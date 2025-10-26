@@ -1,0 +1,10 @@
+{
+  "name": "conductor-tool",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.38.0"
+  }
+}
