@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conductor Tool - Pitch Document</title>
+    <style>
+        /* ============================================
+           PRINT STYLES
+           ============================================ */
+        @media print {
+            @page {
+                size: letter;
+                margin: 0.35in 0.4in;
+            }
+
+            body { margin: 0; padding: 0; }
+
+            .page {
+                page-break-after: always;
+                page-break-inside: avoid;
+                min-height: 0;
+                height: auto;
+                padding: 0.3rem 0.4rem;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .page:last-child { page-break-after: auto; }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            h1, h2, h3, h4, .header, .stat-box, .persona-grid, .feature-grid,
+            .two-col, .timeline, .flow-diagram, .wireframe {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent-cyan: #0891b2;
+            --alert-red: #dc2626;
+            --alert-orange: #ea580c;
+            --success-green: #059669;
+            --text-primary: #0a0a0a;
+            --text-secondary: #525252;
+            --text-light: #a3a3a3;
+            --border-gray: #e5e5e5;
+            --bg-subtle: #fafafa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.4;
+            color: var(--text-primary);
+            background: white;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 0.65rem 1rem;
+            background: white;
+        }
+
+        @media screen {
+            .page {
+                max-width: 8.5in;
+                margin: 0 auto 2rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* ============================================
+           TYPOGRAPHY
+           ============================================ */
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        h4 {
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            margin-top: 0.35rem;
+        }
+
+        p {
+            margin-bottom: 0.35rem;
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }
+
+        .lead {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
+        strong { color: var(--text-primary); font-weight: 600; }
+
+        /* ============================================
+           COMPONENTS
+           ============================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.65rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid var(--text-primary);
+        }
+
+        .logo {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .team-badge {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-box {
+            background: var(--bg-subtle);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 0.55rem;
+            margin: 0.55rem 0;
+        }
+
+        .stat-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1;
+            margin-bottom: 0.15rem;
+        }
+
+        .stat-label {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .quote {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent-cyan);
+            padding-left: 0.75rem;
+            margin: 0.75rem 0;
+        }
+
+        .tools-chaos {
+            display: flex;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin: 0.65rem 0;
+        }
+
+        .tool-badge {
+            background: white;
+            border: 2px solid var(--border-gray);
+            padding: 0.22rem 0.55rem;
+            border-radius: 0.25rem;
+            font-size: 0.68rem;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           PERSONA CARDS
+           ============================================ */
+        .persona-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.55rem;
+            margin: 0.6rem 0;
+        }
+
+        .persona-card {
+            background: var(--bg-subtle);
+            padding: 0.55rem;
+            border-radius: 0.25rem;
+        }
+
+        .persona-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.1rem;
+        }
+
+        .persona-role {
+            font-size: 0.62rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .persona-pain {
+            font-size: 0.66rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* ============================================
+           FEATURE CARDS
+           ============================================ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.55rem;
+            margin: 0.6rem 0;
+        }
+
+        .feature-card {
+            border: 2px solid var(--border-gray);
+            padding: 0.55rem;
+            border-radius: 0.25rem;
+        }
+
+        .feature-icon {
+            width: 26px;
+            height: 26px;
+            background: var(--accent-cyan);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.2rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .feature-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .feature-desc {
+            font-size: 0.66rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* ============================================
+           WIREFRAME STYLES - Small, integrated
+           ============================================ */
+        .wireframe {
+            border: 2px solid var(--border-gray);
+            background: white;
+            border-radius: 0.3rem;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            font-size: 0.65rem;
+        }
+
+        .wireframe-title {
+            font-weight: 600;
+            font-size: 0.68rem;
+            margin-bottom: 0.35rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: 0.25rem;
+        }
+
+        .wireframe-box {
+            border: 1px dashed var(--border-gray);
+            padding: 0.35rem;
+            margin: 0.3rem 0;
+            background: var(--bg-subtle);
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+        }
+
+        .wireframe-input {
+            border: 1px solid var(--border-gray);
+            padding: 0.3rem 0.4rem;
+            margin: 0.25rem 0;
+            background: white;
+            font-size: 0.62rem;
+            color: var(--text-light);
+            border-radius: 0.2rem;
+        }
+
+        .wireframe-button {
+            background: var(--accent-cyan);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.2rem;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 0.62rem;
+            margin: 0.25rem 0.3rem 0 0;
+        }
+
+        .wireframe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            margin: 0.3rem 0;
+        }
+
+        .wireframe-card {
+            border: 1px solid var(--border-gray);
+            padding: 0.35rem;
+            background: var(--bg-subtle);
+            border-radius: 0.2rem;
+            font-size: 0.6rem;
+        }
+
+        .wireframe-avatar {
+            width: 22px;
+            height: 22px;
+            background: var(--border-gray);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.25rem;
+        }
+
+        .wireframe-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        /* ============================================
+           TWO COLUMN LAYOUTS
+           ============================================ */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin: 0.6rem 0;
+        }
+
+        .col-content h4 { margin-top: 0; }
+
+        .col-content ul {
+            font-size: 0.66rem;
+            line-height: 1.4;
+            margin-left: 1rem;
+        }
+
+        /* ============================================
+           FLOW DIAGRAM
+           ============================================ */
+        .flow-diagram {
+            margin: 0.75rem 0;
+            padding: 0.7rem;
+            background: var(--bg-subtle);
+            border-radius: 0.3rem;
+        }
+
+        .flow-box {
+            background: white;
+            border: 2px solid var(--accent-cyan);
+            padding: 0.5rem 0.7rem;
+            border-radius: 0.25rem;
+            text-align: center;
+        }
+
+        .flow-box-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.7rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .flow-box-desc {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .mt-2 { margin-top: 0.55rem; }
+        .mt-3 { margin-top: 0.7rem; }
+        .mb-2 { margin-bottom: 0.55rem; }
+        .text-center { text-align: center; }
+        .text-secondary { color: var(--text-secondary); }
+
+        .highlight {
+            background: linear-gradient(180deg, transparent 60%, #cffafe 60%);
+            padding: 0 0.15rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1: PROBLEM & APPETITE -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>The Problem: Teaching Staff Drowning in Administrative Chaos</h1>
+
+    <p class="lead">It's Wednesday afternoon. Dr. X is staring at her screen, cycling through five different tools just to understand how her class is doing. <strong>It will take her 90 minutes.</strong></p>
+
+    <div class="stat-box">
+        <div class="stat-number">90 min</div>
+        <div class="stat-label">Every week, just to check class health</div>
+    </div>
+
+    <div class="tools-chaos">
+        <div class="tool-badge">Canvas Roster</div>
+        <div class="tool-badge">GitHub Activity</div>
+        <div class="tool-badge">Google Sheets</div>
+        <div class="tool-badge">Slack Messages</div>
+        <div class="tool-badge">Email Threads</div>
+    </div>
+
+    <p>She's looking for Sarah Martinez. Attendance is dropping. Commits are slowing. Journal entries stopped. But by the time Dr. X pieces these signals together from five disconnected systems, <strong>it's week 8. Too late.</strong></p>
+
+    <h2 class="mt-2">The Scale Challenge</h2>
+
+    <div class="two-col">
+        <div class="col-content">
+            <h4>Managing at Scale</h4>
+            <p>500+ students across 50 project teams. Limited TA hours. Every student deserves to be seen, but the tools make it impossible.</p>
+            <ul style="color: var(--text-secondary);">
+                <li>TAs spend 60% of time on admin, not mentoring</li>
+                <li>Students slip through cracks until crisis point</li>
+                <li>Fair grading impossible without data</li>
+                <li>No early warning system</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>The Hidden Costs</h4>
+            <p>Current systems fail everyone involved:</p>
+            <ul style="color: var(--text-secondary);">
+                <li>Professors can't see individual students</li>
+                <li>TAs grade based on incomplete information</li>
+                <li>Team Leaders drown in coordination</li>
+                <li>Quiet contributors become invisible</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="quote">
+        "Every student deserves to be seen, even in a class of 500. Technology should help with that, not make it harder."
+        <div style="font-size: 0.68rem; font-style: normal; margin-top: 0.25rem; color: var(--text-secondary);">— Dr. X, Software Engineering Professor</div>
+    </div>
+
+    <h2 class="mt-2">Statement of Purpose</h2>
+    <p class="lead">Conductor Tool exists to <span class="highlight">transform teaching at scale</span> by replacing administrative chaos with intelligent automation. Our purpose is to ensure that every student in a 500-person software engineering course can be seen, supported, and evaluated fairly—without requiring teaching staff to sacrifice their nights and weekends.</p>
+
+    <p>We believe that <strong>good teaching shouldn't be impossible at scale</strong>. Conductor Tool's purpose is simple: <strong>automate administrative tasks so teaching staff can focus on what matters—teaching and mentoring.</strong></p>
+
+    <h2 class="mt-2">Our Appetite</h2>
+    <p><strong>5 weeks.</strong> Four core features. A system that transforms teaching at scale from impossible to manageable. This is a <span class="highlight">small-batch, high-impact project</span> scoped to deliver a working MVP by December 5, 2024.</p>
+</div>
+
+<!-- PAGE 2: USER PERSONAS -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>The Human Cost: Who This Affects</h1>
+
+    <p class="lead">Four people. Four different pain points. One broken system.</p>
+
+    <div class="persona-grid">
+        <div class="persona-card">
+            <div class="persona-name">Alex Chen</div>
+            <div class="persona-role">The TA (Group Mentor)</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "I have 10 teams. Notes scattered everywhere. Can't track who's falling behind until it's too late."
+                <br><br>
+                <strong>Needs:</strong> Quick meeting prep. Fair grading data. Early warning signals. Structured note-taking that doesn't take forever.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Dr. X</div>
+            <div class="persona-role">The Professor</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> 90 minutes every Wednesday cycling through tools. Almost missed Sarah's crisis. Spent 10 hours manually forming teams.
+                <br><br>
+                <strong>Needs:</strong> Holistic student view. Early intervention. Sustainable tools that survive vendor changes. One place to see everything.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Marcus Johnson</div>
+            <div class="persona-role">The Team Leader</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "I spend more time coordinating than leading. 11pm and I still haven't written code. Can't document team dynamics anywhere."
+                <br><br>
+                <strong>Needs:</strong> Team dashboard. Availability tracking. Private channel to flag concerns. Time to actually lead, not chase people down.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Aisha Patel</div>
+            <div class="persona-role">The Student</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "40 commits. Most of the backend. But I'm quiet in meetings. Will anyone know I contributed? No safe place for feedback."
+                <br><br>
+                <strong>Needs:</strong> Recognition for actual work. Clear evaluation criteria. Private feedback channel. Transparent participation tracking.
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">The Pattern: Good People Failing Because of Bad Tools</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: 0.3rem; margin: 0.65rem 0;">
+        <h3 style="margin-top: 0; font-size: 0.85rem;">By Week 8:</h3>
+        <ul style="color: var(--text-secondary); margin-left: 1.1rem; line-height: 1.5; font-size: 0.72rem;">
+            <li>Alex has graded based on incomplete information, feeling guilty about unfairness</li>
+            <li>Dr. X has discovered three at-risk students, too late to help effectively</li>
+            <li>Marcus is burned out, considering stepping down from team leadership</li>
+            <li>Aisha's contributions are invisible, her grade doesn't reflect her work</li>
+        </ul>
+    </div>
+
+    <h2 class="mt-2">The Solution: One Unified Platform</h2>
+
+    <p class="lead">Replace the chaos with clarity. <span class="highlight">Automate the administrative burden</span> so teaching staff can focus on what matters: teaching and mentoring.</p>
+
+    <div class="stat-box">
+        <div class="stat-number">90 min → 5 min</div>
+        <div class="stat-label">Time to understand class health</div>
+    </div>
+
+    <h2 class="mt-2">Four Integrated Modules</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <div class="feature-title">Authentication & User Management</div>
+            <div class="feature-desc">
+                Secure UCSD-based login with role-based permissions. Instructors manage users, assign roles, and configure access for 500+ students.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <div class="feature-title">Class Directory</div>
+            <div class="feature-desc">
+                Centralized hub for everyone in the course. Searchable roster, detailed profiles, group pages. The "phone book" for the entire class.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">✓</div>
+            <div class="feature-title">Attendance System</div>
+            <div class="feature-desc">
+                Quick-entry tracking for lectures, meetings, and office hours. QR code check-ins. Visual analytics. Takes <60 seconds for 200+ students.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <div class="feature-title">Work Journal / Standup</div>
+            <div class="feature-desc">
+                Daily 2-minute check-ins with GitHub auto-population. Team dashboards for transparency. Automatic blocker escalation and early warnings.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 3: SYSTEM FLOW -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>How The System Flows</h1>
+
+    <div class="flow-diagram">
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="flow-box" style="background: #e0f2fe; border-color: var(--accent-cyan);">
+                <div class="flow-box-title" style="color: var(--accent-cyan);">🔐 AUTHENTICATION & USER MGMT</div>
+                <div class="flow-box-desc">OAuth → Verification → Role Assignment</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 0.35rem 0; font-size: 1rem; color: var(--accent-cyan);">↓</div>
+
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="flow-box" style="background: #f0fdfa; border-color: var(--accent-cyan);">
+                <div class="flow-box-title" style="color: var(--accent-cyan);">👥 CLASS DIRECTORY (Hub)</div>
+                <div class="flow-box-desc">Dashboard • Roster • Profiles • Groups</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 0.35rem 0; font-size: 1rem; color: var(--accent-cyan);">↓</div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.4rem;">
+            <div class="flow-box" style="background: #fef3c7; border-color: var(--alert-orange);">
+                <div class="flow-box-title" style="color: #92400e; font-size: 0.68rem;">✓ ATTENDANCE</div>
+                <div class="flow-box-desc" style="font-size: 0.58rem;">QR Check-in → Analytics</div>
+            </div>
+
+            <div class="flow-box" style="background: #dbeafe; border-color: var(--accent-cyan);">
+                <div class="flow-box-title" style="color: #1e40af; font-size: 0.68rem;">📝 JOURNAL</div>
+                <div class="flow-box-desc" style="font-size: 0.58rem;">GitHub → Dashboard → Alerts</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-size: 0.6rem; color: var(--text-secondary); margin: 0.3rem 0;">
+            ← Data feeds back to profiles & dashboards →
+        </div>
+
+        <div style="text-align: center; margin: 0.35rem 0; font-size: 1rem; color: var(--success-green);">↓</div>
+
+        <div style="text-align: center;">
+            <div class="flow-box" style="background: #d1fae5; border-color: var(--success-green);">
+                <div class="flow-box-title" style="color: var(--success-green);">📊 INSIGHTS & INTERVENTION</div>
+                <div class="flow-box-desc">TA Dashboard • Early Warnings • Fair Evaluation</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Core Principle</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: 0.3rem; margin: 0.65rem 0;">
+        <p style="font-size: 0.85rem; margin: 0 0 0.35rem 0; color: var(--text-primary);"><strong>Automate administrative tasks. Amplify teaching impact.</strong></p>
+        <p style="margin: 0; font-size: 0.72rem;">By handling the busywork automatically, Conductor Tool gives teaching staff time to focus on mentoring students and helping teams succeed.</p>
+    </div>
+
+    <h2 class="mt-2">The Transformation</h2>
+
+    <div class="two-col">
+        <div class="col-content">
+            <h4>Before: Scattered Chaos</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>5+ tools to check class status</li>
+                <li>Manual attendance spreadsheets</li>
+                <li>Notes lost in text files</li>
+                <li>Problems discovered week 8</li>
+                <li>Grading based on gut feeling</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>After: Unified Clarity</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>One platform, complete picture</li>
+                <li>Attendance in <1 minute</li>
+                <li>Structured, searchable notes</li>
+                <li>Early warnings week 3</li>
+                <li>Fair, data-driven evaluation</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="mt-3">Design Approach</h2>
+    <p>Our interface design prioritizes <strong>speed, clarity, and accessibility</strong> for users managing 500+ students. Each module follows a consistent design language with clear visual hierarchy and minimal clicks to complete common tasks.</p>
+</div>
+
+<!-- PAGE 4: FEATURE 1 - AUTHENTICATION -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 1: Authentication & User Management</h1>
+
+    <p class="lead">Secure, role-based access that handles 500+ students including UCSD extension students. Built for administrators to easily manage users and permissions.</p>
+
+    <h2>Sign-In Flow</h2>
+
+    <div class="wireframe-row">
+        <div class="wireframe">
+            <div class="wireframe-title">Sign-In Screen</div>
+            <div class="wireframe-input">Email: your@ucsd.edu</div>
+            <div class="wireframe-input">Password: ••••••••</div>
+            <div style="margin: 0.3rem 0; font-size: 0.62rem; color: var(--text-secondary);">
+                ☐ Sign in with Google (UCSD)
+            </div>
+            <div class="wireframe-button">SIGN IN</div>
+        </div>
+
+        <div class="wireframe">
+            <div class="wireframe-title">Verification Screen</div>
+            <div style="font-size: 0.62rem; color: var(--text-secondary); margin-bottom: 0.3rem;">
+                Find your code on Canvas or class Slack
+            </div>
+            <div class="wireframe-input">Enter verification code</div>
+            <div class="wireframe-button">VERIFY</div>
+            <div style="margin-top: 0.35rem; font-size: 0.6rem; color: var(--success-green);">
+                ✓ Code verified - Student role assigned
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">User Management Interface</h2>
+
+    <div class="wireframe">
+        <div class="wireframe-title">Manage Users - CSE 110 Fall 2024</div>
+        
+        <div style="display: flex; gap: 0.4rem; margin: 0.3rem 0;">
+            <div class="wireframe-button" style="background: #737373;">FILTER BY ROLE</div>
+            <div class="wireframe-button" style="background: #737373;">ADD USER</div>
+            <div class="wireframe-button" style="background: #737373;">ASSIGN GROUPS</div>
+        </div>
+
+        <div class="wireframe-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 0.68rem;">Sarah Martinez</div>
+                    <div style="font-size: 0.6rem;">sarah.martinez@ucsd.edu</div>
+                </div>
+                <div style="display: flex; gap: 0.3rem; align-items: center; font-size: 0.6rem;">
+                    <span style="background: var(--success-green); color: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem;">Student</span>
+                    <span>Team Warriors</span>
+                    <span style="color: var(--accent-cyan);">[EDIT]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="wireframe-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 0.68rem;">Alex Chen</div>
+                    <div style="font-size: 0.6rem;">alex.chen@ucsd.edu</div>
+                </div>
+                <div style="display: flex; gap: 0.3rem; align-items: center; font-size: 0.6rem;">
+                    <span style="background: var(--accent-cyan); color: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem;">TA</span>
+                    <span>10 teams assigned</span>
+                    <span style="color: var(--accent-cyan);">[EDIT]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="wireframe-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 0.68rem;">Marcus Johnson</div>
+                    <div style="font-size: 0.6rem;">marcus.j@ucsd.edu</div>
+                </div>
+                <div style="display: flex; gap: 0.3rem; align-items: center; font-size: 0.6rem;">
+                    <span style="background: #7c3aed; color: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem;">Team Leader</span>
+                    <span>Team Warriors</span>
+                    <span style="color: var(--accent-cyan);">[EDIT]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.65rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>UCSD Google OAuth integration</li>
+                <li>Verification code system for roles</li>
+                <li>Extension student workflow</li>
+                <li>6-tier role hierarchy</li>
+                <li>Bulk user management</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Security & Compliance</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Role-based access control (RBAC)</li>
+                <li>FERPA-compliant data handling</li>
+                <li>Audit logging for user actions</li>
+                <li>Encryption at rest in database</li>
+                <li>Admin-only password resets</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 5: FEATURE 2 - CLASS DIRECTORY -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 2: Class Directory</h1>
+
+    <p class="lead">The centralized "phone book" for the entire course. Searchable roster, detailed profiles, and group pages with all relevant information in one place.</p>
+
+    <h2>Roster View</h2>
+
+    <div class="wireframe">
+        <div class="wireframe-title">Class Roster - CSE 110 Fall 2024</div>
+        
+        <div style="display: flex; gap: 0.4rem; margin: 0.3rem 0;">
+            <div class="wireframe-input" style="flex: 1; margin: 0;">🔍 Search by name...</div>
+            <div class="wireframe-button" style="background: #737373; margin: 0;">FILTER: ALL ROLES</div>
+            <div class="wireframe-button" style="background: #737373; margin: 0;">GROUP: ALL TEAMS</div>
+        </div>
+
+        <div class="wireframe-grid">
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Dr. X</div>
+                <div style="color: var(--accent-cyan); font-size: 0.58rem;">Professor</div>
+            </div>
+
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Alex Chen</div>
+                <div style="color: var(--accent-cyan); font-size: 0.58rem;">TA</div>
+            </div>
+
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Sarah Martinez</div>
+                <div style="color: var(--text-secondary); font-size: 0.58rem;">Student, Warriors</div>
+            </div>
+
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Marcus Johnson</div>
+                <div style="color: #7c3aed; font-size: 0.58rem;">Leader, Warriors</div>
+            </div>
+
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Aisha Patel</div>
+                <div style="color: var(--text-secondary); font-size: 0.58rem;">Student, Dragons</div>
+            </div>
+
+            <div class="wireframe-card">
+                <div class="wireframe-avatar"></div>
+                <div style="font-weight: 600; font-size: 0.66rem;">Jamie Wilson</div>
+                <div style="color: var(--text-secondary); font-size: 0.58rem;">Student, Phoenix</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 0.35rem; font-size: 0.62rem; color: var(--text-secondary);">
+            Showing 6 of 523 users • Page 1 of 88
+        </div>
+    </div>
+
+    <h2 class="mt-2">User Profile & Group Pages</h2>
+
+    <div class="wireframe-row">
+        <div class="wireframe">
+            <div class="wireframe-title">User Profile</div>
+            <div style="display: flex; gap: 0.4rem; margin-bottom: 0.3rem;">
+                <div class="wireframe-avatar" style="width: 38px; height: 38px;"></div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.68rem;">Aisha Patel</div>
+                    <div style="font-size: 0.6rem; color: var(--text-secondary);">she/her • ah-EE-sha</div>
+                    <div style="font-size: 0.6rem; color: var(--accent-cyan);">Student • Team Dragons</div>
+                </div>
+            </div>
+            <div class="wireframe-box">
+                <strong style="font-size: 0.62rem;">Contact:</strong><br>
+                <span style="font-size: 0.58rem;">aisha.p@ucsd.edu<br>Slack: @aisha</span>
+            </div>
+            <div class="wireframe-box">
+                <strong style="font-size: 0.62rem;">Availability:</strong><br>
+                <span style="font-size: 0.58rem;">Mon-Thu 2pm-6pm</span>
+            </div>
+            <div class="wireframe-box">
+                <strong style="font-size: 0.62rem;">Activity:</strong><br>
+                <span style="font-size: 0.58rem; color: var(--success-green);">97% attendance<br>42 commits this week</span>
+            </div>
+        </div>
+
+        <div class="wireframe">
+            <div class="wireframe-title">Team Dragons</div>
+            <div style="font-style: italic; font-size: 0.62rem; color: var(--text-secondary); margin-bottom: 0.3rem;">
+                "Move fast and break things responsibly"
+            </div>
+            <div class="wireframe-box">
+                <strong style="font-size: 0.62rem;">Members:</strong><br>
+                <span style="font-size: 0.58rem;">
+                • Aisha Patel (you)<br>
+                • Jordan Kim<br>
+                • Taylor Brooks<br>
+                • River Chen<br>
+                • Sam Rodriguez
+                </span>
+            </div>
+            <div class="wireframe-box">
+                <strong style="font-size: 0.62rem;">Resources:</strong><br>
+                <span style="font-size: 0.58rem; color: var(--accent-cyan);">
+                → GitHub Repo<br>
+                → Slack Channel<br>
+                → Meeting Notes
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.65rem;">
+        <div class="col-content">
+            <h4>Directory Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Searchable roster with advanced filtering</li>
+                <li>Detailed user profiles with pronouns</li>
+                <li>Group pages with team info and links</li>
+                <li>Activity tracking integration</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Benefits</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>One place to find anyone in class</li>
+                <li>Transparent team structures</li>
+                <li>Easy coordination across 500+ students</li>
+                <li>Replaces scattered contact lists</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 6: FEATURE 3 - ATTENDANCE -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 3: Attendance System</h1>
+
+    <p class="lead">Quick-entry tracking for lectures, meetings, and office hours. QR code check-ins for students. Visual analytics and trends. Takes <60 seconds to record 200+ students.</p>
+
+    <h2>Three View Modes</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem; margin: 0.5rem 0;">
+        <!-- Calendar View -->
+        <div class="wireframe" style="padding: 0.4rem;">
+            <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.3rem; display: flex; gap: 0.4rem;">
+                <span style="text-decoration: underline;">CALENDAR</span>
+                <span style="font-weight: 400;">LIST</span>
+                <span style="font-weight: 400;">TRENDS</span>
+            </div>
+            <div style="font-size: 0.58rem; font-weight: 600; margin-bottom: 0.25rem;">OCTOBER</div>
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; font-size: 0.48rem;">
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">S</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">M</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">T</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">W</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">T</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center; color: var(--success-green);">F</div>
+                <div style="background: var(--bg-subtle); padding: 0.12rem; text-align: center;">S</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">1</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">2</div>
+                <div style="padding: 0.12rem; text-align: center; background: var(--success-green); color: white; border: 1px solid var(--success-green);">3</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">4</div>
+                <div style="padding: 0.12rem; text-align: center; background: var(--success-green); color: white; border: 1px solid var(--success-green);">5</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">6</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">7</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">8</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">9</div>
+                <div style="padding: 0.12rem; text-align: center; background: var(--success-green); color: white; border: 1px solid var(--success-green);">10</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">11</div>
+                <div style="padding: 0.12rem; text-align: center; background: var(--alert-orange); color: white; border: 1px solid var(--alert-orange);">12</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">13</div>
+                <div style="padding: 0.12rem; text-align: center; border: 1px solid var(--border-gray);">14</div>
+            </div>
+        </div>
+
+        <!-- List View -->
+        <div class="wireframe" style="padding: 0.4rem;">
+            <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.3rem; display: flex; gap: 0.4rem;">
+                <span style="font-weight: 400;">CALENDAR</span>
+                <span style="text-decoration: underline;">LIST</span>
+                <span style="font-weight: 400;">TRENDS</span>
+            </div>
+            <div style="border: 1px solid var(--border-gray); padding: 0.25rem; margin-bottom: 0.25rem; font-size: 0.56rem; background: var(--success-green); color: white; border-radius: 0.15rem;">
+                <div style="font-weight: 600;">LECTURE</div>
+                <div style="font-size: 0.5rem;">October 5, 3:30 ●</div>
+            </div>
+            <div style="border: 1px solid var(--border-gray); padding: 0.25rem; margin-bottom: 0.25rem; font-size: 0.56rem; background: var(--success-green); color: white; border-radius: 0.15rem;">
+                <div style="font-weight: 600;">TEAM MEETING</div>
+                <div style="font-size: 0.5rem;">October 4, 11:50 ●</div>
+            </div>
+            <div style="border: 1px solid var(--border-gray); padding: 0.25rem; margin-bottom: 0.25rem; font-size: 0.56rem; border-radius: 0.15rem;">
+                <div style="font-weight: 600;">MARIA'S OH</div>
+                <div style="font-size: 0.5rem; color: var(--text-secondary);">October 4, 1:30</div>
+            </div>
+            <div style="border: 1px solid var(--border-gray); padding: 0.25rem; font-size: 0.56rem; background: var(--alert-red); color: white; border-radius: 0.15rem;">
+                <div style="font-weight: 600;">LECTURE</div>
+                <div style="font-size: 0.5rem;">October 2, 10:30</div>
+            </div>
+        </div>
+
+        <!-- Trends View -->
+        <div class="wireframe" style="padding: 0.4rem;">
+            <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.3rem; display: flex; gap: 0.4rem;">
+                <span style="font-weight: 400;">CALENDAR</span>
+                <span style="font-weight: 400;">LIST</span>
+                <span style="text-decoration: underline;">TRENDS</span>
+            </div>
+            <div style="font-size: 0.55rem; margin-bottom: 0.3rem; color: var(--text-secondary);">
+                <span style="color: var(--alert-red);">—·—</span> You<br>
+                <span style="color: var(--text-light);">- - -</span> Class Avg
+            </div>
+            <div style="position: relative; height: 45px; border-left: 1px solid var(--border-gray); border-bottom: 1px solid var(--border-gray); margin-bottom: 0.25rem;">
+                <svg width="100%" height="100%" style="position: absolute;">
+                    <polyline points="0,35 30,25 60,28 90,18 100,20" style="fill: none; stroke: var(--alert-red); stroke-width: 1.5;"/>
+                    <polyline points="0,22 30,18 60,16 90,12 100,10" style="fill: none; stroke: var(--text-light); stroke-width: 1; stroke-dasharray: 2,2;"/>
+                </svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.5rem; color: var(--text-secondary);">
+                <span>SEP 15</span>
+                <span>OCT 1</span>
+                <span>OCT 15</span>
+            </div>
+            <div style="font-size: 0.52rem; color: var(--text-secondary); margin-top: 0.25rem; font-style: italic;">
+                (Professor/instructor can see all students;<br>Students can only see theirs)
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Recording Attendance</h2>
+
+    <div class="wireframe-row">
+        <!-- Student View -->
+        <div class="wireframe">
+            <div style="font-weight: 600; font-size: 0.68rem; margin-bottom: 0.35rem; border-bottom: 1px solid var(--border-gray); padding-bottom: 0.25rem;">STUDENT VIEW</div>
+            <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.4rem;">LECTURE, OCT 5</div>
+            <div style="text-align: center; margin: 0.5rem 0;">
+                <div style="width: 55px; height: 55px; border: 2px dashed var(--border-gray); display: inline-flex; align-items: center; justify-content: center; font-size: 1.3rem; border-radius: 0.2rem;">
+                    📱
+                </div>
+                <div style="font-size: 0.58rem; color: var(--text-secondary); margin-top: 0.25rem;">SCAN QR CODE</div>
+            </div>
+            <div style="text-align: center; font-size: 0.56rem; color: var(--text-secondary); margin: 0.35rem 0;">
+                — OR —
+            </div>
+            <div class="wireframe-input" style="text-align: center; font-weight: 700; font-size: 0.7rem; padding: 0.35rem;">Q2A5G</div>
+            <div style="text-align: center; font-size: 0.56rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                ENTER A-NUMERIC CODE
+            </div>
+        </div>
+
+        <!-- Instructor View -->
+        <div class="wireframe">
+            <div style="font-weight: 600; font-size: 0.68rem; margin-bottom: 0.35rem; border-bottom: 1px solid var(--border-gray); padding-bottom: 0.25rem;">INSTRUCTOR VIEW</div>
+            <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.3rem;">LECTURE, OCT 5</div>
+            <div style="font-size: 0.58rem; margin-bottom: 0.3rem;">Show your students<br>this QR code:</div>
+            <div style="text-align: center; margin: 0.4rem 0;">
+                <div style="width: 52px; height: 52px; border: 2px solid var(--accent-cyan); display: inline-flex; align-items: center; justify-content: center; background: var(--accent-cyan); border-radius: 0.2rem;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;">
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--accent-cyan);"></div>
+                        <div style="width: 8px; height: 8px; background: white;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.58rem; margin-bottom: 0.25rem;">If they don't have a camera,<br>ask them to enter this code:</div>
+            <div style="text-align: center; font-weight: 700; font-size: 0.75rem; padding: 0.3rem; background: var(--bg-subtle); border-radius: 0.2rem;">Q2A5G</div>
+            <div style="text-align: center; font-size: 0.58rem; color: var(--success-green); margin-top: 0.3rem; font-weight: 600;">
+                23 RESPONSES SO FAR
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Meeting Details</h2>
+
+    <div class="wireframe" style="max-width: 60%;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.3rem;">
+            <div>
+                <div style="font-weight: 600; font-size: 0.68rem;">LECTURE</div>
+                <div style="font-size: 0.58rem; color: var(--text-secondary); margin-top: 0.1rem;">DATE: OCT 5, 3:30PM</div>
+                <div style="font-size: 0.58rem; color: var(--text-secondary);">OWNER: PROFESSOR LEWIS</div>
+            </div>
+            <div style="width: 42px; height: 42px; border: 2px solid var(--border-gray); border-radius: 50%; background: var(--bg-subtle);"></div>
+        </div>
+        <div style="font-size: 0.58rem; color: var(--text-secondary); margin-top: 0.35rem;">
+            MEMBERS: 75 PARTICIPANTS <span style="color: var(--accent-cyan);">[LIST]</span>
+        </div>
+        <div style="border-top: 1px solid var(--border-gray); margin-top: 0.35rem; padding-top: 0.35rem;">
+            <div style="height: 5px; background: var(--bg-subtle); margin: 0.15rem 0;"></div>
+            <div style="height: 5px; background: var(--bg-subtle); margin: 0.15rem 0;"></div>
+            <div style="height: 5px; background: var(--bg-subtle); margin: 0.15rem 0;"></div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.65rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Three view modes: Calendar, List, Trends</li>
+                <li>QR code + alphanumeric code check-in</li>
+                <li>Real-time response tracking</li>
+                <li>Visual analytics and trend charts</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Time Savings</h4>
+            <ul style="color: var(--text-secondary);">
+                <li><60 seconds to record 200+ students</li>
+                <li>Multiple view modes for different needs</li>
+                <li>Automatic alerts for patterns</li>
+                <li>Integration with student profiles</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 7: FEATURE 4 - WORK JOURNAL -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 4: Work Journal / Standup</h1>
+
+    <p class="lead">Daily 2-minute check-ins with GitHub auto-population. Team dashboards for transparency. Automatic blocker escalation. Early warning system for at-risk students.</p>
+
+    <!-- Two-column layout for dashboards -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+
+        <!-- LEFT COLUMN: Student Journal + Team Dashboard -->
+        <div>
+            <h2 style="margin-top: 0; margin-bottom: 0.35rem;">Student Journal Entry</h2>
+
+            <div class="wireframe">
+                <div style="font-weight: 600; font-size: 0.62rem; margin-bottom: 0.25rem;">Daily Standup - November 8, 2024</div>
+
+                <div style="background: #e0f2fe; padding: 0.25rem; border-radius: 0.15rem; margin: 0.2rem 0; font-size: 0.52rem;">
+                    <strong style="font-size: 0.54rem;">📊 GitHub Activity (Last 24h):</strong><br>
+                    <span style="color: var(--success-green); font-size: 0.5rem;">
+                    ✓ 3 commits • 1 PR opened • 2 reviews
+                    </span><br>
+                    <span style="font-size: 0.5rem; margin-top: 0.15rem; display: inline-block;">☑ Include in check-in</span>
+                </div>
+
+                <div class="wireframe-box" style="margin: 0.2rem 0; padding: 0.25rem;">
+                    <strong style="font-size: 0.54rem;">What did you accomplish yesterday?</strong><br>
+                    <span style="font-size: 0.5rem;">
+                    • Implemented login auth (3 commits)<br>
+                    • Fixed bug #43<br>
+                    • Reviewed Sarah's PR
+                    </span>
+                </div>
+
+                <div class="wireframe-box" style="margin: 0.2rem 0; padding: 0.25rem;">
+                    <strong style="font-size: 0.54rem;">What will you work on today?</strong><br>
+                    <span style="font-size: 0.5rem;">
+                    • Add JWT token refresh<br>
+                    • Write tests for auth module
+                    </span>
+                </div>
+
+                <div class="wireframe-box" style="margin: 0.2rem 0; padding: 0.25rem; border-left: 3px solid var(--alert-orange);">
+                    <strong style="font-size: 0.54rem;">Any blockers?</strong><br>
+                    <span style="font-size: 0.5rem; color: var(--alert-orange);">
+                    ⚠ Stuck on database connection pooling
+                    </span>
+                </div>
+
+                <div style="margin: 0.2rem 0; font-size: 0.54rem;">
+                    <strong>How are you feeling?</strong>
+                    <span style="font-size: 0.9rem; margin-left: 0.25rem;">😟 😐 🙂 ● 😄</span>
+                </div>
+
+                <div style="display: flex; gap: 0.3rem; margin-top: 0.25rem;">
+                    <div class="wireframe-button" style="font-size: 0.54rem; padding: 0.22rem 0.4rem;">SUBMIT</div>
+                    <div class="wireframe-button" style="background: #737373; font-size: 0.54rem; padding: 0.22rem 0.4rem;">SAVE DRAFT</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 0.4rem; margin-bottom: 0.3rem;">Team Dashboard</h2>
+
+            <div class="wireframe">
+                <div style="font-weight: 600; font-size: 0.6rem; margin-bottom: 0.2rem;">Team Warriors - Activity Dashboard</div>
+                <div style="font-size: 0.52rem; color: var(--alert-orange); margin-bottom: 0.25rem;">
+                    ⚠ 3/4 submitted • 1 blocker needs attention
+                </div>
+
+                <!-- Compact student cards -->
+                <div class="wireframe-box" style="padding: 0.25rem; margin: 0.15rem 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem;">
+                        <div style="font-size: 0.56rem;">
+                            <span style="font-size: 0.7rem;">😊</span> <strong>Aisha Patel</strong> • 2h ago
+                        </div>
+                        <div style="display: flex; gap: 0.15rem; font-size: 0.48rem;">
+                            <span style="background: var(--success-green); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">42 commits</span>
+                            <span style="background: var(--success-green); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">5/5</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.5rem;">Working on: Database schema • <span style="color: var(--success-green);">On track ✓</span></div>
+                </div>
+
+                <div class="wireframe-box" style="padding: 0.25rem; margin: 0.15rem 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem;">
+                        <div style="font-size: 0.56rem;">
+                            <span style="font-size: 0.7rem;">🙂</span> <strong>Marcus (Leader)</strong> • 4h ago
+                        </div>
+                        <div style="display: flex; gap: 0.15rem; font-size: 0.48rem;">
+                            <span style="background: var(--success-green); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">28 commits</span>
+                            <span style="background: var(--success-green); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">5/5</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.5rem;">Working on: Frontend routing • <span style="color: var(--success-green);">On track ✓</span></div>
+                </div>
+
+                <div class="wireframe-box" style="padding: 0.25rem; margin: 0.15rem 0; border-left: 3px solid var(--alert-red);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem;">
+                        <div style="font-size: 0.56rem;">
+                            <span style="font-size: 0.7rem;">😟</span> <strong>Sarah Martinez</strong> • 3 days ago
+                        </div>
+                        <div style="display: flex; gap: 0.15rem; font-size: 0.48rem;">
+                            <span style="background: var(--alert-orange); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">2 commits</span>
+                            <span style="background: var(--alert-orange); color: white; padding: 0.08rem 0.2rem; border-radius: 0.1rem;">2/5</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.5rem;">Last: API issues • <span style="color: var(--alert-red);">⚠ Alert sent to TA</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: TA Multi-Team Dashboard -->
+        <div>
+            <h2 style="margin-top: 0; margin-bottom: 0.35rem;">TA Multi-Team Dashboard</h2>
+
+    <div class="wireframe">
+        <div style="font-weight: 600; font-size: 0.65rem; margin-bottom: 0.2rem;">TA Dashboard - Prof. Anderson's SE 350</div>
+        <div style="font-size: 0.55rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+            Welcome back, Jennifer! Managing 5 teams (23 students)
+        </div>
+
+        <!-- Priority Alerts -->
+        <div style="font-weight: 600; font-size: 0.6rem; margin: 0.25rem 0 0.2rem 0;">🚨 PRIORITY ALERTS (2)</div>
+
+        <div class="wireframe-box" style="padding: 0.25rem; margin: 0.15rem 0; border-left: 3px solid var(--alert-orange);">
+            <div style="font-size: 0.58rem; font-weight: 600; margin-bottom: 0.1rem;">⚠️ Team Warriors - Alex Chen</div>
+            <div style="font-size: 0.52rem; margin-bottom: 0.15rem;">BLOCKER: Database pooling • Sentiment: 😐 (down from 🙂)</div>
+            <div style="display: flex; gap: 0.2rem; font-size: 0.5rem;">
+                <span style="color: var(--accent-cyan);">[View]</span>
+                <span style="color: var(--accent-cyan);">[Message]</span>
+            </div>
+        </div>
+
+        <div class="wireframe-box" style="padding: 0.25rem; margin: 0.15rem 0; border-left: 3px solid var(--alert-red);">
+            <div style="font-size: 0.58rem; font-weight: 600; margin-bottom: 0.1rem;">⚠️ Team Phoenix - Jamie Wilson</div>
+            <div style="font-size: 0.52rem; margin-bottom: 0.15rem;">No check-ins for 3 days • Blockers unresolved</div>
+            <div style="display: flex; gap: 0.2rem; font-size: 0.5rem;">
+                <span style="color: var(--accent-cyan);">[View]</span>
+                <span style="color: var(--accent-cyan);">[Excuse]</span>
+            </div>
+        </div>
+
+        <!-- Team Overview Table -->
+        <div style="font-weight: 600; font-size: 0.6rem; margin: 0.3rem 0 0.2rem 0;">TEAM OVERVIEW</div>
+        <div style="border: 1px solid var(--border-gray); border-radius: 0.2rem; overflow: hidden;">
+            <table style="width: 100%; font-size: 0.52rem; border-collapse: collapse;">
+                <tr style="background: var(--bg-subtle);">
+                    <th style="padding: 0.15rem 0.2rem; text-align: left; border-bottom: 1px solid var(--border-gray);">Team</th>
+                    <th style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">Today</th>
+                    <th style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">Blockers</th>
+                    <th style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">Sentiment</th>
+                    <th style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">Participation</th>
+                </tr>
+                <tr>
+                    <td style="padding: 0.15rem 0.2rem; border-bottom: 1px solid var(--border-gray);">Warriors</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">3/4 ⚠️</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">1 🚨</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">😐 ↓</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">93% ✓</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.15rem 0.2rem; border-bottom: 1px solid var(--border-gray);">Phoenix</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">2/5 ⚠️</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">0</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">😟 ↓↓</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">78% ⚠️</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.15rem 0.2rem; border-bottom: 1px solid var(--border-gray);">Dragons</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">5/5 ✓</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">0</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">🙂 →</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">100% ✓</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.15rem 0.2rem; border-bottom: 1px solid var(--border-gray);">Spartans</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">4/4 ✓</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">2 🚨</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">😐 →</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center; border-bottom: 1px solid var(--border-gray);">96% ✓</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.15rem 0.2rem;">Titans</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center;">5/5 ✓</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center;">0</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center;">😄 ↑</td>
+                    <td style="padding: 0.15rem 0.2rem; text-align: center;">100% ✓</td>
+                </tr>
+            </table>
+        </div>
+
+            <h2 style="margin-top: 0.35rem; margin-bottom: 0.25rem;">Team Health Analytics</h2>
+
+            <div style="display: flex; gap: 0.3rem;">
+                <div class="wireframe" style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.56rem; margin-bottom: 0.2rem;">📊 Sentiment Trend (Last 7 Days)</div>
+
+                    <!-- Y-axis labels -->
+                    <div style="display: flex; gap: 0.2rem; margin: 0.2rem 0;">
+                        <div style="display: flex; flex-direction: column; justify-content: space-between; height: 35px; font-size: 0.55rem; padding-right: 0.15rem;">
+                            <div>😄</div>
+                            <div>🙂</div>
+                            <div>😐</div>
+                            <div>😟</div>
+                            <div>😭</div>
+                        </div>
+
+                        <!-- Chart area -->
+                        <div style="flex: 1; position: relative; height: 35px; border-left: 1px solid var(--border-gray); border-bottom: 1px solid var(--border-gray);">
+                            <svg width="100%" height="100%" style="position: absolute;">
+                                <!-- Grid lines -->
+                                <line x1="0" y1="7" x2="100%" y2="7" stroke="#e5e5e5" stroke-width="0.5" stroke-dasharray="2,2"/>
+                                <line x1="0" y1="17.5" x2="100%" y2="17.5" stroke="#e5e5e5" stroke-width="0.5" stroke-dasharray="2,2"/>
+                                <line x1="0" y1="28" x2="100%" y2="28" stroke="#e5e5e5" stroke-width="0.5" stroke-dasharray="2,2"/>
+
+                                <!-- Trend line -->
+                                <polyline points="5,5 20,3 35,9 50,11 65,18 80,20 95,22"
+                                    fill="none" stroke="var(--accent-cyan)" stroke-width="1.5"/>
+
+                                <!-- Data points -->
+                                <circle cx="95" cy="22" r="1.5" fill="var(--alert-orange)" stroke="var(--alert-orange)" stroke-width="1.5"/>
+                            </svg>
+
+                            <!-- Today indicator -->
+                            <div style="position: absolute; right: 0; bottom: -4px; font-size: 0.44rem; color: var(--alert-orange);">
+                                ← Today
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- X-axis labels -->
+                    <div style="display: flex; justify-content: space-between; padding-left: 1.6rem; font-size: 0.44rem; color: var(--text-secondary); margin-top: 0.08rem;">
+                        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                    </div>
+
+                    <div style="font-size: 0.48rem; color: var(--text-secondary); margin-top: 0.2rem;">
+                        Team avg: 😐 3.2/5 (↓ 0.3 from last week)
+                    </div>
+                </div>
+
+                <div class="wireframe" style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.56rem; margin-bottom: 0.2rem;">📈 Participation Metrics</div>
+                    <div class="wireframe-box" style="padding: 0.2rem; margin: 0.12rem 0;">
+                        <div style="font-size: 0.5rem; margin-bottom: 0.1rem;">
+                            <strong>This Week:</strong> 97% (29/30 check-ins)
+                        </div>
+                        <div style="background: var(--success-green); height: 3px; width: 97%; border-radius: 2px;"></div>
+                    </div>
+                    <div class="wireframe-box" style="padding: 0.2rem; margin: 0.12rem 0;">
+                        <div style="font-size: 0.5rem; margin-bottom: 0.12rem;"><strong>Blockers:</strong></div>
+                        <div style="font-size: 0.48rem;">
+                            • 4 raised • 3 resolved<br>• 1 active (Alex Chen)
+                        </div>
+                    </div>
+                    <div style="font-size: 0.48rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                        Avg resolution time: 2.4 hours
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 0.35rem; margin-bottom: 0.25rem;">Alert & Notification Views</h2>
+
+            <div style="display: flex; gap: 0.3rem;">
+                <div class="wireframe" style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.56rem; margin-bottom: 0.2rem; border-bottom: 1px solid var(--border-gray); padding-bottom: 0.15rem;">Team Notification (Slack)</div>
+                    <div style="background: #f0f0f0; padding: 0.25rem; border-radius: 0.15rem; border-left: 3px solid var(--alert-orange); margin: 0.15rem 0;">
+                        <div style="font-size: 0.5rem; font-weight: 600; margin-bottom: 0.12rem;">🚨 Alex needs help!</div>
+                        <div style="font-size: 0.48rem; color: var(--text-secondary); margin-bottom: 0.15rem;">
+                            <strong>Blocker:</strong> Database pooling<br>
+                            <strong>Posted:</strong> Just now
+                        </div>
+                        <div style="display: flex; gap: 0.2rem; margin-top: 0.15rem;">
+                            <div style="background: white; border: 1px solid var(--border-gray); padding: 0.15rem 0.3rem; border-radius: 0.12rem; font-size: 0.46rem;">💡 I can help</div>
+                            <div style="background: white; border: 1px solid var(--border-gray); padding: 0.15rem 0.3rem; border-radius: 0.12rem; font-size: 0.46rem;">🔔 Escalate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wireframe" style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.56rem; margin-bottom: 0.2rem; border-bottom: 1px solid var(--border-gray); padding-bottom: 0.15rem;">TA Alert (Email/SMS)</div>
+                    <div style="background: #fff3cd; padding: 0.25rem; border-radius: 0.15rem; border-left: 3px solid var(--alert-red); margin: 0.15rem 0;">
+                        <div style="font-size: 0.5rem; font-weight: 600; margin-bottom: 0.12rem;">⚠️ Unresolved Blocker (4h)</div>
+                        <div style="font-size: 0.48rem; color: var(--text-secondary); margin-bottom: 0.15rem;">
+                            <strong>Student:</strong> Alex Chen (Warriors)<br>
+                            <strong>Issue:</strong> Database pooling<br>
+                            <strong>Sentiment:</strong> 😐 (down from 🙂)
+                        </div>
+                        <div style="display: flex; gap: 0.2rem; margin-top: 0.15rem;">
+                            <div style="background: var(--accent-cyan); color: white; padding: 0.15rem 0.3rem; border-radius: 0.12rem; font-size: 0.46rem;">View Details</div>
+                            <div style="background: white; border: 1px solid var(--border-gray); padding: 0.15rem 0.3rem; border-radius: 0.12rem; font-size: 0.46rem;">Send Message</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close the two-column grid -->
+
+    <div class="two-col" style="margin-top: 0.55rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>2-minute daily check-ins</li>
+                <li>GitHub activity auto-population</li>
+                <li>Team transparency dashboards</li>
+                <li>Blocker escalation to TAs</li>
+                <li>Early warning system</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Impact</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Catch at-risk students by week 3</li>
+                <li>Fair evaluation of contributions</li>
+                <li>Team coordination simplified</li>
+                <li>TAs get structured meeting prep</li>
+                <li>Quiet contributors become visible</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- PAGE 8: TECHNICAL & TIMELINE -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Technical Approach & Timeline</h1>
+
+    <h2>Technology Stack</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 0.65rem 0;">
+        <div style="text-align: center; padding: 0.55rem; background: var(--bg-subtle); border: 2px solid var(--border-gray); border-radius: 0.25rem;">
+            <div style="font-weight: 600; font-size: 0.7rem;">React</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary); margin-top: 0.2rem;">Frontend</div>
+        </div>
+        <div style="text-align: center; padding: 0.55rem; background: var(--bg-subtle); border: 2px solid var(--border-gray); border-radius: 0.25rem;">
+            <div style="font-weight: 600; font-size: 0.7rem;">Node.js</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary); margin-top: 0.2rem;">Backend</div>
+        </div>
+        <div style="text-align: center; padding: 0.55rem; background: var(--bg-subtle); border: 2px solid var(--border-gray); border-radius: 0.25rem;">
+            <div style="font-weight: 600; font-size: 0.7rem;">PostgreSQL</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary); margin-top: 0.2rem;">Database</div>
+        </div>
+        <div style="text-align: center; padding: 0.55rem; background: var(--bg-subtle); border: 2px solid var(--border-gray); border-radius: 0.25rem;">
+            <div style="font-weight: 600; font-size: 0.7rem;">GitHub API</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary); margin-top: 0.2rem;">Integration</div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Sprint Timeline</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 0.6rem 0;">
+        <div style="text-align: center;">
+            <div style="width: 1.8rem; height: 1.8rem; background: var(--accent-cyan); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.62rem; margin: 0 auto 0.25rem;">1&2</div>
+            <div style="font-weight: 600; font-size: 0.66rem; margin-bottom: 0.15rem;">Nov 1-13</div>
+            <div style="font-size: 0.58rem; color: var(--text-secondary); line-height: 1.3;">Feature design & development</div>
+        </div>
+
+        <div style="text-align: center;">
+            <div style="width: 1.8rem; height: 1.8rem; background: var(--accent-cyan); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.72rem; margin: 0 auto 0.25rem;">3</div>
+            <div style="font-weight: 600; font-size: 0.66rem; margin-bottom: 0.15rem;">Nov 14</div>
+            <div style="font-size: 0.58rem; color: var(--text-secondary); line-height: 1.3;">Midway check-in</div>
+        </div>
+
+        <div style="text-align: center;">
+            <div style="width: 1.8rem; height: 1.8rem; background: var(--accent-cyan); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.72rem; margin: 0 auto 0.25rem;">4</div>
+            <div style="font-weight: 600; font-size: 0.66rem; margin-bottom: 0.15rem;">Nov 24-28</div>
+            <div style="font-size: 0.58rem; color: var(--text-secondary); line-height: 1.3;">Integration & Testing</div>
+        </div>
+
+        <div style="text-align: center;">
+            <div style="width: 1.8rem; height: 1.8rem; background: var(--success-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.72rem; margin: 0 auto 0.25rem;">✓</div>
+            <div style="font-weight: 600; font-size: 0.66rem; margin-bottom: 0.15rem;">Dec 5</div>
+            <div style="font-size: 0.58rem; color: var(--text-secondary); line-height: 1.3;"><strong>Technical Deadline</strong></div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 0.4rem; margin-bottom: 0.3rem;">Scope Management</h2>
+
+    <div class="two-col">
+        <div style="background: #fef3c7; border-left: 3px solid var(--alert-orange); padding: 0.35rem; border-radius: 0.15rem;">
+            <div style="font-weight: 700; color: #92400e; font-size: 0.62rem; margin-bottom: 0.2rem;">⚠ Rabbit Holes to Avoid</div>
+            <ul style="color: #78350f; font-size: 0.54rem; margin-left: 0.85rem; line-height: 1.2;">
+                <li>Advanced analytics / ML</li>
+                <li>Mobile apps</li>
+                <li>Real-time notifications</li>
+                <li>Custom grading rubrics</li>
+            </ul>
+        </div>
+
+        <div style="background: #fee2e2; border-left: 3px solid var(--alert-red); padding: 0.35rem; border-radius: 0.15rem;">
+            <div style="font-weight: 700; color: #991b1b; font-size: 0.62rem; margin-bottom: 0.2rem;">⛔ No-Gos</div>
+            <ul style="color: #7f1d1d; font-size: 0.54rem; margin-left: 0.85rem; line-height: 1.2;">
+                <li>LMS replacement</li>
+                <li>Code review tools</li>
+                <li>Video conferencing</li>
+                <li>Assignment submission</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 0.4rem; margin-bottom: 0.35rem;">Expected Impact</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0.5rem 0;">
+        <div style="text-align: center; padding: 0.5rem; background: var(--bg-subtle); border-radius: 0.2rem;">
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--success-green); line-height: 1; margin-bottom: 0.25rem;">18x</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary);">Faster class health checks</div>
+        </div>
+
+        <div style="text-align: center; padding: 0.5rem; background: var(--bg-subtle); border-radius: 0.2rem;">
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--success-green); line-height: 1; margin-bottom: 0.25rem;">60%</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary);">Less time on admin</div>
+        </div>
+
+        <div style="text-align: center; padding: 0.5rem; background: var(--bg-subtle); border-radius: 0.2rem;">
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--success-green); line-height: 1; margin-bottom: 0.25rem;">5 wks</div>
+            <div style="font-size: 0.6rem; color: var(--text-secondary);">Earlier intervention</div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 0.5rem; margin-bottom: 0.4rem;">The Ask</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.5rem; border-radius: 0.25rem; margin: 0.45rem 0;">
+        <p style="font-size: 0.72rem; margin-bottom: 0.3rem; color: var(--text-primary);"><strong>We're seeking approval to build this 5-week MVP with:</strong></p>
+        <ul style="color: var(--text-secondary); margin-left: 1.1rem; line-height: 1.4; font-size: 0.62rem; margin-bottom: 0;">
+            <li>Development team of 10 engineers (already allocated)</li>
+            <li>Access to UCSD infrastructure (Google OAuth, hosting)</li>
+            <li>Pilot class for weeks 4-5 (50-100 students)</li>
+            <li>Weekly check-ins with Dr. X for feedback</li>
+        </ul>
+    </div>
+
+    <h2 style="margin-top: 0.5rem; margin-bottom: 0.35rem;">Why This Matters</h2>
+
+    <p style="font-size: 0.68rem; line-height: 1.4; margin-bottom: 0.25rem;">
+        Every quarter, <strong>thousands of students</strong> take project-based software engineering courses. Some thrive. Others slip through the cracks—not because they're incapable, but because <strong>the tools fail them</strong>. Conductor Tool changes that.
+    </p>
+
+    <p style="font-size: 0.68rem; line-height: 1.4; margin-top: 0.25rem; margin-bottom: 0.3rem;">
+        This isn't just about efficiency. It's about <strong>equity at scale</strong>. It's about making sure that in a class of 500, the quiet contributor in the back row gets the same attention as the vocal student in the front. It's about giving teaching staff the tools they need to <strong>actually teach</strong>, not just administrate.
+    </p>
+
+    <div style="background: linear-gradient(135deg, var(--accent-cyan) 0%, #0e7490 100%); color: white; padding: 0.35rem 0.55rem; border-radius: 0.2rem; margin: 0.3rem 0 0 0; text-align: center;">
+        <div style="font-size: 0.78rem; font-weight: 700; line-height: 1.2;">Let's build a system where every student can be seen. </div>
+        <span style="font-size: 0.6rem; opacity: 0.9; font-weight: 400;">Even in a class of 500.</span>
+    </div>
+</div>
+
+</body>
+</html>
