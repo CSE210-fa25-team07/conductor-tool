@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conductor Tool - Pitch Document (8 Pages)</title>
+    <style>
+        /* ============================================
+           PRINT STYLES - Optimized for 8 pages
+           ============================================ */
+        @media print {
+            @page {
+                size: letter;
+                margin: 0.35in 0.45in;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .page {
+                page-break-after: always;
+                page-break-inside: avoid;
+                min-height: 0;
+                height: auto;
+                padding: 0.35rem 0.5rem;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            h1, h2, h3, h4, .header, .stat-box, .mockup-container,
+            .mockup-container-small, .persona-grid, .feature-grid,
+            .two-col, .timeline, .flow-diagram {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent-cyan: #0891b2;
+            --alert-red: #dc2626;
+            --alert-orange: #ea580c;
+            --success-green: #059669;
+            --text-primary: #0a0a0a;
+            --text-secondary: #525252;
+            --text-light: #a3a3a3;
+            --border-gray: #e5e5e5;
+            --bg-subtle: #fafafa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            line-height: 1.4;
+            color: var(--text-primary);
+            background: white;
+        }
+
+        /* ============================================
+           PAGE LAYOUT - Tighter spacing
+           ============================================ */
+        .page {
+            min-height: 100vh;
+            padding: 0.75rem 1.25rem;
+            background: white;
+        }
+
+        @media screen {
+            .page {
+                max-width: 8.5in;
+                margin: 0 auto 2rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* ============================================
+           TYPOGRAPHY - Reduced sizes
+           ============================================ */
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            margin-top: 0.6rem;
+        }
+
+        h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            margin-top: 0.4rem;
+        }
+
+        p {
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            line-height: 1.35;
+        }
+
+        .lead {
+            font-size: 0.82rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           COMPONENTS - Compact
+           ============================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 2px solid var(--text-primary);
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .team-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-box {
+            background: var(--bg-subtle);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 0.6rem;
+            margin: 0.6rem 0;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1;
+            margin-bottom: 0.15rem;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .quote {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent-cyan);
+            padding-left: 0.85rem;
+            margin: 0.85rem 0;
+        }
+
+        .tools-chaos {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.75rem 0;
+        }
+
+        .tool-badge {
+            background: white;
+            border: 2px solid var(--border-gray);
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           PERSONA CARDS - Compact
+           ============================================ */
+        .persona-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin: 0.65rem 0;
+        }
+
+        .persona-card {
+            background: var(--bg-subtle);
+            padding: 0.6rem;
+            border-radius: 0.25rem;
+        }
+
+        .persona-name {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.1rem;
+        }
+
+        .persona-role {
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .persona-pain {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* ============================================
+           FEATURE CARDS - Compact
+           ============================================ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin: 0.65rem 0;
+        }
+
+        .feature-card {
+            border: 2px solid var(--border-gray);
+            padding: 0.6rem;
+            border-radius: 0.25rem;
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-cyan);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .feature-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .feature-desc {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* ============================================
+           UI MOCKUPS - Highly compressed
+           ============================================ */
+        .mockup-container {
+            background: #1a1a1a;
+            border-radius: 0.4rem;
+            padding: 0.65rem;
+            margin: 0.6rem 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .mockup-container-small {
+            background: #1a1a1a;
+            border-radius: 0.4rem;
+            padding: 0.6rem;
+            margin: 0.5rem 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .mockup-header {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .mockup-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #404040;
+        }
+
+        .mockup-content {
+            background: #262626;
+            border-radius: 0.3rem;
+            padding: 0.75rem;
+            color: #e5e5e5;
+            font-size: 0.7rem;
+        }
+
+        .mockup-content-small {
+            background: #262626;
+            border-radius: 0.3rem;
+            padding: 0.65rem;
+            color: #e5e5e5;
+            font-size: 0.65rem;
+        }
+
+        .mockup-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .mockup-title-small {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.45rem;
+        }
+
+        .mockup-field {
+            background: #1a1a1a;
+            border: 1px solid #404040;
+            border-radius: 0.25rem;
+            padding: 0.45rem;
+            margin-bottom: 0.45rem;
+            color: #a3a3a3;
+            font-size: 0.7rem;
+        }
+
+        .mockup-field-small {
+            background: #1a1a1a;
+            border: 1px solid #404040;
+            border-radius: 0.25rem;
+            padding: 0.35rem;
+            margin-bottom: 0.35rem;
+            color: #a3a3a3;
+            font-size: 0.65rem;
+        }
+
+        .mockup-button {
+            background: var(--accent-cyan);
+            color: white;
+            padding: 0.4rem 0.85rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+        }
+
+        .mockup-card {
+            background: #1a1a1a;
+            border: 1px solid #404040;
+            border-radius: 0.3rem;
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mockup-card-small {
+            background: #1a1a1a;
+            border: 1px solid #404040;
+            border-radius: 0.3rem;
+            padding: 0.45rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .mockup-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .mockup-card-title {
+            font-weight: 600;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .mockup-badge {
+            background: var(--success-green);
+            color: white;
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.2rem;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .mockup-badge.alert {
+            background: var(--alert-orange);
+        }
+
+        .mockup-badge.info {
+            background: var(--accent-cyan);
+        }
+
+        /* ============================================
+           WARNING BOXES - Compact
+           ============================================ */
+        .warning-box {
+            background: #fef3c7;
+            border-left: 3px solid var(--alert-orange);
+            padding: 0.65rem;
+            margin: 0.6rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+        }
+
+        .warning-list {
+            list-style: none;
+            color: #78350f;
+            font-size: 0.72rem;
+        }
+
+        .warning-list li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+            line-height: 1.3;
+        }
+
+        .warning-list li:before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            font-size: 0.65rem;
+        }
+
+        .no-go-box {
+            background: #fee2e2;
+            border-left: 3px solid var(--alert-red);
+            padding: 0.65rem;
+            margin: 0.6rem 0;
+        }
+
+        .no-go-title {
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+        }
+
+        .no-go-list {
+            list-style: none;
+            color: #7f1d1d;
+            font-size: 0.72rem;
+        }
+
+        .no-go-list li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+            line-height: 1.3;
+        }
+
+        .no-go-list li:before {
+            content: "⛔";
+            position: absolute;
+            left: 0;
+            font-size: 0.65rem;
+        }
+
+        /* ============================================
+           TIMELINE - Compact
+           ============================================ */
+        .timeline {
+            margin: 0.5rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child):after {
+            content: '';
+            position: absolute;
+            left: 0.65rem;
+            top: 1.5rem;
+            bottom: -0.5rem;
+            width: 2px;
+            background: var(--border-gray);
+        }
+
+        .timeline-marker {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--accent-cyan);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            z-index: 1;
+            font-size: 0.65rem;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.05rem;
+            font-size: 0.68rem;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            line-height: 1.25;
+        }
+
+        /* ============================================
+           TWO COLUMN LAYOUTS
+           ============================================ */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin: 0.65rem 0;
+        }
+
+        .col-content h4 {
+            margin-top: 0;
+        }
+
+        .col-content ul {
+            font-size: 0.68rem;
+            line-height: 1.4;
+            margin-left: 1.1rem;
+        }
+
+        /* ============================================
+           IMPACT METRICS - Compact
+           ============================================ */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 0.85rem 0;
+        }
+
+        .impact-card {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--bg-subtle);
+            border-radius: 0.3rem;
+        }
+
+        .impact-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--success-green);
+            line-height: 1;
+            margin-bottom: 0.35rem;
+        }
+
+        .impact-label {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           TECHNICAL STACK - Compact
+           ============================================ */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+            margin: 0.85rem 0;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 0.6rem;
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 0.3rem;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            font-size: 0.72rem;
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           FLOW DIAGRAM - Highly compressed
+           ============================================ */
+        .flow-diagram {
+            margin: 0.85rem 0;
+            padding: 0.85rem;
+            background: var(--bg-subtle);
+            border-radius: 0.35rem;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin: 0.6rem 0;
+        }
+
+        .flow-box {
+            background: white;
+            border: 2px solid var(--accent-cyan);
+            padding: 0.6rem 0.85rem;
+            border-radius: 0.3rem;
+            text-align: center;
+            flex: 1;
+            max-width: 180px;
+        }
+
+        .flow-box-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .flow-box-desc {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .flow-arrow {
+            font-size: 1.15rem;
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .mt-2 { margin-top: 0.6rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mb-2 { margin-bottom: 0.6rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .text-center { text-align: center; }
+        .text-secondary { color: var(--text-secondary); }
+
+        .highlight {
+            background: linear-gradient(180deg, transparent 60%, #cffafe 60%);
+            padding: 0 0.15rem;
+        }
+
+        .mockup-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin: 0.65rem 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1: PROBLEM & APPETITE -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>The Problem: Teaching Staff Are Drowning in Administrative Chaos</h1>
+
+    <p class="lead">It's Wednesday afternoon. Dr. X is staring at her screen, cycling through five different tools just to understand how her class is doing. <strong>It will take her 90 minutes.</strong></p>
+
+    <div class="stat-box">
+        <div class="stat-number">90 min</div>
+        <div class="stat-label">Every week, just to check class health</div>
+    </div>
+
+    <div class="tools-chaos">
+        <div class="tool-badge">Canvas Roster</div>
+        <div class="tool-badge">GitHub Activity</div>
+        <div class="tool-badge">Google Sheets</div>
+        <div class="tool-badge">Slack Messages</div>
+        <div class="tool-badge">Email Threads</div>
+    </div>
+
+    <p>She's looking for Sarah Martinez. Attendance is dropping. Commits are slowing. Journal entries stopped. But by the time Dr. X pieces these signals together from five disconnected systems, <strong>it's week 8. Too late.</strong></p>
+
+    <h2 class="mt-2">The Scale Challenge</h2>
+
+    <div class="two-col">
+        <div class="col-content">
+            <h4>Managing at Scale</h4>
+            <p>500+ students across 50 project teams. Limited TA hours. Every student deserves to be seen, but the tools make it impossible.</p>
+            <ul style="color: var(--text-secondary);">
+                <li>TAs spend 60% of time on admin, not mentoring</li>
+                <li>Students slip through cracks until crisis point</li>
+                <li>Fair grading impossible without data</li>
+                <li>No early warning system for at-risk students</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>The Hidden Costs</h4>
+            <p>Current systems fail everyone involved:</p>
+            <ul style="color: var(--text-secondary);">
+                <li>Professors can't see individual students</li>
+                <li>TAs grade based on incomplete information</li>
+                <li>Team Leaders drown in coordination</li>
+                <li>Quiet contributors become invisible</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="quote">
+        "Every student deserves to be seen, even in a class of 500. Technology should help with that, not make it harder."
+        <div style="font-size: 0.7rem; font-style: normal; margin-top: 0.3rem; color: var(--text-secondary);">— Dr. X, Software Engineering Professor</div>
+    </div>
+
+    <h2 class="mt-2">Our Appetite</h2>
+    <p><strong>5 weeks.</strong> Four core features. A system that transforms teaching at scale from impossible to manageable. This is a <span class="highlight">small-batch, high-impact project</span> scoped to deliver a working MVP by December 5, 2024.</p>
+
+    <h2 class="mt-2">The Pattern: Good People Failing Because of Bad Tools</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.85rem; border-radius: 0.35rem; margin: 0.75rem 0;">
+        <h3 style="margin-top: 0; font-size: 0.9rem;">By Week 8:</h3>
+        <ul style="color: var(--text-secondary); margin-left: 1.2rem; line-height: 1.5; font-size: 0.75rem;">
+            <li>Alex has graded based on incomplete information, feeling guilty about unfairness</li>
+            <li>Dr. X has discovered three at-risk students, too late to help effectively</li>
+            <li>Marcus is burned out, considering stepping down from team leadership</li>
+            <li>Aisha's contributions are invisible, her grade doesn't reflect her work</li>
+        </ul>
+    </div>
+</div>
+
+<!-- PAGE 2: USER PERSONAS -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>The Human Cost: Who This Affects</h1>
+
+    <p class="lead">Four people. Four different pain points. One broken system.</p>
+
+    <div class="persona-grid">
+        <div class="persona-card">
+            <div class="persona-name">Alex Chen</div>
+            <div class="persona-role">The TA (Group Mentor)</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "I have 10 teams. Notes scattered everywhere. Can't track who's falling behind until it's too late."
+                <br><br>
+                <strong>Needs:</strong> Quick meeting prep. Fair grading data. Early warning signals. Structured note-taking that doesn't take forever.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Dr. X</div>
+            <div class="persona-role">The Professor</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> 90 minutes every Wednesday cycling through tools. Almost missed Sarah's crisis. Spent 10 hours manually forming teams.
+                <br><br>
+                <strong>Needs:</strong> Holistic student view. Early intervention. Sustainable tools that survive vendor changes. One place to see everything.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Marcus Johnson</div>
+            <div class="persona-role">The Team Leader</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "I spend more time coordinating than leading. 11pm and I still haven't written code. Can't document team dynamics anywhere."
+                <br><br>
+                <strong>Needs:</strong> Team dashboard. Availability tracking. Private channel to flag concerns. Time to actually lead, not chase people down.
+            </div>
+        </div>
+
+        <div class="persona-card">
+            <div class="persona-name">Aisha Patel</div>
+            <div class="persona-role">The Student</div>
+            <div class="persona-pain">
+                <strong>Pain:</strong> "40 commits. Most of the backend. But I'm quiet in meetings. Will anyone know I contributed? No safe place for feedback."
+                <br><br>
+                <strong>Needs:</strong> Recognition for actual work. Clear evaluation criteria. Private feedback channel. Transparent participation tracking.
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-3">The Solution: One Unified Platform</h2>
+
+    <p class="lead">Replace the chaos with clarity. <span class="highlight">Automate the administrative burden</span> so teaching staff can focus on what matters: teaching and mentoring.</p>
+
+    <div class="stat-box">
+        <div class="stat-number">90 min → 5 min</div>
+        <div class="stat-label">Time to understand class health</div>
+    </div>
+
+    <h2 class="mt-2">Four Integrated Modules</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <div class="feature-title">Authentication & User Management</div>
+            <div class="feature-desc">
+                Secure UCSD-based login with role-based permissions. Instructors manage users, assign roles, and configure access for 500+ students.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <div class="feature-title">Class Directory</div>
+            <div class="feature-desc">
+                Centralized hub for everyone in the course. Searchable roster, detailed profiles, group pages. The "phone book" for the entire class.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">✓</div>
+            <div class="feature-title">Attendance System</div>
+            <div class="feature-desc">
+                Quick-entry tracking for lectures, meetings, and office hours. QR code check-ins. Visual analytics. Takes <60 seconds for 200+ students.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <div class="feature-title">Work Journal / Standup</div>
+            <div class="feature-desc">
+                Daily 2-minute check-ins with GitHub auto-population. Team dashboards for transparency. Automatic blocker escalation and early warnings.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 3: SOLUTION FLOW -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>How The System Flows</h1>
+
+    <div class="flow-diagram" style="padding: 0.75rem;">
+        <!-- Row 1: Authentication -->
+        <div style="text-align: center; margin-bottom: 0.6rem;">
+            <div class="flow-box" style="max-width: 100%; background: #e0f2fe; border-color: var(--accent-cyan); padding: 0.6rem 0.85rem;">
+                <div class="flow-box-title" style="color: var(--accent-cyan);">🔐 AUTHENTICATION & USER MANAGEMENT</div>
+                <div class="flow-box-desc" style="display: flex; justify-content: center; gap: 0.4rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Google OAuth</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Verification Code</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Role Assignment</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">User Management</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 0.4rem 0;">
+            <div style="font-size: 1.15rem; color: var(--accent-cyan);">↓</div>
+        </div>
+
+        <!-- Row 2: Directory (Hub) -->
+        <div style="text-align: center; margin-bottom: 0.6rem;">
+            <div class="flow-box" style="max-width: 100%; background: #f0fdfa; border-color: var(--accent-cyan); padding: 0.6rem 0.85rem;">
+                <div class="flow-box-title" style="color: var(--accent-cyan);">👥 CLASS DIRECTORY (Central Hub)</div>
+                <div class="flow-box-desc" style="display: flex; justify-content: center; gap: 0.4rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">User Dashboard</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Roster Search/Filter</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">User Profiles</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Group Pages</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 0.4rem 0;">
+            <div style="font-size: 1.15rem; color: var(--accent-cyan);">↓</div>
+        </div>
+
+        <!-- Row 3: Daily Operations -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.5rem;">
+            <div class="flow-box" style="background: #fef3c7; border-color: var(--alert-orange); padding: 0.6rem;">
+                <div class="flow-box-title" style="color: #92400e; font-size: 0.72rem;">✓ ATTENDANCE SYSTEM</div>
+                <div class="flow-box-desc" style="margin-top: 0.35rem;">
+                    <div style="font-size: 0.62rem; line-height: 1.35; text-align: left;">
+                        <strong>Instructor:</strong> Create → QR/code<br>
+                        <strong>Student:</strong> Check-in<br>
+                        <strong>System:</strong> Analytics
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-box" style="background: #dbeafe; border-color: var(--accent-cyan); padding: 0.6rem;">
+                <div class="flow-box-title" style="color: #1e40af; font-size: 0.72rem;">📝 WORK JOURNAL</div>
+                <div class="flow-box-desc" style="margin-top: 0.35rem;">
+                    <div style="font-size: 0.62rem; line-height: 1.35; text-align: left;">
+                        <strong>Student:</strong> GitHub import<br>
+                        <strong>Team:</strong> View dashboard<br>
+                        <strong>System:</strong> TA alerts
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bidirectional arrows -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.4rem;">
+            <div style="text-align: center; font-size: 1rem; color: var(--text-light);">↕</div>
+            <div style="text-align: center; font-size: 1rem; color: var(--text-light);">↕</div>
+        </div>
+
+        <!-- Data flows -->
+        <div style="text-align: center; font-size: 0.62rem; color: var(--text-secondary); margin-bottom: 0.4rem;">
+            ← Data feeds back to profiles & dashboards →
+        </div>
+
+        <div style="text-align: center; margin: 0.4rem 0;">
+            <div style="font-size: 1.15rem; color: var(--success-green);">↓</div>
+        </div>
+
+        <!-- Row 4: Insights -->
+        <div style="text-align: center;">
+            <div class="flow-box" style="max-width: 100%; background: #d1fae5; border-color: var(--success-green); padding: 0.6rem 0.85rem;">
+                <div class="flow-box-title" style="color: var(--success-green);">📊 INSIGHTS & INTERVENTION</div>
+                <div class="flow-box-desc" style="display: flex; justify-content: center; gap: 0.4rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">TA Dashboard</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Early Warnings</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Team Health</span>
+                    <span style="background: white; padding: 0.15rem 0.35rem; border-radius: 0.15rem; font-size: 0.62rem;">Fair Evaluation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Integrations -->
+        <div style="margin-top: 0.75rem; padding: 0.65rem; background: white; border: 1px solid var(--border-gray); border-radius: 0.3rem;">
+            <div style="font-size: 0.72rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--text-primary);">Key Integrations:</div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-secondary);">
+                <span>• Modules feed to Directory</span>
+                <span>• GitHub API integration</span>
+                <span>• Meeting linking</span>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Core Principle</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.85rem; border-radius: 0.35rem; margin: 0.75rem 0;">
+        <p style="font-size: 0.9rem; margin: 0 0 0.4rem 0; color: var(--text-primary);"><strong>Automate administrative tasks. Amplify teaching impact.</strong></p>
+        <p style="margin: 0; font-size: 0.75rem;">By handling the busywork automatically, Conductor Tool gives teaching staff time to focus on mentoring students and helping teams succeed.</p>
+    </div>
+
+    <h2 class="mt-2">The Transformation</h2>
+
+    <div class="two-col" style="margin-top: 0.75rem; margin-bottom: 0;">
+        <div class="col-content">
+            <h4>Before: Scattered Chaos</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>5+ tools to check class status</li>
+                <li>Manual attendance spreadsheets</li>
+                <li>Notes lost in text files</li>
+                <li>Problems discovered week 8</li>
+                <li>Grading based on gut feeling</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>After: Unified Clarity</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>One platform, complete picture</li>
+                <li>Attendance in <1 minute</li>
+                <li>Structured, searchable notes</li>
+                <li>Early warnings week 3</li>
+                <li>Fair, data-driven evaluation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 4: AUTHENTICATION & USER MANAGEMENT -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 1: Authentication & User Management</h1>
+
+    <p class="lead">Secure, role-based access that handles 500+ students including UCSD extension students. Built for administrators to easily manage users and permissions.</p>
+
+    <h2>Sign-In Flow</h2>
+
+    <div class="mockup-row">
+        <div class="mockup-container-small">
+            <div class="mockup-header">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+            </div>
+            <div class="mockup-content-small">
+                <div class="mockup-title-small">SIGN IN TO CONDUCTOR</div>
+                <div class="mockup-field-small">Email: your@ucsd.edu</div>
+                <div class="mockup-field-small">Password: ••••••••</div>
+                <div style="display: flex; gap: 0.4rem; align-items: center; margin: 0.6rem 0; font-size: 0.7rem;">
+                    <input type="checkbox" style="margin: 0; width: 12px; height: 12px;">
+                    <span>Sign in with Google (UCSD)</span>
+                </div>
+                <div class="mockup-button" style="width: 100%; text-align: center; padding: 0.5rem;">SIGN IN</div>
+            </div>
+        </div>
+
+        <div class="mockup-container-small">
+            <div class="mockup-header">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+            </div>
+            <div class="mockup-content-small">
+                <div class="mockup-title-small">ENTER VERIFICATION CODE</div>
+                <p style="margin-bottom: 0.6rem; font-size: 0.7rem;">Find your code on Canvas or in the class Slack</p>
+                <div class="mockup-field-small" style="color: white;">CSE110-F24-STU</div>
+                <div style="margin-top: 0.6rem; font-size: 0.65rem; color: #52c41a;">
+                    ✓ Code verified - Student role assigned
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">User Role Management</h2>
+
+    <div class="mockup-container">
+        <div class="mockup-header">
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-content">
+            <div class="mockup-title">MANAGE USERS - CSE 110 FALL 2024</div>
+
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.75rem;">
+                <div class="mockup-button" style="background: #404040; padding: 0.4rem 0.75rem;">FILTER BY ROLE</div>
+                <div class="mockup-button" style="background: #404040; padding: 0.4rem 0.75rem;">ADD USER</div>
+                <div class="mockup-button" style="background: #404040; padding: 0.4rem 0.75rem;">ASSIGN GROUPS</div>
+            </div>
+
+            <div class="mockup-card">
+                <div class="mockup-card-header">
+                    <div>
+                        <div class="mockup-card-title">Sarah Martinez</div>
+                        <div style="font-size: 0.7rem; color: #a3a3a3;">sarah.martinez@ucsd.edu</div>
+                    </div>
+                    <div style="display: flex; gap: 0.6rem; align-items: center;">
+                        <span class="mockup-badge">Student</span>
+                        <span style="font-size: 0.7rem; color: #a3a3a3;">Team Warriors</span>
+                        <button style="background: none; border: 1px solid #404040; color: #a3a3a3; padding: 0.2rem 0.5rem; border-radius: 0.2rem; font-size: 0.65rem;">EDIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-card">
+                <div class="mockup-card-header">
+                    <div>
+                        <div class="mockup-card-title">Alex Chen</div>
+                        <div style="font-size: 0.7rem; color: #a3a3a3;">alex.chen@ucsd.edu</div>
+                    </div>
+                    <div style="display: flex; gap: 0.6rem; align-items: center;">
+                        <span class="mockup-badge info">TA</span>
+                        <span style="font-size: 0.7rem; color: #a3a3a3;">10 teams assigned</span>
+                        <button style="background: none; border: 1px solid #404040; color: #a3a3a3; padding: 0.2rem 0.5rem; border-radius: 0.2rem; font-size: 0.65rem;">EDIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-card">
+                <div class="mockup-card-header">
+                    <div>
+                        <div class="mockup-card-title">Marcus Johnson</div>
+                        <div style="font-size: 0.7rem; color: #a3a3a3;">marcus.j@ucsd.edu</div>
+                    </div>
+                    <div style="display: flex; gap: 0.6rem; align-items: center;">
+                        <span class="mockup-badge" style="background: #7c3aed;">Team Leader</span>
+                        <span style="font-size: 0.7rem; color: #a3a3a3;">Team Warriors</span>
+                        <button style="background: none; border: 1px solid #404040; color: #a3a3a3; padding: 0.2rem 0.5rem; border-radius: 0.2rem; font-size: 0.65rem;">EDIT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 1rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>UCSD Google OAuth integration</li>
+                <li>Verification code system for role assignment</li>
+                <li>Extension student request workflow</li>
+                <li>6-tier role hierarchy (Admin → Student)</li>
+                <li>Bulk user management for 500+ students</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Security & Compliance</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Role-based access control (RBAC)</li>
+                <li>FERPA-compliant data handling</li>
+                <li>Audit logging for user actions</li>
+                <li>Encryption at rest in database</li>
+                <li>Admin-only password resets</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 5: CLASS DIRECTORY & ATTENDANCE -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 2: Class Directory</h1>
+
+    <p class="lead">The centralized "phone book" for the entire course. Searchable roster, detailed profiles, and group pages with all relevant information in one place.</p>
+
+    <div class="mockup-container" style="margin-top: 0.6rem;">
+        <div class="mockup-header">
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-content">
+            <div class="mockup-title">CLASS ROSTER - CSE 110 FALL 2024</div>
+
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="mockup-field" style="flex: 1; margin: 0; font-size: 0.68rem;">🔍 Search by name...</div>
+                <div class="mockup-button" style="margin: 0; background: #404040; font-size: 0.65rem; padding: 0.4rem 0.6rem;">FILTER: ALL ROLES</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
+                <div class="mockup-card-small">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 28px; height: 28px; background: #404040; border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: white; font-size: 0.72rem;">Dr. X</div>
+                            <div style="font-size: 0.65rem; color: var(--accent-cyan);">Professor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mockup-card-small">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 28px; height: 28px; background: #404040; border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: white; font-size: 0.72rem;">Alex Chen</div>
+                            <div style="font-size: 0.65rem; color: var(--accent-cyan);">TA</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mockup-card-small">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 28px; height: 28px; background: #404040; border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: white; font-size: 0.72rem;">Sarah Martinez</div>
+                            <div style="font-size: 0.65rem; color: #a3a3a3;">Student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 0.75rem; text-align: center; font-size: 0.7rem; color: #a3a3a3;">
+                Showing 3 of 523 users • Searchable roster with detailed profiles
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.85rem;">
+        <div class="col-content">
+            <h4>Directory Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Searchable roster with advanced filtering</li>
+                <li>Detailed user profiles with pronouns, availability</li>
+                <li>Group pages with team info and links</li>
+                <li>Activity tracking integration</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Benefits</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>One place to find anyone in the class</li>
+                <li>Transparent team structures</li>
+                <li>Easy coordination across 500+ students</li>
+                <li>Replaces scattered contact lists</li>
+            </ul>
+        </div>
+    </div>
+
+    <h1 class="mt-3">Feature 3: Attendance System</h1>
+
+    <p class="lead">Quick-entry tracking for lectures, meetings, and office hours. QR code check-ins for students. Visual analytics and trends.</p>
+
+    <div class="mockup-row">
+        <div class="mockup-container-small">
+            <div class="mockup-header">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+            </div>
+            <div class="mockup-content-small">
+                <div class="mockup-title-small">CREATE ATTENDANCE</div>
+                <div class="mockup-field-small">Event: Lecture Week 5</div>
+                <div class="mockup-field-small">Date: Nov 8, 2024 2:00 PM</div>
+                <div style="margin: 0.5rem 0; font-size: 0.65rem; color: white;">
+                    Check-in method:<br>
+                    ○ QR Code  ○ Passcode  ○ Manual
+                </div>
+                <div class="mockup-button" style="width: 100%; text-align: center;">GENERATE QR CODE</div>
+            </div>
+        </div>
+
+        <div class="mockup-container-small">
+            <div class="mockup-header">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+            </div>
+            <div class="mockup-content-small">
+                <div class="mockup-title-small">ATTENDANCE ANALYTICS</div>
+                <div style="font-size: 0.7rem; margin-bottom: 0.5rem;">
+                    <strong style="color: white;">Lecture Week 5</strong><br>
+                    <span style="color: var(--success-green);">487 / 523 students (93%)</span>
+                </div>
+                <div style="background: #1a1a1a; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.65rem;">
+                    Recent trends:<br>
+                    Week 4: 95% ✓<br>
+                    Week 3: 97% ✓<br>
+                    <span style="color: var(--alert-orange);">Week 5: 93% ↓</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.85rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>QR code generation for quick check-ins</li>
+                <li>Manual entry for TAs and professors</li>
+                <li>Tracks lectures, meetings, office hours</li>
+                <li>Visual analytics and trend tracking</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Time Savings</h4>
+            <ul style="color: var(--text-secondary);">
+                <li><60 seconds to record 200+ students</li>
+                <li>Replaces manual spreadsheets</li>
+                <li>Automatic alerts for patterns</li>
+                <li>Integration with student profiles</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 6: WORK JOURNAL -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Feature 4: Work Journal / Standup</h1>
+
+    <p class="lead">Daily 2-minute check-ins with GitHub auto-population. Team dashboards for transparency. Automatic blocker escalation. Early warning system for at-risk students.</p>
+
+    <h2>Student Journal Entry</h2>
+
+    <div class="mockup-container">
+        <div class="mockup-header">
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-content">
+            <div class="mockup-title">DAILY STANDUP - NOVEMBER 8, 2024</div>
+
+            <div class="mockup-field" style="min-height: 45px;">
+                <strong style="color: white;">What did you work on?</strong><br>
+                <span style="color: #a3a3a3; font-size: 0.68rem;">Auto-populated from GitHub:</span><br>
+                <span style="color: white; font-size: 0.68rem;">• Implemented user authentication (3 commits)<br>
+                • Fixed login bug (#42)<br>
+                • Code review for Sarah's PR</span>
+            </div>
+
+            <div class="mockup-field">
+                <strong style="color: white;">What are you working on next?</strong><br>
+                <span style="color: white; font-size: 0.68rem;">Setting up database migrations for user roles</span>
+            </div>
+
+            <div class="mockup-field">
+                <strong style="color: white;">Any blockers?</strong><br>
+                <span style="color: var(--alert-orange); font-size: 0.68rem;">⚠ Need TA help with Docker configuration</span>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; margin-top: 0.6rem;">
+                <div class="mockup-button">SUBMIT STANDUP</div>
+                <div class="mockup-button" style="background: #404040;">IMPORT FROM GITHUB</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 0.5rem; margin-bottom: 0.3rem;">Team Dashboard View</h2>
+
+    <div class="mockup-container" style="margin: 0.4rem 0; padding: 0.5rem;">
+        <div class="mockup-header" style="margin-bottom: 0.45rem;">
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+            <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-content" style="padding: 0.6rem;">
+            <div class="mockup-title" style="font-size: 0.7rem; margin-bottom: 0.4rem;">TEAM WARRIORS - ACTIVITY DASHBOARD</div>
+
+            <div class="mockup-card" style="padding: 0.45rem; margin-bottom: 0.35rem;">
+                <div class="mockup-card-header" style="margin-bottom: 0.15rem;">
+                    <div>
+                        <div class="mockup-card-title" style="font-size: 0.7rem;">Aisha Patel</div>
+                        <div style="font-size: 0.62rem; color: #a3a3a3;">Last check-in: 2 hours ago</div>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <span class="mockup-badge" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">42 commits</span>
+                        <span class="mockup-badge" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">5/5 standups</span>
+                    </div>
+                </div>
+                <div style="font-size: 0.62rem; margin-top: 0.25rem; color: #e5e5e5;">
+                    Working on: Database schema design<br>
+                    <span style="color: var(--success-green);">Status: On track ✓</span>
+                </div>
+            </div>
+
+            <div class="mockup-card" style="padding: 0.45rem; margin-bottom: 0.35rem;">
+                <div class="mockup-card-header" style="margin-bottom: 0.15rem;">
+                    <div>
+                        <div class="mockup-card-title" style="font-size: 0.7rem;">Marcus Johnson (Leader)</div>
+                        <div style="font-size: 0.62rem; color: #a3a3a3;">Last check-in: 4 hours ago</div>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <span class="mockup-badge" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">28 commits</span>
+                        <span class="mockup-badge" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">5/5 standups</span>
+                    </div>
+                </div>
+                <div style="font-size: 0.62rem; margin-top: 0.25rem; color: #e5e5e5;">
+                    Working on: Frontend routing + team coordination<br>
+                    <span style="color: var(--success-green);">Status: On track ✓</span>
+                </div>
+            </div>
+
+            <div class="mockup-card" style="padding: 0.45rem; margin-bottom: 0;">
+                <div class="mockup-card-header" style="margin-bottom: 0.15rem;">
+                    <div>
+                        <div class="mockup-card-title" style="font-size: 0.7rem;">Sarah Martinez</div>
+                        <div style="font-size: 0.62rem; color: #a3a3a3;">Last check-in: 3 days ago</div>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <span class="mockup-badge alert" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">2 commits</span>
+                        <span class="mockup-badge alert" style="font-size: 0.58rem; padding: 0.12rem 0.3rem;">2/5 standups</span>
+                    </div>
+                </div>
+                <div style="font-size: 0.62rem; margin-top: 0.25rem; color: #e5e5e5;">
+                    Last reported: API integration issues<br>
+                    <span style="color: var(--alert-red);">⚠ Alert sent to TA Alex Chen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.5rem;">
+        <div class="col-content">
+            <h4>Key Features</h4>
+            <ul style="color: var(--text-secondary); margin-bottom: 0;">
+                <li>2-minute daily check-ins</li>
+                <li>GitHub activity auto-population</li>
+                <li>Team transparency dashboards</li>
+                <li>Blocker escalation to TAs</li>
+                <li>Early warning system</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Impact</h4>
+            <ul style="color: var(--text-secondary); margin-bottom: 0;">
+                <li>Catch at-risk students by week 3</li>
+                <li>Fair evaluation of contributions</li>
+                <li>Team coordination simplified</li>
+                <li>TAs get structured meeting prep</li>
+                <li>Quiet contributors become visible</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 7: TECHNICAL APPROACH & RISKS -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Technical Approach</h1>
+
+    <h2>Technology Stack</h2>
+
+    <div class="tech-stack">
+        <div class="tech-item">
+            <div class="tech-name">React</div>
+            <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.25rem;">Frontend</div>
+        </div>
+        <div class="tech-item">
+            <div class="tech-name">Node.js</div>
+            <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.25rem;">Backend</div>
+        </div>
+        <div class="tech-item">
+            <div class="tech-name">PostgreSQL</div>
+            <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.25rem;">Database</div>
+        </div>
+        <div class="tech-item">
+            <div class="tech-name">GitHub API</div>
+            <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.25rem;">Integration</div>
+        </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0.85rem;">
+        <div class="col-content">
+            <h4>Architecture Principles</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Modular design for incremental delivery</li>
+                <li>API-first approach for flexibility</li>
+                <li>Role-based access control throughout</li>
+                <li>Performance optimized for 500+ users</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Data Strategy</h4>
+            <ul style="color: var(--text-secondary);">
+                <li>Encrypted at rest and in transit</li>
+                <li>FERPA-compliant data handling</li>
+                <li>Audit logging for accountability</li>
+                <li>Privacy controls for students</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="mt-3">Rabbit Holes to Avoid</h2>
+
+    <div class="warning-box">
+        <div class="warning-title">⚠ Scope Creep Traps</div>
+        <ul class="warning-list">
+            <li><strong>Advanced analytics:</strong> Start with simple counts and trends. No ML or predictive models in v1.</li>
+            <li><strong>Mobile apps:</strong> Responsive web only. No native iOS/Android apps.</li>
+            <li><strong>Real-time notifications:</strong> Email digests are sufficient. No push notifications or websockets.</li>
+            <li><strong>Custom grading rubrics:</strong> Fixed rubric for v1. No customizable grading systems.</li>
+            <li><strong>Team formation algorithms:</strong> Manual assignment only. No auto-matching based on skills/preferences.</li>
+        </ul>
+    </div>
+
+    <h2 class="mt-2">No-Gos: What We're NOT Building</h2>
+
+    <div class="no-go-box">
+        <div class="no-go-title">⛔ Out of Scope</div>
+        <ul class="no-go-list">
+            <li><strong>LMS replacement:</strong> Not competing with Canvas. Integration only.</li>
+            <li><strong>Code review tools:</strong> Link to GitHub, don't rebuild their features.</li>
+            <li><strong>Video conferencing:</strong> Zoom/Teams links only. No built-in video.</li>
+            <li><strong>Assignment submission:</strong> Use Canvas. We track participation, not deliverables.</li>
+            <li><strong>Peer evaluation system:</strong> Too complex for v1. Manual feedback only.</li>
+        </ul>
+    </div>
+
+    <h2 class="mt-3">Risks & Mitigation</h2>
+
+    <div class="two-col">
+        <div class="col-content">
+            <h4>Technical Risks</h4>
+            <ul style="color: var(--text-secondary);">
+                <li><strong>GitHub API limits:</strong> Cache aggressively, batch requests</li>
+                <li><strong>Scale to 500+ users:</strong> Load testing from week 2</li>
+                <li><strong>OAuth complexity:</strong> Use proven library, test early</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Execution Risks</h4>
+            <ul style="color: var(--text-secondary);">
+                <li><strong>Feature creep:</strong> Strict scope enforcement, say no often</li>
+                <li><strong>Integration delays:</strong> Mock external APIs for parallel work</li>
+                <li><strong>User adoption:</strong> Pilot with one class first</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 8: TIMELINE & ASK -->
+<div class="page">
+    <div class="header">
+        <div class="logo">Conductor Tool</div>
+        <div class="team-badge">Team 7 • Pitch Document</div>
+    </div>
+
+    <h1>Timeline: 5 Weeks to MVP</h1>
+
+    <p class="lead" style="margin-bottom: 0.5rem;">Small-batch, high-impact delivery. Four core features. Incremental deployment. Working MVP by December 5, 2024.</p>
+
+    <div class="timeline" style="margin: 0.5rem 0;">
+        <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+                <div class="timeline-date">Week 1: Foundation (Nov 11-15)</div>
+                <div class="timeline-desc">
+                    Database schema, authentication framework, basic UI shell. Get Google OAuth working. Deploy infrastructure.
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+                <div class="timeline-date">Week 2: Core Features (Nov 18-22)</div>
+                <div class="timeline-desc">
+                    User management complete. Directory with search/filter. Attendance tracking with QR codes. First usability tests.
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+                <div class="timeline-date">Week 3: Work Journal (Nov 25-29)</div>
+                <div class="timeline-desc">
+                    Daily standup system. GitHub API integration. Team dashboards. Blocker escalation. Pilot with small group.
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+                <div class="timeline-date">Week 4: Integration (Dec 2-6)</div>
+                <div class="timeline-desc">
+                    Connect all modules. TA dashboard with early warnings. Analytics and reporting. Performance optimization. Bug fixes.
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+                <div class="timeline-date">Week 5: Polish & Launch (Dec 9-13)</div>
+                <div class="timeline-desc">
+                    User testing with real class. Documentation. Training materials. Final deployment. Monitoring and support plan.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Expected Impact</h2>
+
+    <div class="impact-grid" style="margin: 0.55rem 0;">
+        <div class="impact-card">
+            <div class="impact-number">18x</div>
+            <div class="impact-label">Faster class health checks</div>
+        </div>
+
+        <div class="impact-card">
+            <div class="impact-number">60%</div>
+            <div class="impact-label">Less time on admin</div>
+        </div>
+
+        <div class="impact-card">
+            <div class="impact-number">5 weeks</div>
+            <div class="impact-label">Earlier intervention</div>
+        </div>
+    </div>
+
+    <h2 class="mt-2">Success Metrics</h2>
+
+    <div class="two-col" style="margin: 0.55rem 0;">
+        <div class="col-content">
+            <h4>Quantitative</h4>
+            <ul style="color: var(--text-secondary); margin-bottom: 0;">
+                <li>Dr. X spends <10 min/week checking class health</li>
+                <li>TAs save 8+ hours/week on admin tasks</li>
+                <li>Attendance recorded in <60 seconds for 200+ students</li>
+                <li>90% of students submit 4+ standups per week</li>
+            </ul>
+        </div>
+        <div class="col-content">
+            <h4>Qualitative</h4>
+            <ul style="color: var(--text-secondary); margin-bottom: 0;">
+                <li>TAs report feeling prepared for meetings</li>
+                <li>Students feel their work is recognized</li>
+                <li>At-risk students identified by week 3</li>
+                <li>Team leaders report coordination is easier</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="mt-2">The Ask</h2>
+
+    <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: 0.3rem; margin: 0.6rem 0;">
+        <p style="font-size: 0.82rem; margin-bottom: 0.4rem; color: var(--text-primary);"><strong>We're seeking approval to build this 5-week MVP with the following resources:</strong></p>
+        <ul style="color: var(--text-secondary); margin-left: 1.3rem; line-height: 1.5; font-size: 0.68rem; margin-bottom: 0;">
+            <li>Development team of 5 engineers (already allocated)</li>
+            <li>Access to UCSD infrastructure (Google OAuth, hosting)</li>
+            <li>Pilot class for weeks 4-5 (50-100 students)</li>
+            <li>Weekly check-ins with Dr. X for feedback</li>
+        </ul>
+    </div>
+
+    <h2 class="mt-2">Why This Matters</h2>
+
+    <p style="font-size: 0.75rem; line-height: 1.45; margin-bottom: 0.35rem;">
+        Every quarter, <strong>thousands of students</strong> take project-based software engineering courses. Some thrive. Others slip through the cracks—not because they're incapable, but because <strong>the tools fail them</strong>. Conductor Tool changes that.
+    </p>
+
+    <p style="font-size: 0.75rem; line-height: 1.45; margin-top: 0.35rem;">
+        This isn't just about efficiency. It's about <strong>equity at scale</strong>. It's about making sure that in a class of 500, the quiet contributor in the back row gets the same attention as the vocal student in the front. It's about giving teaching staff the tools they need to <strong>actually teach</strong>, not just administrate.
+    </p>
+
+    <div style="background: linear-gradient(135deg, var(--accent-cyan) 0%, #0e7490 100%); color: white; padding: 0.85rem; border-radius: 0.35rem; margin: 0.75rem 0 0 0; text-align: center;">
+        <div style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem;">Let's build a system where every student can be seen.</div>
+        <div style="font-size: 0.75rem; opacity: 0.95;">Even in a class of 500.</div>
+    </div>
+</div>
+
+</body>
+</html>
