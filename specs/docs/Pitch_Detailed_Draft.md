@@ -94,7 +94,7 @@ The System Administrator, Instructor, and Teaching Assistant have the ability to
 
 ###  **Rabbit Holes:**
 
-### Authentication: Potential issues using verification code-based authentication would be that they can be shared. We assume Instructors/TAs/Tutors are responsible enough not to leak their codes. Students, however, are more likely to share their code with non-students, populating the class with excess profiles. As of now, we will assume that not many people are interested in signing up for a class they are not related to, so that Instructors/TAs/Tutors/SysAdmin can manually delete any profiles that do not seem to match with the registration list (provided by WebReg, Canvas, etc).
+Authentication: Potential issues using verification code-based authentication would be that they can be shared. We assume Instructors/TAs/Tutors are responsible enough not to leak their codes. Students, however, are more likely to share their code with non-students, populating the class with excess profiles. As of now, we will assume that not many people are interested in signing up for a class they are not related to, so that Instructors/TAs/Tutors/SysAdmin can manually delete any profiles that do not seem to match with the registration list (provided by WebReg, Canvas, etc).
 
 User management: On the topic of system administration, the consequences are unclear whether having multiple administrators or being able to transfer the power of a system administrator poses security risks. We also think the system administrators are solely responsible for managing the user roles and authentication; they are not a superset of the capabilities of the instructors/TAs.
 
