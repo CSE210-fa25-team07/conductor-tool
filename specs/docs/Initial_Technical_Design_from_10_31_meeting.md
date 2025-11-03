@@ -99,7 +99,7 @@ Questions:
 - How much admin power does the instructor have? (What features of students should be hidden/readable from the instructor?)
 
 App Implementation Visual:  
-![](./images/image1.png)
+![](./images/first_design.png)
 
 **User Management & Authentication**  
 Functional Requirements
