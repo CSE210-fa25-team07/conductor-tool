@@ -1,0 +1,58 @@
+# Conductor Tool
+
+Web platform for managing large software engineering courses (500+ students).
+
+## Quick Start
+
+```bash
+cp .env.example .env
+docker-compose up --build
+
+# Frontend: http://localhost:8080
+# Backend: http://localhost:8081
+```
+
+## Structure
+
+```
+conductor-tool/
+├── frontend/      # VanillaJS (Port 8080)
+├── backend/       # Node.js + Express (Port 8081)
+├── database/      # PostgreSQL migrations
+└── specs/         # Docs, ADRs
+```
+
+## Team Ownership
+
+| Team | Feature | Frontend Folder | Backend Files |
+|------|---------|----------------|---------------|
+| **Auth** | Login, roles | `pages/auth/` | `auth*` files |
+| **Directory** | Roster, profiles | `pages/directory/` | `directory*`, `team*` |
+| **Attendance** | Meetings, check-in | `pages/attendance/` | `attendance*` |
+| **Standup** | Daily standups | `pages/standup/` | `standup*` |
+
+## Docs
+
+- **[STRUCTURE_SUMMARY.md](STRUCTURE_SUMMARY.md)** - Quick overview
+- **[codebase_structure.md](specs/code_guides/codebase_structure.md)** - Patterns & examples
+- **[subteam_expectations.md](specs/code_guides/subteam_expectations.md)** - Team dependencies
+- **Folder READMEs** - Check any folder for guidance
+
+## Rules
+
+1. **3-layer pattern:** Route → Controller → Service → Repository
+2. **File naming:** Match your feature (`standupRoutes.js`, `standupService.js`)
+3. **Don't mix layers:** Business logic goes in services, SQL goes in repositories
+4. **Check folder READMEs** when unsure where code goes
+
+## Tech Stack
+
+- Frontend: HTML/CSS/VanillaJS
+- Backend: Node.js + Express
+- Database: PostgreSQL + Redis
+- Auth: Auth.js + Google OAuth
+- Deploy: Docker Compose
+
+---
+
+**Organize your feature however you want within your folders. The structure just keeps things clean.**
