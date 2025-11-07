@@ -2,7 +2,7 @@ name: Deploy JSDoc to GitHub Pages
 
 on:
   push:
-    branches: [ 30-JSDoc ]
+    branches: [ main, 30-JSDoc ]
 
 permissions:
   contents: read
