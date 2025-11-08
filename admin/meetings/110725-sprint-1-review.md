@@ -40,7 +40,9 @@
 ### **Directory Team**
 
 - Implementing **Class Calendar** (similar to Google Calendar)  
-- Has a **complete workflow** (diagram not shown)
+- Has a **complete workflow**
+
+![App Structure Diagram](../assets/app-structure.png)
 
 ---
 
@@ -52,6 +54,9 @@
 - Attendance visualized as **calendar**  
 - Can take attendance via **QR code** or manually  
 - Own feature-specific **database schema**
+
+![Attendance UI Sketches](../assets/attendance-ui.png)  
+![Database Schema](../assets/attendance-schema.png)
 
 ---
 
@@ -97,4 +102,7 @@
 
 - GitHub workflow using **linting**  
 - **Human review** in pipeline  
-- **JSDocs** documentation support
+- **JSDocs** documentation support  
+
+
+
