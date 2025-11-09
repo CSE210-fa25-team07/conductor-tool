@@ -290,34 +290,22 @@ course_staff (1) ←→ (M) team_ta_assignments
 
 ## Page-to-Table Mapping
 
-### Class Selection Page
-**Displays**: All courses a user is taking across different terms
-**Tables Used**:
-- `users` (current user)
-- `is_enrolled` (user's enrollments)
-- `courses` (course details)
-- `terms` (term information for sorting)
-
-**Query Pattern**:
-```sql
-SELECT c.*, t.*, e.enrollment_status, e.current_letter_grade
-FROM is_enrolled e
-JOIN courses c ON e.course_uuid = c.course_uuid
-JOIN terms t ON c.term_uuid = t.term_uuid
-WHERE e.user_uuid = :user_uuid AND e.enrollment_status = 'active'
-ORDER BY t.start_date DESC;
-```
-
 ### Class Dashboard Page
-**Displays**: Course logistics, grades, staff, and navigation buttons
+
+#### Student View
+**Displays**: Course logistics, personal grades, staff, and navigation buttons
 **Tables Used**:
 - `courses` (course info, logistics, links)
+- `terms` (term information)
 - `course_staff` (teaching staff)
 - `users` (staff details)
+- `staff_profiles` (staff office locations)
 - `office_hours` (office hours)
-- `is_enrolled` (student's current grade)
+- `is_enrolled` (student's current overall grade)
+- `assignments` (assignment details)
+- `assignment_grades` (student's assignment scores)
 
-**Query Pattern** (example for course info):
+**Query Pattern** (course info):
 ```sql
 SELECT c.*, t.*
 FROM courses c
@@ -325,11 +313,101 @@ JOIN terms t ON c.term_uuid = t.term_uuid
 WHERE c.course_uuid = :course_uuid;
 ```
 
-**Query Pattern** (student's grade):
+**Query Pattern** (student's overall grade):
 ```sql
 SELECT current_percentage, current_letter_grade
 FROM is_enrolled
 WHERE user_uuid = :user_uuid AND course_uuid = :course_uuid;
+```
+
+**Query Pattern** (student's assignment grades):
+```sql
+SELECT a.assignment_name,
+       a.assignment_category,
+       a.points_possible,
+       a.due_date,
+       ag.points_earned,
+       ROUND((ag.points_earned / a.points_possible) * 100, 2) as percentage,
+       ag.submitted_at,
+       ag.graded_at
+FROM assignments a
+LEFT JOIN assignment_grades ag ON a.assignment_uuid = ag.assignment_uuid
+    AND ag.user_uuid = :user_uuid
+WHERE a.course_uuid = :course_uuid
+  AND a.is_published = true
+ORDER BY a.due_date DESC;
+```
+
+**Query Pattern** (teaching staff and office hours):
+```sql
+SELECT u.first_name, u.last_name, u.email,
+       cs.staff_role,
+       sp.office_location,
+       oh.day_of_week, oh.start_time, oh.end_time, oh.location
+FROM course_staff cs
+JOIN users u ON cs.user_uuid = u.user_uuid
+LEFT JOIN staff_profiles sp ON u.user_uuid = sp.user_uuid
+LEFT JOIN office_hours oh ON cs.user_uuid = oh.user_uuid AND cs.course_uuid = oh.course_uuid
+WHERE cs.course_uuid = :course_uuid
+ORDER BY cs.staff_role, u.last_name;
+```
+
+#### Instructor View
+**Displays**: Course logistics, class statistics, roster overview, assignment management
+**Tables Used**:
+- `courses` (course info, logistics, links)
+- `terms` (term information)
+- `is_enrolled` (all student enrollments and grades)
+- `users` (student information)
+- `assignments` (all assignments)
+- `assignment_grades` (grade statistics)
+- `teams` (team information)
+- `team_members` (team membership)
+
+**Query Pattern** (course overview):
+```sql
+SELECT c.*, t.*
+FROM courses c
+JOIN terms t ON c.term_uuid = t.term_uuid
+WHERE c.course_uuid = :course_uuid;
+```
+
+**Query Pattern** (enrollment statistics):
+```sql
+SELECT
+    COUNT(*) as total_students,
+    COUNT(CASE WHEN enrollment_status = 'active' THEN 1 END) as active_students,
+    COUNT(CASE WHEN enrollment_status = 'dropped' THEN 1 END) as dropped_students,
+    ROUND(AVG(current_percentage), 2) as average_grade
+FROM is_enrolled
+WHERE course_uuid = :course_uuid;
+```
+
+**Query Pattern** (assignment statistics):
+```sql
+SELECT a.assignment_name,
+       a.assignment_category,
+       a.points_possible,
+       a.due_date,
+       COUNT(ag.user_uuid) as submissions,
+       ROUND(AVG(ag.points_earned), 2) as avg_points,
+       ROUND(AVG((ag.points_earned / a.points_possible) * 100), 2) as avg_percentage
+FROM assignments a
+LEFT JOIN assignment_grades ag ON a.assignment_uuid = ag.assignment_uuid
+WHERE a.course_uuid = :course_uuid
+GROUP BY a.assignment_uuid, a.assignment_name, a.assignment_category, a.points_possible, a.due_date
+ORDER BY a.due_date DESC;
+```
+
+**Query Pattern** (recent student enrollments):
+```sql
+SELECT u.first_name, u.last_name, u.email, e.enrolled_at
+FROM is_enrolled e
+JOIN users u ON e.user_uuid = u.user_uuid
+WHERE e.course_uuid = :course_uuid
+  AND e.enrollment_status = 'active'
+ORDER BY e.enrolled_at DESC
+LIMIT 10;
 ```
 
 ### Class Directory/Roster Page
@@ -415,35 +493,6 @@ WHERE t.course_uuid = :course_uuid
 GROUP BY t.team_uuid, ta_name
 ORDER BY t.team_number;
 ```
-
-### Student Views Assignment Grades
-**Displays**: List of assignments and grades for a student in a course
-**Tables Used**:
-- `assignments` (assignment details)
-- `assignment_grades` (student's scores)
-
-**Query Pattern**:
-```sql
-SELECT a.assignment_name,
-       a.assignment_category,
-       a.points_possible,
-       a.due_date,
-       ag.points_earned,
-       ROUND((ag.points_earned / a.points_possible) * 100, 2) as percentage,
-       ag.submitted_at,
-       ag.graded_at
-FROM assignments a
-LEFT JOIN assignment_grades ag ON a.assignment_uuid = ag.assignment_uuid
-    AND ag.user_uuid = :user_uuid
-WHERE a.course_uuid = :course_uuid
-  AND a.is_published = true
-ORDER BY a.due_date DESC;
-```
-
-**Benefits of Normalized Design**:
-- Assignment details fetched once from `assignments` table
-- Join with `assignment_grades` to get student-specific scores
-- If instructor changes `points_possible`, only one row updates (not 500+ student rows)
 
 ## Design Principles
 
