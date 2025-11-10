@@ -10,7 +10,7 @@ Folder structure + READMEs explaining where to put code. **No prescriptive "do t
 
 ```
 conductor-tool/
-├── frontend/          # VanillaJS (Port 8080)
+├── frontend/          # VanillaJS
 ├── backend/           # Node.js + Express (Port 8081)
 ├── database/          # PostgreSQL migrations
 └── specs/             # Docs, ADRs
@@ -70,18 +70,6 @@ One feature = matching files across layers:
 - `standupController.js`
 - `standupService.js`
 - `standupRepository.js`
-
----
-
-## Quick Start
-
-```bash
-cp .env.example .env
-docker-compose up --build
-
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
-```
 
 ---
 

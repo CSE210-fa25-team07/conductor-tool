@@ -21,8 +21,6 @@ Some files are used by multiple teams:
 
 ### Auth Team Owns (Everyone Needs)
 - `frontend/src/js/api/apiClient.js` - Base API wrapper
-- `backend/src/middleware/authMiddleware.js` - Session verification
-- `backend/src/middleware/rbacMiddleware.js` - Role checks
 - `backend/src/repositories/userRepository.js` - Shared with Directory
 
 ### Directory Team Owns (Attendance + Standup Need)
