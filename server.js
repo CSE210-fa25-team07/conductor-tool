@@ -20,7 +20,7 @@ app.get('/dashboard', (req, res) => {
   if (!req.session.user) return res.redirect('/');
 
   const user = req.session.user;
-  const pictureUrl = user.picture
+  const pictureUrl = user.picture;
 
   res.send(`
     <h1>Welcome, ${user.name}</h1>
@@ -32,12 +32,11 @@ app.get('/dashboard', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) console.error(err);
+  req.session.destroy(() => {
     res.redirect('/');
   });
 });
 
 app.use('/auth', authRoutes);
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT);
