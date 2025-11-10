@@ -11,21 +11,11 @@ The goal of **Conductor** is to:
 - Support fair and transparent assessment for both individual students and project groups.
 - Offer insights that help improve teaching efficiency and student learning outcomes.
 
-## Quick Start
-
-```bash
-cp .env.example .env
-docker-compose up --build
-
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
-```
-
 ## Structure
 
 ```
 conductor-tool/
-├── frontend/      # VanillaJS (Port 8080)
+├── frontend/      # VanillaJS
 ├── backend/       # Node.js + Express (Port 8081)
 ├── database/      # PostgreSQL migrations
 └── specs/         # Docs, ADRs
@@ -58,10 +48,5 @@ conductor-tool/
 
 - Frontend: HTML/CSS/VanillaJS
 - Backend: Node.js + Express
-- Database: PostgreSQL + Redis
+- Database: PostgreSQL
 - Auth: Auth.js + Google OAuth
-- Deploy: Docker Compose
-
----
-
-**Organize your feature however you want within your folders. The structure just keeps things clean.**

@@ -73,18 +73,6 @@ One feature = matching files across layers:
 
 ---
 
-## Quick Start
-
-```bash
-cp .env.example .env
-docker-compose up --build
-
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
-```
-
----
-
 ## Where to Learn More
 
 - **[codebase_structure.md](specs/code_guides/codebase_structure.md)** - Quick reference with patterns
