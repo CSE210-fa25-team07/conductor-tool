@@ -13,6 +13,19 @@ The goal of **Conductor** is to:
 
 ## Getting Started
 
+### Installing Node.js and npm
+
+Conductor requires **Node.js** and **npm** (Node Package Manager).
+If you don’t already have them installed:
+
+1. Visit the [Node.js download page](https://nodejs.org/).
+2. Download and install the **LTS** version for your operating system.
+3. Verify installation by running the following commands in your terminal:
+   - `node -v` — prints your Node.js version  
+   - `npm -v` — prints your npm version  
+  
+### Setting Up the Project
+
 1. Clone the repository
    ```bash
    git clone git@github.com:CSE210-fa25-team07/conductor-tool.git
