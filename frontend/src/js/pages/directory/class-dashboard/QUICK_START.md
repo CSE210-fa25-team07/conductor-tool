@@ -59,22 +59,22 @@ To see the instructor dashboard:
 
 When the backend is ready:
 
-1. In `/frontend/src/js/pages/directory/dashboard.js`, change:
+1. In `/frontend/src/js/pages/directory/class-dashboard/index.js`, change:
    ```javascript
-   import { getUserRole } from '../../api/directory/directoryApiMock.js';
+   import { getUserRole } from '../../../api/directory/directoryApiMock.js';
    ```
    to:
    ```javascript
-   import { getUserRole } from '../../api/directoryApi.js';
+   import { getUserRole } from '../../../api/directoryApi.js';
    ```
 
 2. Make the same change in `studentView.js` and `instructorView.js`:
    ```javascript
    // Change from:
-   import { ... } from '../../api/directory/directoryApiMock.js';
+   import { ... } from '../../../api/directory/directoryApiMock.js';
 
    // To:
-   import { ... } from '../../api/directoryApi.js';
+   import { ... } from '../../../api/directoryApi.js';
    ```
 
 ## File Structure
@@ -93,9 +93,10 @@ frontend/
 │       │       └── mockData.js          # Mock data
 │       └── pages/
 │           └── directory/
-│               ├── dashboard.js       # Main controller
-│               ├── studentView.js     # Student view
-│               └── instructorView.js  # Instructor view
+│               └── class-dashboard/   # Class dashboard feature
+│                   ├── index.js       # Main controller
+│                   ├── studentView.js # Student view
+│                   └── instructorView.js # Instructor view
 └── public/
     └── class-dashboard.html           # HTML page (references ../src files)
 ```
@@ -106,6 +107,6 @@ All files are served directly from `/frontend/src/`. Just edit the files and ref
 
 - Edit CSS: `/frontend/src/css/pages/dashboard.css`
 - Edit Mock Data: `/frontend/src/js/api/directory/mockData.js`
-- Edit Views: `/frontend/src/js/pages/directory/*.js`
+- Edit Views: `/frontend/src/js/pages/directory/class-dashboard/*.js`
 
 **No copying needed!** The HTML references the src files directly.

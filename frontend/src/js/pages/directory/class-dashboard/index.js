@@ -5,9 +5,9 @@
  */
 
 // USING MOCK DATA - Switch to directoryApi.js when backend is ready
-import { getUserRole } from '../../api/directory/directoryApiMock.js';
-import { renderStudentDashboard } from './studentView.js';
-import { renderInstructorDashboard } from './instructorView.js';
+import { getUserRole } from "../../../api/directory/directoryApiMock.js";
+import { renderStudentDashboard } from "./studentView.js";
+import { renderInstructorDashboard } from "./instructorView.js";
 
 /**
  * Get course UUID from URL parameters
@@ -15,7 +15,7 @@ import { renderInstructorDashboard } from './instructorView.js';
  */
 function getCourseUuidFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('course');
+  return urlParams.get("course");
 }
 
 /**
@@ -23,10 +23,9 @@ function getCourseUuidFromUrl() {
  * Fetches user role and renders appropriate dashboard view
  */
 async function initDashboard() {
-  const container = document.getElementById('dashboard-container');
+  const container = document.getElementById("dashboard-container");
 
   if (!container) {
-    console.error('Dashboard container not found');
     return;
   }
 
@@ -45,13 +44,13 @@ async function initDashboard() {
 
   try {
     // Show initial loading state
-    container.innerHTML = '<div class="loading">Loading dashboard...</div>';
+    container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
     // Fetch user role for this course
     const roleData = await getUserRole(courseUuid);
 
     // Determine which view to render based on role
-    const isInstructor = roleData.role === 'instructor' || roleData.role === 'ta';
+    const isInstructor = roleData.role === "instructor" || roleData.role === "ta";
 
     if (isInstructor) {
       // Render instructor view
@@ -62,11 +61,10 @@ async function initDashboard() {
     }
 
   } catch (error) {
-    console.error('Error initializing dashboard:', error);
     container.innerHTML = `
       <div class="error-message">
         <h2>Error Loading Dashboard</h2>
-        <p>${error.message || 'Failed to load dashboard. Please try again later.'}</p>
+        <p>${error.message || "Failed to load dashboard. Please try again later."}</p>
         <a href="/courses" class="btn btn-primary">Back to Course List</a>
       </div>
     `;
@@ -74,8 +72,8 @@ async function initDashboard() {
 }
 
 // Initialize dashboard when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDashboard);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDashboard);
 } else {
   initDashboard();
 }

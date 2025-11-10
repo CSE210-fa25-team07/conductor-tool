@@ -3,7 +3,7 @@
  * Handles class dashboard data fetching for both student and instructor views
  */
 
-import { apiClient } from './apiClient.js';
+import { apiClient } from "./apiClient.js";
 
 /**
  * Get course overview information

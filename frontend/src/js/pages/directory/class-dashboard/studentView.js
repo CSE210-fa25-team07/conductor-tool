@@ -9,7 +9,7 @@ import {
   getStudentGrade,
   getStudentAssignments,
   getCourseStaff
-} from '../../api/directory/directoryApiMock.js';
+} from "../../../api/directory/directoryApiMock.js";
 
 /**
  * Render course information header
@@ -27,16 +27,16 @@ function renderCourseHeader(course) {
       <div class="course-info">
         <div class="info-item">
           <span class="label">Lecture:</span>
-          <span class="value">${course.lecture_time || 'TBA'}</span>
+          <span class="value">${course.lecture_time || "TBA"}</span>
         </div>
         <div class="info-item">
           <span class="label">Location:</span>
-          <span class="value">${course.lecture_location || 'TBA'}</span>
+          <span class="value">${course.lecture_location || "TBA"}</span>
         </div>
       </div>
       <div class="course-links">
-        ${course.syllabus_url ? `<a href="${course.syllabus_url}" target="_blank" class="btn btn-secondary">Syllabus</a>` : ''}
-        ${course.canvas_url ? `<a href="${course.canvas_url}" target="_blank" class="btn btn-secondary">Canvas</a>` : ''}
+        ${course.syllabus_url ? `<a href="${course.syllabus_url}" target="_blank" class="btn btn-secondary">Syllabus</a>` : ""}
+        ${course.canvas_url ? `<a href="${course.canvas_url}" target="_blank" class="btn btn-secondary">Canvas</a>` : ""}
       </div>
     </div>
   `;
@@ -58,7 +58,7 @@ function renderCurrentGrade(grade) {
   }
 
   const percentage = parseFloat(grade.current_percentage).toFixed(2);
-  const letterGrade = grade.current_letter_grade || 'N/A';
+  const letterGrade = grade.current_letter_grade || "N/A";
 
   return `
     <div class="grade-card">
@@ -89,7 +89,7 @@ function renderAssignments(assignments) {
   const assignmentRows = assignments.map(assignment => {
     const dueDate = assignment.due_date
       ? new Date(assignment.due_date).toLocaleDateString()
-      : 'No due date';
+      : "No due date";
 
     const points = assignment.points_earned !== null
       ? `${assignment.points_earned} / ${assignment.points_possible}`
@@ -97,13 +97,13 @@ function renderAssignments(assignments) {
 
     const percentage = assignment.percentage !== null
       ? `${parseFloat(assignment.percentage).toFixed(1)}%`
-      : '-';
+      : "-";
 
     const status = assignment.graded_at
-      ? 'Graded'
+      ? "Graded"
       : assignment.submitted_at
-      ? 'Submitted'
-      : 'Not Submitted';
+        ? "Submitted"
+        : "Not Submitted";
 
     return `
       <tr>
@@ -112,10 +112,10 @@ function renderAssignments(assignments) {
         <td>${dueDate}</td>
         <td>${points}</td>
         <td>${percentage}</td>
-        <td><span class="status-badge status-${status.toLowerCase().replace(' ', '-')}">${status}</span></td>
+        <td><span class="status-badge status-${status.toLowerCase().replace(" ", "-")}">${status}</span></td>
       </tr>
     `;
-  }).join('');
+  }).join("");
 
   return `
     <div class="assignments-section">
@@ -158,10 +158,10 @@ function renderStaff(staff) {
     const role = member.staff_role.charAt(0).toUpperCase() + member.staff_role.slice(1);
     const officeHours = member.office_hours && member.office_hours.length > 0
       ? member.office_hours.map(oh => {
-          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-          return `${days[oh.day_of_week]} ${oh.start_time}-${oh.end_time} (${oh.location})`;
-        }).join('<br>')
-      : 'No office hours posted';
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        return `${days[oh.day_of_week]} ${oh.start_time}-${oh.end_time} (${oh.location})`;
+      }).join("<br>")
+      : "No office hours posted";
 
     return `
       <div class="staff-card">
@@ -171,7 +171,7 @@ function renderStaff(staff) {
         </div>
         <div class="contact-info">
           <p><strong>Email:</strong> <a href="mailto:${member.email}">${member.email}</a></p>
-          ${member.office_location ? `<p><strong>Office:</strong> ${member.office_location}</p>` : ''}
+          ${member.office_location ? `<p><strong>Office:</strong> ${member.office_location}</p>` : ""}
         </div>
         <div class="office-hours">
           <strong>Office Hours:</strong><br>
@@ -179,7 +179,7 @@ function renderStaff(staff) {
         </div>
       </div>
     `;
-  }).join('');
+  }).join("");
 
   return `
     <div class="staff-section">
@@ -223,7 +223,7 @@ function renderNavigationButtons(courseUuid) {
 export async function renderStudentDashboard(courseUuid, container) {
   try {
     // Show loading state
-    container.innerHTML = '<div class="loading">Loading dashboard...</div>';
+    container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
     // Fetch all data in parallel
     const [courseData, gradeData, assignmentsData, staffData] = await Promise.all([
@@ -257,11 +257,10 @@ export async function renderStudentDashboard(courseUuid, container) {
     setupEventListeners(container);
 
   } catch (error) {
-    console.error('Error rendering student dashboard:', error);
     container.innerHTML = `
       <div class="error-message">
         <h2>Error Loading Dashboard</h2>
-        <p>${error.message || 'Failed to load dashboard. Please try again later.'}</p>
+        <p>${error.message || "Failed to load dashboard. Please try again later."}</p>
       </div>
     `;
   }
@@ -269,9 +268,9 @@ export async function renderStudentDashboard(courseUuid, container) {
 
 /**
  * Setup event listeners for interactive elements
- * @param {HTMLElement} container - Dashboard container
+ * @param {HTMLElement} _container - Dashboard container
  */
-function setupEventListeners(container) {
+function setupEventListeners(_container) {
   // Add any interactive behavior here
   // For example: sorting tables, filtering, etc.
 }
