@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 
 const router = express.Router();
 
-const PORT = 3000;
+const PORT = 8081;
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = `http://localhost:${PORT}/auth/google/callback`;

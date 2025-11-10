@@ -1,9 +1,9 @@
 import express from 'express';
-import authRoutes from './authentication/auth-router.js';
+import authRoutes from './backend/src/routes/authRoutes.js';
 import session from 'express-session';
 
 const app = express();
-const PORT = 3000;
+const PORT = 8081;
 
 app.use(session({
   secret: process.env.SESSION_SECRET,    // signs the session ID cookie
