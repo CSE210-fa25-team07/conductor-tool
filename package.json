@@ -1,10 +1,20 @@
 {
   "name": "conductor-tool",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "devDependencies": {
-    "eslint": "^9.38.0"
+    "eslint": "^9.38.0",
+    "jsdoc": "^4.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.0",
+    "express-session": "^1.17.3"
   }
 }

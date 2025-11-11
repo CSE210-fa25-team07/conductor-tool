@@ -21,29 +21,11 @@ Some files are used by multiple teams:
 
 ### Auth Team Owns (Everyone Needs)
 - `frontend/src/js/api/apiClient.js` - Base API wrapper
-- `backend/src/middleware/authMiddleware.js` - Session verification
-- `backend/src/middleware/rbacMiddleware.js` - Role checks
 - `backend/src/repositories/userRepository.js` - Shared with Directory
 
 ### Directory Team Owns (Attendance + Standup Need)
 - `backend/src/repositories/teamRepository.js` - Team membership checks
 - `frontend/src/js/components/userCard.js` - Shared with Standup
-
----
-
-## Dependencies
-
-```
-Auth (no dependencies)
-  ↓
-Directory (needs: apiClient, auth middleware, userRepository)
-  ↓
-Attendance + Standup (need: apiClient, auth middleware, teamRepository)
-```
-
-**Order:** Auth implements shared code first, then everyone works in parallel.
-
----
 
 ## General Rules
 

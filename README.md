@@ -1,22 +1,91 @@
-# Conductor Tool
+# Conductor
 
-Web platform for managing large software engineering courses (500+ students).
+**Conductor** is a web platform designed to streamline the management of large-scale software engineering courses (500+ students).
+It provides utilities and insights that help teaching staff and students focus on the more meaningful aspects of software engineering, while automating repetitive or administrative tasks.
 
-## Quick Start
+## Overview
 
-```bash
-cp .env.example .env
-docker-compose up --build
+The goal of **Conductor** is to:
+- Automate time-consuming tasks involved in course management.
+- Provide a consistent structure for collecting and evaluating observations.
+- Support fair and transparent assessment for both individual students and project groups.
+- Offer insights that help improve teaching efficiency and student learning outcomes.
 
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
+## Getting Started
+
+### Installing Node.js and npm
+
+Conductor requires **Node.js** and **npm** (Node Package Manager).
+If you don’t already have them installed:
+
+1. Visit the [Node.js download page](https://nodejs.org/).
+2. Download and install the **LTS** version for your operating system.
+3. Verify installation by running the following commands in your terminal:
+   - `node -v` — prints your Node.js version  
+   - `npm -v` — prints your npm version  
+  
+### Setting Up the Project
+
+1. Clone the repository
+   ```bash
+   git clone git@github.com:CSE210-fa25-team07/conductor-tool.git
+   ```
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+3. Generate JS documentation locally
+   ```bash
+   npm run docs
+   ```
+   You can also check our [GitHub Pages](https://cse210-fa25-team07.github.io/conductor-tool/) for JS documentation from `main`.
+
+## Contributing
+
+- Use JSDoc for all functions, classes, and modules  
+- Follow the modular structure of the project for all new components
+- Run `npm run lint` periodically to ensure your code meets standards
+
+*Example Template for documenting your code*
 ```
+/**
+* @module {moduleName} - Define in only one file
+*/
 
+/**
+ * [Short description of the function]
+ *
+ * @param {TYPE} param1 - [Description of parameter]
+ * @param {TYPE} param2 - [Description of parameter]
+ * @returns {TYPE} [Description of return value]
+ * @memberof module:{moduleName} - Only for other files
+ *
+ * @example
+ * // Example usage
+ * const result = functionName(arg1, arg2);
+ */
+function functionName(param1, param2) {
+  // function body
+}
+``` 
+
+## Running the Web App (Local)
+> [!NOTE] Disclaimer
+> In order to use authentication (Log in with Google), you must have the `.env` file.
+> The `.env` file contains the necessary secrets and information that our web app uses for the Google Auth API.
+> Please ask the authentication team for more info.
+
+1. Run the web server
+    ```bash
+    node backend/src/server.js
+    ```
+2. On your browser, go to `localhost:8081`
+   
 ## Structure
 
 ```
 conductor-tool/
-├── frontend/      # VanillaJS (Port 8080)
+├── frontend/      # VanillaJS
 ├── backend/       # Node.js + Express (Port 8081)
 ├── database/      # PostgreSQL migrations
 └── specs/         # Docs, ADRs
@@ -33,9 +102,9 @@ conductor-tool/
 
 ## Docs
 
-- **[STRUCTURE_SUMMARY.md](STRUCTURE_SUMMARY.md)** - Quick overview
-- **[codebase_structure.md](specs/code_guides/codebase_structure.md)** - Patterns & examples
-- **[subteam_expectations.md](specs/code_guides/subteam_expectations.md)** - Team dependencies
+- **[STRUCTURE_SUMMARY.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/STRUCTURE_SUMMARY.md)** - Quick overview
+- **[codebase_structure.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/codebase_structure.md)** - Patterns & examples
+- **[subteam_expectations.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/subteam_expectations.md)** - Team dependencies
 - **Folder READMEs** - Check any folder for guidance
 
 ## Rules
@@ -49,10 +118,5 @@ conductor-tool/
 
 - Frontend: HTML/CSS/VanillaJS
 - Backend: Node.js + Express
-- Database: PostgreSQL + Redis
+- Database: PostgreSQL
 - Auth: Auth.js + Google OAuth
-- Deploy: Docker Compose
-
----
-
-**Organize your feature however you want within your folders. The structure just keeps things clean.**
