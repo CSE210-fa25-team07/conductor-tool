@@ -1,6 +1,11 @@
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 8081;
@@ -12,8 +17,12 @@ app.use(session({
   cookie: { secure: false }  // true if HTTPS/production
 }));
 
+app.use(express.static(path.join(__dirname, "../../frontend")));
+// app.get("/", (req, res) => {
+//   res.send("<a href='/auth/google'>Login with Google</a>");
+// });
 app.get("/", (req, res) => {
-  res.send("<a href='/auth/google'>Login with Google</a>");
+  res.sendFile(path.join(__dirname, "../../frontend/html/auth/login.html"));
 });
 
 app.get("/dashboard", (req, res) => {

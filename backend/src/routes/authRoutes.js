@@ -4,13 +4,21 @@
 import "dotenv/config";
 import express from "express";
 import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
 
 const router = express.Router();
-
 const PORT = 8081;
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = `http://localhost:${PORT}/auth/google/callback`;
+
+router.get("/verification", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/verification.html"));
+});
 
 /**
  * Initiates Google OAuth login by redirecting the user to Google’s OAuth consent screen to authenticate.
@@ -71,7 +79,7 @@ router.get("/google/callback", async (req, res) => {
 
     // Store user in session
     req.session.user = profile;
-    res.redirect("/dashboard");
+    res.redirect("/auth/verification");
   } catch {
     res.redirect("/");
   }
