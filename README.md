@@ -77,7 +77,7 @@ function functionName(param1, param2) {
 
 1. Run the web server
     ```bash
-    node server.js
+    node backend/src/server.js
     ```
 2. On your browser, go to `localhost:8081`
    

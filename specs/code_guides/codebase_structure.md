@@ -139,15 +139,22 @@ Route → Controller → Service → Repository
   └─ URL mapping + validation
 ```
 
-**Example Route:** `/backend/src/routes/standupRoutes.js`
+**Example Route:** `/backend/src/routes/authRoutes.js`
 ```javascript
 import express from 'express';
-import { standupController } from '../controllers/standupController.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.send('<a href="/auth/google">Login with Google</a>');
+router.get('/google', (req, res) => {
+  const redirectUrl =
+    'https://accounts.google.com/o/oauth2/v2/auth?' +
+    new URLSearchParams({
+      'client_id': CLIENT_ID,
+      'redirect_uri': REDIRECT_URI,
+      'response_type': 'code',
+      'scope': 'openid email profile'
+    });
+  res.redirect(redirectUrl);
 });
 
 export default router;

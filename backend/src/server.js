@@ -1,5 +1,5 @@
 import express from 'express';
-import authRoutes from './backend/src/routes/authRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import session from 'express-session';
 
 const app = express();
