@@ -27,22 +27,6 @@ Some files are used by multiple teams:
 - `backend/src/repositories/teamRepository.js` - Team membership checks
 - `frontend/src/js/components/userCard.js` - Shared with Standup
 
----
-
-## Dependencies
-
-```
-Auth (no dependencies)
-  ↓
-Directory (needs: apiClient, auth middleware, userRepository)
-  ↓
-Attendance + Standup (need: apiClient, auth middleware, teamRepository)
-```
-
-**Order:** Auth implements shared code first, then everyone works in parallel.
-
----
-
 ## General Rules
 
 1. **File naming:** Match your feature (`standupService.js`, `attendanceRoutes.js`)

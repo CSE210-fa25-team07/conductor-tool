@@ -29,22 +29,6 @@ conductor-tool/
 
 **Organize within your folders however you want.**
 
----
-
-## Shared Code (Coordinate These)
-
-### Auth Team Implements First
-- `frontend/src/js/api/apiClient.js` - Everyone uses this
-- `backend/src/middleware/authMiddleware.js` - Everyone needs this
-- `backend/src/middleware/rbacMiddleware.js` - Everyone needs this
-
-### Directory Team (Others Need)
-- `backend/src/repositories/teamRepository.js` - Team membership checks
-
-**Other teams wait for these before starting routes.**
-
----
-
 ## 3-Layer Pattern
 
 Backend follows this:
@@ -53,7 +37,7 @@ Backend follows this:
 Route → Controller → Service → Repository
 ```
 
-- **Route:** URL mapping + middleware
+- **Route:** URL mapping
 - **Controller:** Extract request data, return response
 - **Service:** Business logic
 - **Repository:** SQL queries
