@@ -121,7 +121,43 @@
 │ joined_at         │  │          └──────────────────────┘
 │ left_at           │  │                      │
 └───────────────────┘  │                      │
-                       │                      │
-                       └────► users ◄─────────┘
-                              (connects to both tables)
+          |            │                      │
+          |            └────► users ◄─────────┘
+          |                   (connects to both tables)
+          |
+          |
+          │ 1:M
+          ▼
+ ┌────────────────────────┐
+ │       standups         │
+ │────────────────────────│
+ │ standup_uuid (PK)      │
+ │ user_uuid (FK)         │
+ │ team_uuid (FK)         │
+ │ course_uuid (FK)       │
+ │ date_submitted         │
+ │ what_done              │
+ │ what_next              │
+ │ blockers               │
+ │ reflection             │
+ │ sentiment_score        │
+ │ sentiment_emoji        │
+ │ visibility             │
+ │ created_at             │
+ │ updated_at             │
+ └────────────────────────┘_____________________________________________
+     │           |_____________________                                 │
+     │1:M                              │1:M                             │1:1
+     ▼                                 ▼                                ▼
+ ┌──────────────────────┐   ┌──────────────────────────┐   ┌──────────────────────────┐
+ │ standup_comments     │   │ standup_notifications    │   │ standup_sentiment_logs   │
+ │──────────────────────│   │──────────────────────────│   │──────────────────────────│
+ │ comment_uuid (PK)    │   │ notif_uuid (PK)          │   │ log_uuid (PK)            │
+ │ standup_uuid (FK)    │   │ sender_uuid (FK)         │   │ standup_uuid (FK)        │
+ │ commenter_uuid (FK)  │   │ receiver_uuid (FK)       │   │ sentiment_score          │
+ │ comment_text         │   │ standup_uuid (FK)        │   │ detected_keywords (JSON) │
+ │ created_at           │   │ message                  │   │ created_at               │
+ │ updated_at           │   │ status (Unread/Read)     │   └──────────────────────────┘
+ └──────────────────────┘   │ created_at               │
+                            └──────────────────────────┘
 ```

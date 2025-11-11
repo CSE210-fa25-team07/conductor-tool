@@ -272,6 +272,103 @@ TA assignments to teams (one TA per team).
 - TA dashboard: Show assigned teams
 - Team-TA coordination
 
+#### 13. Standups  
+Records daily or periodic stand-up entries for each user, linked to their team and course.
+
+**Table:** `standups`  
+- `standup_uuid` (PK): Unique identifier  
+- `user_uuid` (FK): Reference to users table (the author of the entry)  
+- `team_uuid` (FK): Reference to teams table  
+- `course_uuid` (FK): Reference to courses table  
+- `date_submitted`: Timestamp of when the entry was submitted  
+- `what_done`: Description of what the user accomplished since the last stand-up  
+- `what_next`: Tasks or goals planned for the next period  
+- `blockers`: Issues or challenges currently blocking progress  
+- `reflection`: Optional free-form personal or team reflection  
+- `sentiment_score`: Numeric representation of emotional tone (e.g., -1.0 to 1.0)  
+- `sentiment_emoji`: Emoji derived from sentiment score (front-end visualization)  
+- `visibility`: Enum for access scope (Private, Team, or Instructor)  
+- `created_at`: Timestamp when the record was created  
+- `updated_at`: Timestamp of last update  
+
+**Primary Key:** `standup_uuid`  
+**Foreign Keys:**  
+- (`user_uuid`) REFERENCES `users`(`user_uuid`)  
+- (`team_uuid`) REFERENCES `teams`(`team_uuid`)  
+- (`course_uuid`) REFERENCES `courses`(`course_uuid`)  
+
+**Unique Constraint:** (`team_uuid`, `user_uuid`)
+
+**Use Cases:**  
+- Daily or weekly stand-up submissions  
+- Team or individual progress tracking  
+- Instructor visibility into team engagement  
+- Mood and sentiment monitoring across the course  
+
+
+#### 14. Standup_Comments  
+Stores comments or feedback made on stand-up entries by peers, TAs, or professors.
+
+**Table:** `standup_comments`  
+- `comment_uuid` (PK): Unique identifier  
+- `standup_uuid` (FK): Reference to standups table  
+- `commenter_uuid` (FK): Reference to users table (the person commenting)  
+- `comment_text`: Text content of the comment  
+- `created_at`: Timestamp when the comment was created  
+- `updated_at`: Timestamp when the comment was last edited  
+
+**Primary Key:** `comment_uuid`  
+**Foreign Keys:**  
+- (`standup_uuid`) REFERENCES `standups`(`standup_uuid`)  
+- (`commenter_uuid`) REFERENCES `users`(`user_uuid`)  
+
+**Unique Constraint:** (`standup_uuid`, `commenter_uuid`)  
+
+**Use Cases:**  
+- Enables peer and instructor feedback on stand-up reflections  
+- Fosters team communication and engagement  
+- Supports threaded discussions on blockers or progress updates  
+
+
+#### 15. Standup_Notifications 
+Tracks system-generated notifications related to stand-up entries or comments.
+
+**Table:** `standup_notifications`  
+- `notif_uuid` (PK): Unique identifier  
+- `sender_uuid` (FK): Reference to users table (sender of the notification)  
+- `receiver_uuid` (FK): Reference to users table (recipient of the notification)  
+- `standup_uuid` (FK): Reference to standups table  
+- `message`: Notification message content  
+- `status`: Enum for message status (Unread, Read)  
+- `created_at`: Timestamp when the notification was generated  
+
+**Primary Key:** `notif_uuid`  
+**Foreign Keys:**  
+- (`sender_uuid`) REFERENCES `users`(`user_uuid`)  
+- (`receiver_uuid`) REFERENCES `users`(`user_uuid`)  
+- (`standup_uuid`) REFERENCES `standups`(`standup_uuid`)  
+
+**Use Cases:**  
+- Alerts users when someone comments on their stand-up  
+- Reminds users to submit their daily or weekly updates  
+- Supports outreach and acknowledgment workflows  
+
+
+#### 16. Standup_Sentiment_Logs (optional)  
+Stores historical sentiment data and keyword analytics for research or visualization.
+
+**Table:** `standup_sentiment_logs`  
+- `log_uuid` (PK): Unique identifier  
+- `standup_uuid` (FK): Reference to standups table  
+- `sentiment_score`: Sentiment analysis score (e.g., -1.0 = negative, 1.0 = positive)  
+- `detected_keywords`: Array or JSON of detected emotional or topical keywords  
+- `created_at`: Timestamp when the log was created  
+
+**Use Cases:**  
+- Analyze mood and morale trends over time  
+- Support dashboards for instructors or team leaders  
+- Enable studies on student well-being and engagement  
+
 ## Entity Relationships
 
 ```
@@ -286,6 +383,13 @@ assignments (1) ←→ (M) assignment_grades ←→ (M) users
 teams (1) ←→ (M) team_members ←→ (M) users
 teams (1) ←→ (1) team_ta_assignments
 course_staff (1) ←→ (M) team_ta_assignments
+users (1) ←→ (M) standups
+teams (1) ←→ (M) standups
+courses (1) ←→ (M) standups
+standups (1) ←→ (M) standup_comments ←→ (M) users
+standups (1) ←→ (M) standup_notifications ←→ (M) users
+standups (1) ←→ (1) standup_sentiment_logs
+course_staff (1) ←→ (M) standup_sentiment_logs
 ```
 
 ## Page-to-Table Mapping
@@ -564,9 +668,8 @@ ORDER BY t.team_number;
 
 Tables that may be added in future migrations:
 - `attendance_records` (for Attendance feature)
-- `standups` (for Standup/Work Journal feature)
 - `meetings` (for meeting management)
-- `notifications` (for user notifications)
 - `help_queue` (for tutor help queue)
 - `faq_entries` (for FAQ system)
 - `feedback_submissions` (for anonymous feedback)
+
