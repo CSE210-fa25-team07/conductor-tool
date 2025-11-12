@@ -19,7 +19,7 @@ function delay(ms = 300) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} Course details with term information
  */
-export async function getCourseOverview(_courseUuid) {
+export async function getCourseOverview() {
   await delay(400);
   return mockData.courseOverview;
 }
@@ -29,7 +29,7 @@ export async function getCourseOverview(_courseUuid) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Array>} List of staff with office hours
  */
-export async function getCourseStaff(_courseUuid) {
+export async function getCourseStaff() {
   await delay(450);
   return mockData.courseStaff;
 }
@@ -39,7 +39,7 @@ export async function getCourseStaff(_courseUuid) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} Enrollment stats (total, active, dropped, avg grade)
  */
-export async function getEnrollmentStats(_courseUuid) {
+export async function getEnrollmentStats() {
   await delay(400);
   return mockData.enrollmentStats;
 }
@@ -60,7 +60,7 @@ export async function getRecentEnrollments(courseUuid, limit = 10) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} User role information
  */
-export async function getUserRole(_courseUuid) {
+export async function getUserRole() {
   await delay(300);
   return mockData.userRole;
 }
@@ -70,6 +70,48 @@ export async function getUserRole(_courseUuid) {
  * @param {string} userUuid - User UUID
  * @returns {Promise<Object>} User profile with teams and staff information
  */
+function attachTeamMembership(profile, userUuid) {
+  if (!profile) {
+    return profile;
+  }
+
+  const existingTeams = Array.isArray(profile.teams) ? [...profile.teams] : [];
+  const teamProfiles = mockData.teamProfiles || {};
+
+  Object.values(teamProfiles).forEach((teamProfile) => {
+    if (!teamProfile || !teamProfile.team_info || !Array.isArray(teamProfile.members)) {
+      return;
+    }
+
+    const match = teamProfile.members.find((member) => member.user_uuid === userUuid);
+    if (!match) {
+      return;
+    }
+
+    const teamInfo = teamProfile.team_info;
+    const alreadyPresent = existingTeams.some((team) => team.team_uuid === teamInfo.team_uuid);
+    if (alreadyPresent) {
+      return;
+    }
+
+    /* eslint-disable camelcase */
+    existingTeams.push({
+      team_uuid: teamInfo.team_uuid,
+      team_name: teamInfo.team_name,
+      course_uuid: teamInfo.course_uuid,
+      course_name: teamInfo.course_name,
+      project_name: teamInfo.project_name,
+      role: match.role || "Member",
+      is_team_leader: Boolean(match.is_team_leader || (match.role && match.role.toLowerCase().includes("lead"))),
+      joined_at: match.joined_at || null
+    });
+    /* eslint-enable camelcase */
+  });
+
+  profile.teams = existingTeams;
+  return profile;
+}
+
 export async function getUserProfile(userUuid) {
   await delay(450);
 
@@ -96,16 +138,20 @@ export async function getUserProfile(userUuid) {
   };
 
   // Return specific profile if exists, otherwise return default based on type
-  if (profileMap[userUuid]) {
-    return profileMap[userUuid];
+  const template = profileMap[userUuid];
+  if (template) {
+    const profile = JSON.parse(JSON.stringify(template));
+    return attachTeamMembership(profile, userUuid);
   }
 
   // Fallback: return default profile based on UUID pattern
   if (userUuid.includes("staff")) {
-    return mockData.userProfileStaff1;
+    const profile = JSON.parse(JSON.stringify(mockData.userProfileStaff1));
+    return attachTeamMembership(profile, userUuid);
   }
 
-  return mockData.userProfileStudent;
+  const profile = JSON.parse(JSON.stringify(mockData.userProfileStudent));
+  return attachTeamMembership(profile, userUuid);
 }
 
 /**
@@ -116,7 +162,8 @@ export async function getUserProfile(userUuid) {
  * @param {string} filter - Role filter ("all", "student", "instructor", "ta")
  * @returns {Promise<Object>} Paginated roster data with counts
  */
-export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter = "all") {
+export async function getCourseRoster(courseUuid, page = 1, limit = 12, filter = "all") {
+  void courseUuid;
   await delay(400);
 
   // Get all users from roster
@@ -155,6 +202,108 @@ export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter 
     total_count: totalCount,
     total_pages: totalPages,
     counts: counts
+  };
+  /* eslint-enable camelcase */
+}
+
+/**
+ * Get detailed team profile information
+ * @param {string} teamUuid - Team UUID
+ * @returns {Promise<Object>} Team profile including members and status
+ */
+export async function getTeamProfile(teamUuid) {
+  await delay(420);
+
+  /* eslint-disable camelcase */
+  if (mockData.teamProfiles && mockData.teamProfiles[teamUuid]) {
+    return mockData.teamProfiles[teamUuid];
+  }
+
+  // Derive basic information from user profiles if explicit profile is missing
+  const derivedMembers = [];
+  let derivedTeamInfo = null;
+
+  Object.keys(mockData)
+    .filter((key) => key.startsWith("userProfile"))
+    .forEach((key) => {
+      const profile = mockData[key];
+      if (!profile || !profile.teams) {
+        return;
+      }
+
+      const membership = profile.teams.find((team) => team.team_uuid === teamUuid);
+      if (!membership) {
+        return;
+      }
+
+      if (!derivedTeamInfo) {
+        derivedTeamInfo = {
+          team_uuid: membership.team_uuid,
+          team_name: membership.team_name,
+          course_uuid: membership.course_uuid,
+          course_name: membership.course_name,
+          project_name: membership.project_name,
+          mission: "Team details coming soon.",
+          summary: "This team has not added an overview yet.",
+          repo_url: null,
+          docs_url: null,
+          chat_url: null,
+          status_health: "Unknown",
+          status_summary: "No status updates available.",
+          status_updated: null,
+          tags: []
+        };
+      }
+
+      derivedMembers.push({
+        user_uuid: profile.user.user_uuid,
+        name: `${profile.user.first_name} ${profile.user.last_name}`,
+        role: membership.is_team_leader ? "Team Leader" : "Contributor",
+        responsibilities: null,
+        pronouns: profile.user.pronouns,
+        email: profile.user.email,
+        github: profile.user.github_username
+      });
+    });
+
+  if (derivedTeamInfo) {
+    return {
+      team_info: derivedTeamInfo,
+      metrics: {},
+      meeting_schedule: [],
+      members: derivedMembers,
+      recent_updates: [],
+      upcoming_milestones: [],
+      status_notes: [],
+      resources: []
+    };
+  }
+
+  // Final fallback if no data found at all
+  return {
+    team_info: {
+      team_uuid: teamUuid,
+      team_name: "Project Team",
+      course_uuid: null,
+      course_name: "Unknown Course",
+      project_name: null,
+      mission: "Team details have not been configured yet.",
+      summary: "Once this team is set up, their overview and members will appear here.",
+      repo_url: null,
+      docs_url: null,
+      chat_url: null,
+      status_health: "Unknown",
+      status_summary: "No data available.",
+      status_updated: null,
+      tags: []
+    },
+    metrics: {},
+    meeting_schedule: [],
+    members: [],
+    recent_updates: [],
+    upcoming_milestones: [],
+    status_notes: [],
+    resources: []
   };
   /* eslint-enable camelcase */
 }

@@ -232,7 +232,7 @@ export async function renderInstructorDashboard(courseUuid, container) {
     `;
 
     // Add event listeners if needed
-    setupEventListeners(container);
+    setupEventListeners();
 
   } catch (error) {
     container.innerHTML = `
@@ -248,7 +248,7 @@ export async function renderInstructorDashboard(courseUuid, container) {
  * Setup event listeners for interactive elements
  * @param {HTMLElement} _container - Dashboard container
  */
-function setupEventListeners(_container) {
+function setupEventListeners() {
   // Add any interactive behavior here
   // For example: sorting tables, filtering, etc.
 }

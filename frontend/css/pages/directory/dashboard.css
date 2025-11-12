@@ -303,6 +303,33 @@ main {
   border-color: #1967d2;
 }
 
+.nav-btn .label small {
+  display: block;
+  font-size: 0.8rem;
+  color: #5f6368;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.nav-btn--disabled {
+  cursor: not-allowed;
+  background: #eceff1;
+  border-color: #d6dde2;
+  color: #8f9ba8;
+}
+
+.nav-btn--disabled .icon {
+  opacity: 0.65;
+}
+
+.nav-btn--disabled .nav-helper {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: #8f9ba8;
+  font-weight: 500;
+}
+
 .nav-btn .icon {
   font-size: 1.5rem;
 }
