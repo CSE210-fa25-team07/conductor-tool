@@ -181,7 +181,7 @@ function renderStaff(staff) {
 function renderNavigationButtons(courseUuid) {
   return `
     <div class="dashboard-navigation">
-      <a href="roster.html?course=${courseUuid}" class="nav-btn">
+      <a href="user-directory.html?course=${courseUuid}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>

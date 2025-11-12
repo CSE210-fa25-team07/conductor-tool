@@ -59,3 +59,20 @@ export async function getUserRole(courseUuid) {
 export async function getUserProfile(userUuid) {
   return apiClient.get(`/api/users/${userUuid}/profile`);
 }
+
+/**
+ * Get course roster with pagination and filtering
+ * @param {string} courseUuid - Course UUID
+ * @param {number} page - Page number (1-indexed)
+ * @param {number} limit - Items per page
+ * @param {string} filter - Role filter ("all", "student", "instructor", "ta")
+ * @returns {Promise<Object>} Paginated roster data
+ */
+export async function getCourseRoster(courseUuid, page = 1, limit = 12, filter = "all") {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    filter: filter
+  });
+  return apiClient.get(`/api/courses/${courseUuid}/roster?${params.toString()}`);
+}

@@ -82,7 +82,17 @@ export async function getUserProfile(userUuid) {
     "student-2-uuid": mockData.userProfileStudent2,
     "student-3-uuid": mockData.userProfileStudent3,
     "student-4-uuid": mockData.userProfileStudent4,
-    "student-5-uuid": mockData.userProfileStudent5
+    "student-5-uuid": mockData.userProfileStudent5,
+    "student-6-uuid": mockData.userProfileStudent6,
+    "student-7-uuid": mockData.userProfileStudent7,
+    "student-8-uuid": mockData.userProfileStudent8,
+    "student-9-uuid": mockData.userProfileStudent9,
+    "student-10-uuid": mockData.userProfileStudent10,
+    "student-11-uuid": mockData.userProfileStudent11,
+    "student-12-uuid": mockData.userProfileStudent12,
+    "student-13-uuid": mockData.userProfileStudent13,
+    "student-14-uuid": mockData.userProfileStudent14,
+    "student-15-uuid": mockData.userProfileStudent15
   };
 
   // Return specific profile if exists, otherwise return default based on type
@@ -96,4 +106,53 @@ export async function getUserProfile(userUuid) {
   }
 
   return mockData.userProfileStudent;
+}
+
+/**
+ * Get course roster with pagination and filtering
+ * @param {string} _courseUuid - Course UUID
+ * @param {number} page - Page number (1-indexed)
+ * @param {number} limit - Items per page
+ * @param {string} filter - Role filter ("all", "student", "instructor", "ta")
+ * @returns {Promise<Object>} Paginated roster data with counts
+ */
+export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter = "all") {
+  await delay(400);
+
+  // Get all users from roster
+  let allUsers = [...mockData.courseRoster.users];
+
+  // Apply filter
+  let filteredUsers = allUsers;
+  if (filter !== "all") {
+    filteredUsers = allUsers.filter(user => user.role === filter);
+  }
+
+  // Calculate counts for filter buttons
+  const counts = {
+    all: allUsers.length,
+    students: allUsers.filter(u => u.role === "student").length,
+    instructors: allUsers.filter(u => u.role === "instructor").length,
+    tas: allUsers.filter(u => u.role === "ta").length
+  };
+
+  // Calculate pagination
+  const totalCount = filteredUsers.length;
+  const totalPages = Math.ceil(totalCount / limit);
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  // Get page of users
+  const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+  return {
+    course_name: mockData.courseRoster.course_name,
+    course_uuid: mockData.courseRoster.course_uuid,
+    users: pageUsers,
+    page: page,
+    limit: limit,
+    total_count: totalCount,
+    total_pages: totalPages,
+    counts: counts
+  };
 }
