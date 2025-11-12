@@ -187,8 +187,8 @@ export async function renderStudentDashboard(courseUuid, container, roleData = n
           teamLink = `group-profile.html?team=${teamMembership.team_uuid}`;
           teamName = teamMembership.team_name;
         }
-      } catch (_profileError) {
-        // Ignore profile fetch issues so the dashboard still renders
+      } catch (profileError) {
+        void profileError;
       }
     }
 

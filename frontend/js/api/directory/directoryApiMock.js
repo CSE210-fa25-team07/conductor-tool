@@ -168,6 +168,7 @@ export async function getCourseRoster(courseUuid, page = 1, limit = 12, filter =
 export async function getTeamProfile(teamUuid) {
   await delay(420);
 
+  /* eslint-disable camelcase */
   if (mockData.teamProfiles && mockData.teamProfiles[teamUuid]) {
     return mockData.teamProfiles[teamUuid];
   }
@@ -258,4 +259,5 @@ export async function getTeamProfile(teamUuid) {
     status_notes: [],
     resources: []
   };
+  /* eslint-enable camelcase */
 }
