@@ -187,8 +187,8 @@ export async function renderStudentDashboard(courseUuid, container, roleData = n
           teamLink = `group-profile.html?team=${teamMembership.team_uuid}`;
           teamName = teamMembership.team_name;
         }
-      } catch (profileError) {
-        console.warn("Unable to load user profile for navigation", profileError);
+      } catch (_profileError) {
+        // Ignore profile fetch issues so the dashboard still renders
       }
     }
 
