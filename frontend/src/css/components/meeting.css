@@ -1,0 +1,22 @@
+/* Minimal styles for meeting page */
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 20px; color: #1a1a1a; }
+.meeting-page { max-width: 980px; margin: 0 auto; }
+h1 { margin-bottom: 12px; }
+section { border: 1px solid #e2e8f0; padding: 12px; margin-bottom: 16px; border-radius: 6px; background: #fff; }
+label { display:block; margin:8px 0; }
+input[type=text], input[type=date], input[type=time], textarea, select { width: 100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px; box-sizing:border-box; }
+.invite-controls { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.invite-controls input { flex:1 }
+.student-results, .selected-invitees, #meetings { list-style:none; padding:0; margin:0; }
+.student-results li, .selected-invitees li, #meetings li { padding:8px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; }
+.student-results li .add-student, .selected-invitees li .remove-invitee, .m-actions button { margin-left:8px; }
+.form-actions { margin-top:12px; display:flex; gap:8px; }
+.muted { color:#64748b; }
+.meta { font-size:0.9em; color:#475569; }
+.m-actions button { margin-right:6px; }
+.owner-controls { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+#qrcode { margin-top:10px; }
+.scanner { display:flex; gap:8px; align-items:center; }
+video { width:240px; height:180px; background:#000; border-radius:4px; }
+.code-display { font-weight:600; font-size:1.1em; margin-top:8px; }
+.attendance-result { margin-top:8px; color:green; }
