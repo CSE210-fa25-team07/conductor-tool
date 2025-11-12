@@ -168,9 +168,13 @@ function renderPagination() {
 
   // First page + ellipsis
   if (startPage > 1) {
-    pages.push(`<button class="pagination-btn" data-page="1">1</button>`);
+    pages.push(`
+      <button class="pagination-btn" data-page="1">1</button>
+    `);
     if (startPage > 2) {
-      pages.push(`<span class="pagination-info">...</span>`);
+      pages.push(`
+        <span class="pagination-info">...</span>
+      `);
     }
   }
 
@@ -187,7 +191,9 @@ function renderPagination() {
   // Ellipsis + last page
   if (endPage < currentState.totalPages) {
     if (endPage < currentState.totalPages - 1) {
-      pages.push(`<span class="pagination-info">...</span>`);
+      pages.push(`
+        <span class="pagination-info">...</span>
+      `);
     }
     pages.push(`
       <button class="pagination-btn" data-page="${currentState.totalPages}">
