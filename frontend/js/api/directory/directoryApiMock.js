@@ -70,6 +70,48 @@ export async function getUserRole() {
  * @param {string} userUuid - User UUID
  * @returns {Promise<Object>} User profile with teams and staff information
  */
+function attachTeamMembership(profile, userUuid) {
+  if (!profile) {
+    return profile;
+  }
+
+  const existingTeams = Array.isArray(profile.teams) ? [...profile.teams] : [];
+  const teamProfiles = mockData.teamProfiles || {};
+
+  Object.values(teamProfiles).forEach((teamProfile) => {
+    if (!teamProfile || !teamProfile.team_info || !Array.isArray(teamProfile.members)) {
+      return;
+    }
+
+    const match = teamProfile.members.find((member) => member.user_uuid === userUuid);
+    if (!match) {
+      return;
+    }
+
+    const teamInfo = teamProfile.team_info;
+    const alreadyPresent = existingTeams.some((team) => team.team_uuid === teamInfo.team_uuid);
+    if (alreadyPresent) {
+      return;
+    }
+
+    /* eslint-disable camelcase */
+    existingTeams.push({
+      team_uuid: teamInfo.team_uuid,
+      team_name: teamInfo.team_name,
+      course_uuid: teamInfo.course_uuid,
+      course_name: teamInfo.course_name,
+      project_name: teamInfo.project_name,
+      role: match.role || "Member",
+      is_team_leader: Boolean(match.is_team_leader || (match.role && match.role.toLowerCase().includes("lead"))),
+      joined_at: match.joined_at || null
+    });
+    /* eslint-enable camelcase */
+  });
+
+  profile.teams = existingTeams;
+  return profile;
+}
+
 export async function getUserProfile(userUuid) {
   await delay(450);
 
@@ -96,16 +138,20 @@ export async function getUserProfile(userUuid) {
   };
 
   // Return specific profile if exists, otherwise return default based on type
-  if (profileMap[userUuid]) {
-    return profileMap[userUuid];
+  const template = profileMap[userUuid];
+  if (template) {
+    const profile = JSON.parse(JSON.stringify(template));
+    return attachTeamMembership(profile, userUuid);
   }
 
   // Fallback: return default profile based on UUID pattern
   if (userUuid.includes("staff")) {
-    return mockData.userProfileStaff1;
+    const profile = JSON.parse(JSON.stringify(mockData.userProfileStaff1));
+    return attachTeamMembership(profile, userUuid);
   }
 
-  return mockData.userProfileStudent;
+  const profile = JSON.parse(JSON.stringify(mockData.userProfileStudent));
+  return attachTeamMembership(profile, userUuid);
 }
 
 /**
