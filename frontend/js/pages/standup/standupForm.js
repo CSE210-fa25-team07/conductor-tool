@@ -1,7 +1,7 @@
 // Standup Form Page - Student submits daily standup
 // NO STYLING - Pure HTML elements only
 
-import { currentUser } from "./mockData.js";
+import { currentUser, getGithubActivityByUser, mockTeams } from "./mockData.js";
 
 export function renderStandupForm(containerId) {
   const container = document.getElementById(containerId);
@@ -46,14 +46,88 @@ export function renderStandupForm(containerId) {
   form.appendChild(document.createElement("br"));
   form.appendChild(document.createElement("br"));
 
-  // Mock GitHub auto-populate button
-  const githubBtn = document.createElement("button");
-  githubBtn.type = "button";
-  githubBtn.textContent = "Auto-populate from GitHub (last 24h)";
-  githubBtn.onclick = () => {
-    q1Textarea.value = "MOCK GITHUB DATA:\n- Commit: Fixed login bug (3 hours ago)\n- Commit: Updated README (5 hours ago)\n- PR Review: Reviewed PR #42 for authentication (6 hours ago)";
-  };
-  form.appendChild(githubBtn);
+  // GitHub status and auto-populate button
+  if (!currentUser.github_connected) {
+    const githubWarning = document.createElement("p");
+    githubWarning.textContent = "⚠️ GitHub not connected. Connect your GitHub account to auto-populate activity.";
+    form.appendChild(githubWarning);
+
+    const connectBtn = document.createElement("button");
+    connectBtn.type = "button";
+    connectBtn.textContent = "Connect GitHub Account";
+    connectBtn.onclick = () => {
+      alert("Would redirect to GitHub OAuth (mock action)");
+    };
+    form.appendChild(connectBtn);
+  } else {
+    // Show GitHub org info
+    const team = mockTeams.find(t => t.team_uuid === "team-001");
+    const githubInfo = document.createElement("p");
+    githubInfo.textContent = `GitHub connected: @${currentUser.github_username} | Team org: ${team.github_org}`;
+    form.appendChild(githubInfo);
+
+    // GitHub auto-populate button
+    const githubBtn = document.createElement("button");
+    githubBtn.type = "button";
+    githubBtn.textContent = "Auto-populate from GitHub (last 24h)";
+    githubBtn.onclick = () => {
+      const activities = getGithubActivityByUser(currentUser.user_uuid, 24);
+
+      if (activities.length === 0) {
+        q1Textarea.value = "No GitHub activity in the last 24 hours.";
+        return;
+      }
+
+      let content = "GitHub Activity (last 24h):\n\n";
+
+      // Group by type
+      const commits = activities.filter(a => a.activity_type === "commit");
+      const prs = activities.filter(a => a.activity_type === "pull_request");
+      const reviews = activities.filter(a => a.activity_type === "review");
+      const issues = activities.filter(a => a.activity_type === "issue");
+
+      if (commits.length > 0) {
+        content += "Commits:\n";
+        commits.forEach(activity => {
+          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
+          content += `  ✓ ${activity.data.sha}: ${activity.data.message} (${activity.repo_name}) - ${hoursAgo}h ago - +${activity.data.additions}/-${activity.data.deletions} lines\n`;
+        });
+        content += "\n";
+      }
+
+      if (prs.length > 0) {
+        content += "Pull Requests:\n";
+        prs.forEach(activity => {
+          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
+          content += `  ✓ PR #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.state.toUpperCase()} - ${hoursAgo}h ago\n`;
+        });
+        content += "\n";
+      }
+
+      if (reviews.length > 0) {
+        content += "Code Reviews:\n";
+        reviews.forEach(activity => {
+          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
+          content += `  ✓ Reviewed PR #${activity.data.pr_number}: ${activity.data.pr_title} (${activity.repo_name}) - ${activity.data.review_state.toUpperCase()} - ${hoursAgo}h ago\n`;
+        });
+        content += "\n";
+      }
+
+      if (issues.length > 0) {
+        content += "Issues:\n";
+        issues.forEach(activity => {
+          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
+          content += `  ✓ Issue #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.action.toUpperCase()} - ${hoursAgo}h ago\n`;
+        });
+        content += "\n";
+      }
+
+      content += "\n[You can edit above or add non-code work below]";
+
+      q1Textarea.value = content;
+    };
+    form.appendChild(githubBtn);
+  }
 
   form.appendChild(document.createElement("br"));
   form.appendChild(document.createElement("br"));

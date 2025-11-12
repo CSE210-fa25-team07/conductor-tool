@@ -8,31 +8,41 @@ export const mockUsers = [
     user_uuid: "user-001",
     name: "Alice Chen",
     email: "alice@ucsd.edu",
-    role: "student"
+    role: "student",
+    github_username: "alicechen",
+    github_connected: true
   },
   {
     user_uuid: "user-002",
     name: "Bob Martinez",
     email: "bob@ucsd.edu",
-    role: "student"
+    role: "student",
+    github_username: "bobmartinez",
+    github_connected: true
   },
   {
     user_uuid: "user-003",
     name: "Carol Davis",
     email: "carol@ucsd.edu",
-    role: "student"
+    role: "student",
+    github_username: "caroldavis",
+    github_connected: false
   },
   {
     user_uuid: "user-004",
     name: "David Kim",
     email: "david@ucsd.edu",
-    role: "student"
+    role: "student",
+    github_username: "davidkim",
+    github_connected: true
   },
   {
     user_uuid: "user-005",
     name: "Eva Rodriguez",
     email: "eva@ucsd.edu",
-    role: "ta"
+    role: "ta",
+    github_username: "evarodriguez",
+    github_connected: true
   }
 ];
 
@@ -40,12 +50,16 @@ export const mockTeams = [
   {
     team_uuid: "team-001",
     name: "Team Alpha",
-    course_uuid: "course-001"
+    course_uuid: "course-001",
+    github_org: "cse110-fa25-team-alpha",
+    github_org_url: "https://github.com/cse110-fa25-team-alpha"
   },
   {
     team_uuid: "team-002",
     name: "Team Beta",
-    course_uuid: "course-001"
+    course_uuid: "course-001",
+    github_org: "cse110-fa25-team-beta",
+    github_org_url: "https://github.com/cse110-fa25-team-beta"
   }
 ];
 
@@ -256,6 +270,308 @@ export function getNotificationsByUser(userId) {
 
 export function getUnreadNotificationCount(userId) {
   return mockNotifications.filter(n => n.receiver_uuid === userId && n.status === "Unread").length;
+}
+
+// Mock GitHub repositories in team orgs
+export const mockGithubRepos = [
+  {
+    repo_uuid: "repo-001",
+    team_uuid: "team-001",
+    repo_name: "frontend-repo",
+    repo_full_name: "cse110-fa25-team-alpha/frontend-repo",
+    description: "Frontend application",
+    last_activity: "2025-11-09T14:30:00Z"
+  },
+  {
+    repo_uuid: "repo-002",
+    team_uuid: "team-001",
+    repo_name: "backend-repo",
+    repo_full_name: "cse110-fa25-team-alpha/backend-repo",
+    description: "Backend API server",
+    last_activity: "2025-11-09T15:00:00Z"
+  },
+  {
+    repo_uuid: "repo-003",
+    team_uuid: "team-001",
+    repo_name: "docs-repo",
+    repo_full_name: "cse110-fa25-team-alpha/docs-repo",
+    description: "Documentation",
+    last_activity: "2025-11-08T10:00:00Z"
+  },
+  {
+    repo_uuid: "repo-004",
+    team_uuid: "team-002",
+    repo_name: "main-repo",
+    repo_full_name: "cse110-fa25-team-beta/main-repo",
+    description: "Main project repository",
+    last_activity: "2025-11-06T12:00:00Z"
+  }
+];
+
+// Mock GitHub activity (commits, PRs, reviews, issues)
+export const mockGithubActivity = [
+  // Alice's activity
+  {
+    activity_uuid: "gh-001",
+    user_uuid: "user-001",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "frontend-repo",
+    timestamp: "2025-11-09T10:00:00Z",
+    data: {
+      sha: "abc123",
+      message: "Fixed login bug in authentication flow",
+      files_changed: 3,
+      additions: 45,
+      deletions: 12,
+      url: "https://github.com/cse110-fa25-team-alpha/frontend-repo/commit/abc123"
+    }
+  },
+  {
+    activity_uuid: "gh-002",
+    user_uuid: "user-001",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "frontend-repo",
+    timestamp: "2025-11-09T08:30:00Z",
+    data: {
+      sha: "def456",
+      message: "Updated README with setup instructions",
+      files_changed: 1,
+      additions: 20,
+      deletions: 5,
+      url: "https://github.com/cse110-fa25-team-alpha/frontend-repo/commit/def456"
+    }
+  },
+  {
+    activity_uuid: "gh-003",
+    user_uuid: "user-001",
+    team_uuid: "team-001",
+    activity_type: "pull_request",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T09:00:00Z",
+    data: {
+      number: 42,
+      title: "Add authentication module",
+      state: "open",
+      additions: 234,
+      deletions: 56,
+      commits: 5,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/pull/42"
+    }
+  },
+  {
+    activity_uuid: "gh-004",
+    user_uuid: "user-001",
+    team_uuid: "team-001",
+    activity_type: "review",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T07:00:00Z",
+    data: {
+      pr_number: 38,
+      pr_title: "Database schema update",
+      review_state: "approved",
+      comments_count: 3,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/pull/38"
+    }
+  },
+  // Bob's activity
+  {
+    activity_uuid: "gh-005",
+    user_uuid: "user-002",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T09:00:00Z",
+    data: {
+      sha: "ghi789",
+      message: "Implement database connection pooling",
+      files_changed: 2,
+      additions: 78,
+      deletions: 23,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/commit/ghi789"
+    }
+  },
+  {
+    activity_uuid: "gh-006",
+    user_uuid: "user-002",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T08:00:00Z",
+    data: {
+      sha: "jkl012",
+      message: "Fix PostgreSQL timeout configuration",
+      files_changed: 1,
+      additions: 15,
+      deletions: 8,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/commit/jkl012"
+    }
+  },
+  {
+    activity_uuid: "gh-007",
+    user_uuid: "user-002",
+    team_uuid: "team-001",
+    activity_type: "pull_request",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-08T14:00:00Z",
+    data: {
+      number: 40,
+      title: "Database migration scripts",
+      state: "merged",
+      additions: 156,
+      deletions: 34,
+      commits: 3,
+      merged_at: "2025-11-09T10:00:00Z",
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/pull/40"
+    }
+  },
+  {
+    activity_uuid: "gh-008",
+    user_uuid: "user-002",
+    team_uuid: "team-001",
+    activity_type: "issue",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T06:30:00Z",
+    data: {
+      number: 15,
+      title: "PostgreSQL connection timeout issue",
+      state: "open",
+      action: "created",
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/issues/15"
+    }
+  },
+  // David's activity
+  {
+    activity_uuid: "gh-009",
+    user_uuid: "user-004",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "docs-repo",
+    timestamp: "2025-11-09T11:00:00Z",
+    data: {
+      sha: "mno345",
+      message: "Update API documentation",
+      files_changed: 2,
+      additions: 67,
+      deletions: 12,
+      url: "https://github.com/cse110-fa25-team-alpha/docs-repo/commit/mno345"
+    }
+  },
+  {
+    activity_uuid: "gh-010",
+    user_uuid: "user-004",
+    team_uuid: "team-001",
+    activity_type: "review",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-09T09:30:00Z",
+    data: {
+      pr_number: 42,
+      pr_title: "Add authentication module",
+      review_state: "commented",
+      comments_count: 2,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/pull/42"
+    }
+  },
+  // Carol - NO activity (not connected to GitHub)
+  // Older activity for history
+  {
+    activity_uuid: "gh-011",
+    user_uuid: "user-001",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "frontend-repo",
+    timestamp: "2025-11-08T10:00:00Z",
+    data: {
+      sha: "pqr678",
+      message: "Initial auth module setup",
+      files_changed: 5,
+      additions: 123,
+      deletions: 0,
+      url: "https://github.com/cse110-fa25-team-alpha/frontend-repo/commit/pqr678"
+    }
+  },
+  {
+    activity_uuid: "gh-012",
+    user_uuid: "user-002",
+    team_uuid: "team-001",
+    activity_type: "commit",
+    repo_name: "backend-repo",
+    timestamp: "2025-11-07T14:00:00Z",
+    data: {
+      sha: "stu901",
+      message: "Add database schema design",
+      files_changed: 3,
+      additions: 89,
+      deletions: 0,
+      url: "https://github.com/cse110-fa25-team-alpha/backend-repo/commit/stu901"
+    }
+  }
+];
+
+// Helper functions for GitHub data
+export function getGithubActivityByUser(userId, hoursAgo = 24) {
+  const cutoffTime = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
+  return mockGithubActivity.filter(activity =>
+    activity.user_uuid === userId && new Date(activity.timestamp) > cutoffTime
+  );
+}
+
+export function getGithubActivityByTeam(teamId, hoursAgo = 24) {
+  const cutoffTime = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
+  return mockGithubActivity.filter(activity =>
+    activity.team_uuid === teamId && new Date(activity.timestamp) > cutoffTime
+  );
+}
+
+export function getReposByTeam(teamId) {
+  return mockGithubRepos.filter(repo => repo.team_uuid === teamId);
+}
+
+export function getGithubStatsByUser(userId, days = 30) {
+  const cutoffTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const activities = mockGithubActivity.filter(activity =>
+    activity.user_uuid === userId && new Date(activity.timestamp) > cutoffTime
+  );
+
+  const commits = activities.filter(a => a.activity_type === "commit");
+  const prs = activities.filter(a => a.activity_type === "pull_request");
+  const reviews = activities.filter(a => a.activity_type === "review");
+  const issues = activities.filter(a => a.activity_type === "issue");
+
+  const totalAdditions = commits.reduce((sum, a) => sum + (a.data.additions || 0), 0);
+  const totalDeletions = commits.reduce((sum, a) => sum + (a.data.deletions || 0), 0);
+
+  return {
+    total_commits: commits.length,
+    total_prs: prs.length,
+    prs_open: prs.filter(pr => pr.data.state === "open").length,
+    prs_merged: prs.filter(pr => pr.data.state === "merged").length,
+    total_reviews: reviews.length,
+    total_issues: issues.length,
+    lines_added: totalAdditions,
+    lines_deleted: totalDeletions,
+    activities: activities
+  };
+}
+
+export function getGithubStatsByTeam(teamId, days = 7) {
+  const cutoffTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const activities = mockGithubActivity.filter(activity =>
+    activity.team_uuid === teamId && new Date(activity.timestamp) > cutoffTime
+  );
+
+  const commits = activities.filter(a => a.activity_type === "commit");
+  const prs = activities.filter(a => a.activity_type === "pull_request");
+
+  return {
+    total_commits: commits.length,
+    total_prs: prs.length,
+    prs_open: prs.filter(pr => pr.data.state === "open").length,
+    prs_merged: prs.filter(pr => pr.data.state === "merged").length,
+    avg_commits_per_day: (commits.length / days).toFixed(1),
+    activities: activities
+  };
 }
 
 // Current logged in user (for demo purposes)

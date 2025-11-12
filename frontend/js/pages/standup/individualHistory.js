@@ -3,7 +3,9 @@
 
 import {
   currentUser,
-  getStandupsByUser
+  getStandupsByUser,
+  getGithubStatsByUser,
+  getGithubActivityByUser
 } from "./mockData.js";
 
 export function renderIndividualHistory(containerId) {
@@ -29,6 +31,11 @@ export function renderIndividualHistory(containerId) {
 
   // Stats summary
   renderStatsSummary(container);
+
+  container.appendChild(document.createElement("hr"));
+
+  // GitHub activity stats
+  renderGithubStats(container);
 
   container.appendChild(document.createElement("hr"));
 
@@ -166,6 +173,135 @@ function renderStatsSummary(container) {
   }
 
   container.appendChild(statsDiv);
+}
+
+function renderGithubStats(container) {
+  const githubDiv = document.createElement("div");
+
+  const githubHeader = document.createElement("h3");
+  githubHeader.textContent = "My GitHub Activity";
+  githubDiv.appendChild(githubHeader);
+
+  if (!currentUser.github_connected) {
+    const notConnected = document.createElement("p");
+    notConnected.textContent = "⚠️ GitHub not connected. Connect your GitHub account to track coding activity.";
+    githubDiv.appendChild(notConnected);
+
+    const connectBtn = document.createElement("button");
+    connectBtn.textContent = "Connect GitHub";
+    connectBtn.onclick = () => {
+      alert("Would redirect to GitHub OAuth flow (mock action)");
+    };
+    githubDiv.appendChild(connectBtn);
+  } else {
+    // GitHub username
+    const usernameP = document.createElement("p");
+    usernameP.textContent = `GitHub: @${currentUser.github_username}`;
+    githubDiv.appendChild(usernameP);
+
+    // Stats for different time periods
+    [7, 30].forEach(days => {
+      const periodHeader = document.createElement("h4");
+      periodHeader.textContent = `Last ${days} Days`;
+      githubDiv.appendChild(periodHeader);
+
+      const stats = getGithubStatsByUser(currentUser.user_uuid, days);
+
+      const statsList = document.createElement("ul");
+
+      const commitsStat = document.createElement("li");
+      commitsStat.textContent = `Commits: ${stats.total_commits} (+${stats.total_additions}/-${stats.total_deletions} lines)`;
+      statsList.appendChild(commitsStat);
+
+      const prsStat = document.createElement("li");
+      prsStat.textContent = `Pull Requests: ${stats.prs_created} created, ${stats.prs_reviewed} reviewed`;
+      statsList.appendChild(prsStat);
+
+      const issuesStat = document.createElement("li");
+      issuesStat.textContent = `Issues: ${stats.issues_opened} opened, ${stats.issues_commented} commented`;
+      statsList.appendChild(issuesStat);
+
+      githubDiv.appendChild(statsList);
+    });
+
+    // Recent activity feed
+    const recentHeader = document.createElement("h4");
+    recentHeader.textContent = "Recent Activity (Last 7 Days)";
+    githubDiv.appendChild(recentHeader);
+
+    const recentActivity = getGithubActivityByUser(currentUser.user_uuid, 24 * 7);
+
+    if (recentActivity.length === 0) {
+      const noActivity = document.createElement("p");
+      noActivity.textContent = "No recent GitHub activity in the last 7 days.";
+      githubDiv.appendChild(noActivity);
+    } else {
+      const activityList = document.createElement("ul");
+
+      // Sort by timestamp, most recent first
+      const sortedActivity = [...recentActivity].sort((a, b) =>
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      sortedActivity.slice(0, 10).forEach(activity => {
+        const listItem = document.createElement("li");
+        const timeAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
+
+        let activityText = "";
+        switch (activity.activity_type) {
+        case "commit":
+          activityText = `📝 Commit: ${activity.data.message} (+${activity.data.additions}/-${activity.data.deletions}) - ${activity.repo_name}`;
+          break;
+        case "pr_created":
+          activityText = `🔀 Created PR: ${activity.data.title} - ${activity.repo_name}`;
+          break;
+        case "pr_reviewed":
+          activityText = `👀 Reviewed PR #${activity.data.pr_number} - ${activity.repo_name}`;
+          break;
+        case "issue_opened":
+          activityText = `🐛 Opened issue: ${activity.data.title} - ${activity.repo_name}`;
+          break;
+        case "issue_comment":
+          activityText = `💬 Commented on issue #${activity.data.issue_number} - ${activity.repo_name}`;
+          break;
+        default:
+          activityText = `${activity.activity_type} - ${activity.repo_name}`;
+        }
+
+        listItem.textContent = `${activityText} (${timeAgo}h ago)`;
+        activityList.appendChild(listItem);
+      });
+
+      githubDiv.appendChild(activityList);
+
+      if (recentActivity.length > 10) {
+        const moreText = document.createElement("p");
+        moreText.textContent = `... and ${recentActivity.length - 10} more activities`;
+        githubDiv.appendChild(moreText);
+      }
+    }
+
+    // Contribution trend mock
+    const trendHeader = document.createElement("h4");
+    trendHeader.textContent = "Contribution Trend (Last 30 Days)";
+    githubDiv.appendChild(trendHeader);
+
+    const trendMock = document.createElement("p");
+    trendMock.textContent = "[MOCK: Contribution graph would appear here]";
+    githubDiv.appendChild(trendMock);
+
+    const trendAscii = document.createElement("pre");
+    trendAscii.textContent = `
+Commits per week:
+Week 1: ████████░░ 8
+Week 2: ██████████ 10
+Week 3: ████░░░░░░ 4
+Week 4: ██████████ 10
+    `;
+    githubDiv.appendChild(trendAscii);
+  }
+
+  container.appendChild(githubDiv);
 }
 
 function renderSentimentTrend(container) {

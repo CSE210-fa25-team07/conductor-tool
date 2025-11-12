@@ -10,18 +10,31 @@ A fully functional frontend demo is available with mock data and zero styling.
 
 ### Files
 
+**JavaScript** (`frontend/js/pages/standup/`):
 - `mockData.js` - Mock data for users, teams, standups, comments, notifications
 - `standupForm.js` - Daily standup submission form (Student view)
 - `teamDashboard.js` - Team standup feed and collaboration (Student/Team Lead view)
 - `taDashboard.js` - Multi-team overview dashboard (TA/Instructor view)
 - `individualHistory.js` - Personal standup history and stats (Student view)
-- `demo.js` - Main entry point with navigation
-- `demo.html` - HTML page to run the demo
-- `DEMO_README.md` - Detailed documentation
+- `main.js` - Main entry point with navigation between views
+
+**HTML** (`frontend/html/standup/`):
+- `index.html` - Main demo page (requires local server for ES modules)
+- `standalone.html` - Standalone version (works directly in browser, all code inline)
 
 ### Running the Demo
 
-Open `demo.html` in a web browser to see all interactions.
+**Option 1: Standalone (easiest)**
+```bash
+open frontend/html/standup/standalone.html
+```
+
+**Option 2: With local server (for modular version)**
+```bash
+cd frontend
+python3 -m http.server 8080
+# Open http://localhost:8080/html/standup/index.html
+```
 
 ### Features Demonstrated
 

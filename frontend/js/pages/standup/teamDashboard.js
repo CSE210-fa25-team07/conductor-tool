@@ -7,7 +7,11 @@ import {
   getStandupsByTeam,
   getUserById,
   getCommentsByStandup,
-  mockComments
+  mockComments,
+  getGithubActivityByTeam,
+  getGithubActivityByUser,
+  getReposByTeam,
+  mockUsers
 } from "./mockData.js";
 
 export function renderTeamDashboard(containerId) {
@@ -67,6 +71,101 @@ function renderTeamStandups(container, teamId) {
   const teamHeader = document.createElement("h2");
   teamHeader.textContent = `${team.name} - Recent Standups`;
   dashboardContent.appendChild(teamHeader);
+
+  // GitHub org info
+  if (team.github_org) {
+    const githubInfo = document.createElement("p");
+    githubInfo.textContent = `GitHub Organization: ${team.github_org}`;
+    dashboardContent.appendChild(githubInfo);
+
+    const repos = getReposByTeam(teamId);
+    const repoInfo = document.createElement("p");
+    repoInfo.textContent = `Repositories: ${repos.map(r => r.repo_name).join(", ")}`;
+    dashboardContent.appendChild(repoInfo);
+  }
+
+  dashboardContent.appendChild(document.createElement("hr"));
+
+  // GitHub Activity Section (Today)
+  const githubSection = document.createElement("div");
+  githubSection.innerHTML = "<h3>GitHub Activity (Today)</h3>";
+
+  const teamGithubActivity = getGithubActivityByTeam(teamId, 24);
+
+  if (teamGithubActivity.length === 0) {
+    const noActivity = document.createElement("p");
+    noActivity.textContent = "No GitHub activity in the last 24 hours.";
+    githubSection.appendChild(noActivity);
+  } else {
+    // Team summary stats
+    const commits = teamGithubActivity.filter(a => a.activity_type === "commit");
+    const prs = teamGithubActivity.filter(a => a.activity_type === "pull_request");
+    const reviews = teamGithubActivity.filter(a => a.activity_type === "review");
+
+    const statsSummary = document.createElement("p");
+    statsSummary.textContent = `Team total: ${commits.length} commits, ${prs.length} PRs, ${reviews.length} reviews`;
+    githubSection.appendChild(statsSummary);
+
+    // Per-member GitHub activity
+    githubSection.appendChild(document.createElement("br"));
+    const perMemberHeader = document.createElement("strong");
+    perMemberHeader.textContent = "Per-Member Activity:";
+    githubSection.appendChild(perMemberHeader);
+    githubSection.appendChild(document.createElement("br"));
+    githubSection.appendChild(document.createElement("br"));
+
+    // Get team members (users in this team)
+    const teamMembers = mockUsers.filter(u => u.role === "student");
+
+    teamMembers.forEach(member => {
+      const memberActivity = getGithubActivityByUser(member.user_uuid, 24);
+      const memberDiv = document.createElement("div");
+
+      const memberHeader = document.createElement("strong");
+      memberHeader.textContent = `${member.name}:`;
+      memberDiv.appendChild(memberHeader);
+      memberDiv.appendChild(document.createElement("br"));
+
+      if (!member.github_connected) {
+        const notConnected = document.createElement("span");
+        notConnected.textContent = "  ⚠️ GitHub not connected";
+        memberDiv.appendChild(notConnected);
+      } else if (memberActivity.length === 0) {
+        const noActivity = document.createElement("span");
+        noActivity.textContent = "  No activity today";
+        memberDiv.appendChild(noActivity);
+      } else {
+        const memberCommits = memberActivity.filter(a => a.activity_type === "commit");
+        const memberPRs = memberActivity.filter(a => a.activity_type === "pull_request");
+        const memberReviews = memberActivity.filter(a => a.activity_type === "review");
+        const memberIssues = memberActivity.filter(a => a.activity_type === "issue");
+
+        const totalAdditions = memberCommits.reduce((sum, a) => sum + (a.data.additions || 0), 0);
+        const totalDeletions = memberCommits.reduce((sum, a) => sum + (a.data.deletions || 0), 0);
+
+        const activityText = document.createElement("span");
+        activityText.textContent = `  ${memberCommits.length} commits (+${totalAdditions}/-${totalDeletions} lines)`;
+        if (memberPRs.length > 0) activityText.textContent += `, ${memberPRs.length} PRs`;
+        if (memberReviews.length > 0) activityText.textContent += `, ${memberReviews.length} reviews`;
+        if (memberIssues.length > 0) activityText.textContent += `, ${memberIssues.length} issues`;
+
+        memberDiv.appendChild(activityText);
+        memberDiv.appendChild(document.createElement("br"));
+
+        // Show repos worked on
+        const repos = [...new Set(memberActivity.map(a => a.repo_name))];
+        const reposText = document.createElement("span");
+        reposText.textContent = `  Repos: ${repos.join(", ")}`;
+        memberDiv.appendChild(reposText);
+      }
+
+      memberDiv.appendChild(document.createElement("br"));
+      githubSection.appendChild(memberDiv);
+    });
+  }
+
+  dashboardContent.appendChild(githubSection);
+  dashboardContent.appendChild(document.createElement("hr"));
 
   // Filter by date
   const filterLabel = document.createElement("label");

@@ -5,7 +5,9 @@ import {
   mockTeams,
   mockStandups,
   getUserById,
-  getStandupsByTeam
+  getStandupsByTeam,
+  mockUsers,
+  getGithubStatsByTeam
 } from "./mockData.js";
 
 export function renderTADashboard(containerId) {
@@ -144,7 +146,7 @@ function renderTeamOverview(container) {
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
 
-  ["Team Name", "Avg Sentiment", "Trend", "Active Blockers", "Participation %", "Status", "Actions"].forEach(header => {
+  ["Team Name", "GitHub Org", "Commits (7d)", "PRs", "Avg Sentiment", "Blockers", "Status", "Actions"].forEach(header => {
     const th = document.createElement("th");
     th.textContent = header;
     headerRow.appendChild(th);
@@ -164,11 +166,18 @@ function renderTeamOverview(container) {
 
     const activeBlockers = teamStandups.filter(s => s.blockers && s.blockers.trim() !== "").length;
 
-    // Mock participation (in real app, would calculate based on team size)
-    const participation = teamStandups.length > 0 ? "75%" : "0%";
+    // GitHub stats
+    const githubStats = getGithubStatsByTeam(team.team_uuid, 7);
 
-    const trend = avgSentiment > 0.5 ? "↑" : avgSentiment > 0 ? "→" : "↓";
-    const status = activeBlockers > 0 ? "⚠️ Needs Attention" : avgSentiment < 0 ? "⚠️ Low Morale" : "✅ Healthy";
+    // Determine status based on both sentiment and GitHub activity
+    let status = "✅ Healthy";
+    if (activeBlockers > 0) {
+      status = "⚠️ Needs Attention";
+    } else if (githubStats.total_commits < 5) {
+      status = "⚠️ Low GitHub Activity";
+    } else if (avgSentiment < 0) {
+      status = "⚠️ Low Morale";
+    }
 
     const row = document.createElement("tr");
 
@@ -177,25 +186,30 @@ function renderTeamOverview(container) {
     nameCell.textContent = team.name;
     row.appendChild(nameCell);
 
+    // GitHub org
+    const orgCell = document.createElement("td");
+    orgCell.textContent = team.github_org || "Not linked";
+    row.appendChild(orgCell);
+
+    // Commits (7 days)
+    const commitsCell = document.createElement("td");
+    commitsCell.textContent = githubStats.total_commits;
+    row.appendChild(commitsCell);
+
+    // PRs
+    const prsCell = document.createElement("td");
+    prsCell.textContent = `${githubStats.prs_open} open, ${githubStats.prs_merged} merged`;
+    row.appendChild(prsCell);
+
     // Avg sentiment
     const sentimentCell = document.createElement("td");
     sentimentCell.textContent = avgSentiment;
     row.appendChild(sentimentCell);
 
-    // Trend
-    const trendCell = document.createElement("td");
-    trendCell.textContent = trend;
-    row.appendChild(trendCell);
-
     // Active blockers
     const blockersCell = document.createElement("td");
     blockersCell.textContent = activeBlockers;
     row.appendChild(blockersCell);
-
-    // Participation
-    const participationCell = document.createElement("td");
-    participationCell.textContent = participation;
-    row.appendChild(participationCell);
 
     // Status
     const statusCell = document.createElement("td");
@@ -229,8 +243,24 @@ function renderAtRiskStudents(container) {
   atRiskSection.appendChild(atRiskHeader);
 
   const explanation = document.createElement("p");
-  explanation.textContent = "Students detected as at-risk based on: low sentiment, unresolved blockers, or low participation";
+  explanation.textContent = "Students detected as at-risk based on: low sentiment, unresolved blockers, low GitHub activity, or GitHub not connected";
   atRiskSection.appendChild(explanation);
+
+  // GitHub connection status
+  const githubNotConnected = mockUsers.filter(u => u.role === "student" && !u.github_connected);
+  if (githubNotConnected.length > 0) {
+    const githubHeader = document.createElement("h3");
+    githubHeader.textContent = "⚠️ GitHub Not Connected";
+    atRiskSection.appendChild(githubHeader);
+
+    const githubList = document.createElement("ul");
+    githubNotConnected.forEach(user => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `${user.name} - Cannot track GitHub activity`;
+      githubList.appendChild(listItem);
+    });
+    atRiskSection.appendChild(githubList);
+  }
 
   // Mock at-risk detection
   const atRiskStudents = mockStandups.filter(s =>
