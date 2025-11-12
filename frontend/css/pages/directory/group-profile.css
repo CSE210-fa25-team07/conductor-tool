@@ -318,6 +318,15 @@ main {
   color: #2f3b52;
 }
 
+.member-name .member-link {
+  color: #1967d2;
+  text-decoration: none;
+}
+
+.member-name .member-link:hover {
+  text-decoration: underline;
+}
+
 .member-role {
   display: inline-block;
   margin-top: 0.35rem;

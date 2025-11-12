@@ -90,7 +90,14 @@ View all students and staff in the course: `http://localhost:8080/html/directory
   - The link is identified by `id="myProfileLink"` in both HTML files
   - Both pages (dashboard, user-profile, and user-directory) update their navigation on load
 - **"Class Roster" button** → navigates to user-directory.html (roster page)
-- "My Group" button links to placeholder page that doesn't exist yet (group-profile.html)
+- **"My Group" button** → navigates to the student's team profile when a membership exists (Alice → Team Alpha, Bob → IoT Innovators, etc.)
+
+### Group Profile Page
+
+- Team Alpha: `http://localhost:8080/html/directory/group-profile.html?team=team-1-uuid`
+- IoT Innovators: `http://localhost:8080/html/directory/group-profile.html?team=team-3-uuid`
+- AI Architects: `http://localhost:8080/html/directory/group-profile.html?team=team-5-uuid`
+- Every teammate name links to the corresponding user profile.
 
 ## Features You Can See
 
@@ -121,6 +128,7 @@ View all students and staff in the course: `http://localhost:8080/html/directory
 - Academic information (majors, minors, year) - for students only
 - Staff information (office location, research interests) - for staff users only
 - Team membership cards with leader badge (links to team profile pages)
+- Group profile pages surface mission, status, meeting cadence, members, milestones, and notes.
 
 ## Switching to Real API
 
@@ -144,7 +152,7 @@ When the backend is ready:
    }
    ```
 
-3. Make similar changes in `studentView.js`, `instructorView.js`, `user-profile/index.js`, and `user-directory/directoryView.js`:
+3. Make similar changes in `studentView.js`, `instructorView.js`, `user-profile/index.js`, `group-profile/index.js`, and `user-directory/directoryView.js`:
    ```javascript
    // Change from:
    import { ... } from "../../../api/directory/directoryApiMock.js";
@@ -160,6 +168,7 @@ When the backend is ready:
 
    // Update updateNavigationLinks() to use async getUserRole()
    ```
+5. Once the Auth/Login team ships the shared HTTP client (`apiClient.js`), update the real API file (`frontend/js/api/directoryApi.js`) to call that client instead of throwing a placeholder error.
 
 ## File Structure
 
@@ -172,8 +181,7 @@ frontend/
 │           └── user-profile.css       # User profile page styles
 ├── js/
 │   ├── api/
-│   │   ├── apiClient.js               # HTTP client for backend API
-│   │   ├── directoryApi.js            # Real API (for production)
+│   │   ├── directoryApi.js            # Real API stubs (swap in apiClient once ready)
 │   │   └── directory/                 # Directory-specific API files
 │   │       ├── directoryApiMock.js    # Mock API wrapper
 │   │       └── mockData.js            # Mock data
@@ -183,6 +191,9 @@ frontend/
 │           │   ├── index.js           # Main controller
 │           │   ├── studentView.js     # Student view
 │           │   └── instructorView.js  # Instructor view
+│           ├── group-profile/         # Team profile feature
+│           │   ├── index.js           # Main controller
+│           │   └── profileView.js     # Profile rendering
 │           ├── user-profile/          # User profile feature
 │           │   ├── index.js           # Main controller
 │           │   └── profileView.js     # Profile rendering
@@ -192,6 +203,7 @@ frontend/
 └── html/
     └── directory/
         ├── class-dashboard.html       # Dashboard HTML page
+        ├── group-profile.html         # Group profile HTML page
         ├── user-profile.html          # User profile HTML page
         └── user-directory.html        # User directory/roster HTML page
 ```

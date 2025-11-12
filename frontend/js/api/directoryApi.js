@@ -1,78 +1,53 @@
 /**
- * Dashboard API functions
- * Handles class dashboard data fetching for both student and instructor views
+ * Placeholder implementations for real API calls.
+ * The Auth team will provide apiClient.js + authenticated fetch helpers.
  */
 
-import { apiClient } from "./apiClient.js";
+const missingApiClientMessage = [
+  "apiClient.js is not implemented yet.",
+  "Auth/Login team owns the shared HTTP client.",
+  "Swap these stub functions with real implementations once the client is ready."
+].join(" ");
 
-/**
- * Get course overview information
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Object>} Course details with term information
- */
+function notImplemented() {
+  throw new Error(missingApiClientMessage);
+}
+
 export async function getCourseOverview(courseUuid) {
-  return apiClient.get(`/api/courses/${courseUuid}/overview`);
+  void courseUuid;
+  notImplemented();
 }
 
-/**
- * Get teaching staff and their office hours for a course
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Array>} List of staff with office hours
- */
 export async function getCourseStaff(courseUuid) {
-  return apiClient.get(`/api/courses/${courseUuid}/staff`);
+  void courseUuid;
+  notImplemented();
 }
 
-/**
- * Get enrollment statistics for a course (instructor only)
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Object>} Enrollment stats (total, active, dropped, avg grade)
- */
 export async function getEnrollmentStats(courseUuid) {
-  return apiClient.get(`/api/courses/${courseUuid}/enrollment-stats`);
+  void courseUuid;
+  notImplemented();
 }
 
-/**
- * Get recent student enrollments (instructor only)
- * @param {string} courseUuid - Course UUID
- * @param {number} limit - Number of recent enrollments to fetch (default 10)
- * @returns {Promise<Array>} List of recent enrollments
- */
 export async function getRecentEnrollments(courseUuid, limit = 10) {
-  return apiClient.get(`/api/courses/${courseUuid}/recent-enrollments?limit=${limit}`);
+  void courseUuid;
+  void limit;
+  notImplemented();
 }
 
-/**
- * Get current user's role in the course
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Object>} User role information
- */
 export async function getUserRole(courseUuid) {
-  return apiClient.get(`/api/courses/${courseUuid}/my-role`);
+  void courseUuid;
+  notImplemented();
 }
 
-/**
- * Get user profile information including teams and staff info
- * @param {string} userUuid - User UUID
- * @returns {Promise<Object>} User profile with teams and staff information
- */
 export async function getUserProfile(userUuid) {
-  return apiClient.get(`/api/users/${userUuid}/profile`);
+  void userUuid;
+  notImplemented();
 }
 
-/**
- * Get course roster with pagination and filtering
- * @param {string} courseUuid - Course UUID
- * @param {number} page - Page number (1-indexed)
- * @param {number} limit - Items per page
- * @param {string} filter - Role filter ("all", "student", "instructor", "ta")
- * @returns {Promise<Object>} Paginated roster data
- */
 export async function getCourseRoster(courseUuid, page = 1, limit = 12, filter = "all") {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-    filter: filter
-  });
-  return apiClient.get(`/api/courses/${courseUuid}/roster?${params.toString()}`);
+  void courseUuid;
+  void page;
+  void limit;
+  void filter;
+  notImplemented();
 }

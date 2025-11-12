@@ -168,7 +168,11 @@ function renderMembers(members) {
     <div class="member-card">
       <div class="member-avatar">${getInitials(member.name)}</div>
       <div>
-        <div class="member-name">${member.name || "Team Member"}</div>
+        <div class="member-name">
+          <a class="member-link" href="user-profile.html?user=${member.user_uuid}">
+            ${member.name || "Team Member"}
+          </a>
+        </div>
         ${member.role ? `<div class="member-role">${member.role}</div>` : ""}
         <div class="member-meta">
           ${member.pronouns ? `<span>Pronouns: ${member.pronouns}</span>` : ""}
