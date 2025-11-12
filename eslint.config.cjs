@@ -1,4 +1,4 @@
-/** @type {import('eslint').FlatConfig[]} */
+/** @type {import("eslint").FlatConfig[]} */
 module.exports = [
   {
     ignores: ["node_modules/"],

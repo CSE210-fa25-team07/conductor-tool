@@ -8,11 +8,9 @@ Quick reference for where to put your code.
 
 ```
 conductor-tool/
-├── frontend/           # HTML/CSS/JS (Port 8080)
+├── frontend/           # HTML/CSS/JS
 ├── backend/            # Node.js/Express (Port 8081)
-├── database/           # PostgreSQL migrations & seeds
-├── docker-compose.yml
-└── .env.example
+└── database/           # PostgreSQL migrations & seeds
 ```
 
 ---
@@ -84,11 +82,6 @@ backend/
 ├── src/
 │   ├── server.js                      # Entry point
 │   │
-│   ├── config/                        # Setup
-│   │   ├── database.js
-│   │   ├── redis.js
-│   │   └── auth.js
-│   │
 │   ├── routes/                        # HTTP routing
 │   │   ├── authRoutes.js
 │   │   ├── userRoutes.js
@@ -112,14 +105,6 @@ backend/
 │   │   ├── userRepository.js
 │   │   ├── attendanceRepository.js
 │   │   └── standupRepository.js
-│   │
-│   ├── middleware/                    # Express middleware
-│   │   ├── authMiddleware.js
-│   │   ├── rbacMiddleware.js
-│   │   └── errorHandler.js
-│   │
-│   ├── jobs/                          # Background jobs
-│   │   └── escalationJob.js
 │   │
 │   ├── sockets/                       # Socket.io
 │   │   ├── index.js
@@ -154,19 +139,23 @@ Route → Controller → Service → Repository
   └─ URL mapping + validation
 ```
 
-**Example Route:** `/backend/src/routes/standupRoutes.js`
+**Example Route:** `/backend/src/routes/authRoutes.js`
 ```javascript
 import express from 'express';
-import { standupController } from '../controllers/standupController.js';
-import { authMiddleware, rbacMiddleware } from '../middleware/index.js';
 
 const router = express.Router();
 
-router.post('/',
-  authMiddleware,
-  rbacMiddleware(['student', 'team_leader']),
-  standupController.create
-);
+router.get('/google', (req, res) => {
+  const redirectUrl =
+    'https://accounts.google.com/o/oauth2/v2/auth?' +
+    new URLSearchParams({
+      'client_id': CLIENT_ID,
+      'redirect_uri': REDIRECT_URI,
+      'response_type': 'code',
+      'scope': 'openid email profile'
+    });
+  res.redirect(redirectUrl);
+});
 
 export default router;
 ```
@@ -284,30 +273,9 @@ test('POST /api/standups creates standup', async () => {
 | HTTP route | `/backend/src/routes/` |
 | Business logic | `/backend/src/services/` |
 | Database query | `/backend/src/repositories/` |
-| Middleware | `/backend/src/middleware/` |
-| Background job | `/backend/src/jobs/` |
 | Backend unit test | `/backend/tests/unit/` |
 | Backend integration test | `/backend/tests/integration/` |
 | Database migration | `/database/migrations/` |
-
----
-
-## Setup Commands
-
-```bash
-# Copy environment variables
-cp .env.example .env
-
-# Start all containers
-docker-compose up --build
-
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
-
-# Run tests
-cd frontend && npm test
-cd backend && npm test
-```
 
 ---
 

@@ -1,14 +1,16 @@
 # Frontend
 
-VanillaJS frontend. Port 8080.
+HTML/CSS/VanillaJS frontend.
 
 ## Folders
 
-- `src/js/api/` - API calls (one file per team)
-- `src/js/pages/` - Page logic (one folder per team)
-- `src/js/components/` - Shared UI components
-- `src/js/utils/` - Helper functions
-- `src/js/__tests__/` - Tests
-- `src/css/` - Stylesheets
+- `js/api/` - API calls (one file per team)
+- `js/pages/` - Page logic (one folder per team)
+- `js/components/` - Shared UI components
+- `js/utils/` - Helper functions
+- `js/__tests__/` - Tests
+- `css/components` - Shared Stylesheets
+- `css/pages` - Team specific stylesheets
+- `html/team` - HTML for each team
 
 **Check each folder's README for details.**
