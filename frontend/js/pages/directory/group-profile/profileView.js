@@ -284,32 +284,6 @@ function renderStatusNotes(notes) {
   `;
 }
 
-function renderResourceCard(resources) {
-  if (!resources || resources.length === 0) {
-    return "";
-  }
-
-  const items = resources.map((resource) => {
-    const label = resource.label || resource.url || "Resource";
-    const target = resource.url ? `href="${resource.url}" target="_blank" rel="noopener noreferrer"` : "";
-    return `
-      <div class="resource-item">
-        <a ${target}>${label}</a>
-        ${resource.type ? `<p class="timeline-summary">${resource.type}</p>` : ""}
-      </div>
-    `;
-  }).join("");
-
-  return `
-    <div class="card">
-      <div class="section-title">Resources</div>
-      <div class="resource-list">
-        ${items}
-      </div>
-    </div>
-  `;
-}
-
 export async function renderGroupProfile(teamUuid, container) {
   try {
     container.innerHTML = "<div class=\"loading\">Loading team profile...</div>";

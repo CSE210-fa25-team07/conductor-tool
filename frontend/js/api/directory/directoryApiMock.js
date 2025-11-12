@@ -19,7 +19,7 @@ function delay(ms = 300) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} Course details with term information
  */
-export async function getCourseOverview(_courseUuid) {
+export async function getCourseOverview() {
   await delay(400);
   return mockData.courseOverview;
 }
@@ -29,7 +29,7 @@ export async function getCourseOverview(_courseUuid) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Array>} List of staff with office hours
  */
-export async function getCourseStaff(_courseUuid) {
+export async function getCourseStaff() {
   await delay(450);
   return mockData.courseStaff;
 }
@@ -39,7 +39,7 @@ export async function getCourseStaff(_courseUuid) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} Enrollment stats (total, active, dropped, avg grade)
  */
-export async function getEnrollmentStats(_courseUuid) {
+export async function getEnrollmentStats() {
   await delay(400);
   return mockData.enrollmentStats;
 }
@@ -60,7 +60,7 @@ export async function getRecentEnrollments(courseUuid, limit = 10) {
  * @param {string} _courseUuid - Course UUID
  * @returns {Promise<Object>} User role information
  */
-export async function getUserRole(_courseUuid) {
+export async function getUserRole() {
   await delay(300);
   return mockData.userRole;
 }
@@ -116,7 +116,8 @@ export async function getUserProfile(userUuid) {
  * @param {string} filter - Role filter ("all", "student", "instructor", "ta")
  * @returns {Promise<Object>} Paginated roster data with counts
  */
-export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter = "all") {
+export async function getCourseRoster(courseUuid, page = 1, limit = 12, filter = "all") {
+  void courseUuid;
   await delay(400);
 
   // Get all users from roster

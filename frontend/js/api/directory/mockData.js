@@ -686,6 +686,7 @@ export const mockData = {
   },
 
   // Course roster data for directory/roster page
+  /* eslint-disable camelcase */
   courseRoster: {
     course_name: "CSE 210 - Software Engineering",
     course_uuid: "course-123-uuid",
@@ -1446,3 +1447,4 @@ export const mockData = {
     }
   }
 };
+/* eslint-enable camelcase */
