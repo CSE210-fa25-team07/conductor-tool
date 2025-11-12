@@ -120,7 +120,7 @@ export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter 
   await delay(400);
 
   // Get all users from roster
-  let allUsers = [...mockData.courseRoster.users];
+  const allUsers = [...mockData.courseRoster.users];
 
   // Apply filter
   let filteredUsers = allUsers;
@@ -145,6 +145,7 @@ export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter 
   // Get page of users
   const pageUsers = filteredUsers.slice(startIndex, endIndex);
 
+  /* eslint-disable camelcase */
   return {
     course_name: mockData.courseRoster.course_name,
     course_uuid: mockData.courseRoster.course_uuid,
@@ -155,4 +156,5 @@ export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter 
     total_pages: totalPages,
     counts: counts
   };
+  /* eslint-enable camelcase */
 }

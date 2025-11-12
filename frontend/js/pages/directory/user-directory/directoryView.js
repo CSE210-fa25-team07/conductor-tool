@@ -6,7 +6,7 @@
 import { getCourseRoster } from "../../../api/directory/directoryApiMock.js";
 
 // State management for pagination and filtering
-let currentState = {
+const currentState = {
   courseUuid: null,
   page: 1,
   limit: 12,
@@ -151,7 +151,7 @@ function renderPagination() {
   const pages = [];
   const maxVisiblePages = 5;
   let startPage = Math.max(1, currentState.page - Math.floor(maxVisiblePages / 2));
-  let endPage = Math.min(currentState.totalPages, startPage + maxVisiblePages - 1);
+  const endPage = Math.min(currentState.totalPages, startPage + maxVisiblePages - 1);
 
   // Adjust start if we're near the end
   if (endPage - startPage < maxVisiblePages - 1) {
