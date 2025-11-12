@@ -6,8 +6,6 @@
 // USING MOCK DATA - Switch to directoryApi.js when backend is ready
 import {
   getCourseOverview,
-  getStudentGrade,
-  getStudentAssignments,
   getCourseStaff
 } from "../../../api/directory/directoryApiMock.js";
 
@@ -38,103 +36,6 @@ function renderCourseHeader(course) {
         ${course.syllabus_url ? `<a href="${course.syllabus_url}" target="_blank" class="btn btn-secondary">Syllabus</a>` : ""}
         ${course.canvas_url ? `<a href="${course.canvas_url}" target="_blank" class="btn btn-secondary">Canvas</a>` : ""}
       </div>
-    </div>
-  `;
-}
-
-/**
- * Render student's current grade
- * @param {Object} grade - Grade data
- * @returns {string} HTML string
- */
-function renderCurrentGrade(grade) {
-  if (!grade || grade.current_percentage === null) {
-    return `
-      <div class="grade-card">
-        <h2>Your Grade</h2>
-        <p class="no-grade">No grades posted yet</p>
-      </div>
-    `;
-  }
-
-  const percentage = parseFloat(grade.current_percentage).toFixed(2);
-  const letterGrade = grade.current_letter_grade || "N/A";
-
-  return `
-    <div class="grade-card">
-      <h2>Your Grade</h2>
-      <div class="grade-display">
-        <div class="grade-percentage">${percentage}%</div>
-        <div class="grade-letter">${letterGrade}</div>
-      </div>
-    </div>
-  `;
-}
-
-/**
- * Render assignments table
- * @param {Array} assignments - List of assignments
- * @returns {string} HTML string
- */
-function renderAssignments(assignments) {
-  if (!assignments || assignments.length === 0) {
-    return `
-      <div class="assignments-section">
-        <h2>Assignments</h2>
-        <p class="no-data">No assignments yet</p>
-      </div>
-    `;
-  }
-
-  const assignmentRows = assignments.map(assignment => {
-    const dueDate = assignment.due_date
-      ? new Date(assignment.due_date).toLocaleDateString()
-      : "No due date";
-
-    const points = assignment.points_earned !== null
-      ? `${assignment.points_earned} / ${assignment.points_possible}`
-      : `- / ${assignment.points_possible}`;
-
-    const percentage = assignment.percentage !== null
-      ? `${parseFloat(assignment.percentage).toFixed(1)}%`
-      : "-";
-
-    const status = assignment.graded_at
-      ? "Graded"
-      : assignment.submitted_at
-        ? "Submitted"
-        : "Not Submitted";
-
-    return `
-      <tr>
-        <td>${assignment.assignment_name}</td>
-        <td><span class="category-badge">${assignment.assignment_category}</span></td>
-        <td>${dueDate}</td>
-        <td>${points}</td>
-        <td>${percentage}</td>
-        <td><span class="status-badge status-${status.toLowerCase().replace(" ", "-")}">${status}</span></td>
-      </tr>
-    `;
-  }).join("");
-
-  return `
-    <div class="assignments-section">
-      <h2>Assignments</h2>
-      <table class="assignments-table">
-        <thead>
-          <tr>
-            <th>Assignment</th>
-            <th>Category</th>
-            <th>Due Date</th>
-            <th>Points</th>
-            <th>Percentage</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${assignmentRows}
-        </tbody>
-      </table>
     </div>
   `;
 }
@@ -226,10 +127,8 @@ export async function renderStudentDashboard(courseUuid, container) {
     container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
     // Fetch all data in parallel
-    const [courseData, gradeData, assignmentsData, staffData] = await Promise.all([
+    const [courseData, staffData] = await Promise.all([
       getCourseOverview(courseUuid),
-      getStudentGrade(courseUuid),
-      getStudentAssignments(courseUuid),
       getCourseStaff(courseUuid)
     ]);
 
@@ -240,12 +139,7 @@ export async function renderStudentDashboard(courseUuid, container) {
 
         <div class="dashboard-main">
           <div class="left-column">
-            ${renderCurrentGrade(gradeData)}
             ${renderNavigationButtons(courseUuid)}
-          </div>
-
-          <div class="right-column">
-            ${renderAssignments(assignmentsData)}
           </div>
         </div>
 
