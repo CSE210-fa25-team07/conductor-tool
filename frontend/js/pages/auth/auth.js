@@ -48,7 +48,6 @@ function handleGoogleLogin() {
 async function checkUserSession() {
     try {
         // Try to get current session user info from backend
-        // You may need to add a /auth/session endpoint to get current user
         const response = await fetch("/auth/session", {
             credentials: "include" // Include session cookie
         });
@@ -56,6 +55,15 @@ async function checkUserSession() {
         if (response.ok) {
             const data = await response.json();
             if (data.user && data.user.email) {
+                // Check if UCSD email
+                const isUCSDEmail = data.user.email.endsWith("@ucsd.edu");
+                
+                if (!isUCSDEmail) {
+                    // Redirect to request access page if not UCSD email
+                    window.location.href = "/auth/request-access";
+                    return;
+                }
+                
                 displayUserInfo(data.user);
             }
         }
@@ -90,26 +98,25 @@ async function handleVerification() {
     }
     
     console.log("Verifying code:", code);
+    
     try {
-        // TODO: Implement actual verification code check with backend
-        // For now, accept any code and redirect to dashboard
+        // Call backend to verify code and create user
+        const response = await fetch("/auth/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ code })
+        });
         
-        // In a real implementation, you would:
-        // const response = await fetch("http://localhost:8081/auth/verify", {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     credentials: "include",
-        //     body: JSON.stringify({ code })
-        // });
+        const data = await response.json();
         
-        // if (response.ok) {
-        //     window.location.href = "http://localhost:8081/dashboard";
-        // } else {
-        //     showMessage("Invalid verification code");
-        // }
-        
-        // For now, just redirect to dashboard
-        window.location.href = "/dashboard";
+        if (response.ok && data.success) {
+            // Verification successful, redirect to dashboard
+            window.location.href = "/dashboard";
+        } else {
+            // Verification failed
+            showMessage(data.error || "Invalid verification code");
+        }
         
     } catch (error) {
         console.error("Error during verification:", error);

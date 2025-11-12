@@ -21,8 +21,12 @@ router.get("/verification", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../frontend/html/auth/verification.html"));
 });
 
+router.get("/request-access", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-access.html"));
+});
+
 /**
- * Initiates Google OAuth login by redirecting the user to Google’s OAuth consent screen to authenticate.
+ * Initiates Google OAuth login by redirecting the user to Google's OAuth consent screen to authenticate.
  *
  * @name GET /auth/google
  */
@@ -78,66 +82,37 @@ router.get("/google/callback", async (req, res) => {
     });
     const profile = await profileRes.json();
 
-    // Store or update user in database
+    // Store user in session first
+    req.session.user = profile;
+
+    // Check if user exists in database
     try {
       const existingUser = await userService.getUserByEmail(profile.email);
-      if (!existingUser) {
-        // Extract first and last name from profile
-        const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
-        const firstName = profile.given_name || nameParts[0] || "Unknown";
-        const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
-        
-        await userService.addUser({
-          firstName,
-          lastName,
-          email: profile.email
-        });
+      
+      if (existingUser) {
+        // Case 1: User already exists -> redirect to dashboard
+        return res.redirect("/dashboard");
       }
+      
+      // User doesn't exist - check if UCSD email
+      const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
+      
+      if (isUCSDEmail) {
+        // Case 2: New UCSD user -> redirect to verification page
+        // They will be added to DB after verification
+        return res.redirect("/auth/verification");
+      } else {
+        // Case 3: Non-UCSD email -> redirect to request form (no DB entry)
+        return res.redirect("/auth/request-access");
+      }
+      
     } catch (error) {
-      console.error("Error storing user:", error.message);
-      // Continue even if user storage fails
+      console.error("Error processing user:", error.message);
+      return res.redirect("/");
     }
-
-    // Store user in session
-    req.session.user = profile;
-    res.redirect("/auth/verification");
+    
   } catch {
     res.redirect("/");
-  }
-});
-
-/**
- * Create a new user (signup endpoint)
- * 
- * @name POST /auth/signup
- * @param {Object} req.body - User data with firstName, lastName, and email
- * @returns {Object} 201 - Created user object
- * @returns {Object} 400 - Validation error
- * @returns {Object} 409 - User already exists
- */
-router.post("/signup", express.json(), async (req, res) => {
-  try {
-    const { firstName, lastName, email } = req.body;
-    
-    const newUser = await userService.addUser({ firstName, lastName, email });
-    
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      user: newUser
-    });
-  } catch (error) {
-    if (error.message.includes("already exists")) {
-      return res.status(409).json({
-        success: false,
-        error: error.message
-      });
-    }
-    
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
   }
 });
 
@@ -228,6 +203,71 @@ router.get("/session", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Verify user and create account
+ * 
+ * @name POST /auth/verify
+ * @param {string} req.body.code - Verification code
+ * @returns {Object} 200 - Success, user created
+ * @returns {Object} 400 - Invalid code or error
+ * @returns {Object} 401 - Not authenticated
+ */
+router.post("/verify", express.json(), async (req, res) => {
+  try {
+    // Check if user is logged in
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    const { code } = req.body;
+    const profile = req.session.user;
+
+    // TODO: Implement actual verification code validation
+    // For now, accept any non-empty code
+    if (!code || code.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Verification code is required"
+      });
+    }
+
+    // Check if user already exists in database
+    const existingUser = await userService.getUserByEmail(profile.email);
+    if (existingUser) {
+      return res.status(200).json({
+        success: true,
+        message: "User already exists",
+        user: existingUser
+      });
+    }
+
+    // Create user in database
+    const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
+    const firstName = profile.given_name || nameParts[0] || "Unknown";
+    const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
+
+    const newUser = await userService.addUser({
+      firstName,
+      lastName,
+      email: profile.email
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User verified and created successfully",
+      user: newUser
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
       error: error.message
     });
