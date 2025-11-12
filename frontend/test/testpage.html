@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Analytics - Demo Page</title>
+  <link rel="stylesheet" href="../css/pages/AnalyticsCard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .demo-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .demo-header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .demo-header h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    .demo-header p {
+      margin: 0;
+      color: #666;
+      font-size: 16px;
+    }
+    .demo-section {
+      margin-bottom: 40px;
+    }
+    .demo-section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      padding-left: 12px;
+      border-left: 4px solid #4CAF50;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+      gap: 20px;
+    }
+    .demo-full-width {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 768px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Demo Header -->
+    <div class="demo-header">
+      <h1>📊 Attendance Analytics Dashboard</h1>
+      <p>Demo page showing all three analytics views and meeting list component</p>
+    </div>
+
+    <!-- Class Analytics Section -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">Class Level View (Professor/TA)</h2>
+      <div id="classAnalyticsContainer"></div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="demo-grid">
+      <!-- Group Analytics Section -->
+      <div class="demo-section">
+        <h2 class="demo-section-title">Group Profile View</h2>
+        <div id="groupAnalyticsContainer"></div>
+      </div>
+
+      <!-- User Analytics Section -->
+      <div class="demo-section">
+        <h2 class="demo-section-title">User Profile View</h2>
+        <div id="userAnalyticsContainer"></div>
+      </div>
+    </div>
+
+
+  <!-- Include all JavaScript modules -->
+  <script src="../js/api/analyticsapi.js"></script>
+  <script src="../js/components/Chart.js"></script>
+  <script src="../js/pages/attendance/classindex.js"></script>
+  <script src="../js/pages/attendance/groupindex.js"></script>
+  <script src="../js/pages/attendance/userindex.js"></script>
+  <!-- <script src="js/pages/listindex.js"></script> -->
+
+  <script>
+    // Initialize all components when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load Class Analytics
+      fetch('../html/attendance/classanalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('classAnalyticsContainer');
+          container.innerHTML = html;
+          // Reinitialize the chart after loading
+          if (typeof initClassAnalytics === 'function') {
+            initClassAnalytics();
+          }
+        });
+
+      // Load Group Analytics
+      fetch('../html/attendance/groupanalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('groupAnalyticsContainer');
+          container.innerHTML = html;
+          if (typeof initGroupAnalytics === 'function') {
+            initGroupAnalytics();
+          }
+        });
+
+      // Load User Analytics
+      fetch('../html/attendance/useranalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('userAnalyticsContainer');
+          container.innerHTML = html;
+          if (typeof initUserAnalytics === 'function') {
+            initUserAnalytics();
+          }
+        });
+
+      // Load Meeting List
+      // fetch('html/meetinglist.html')
+      //   .then(response => response.text())
+      //   .then(html => {
+      //     const container = document.getElementById('meetingListContainer');
+      //     container.innerHTML = html;
+      //     if (typeof initMeetingList === 'function') {
+      //       initMeetingList();
+      //     }
+      //   });
+    });
+  </script>
+</body>
+</html>

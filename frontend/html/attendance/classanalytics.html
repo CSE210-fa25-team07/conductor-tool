@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Analytics</title>
+  <link rel="stylesheet" href="../../css/pages/AnalyticsCard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Class Analytics Card -->
+  <div class="analytics-card" id="classAnalyticsCard">
+    <!-- Header -->
+    <div class="analytics-card-header">
+      <div>
+        <h2 class="analytics-card-title">Class Attendance Analytics</h2>
+        <p class="analytics-card-subtitle">CS 101 - Fall 2025</p>
+      </div>
+      <div class="analytics-filters">
+        <div class="filter-group">
+          <label class="filter-label" for="meetingTypeFilter">Meeting Type:</label>
+          <select id="meetingTypeFilter" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="lecture">Lecture</option>
+            <option value="office-hours">Office Hours</option>
+            <option value="ta-checkin">TA Check-ins</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="analytics-chart-container">
+      <h3 style="margin-top: 0; color: #333;">Attendance Trend Over Time</h3>
+      <div class="chart-wrapper">
+        <canvas id="classAttendanceChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Students at Risk Section -->
+    <div class="students-at-risk">
+      <div class="students-at-risk-header">
+        <h3 class="students-at-risk-title">Students At Risk</h3>
+        <div class="threshold-setting">
+          <label class="threshold-label">Threshold:</label>
+          <input 
+            type="number" 
+            id="thresholdInput" 
+            class="threshold-input" 
+            min="0" 
+            max="100" 
+            value="75"
+            step="5"
+          />
+          <span class="threshold-label">%</span>
+        </div>
+      </div>
+      <ul class="student-risk-list" id="studentRiskList">
+        <!-- Students below threshold will be populated here -->
+      </ul>
+      <div id="noRiskStudents" style="display: none;">
+        <p>✓ No students below the threshold</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/pages/classindex.js"></script>
+</body>
+</html>

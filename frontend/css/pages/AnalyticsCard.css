@@ -1,0 +1,492 @@
+/* =============================================
+   ATTENDANCE ANALYTICS - UNIFIED CARD STYLES
+   ============================================= */
+
+/* Card Container */
+.analytics-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.analytics-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header */
+.analytics-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.analytics-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.analytics-card-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Filter Section */
+.analytics-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.filter-select:hover {
+  border-color: #4CAF50;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Stats Section */
+.analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.stat-card.success {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.stat-card.warning {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.stat-card.danger {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+}
+
+.stat-card.info {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stat-description {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+/* Chart Container */
+.analytics-chart-container {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 350px;
+  cursor: pointer;
+}
+
+/* Students at Risk Section (Class View) */
+.students-at-risk {
+  margin-top: 24px;
+  padding: 0;
+  background: #fefefe;
+  border-left: 4px solid #fff3d0;
+  border-radius: 8px;
+  height: 200px; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.students-at-risk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #fff3cd;
+  border-bottom: 2px solid #ffe69c;
+  flex-shrink: 0; 
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.students-at-risk-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #856404;
+  margin: 0;
+}
+
+.threshold-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.threshold-input {
+  width: 80px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.threshold-label {
+  font-size: 14px;
+  color: #856404;
+  font-weight: 500;
+}
+
+.student-risk-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 12px 16px;
+  list-style-type: none;
+}
+
+#noRiskStudents {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  overflow-y: auto;
+  flex: 1;
+}
+.student-risk-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.student-risk-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.student-risk-list::-webkit-scrollbar-thumb {
+  background: #ffc107;
+  border-radius: 4px;
+}
+
+.student-risk-list::-webkit-scrollbar-thumb:hover {
+  background: #ffb300;
+}
+
+#noRiskStudents {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Scrollbar styling for student risk list */
+
+.student-risk-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #ffe69c;
+  transition: all 0.3s ease;
+}
+
+.student-risk-item:hover {
+  transform: translateX(4px);
+  border-color: #ffc107;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+.student-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.student-attendance-rate {
+  font-weight: 600;
+  color: #d32f2f;
+}
+
+/* Team Member Section (Group View - Future) */
+.team-members {
+  margin-top: 24px;
+}
+
+.team-members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.team-members-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.expand-icon {
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.team-members-list {
+  display: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.team-members-list.show {
+  display: block;
+}
+
+.team-member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling for modal body */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Loading State */
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analytics-card {
+    padding: 16px;
+  }
+
+  .analytics-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .analytics-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-wrapper {
+    height: 250px;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Analytics</title>
+  <link rel="stylesheet" href="../../css/pages/AnalyticsCard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- User Analytics Card -->
+  <div class="analytics-card" id="userAnalyticsCard">
+    <!-- Header -->
+    <div class="analytics-card-header">
+      <div>
+        <h2 class="analytics-card-title">My Attendance Analytics</h2>
+        <p class="analytics-card-subtitle" id="userName">John Doe</p>
+      </div>
+    </div>
+
+
+    <!-- Chart Container -->
+    <div class="analytics-chart-container">
+      <h3 style="margin-top: 0; color: #333;">Attendance by Meeting Type</h3>
+      <p style="color: #666; font-size: 14px; margin-top: -8px; margin-bottom: 16px;">
+        Click on a bar to view detailed meeting list
+      </p>
+      <div class="chart-wrapper" id="userChartWrapper">
+        <canvas id="userAttendanceChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Meeting List -->
+  <div class="modal-overlay" id="meetingListModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Meeting List</h3>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body" id="modalMeetingList">
+        <!-- Meeting list will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/pages/userindex.js"></script>
+</body>
+</html>

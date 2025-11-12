@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Analytics</title>
+  <link rel="stylesheet" href="../../css/pages/AnalyticsCard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Group Analytics Card -->
+  <div class="analytics-card" id="groupAnalyticsCard">
+    <!-- Header -->
+    <div class="analytics-card-header">
+      <div>
+        <h2 class="analytics-card-title">Team Attendance Analytics</h2>
+        <p class="analytics-card-subtitle" id="teamName">Team Alpha</p>
+      </div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="analytics-chart-container">
+      <h3 style="margin-top: 0; color: #333;">Team Attendance Trend</h3>
+      <div class="chart-wrapper">
+        <canvas id="groupAttendanceChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Team Members Section (Future Feature) -->
+    <div class="team-members" style="display: none;">
+      <div class="team-members-header" id="teamMembersToggle">
+        <h3 class="team-members-title">Team Members</h3>
+        <span class="expand-icon">▼</span>
+      </div>
+      <ul class="team-members-list" id="teamMembersList">
+        <!-- Team members will be populated here -->
+      </ul>
+    </div>
+  </div>
+
+  <script src="../js/pages/groupindex.js"></script>
+</body>
+</html>
