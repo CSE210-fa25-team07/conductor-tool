@@ -20,3 +20,14 @@ input[type=text], input[type=date], input[type=time], textarea, select { width: 
 video { width:240px; height:180px; background:#000; border-radius:4px; }
 .code-display { font-weight:600; font-size:1.1em; margin-top:8px; }
 .attendance-result { margin-top:8px; color:green; }
+
+/* Small toast for save/confirm feedback */
+.toast { position: fixed; right: 16px; bottom: 16px; background: rgba(0,0,0,0.85); color: white; padding: 8px 12px; border-radius: 6px; z-index: 50; display: inline-block; }
+.toast.hidden { display: none; }
+
+.btn { display:inline-block; padding:6px 10px; border-radius:6px; background:#0078d7; color:#fff; text-decoration:none; border:none; cursor:pointer; }
+.btn-danger { background:#e53e3e; }
+.modal-header h3 { font-size:1.1rem; }
+
+.desc { color:#334155; margin-top:6px; font-size:0.95em; }
+

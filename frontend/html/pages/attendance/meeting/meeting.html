@@ -13,6 +13,19 @@
   <main class="meeting-page">
     <h1>Create / Manage Meetings</h1>
 
+    <!-- About view: shows when opening an existing meeting (read-only) -->
+    <section class="meeting-about" style="display:none;">
+      <h2 id="aboutTitle">About the meeting</h2>
+      <div id="aboutMeta" class="meta muted"></div>
+      <div id="aboutDescription" class="desc"></div>
+      <h4>Invitees</h4>
+      <ul id="aboutInvitees" class="selected-invitees"></ul>
+      <div class="view-controls" style="margin-top:8px;">
+        <button type="button" id="editMeeting">Edit meeting</button>
+        <button type="button" id="recordAttendance">Record attendance</button>
+      </div>
+    </section>
+
     <section class="meeting-form">
       <h2>New / Edit Meeting</h2>
       <form id="meetingForm">
@@ -23,11 +36,11 @@
 
         <label>Type
           <select id="type">
-            <option>Lecture</option>
-            <option>Discussion</option>
-            <option>Office Hours</option>
-            <option>TA Check-In</option>
-            <option>Team Meeting</option>
+            <option value="lecture">Lecture</option>
+            <option value="group">Discussion</option>
+            <option value="office">Office Hours</option>
+            <option value="ta">TA Check-In</option>
+            <option value="group">Team Meeting</option>
           </select>
         </label>
 
@@ -67,13 +80,11 @@
       </form>
     </section>
 
-    <section class="meeting-list">
-      <h2>Meetings</h2>
-      <ul id="meetings"></ul>
-    </section>
+    <!-- meetings list intentionally removed from the editor page; meeting_list.html contains the full list -->
 
-    <section class="attendance">
+    <section id="attendanceSection" class="attendance" style="display:none;">
       <h2>Attendance (Owner view & student check-in)</h2>
+      <div id="attendanceNotice" class="muted">Attendance controls are available when viewing a meeting. Click "Record attendance" to reveal check-in tools.</div>
       <div class="owner-controls">
         <label>Pick meeting
           <select id="meetingPicker"></select>
@@ -102,6 +113,8 @@
       </div>
     </section>
   </main>
+
+  <div id="toast" class="toast hidden" aria-live="polite"></div>
 
   <script type="module" src="../../../../js/pages/attendance/meeting/meeting.js"></script>
 </body>
