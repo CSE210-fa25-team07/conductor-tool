@@ -1,0 +1,109 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Create Meeting</title>
+		<link rel="stylesheet" href="../../../../css/components/meeting.css" />
+	<!-- QR code generator and scanner (CDN) -->
+	<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
+</head>
+<body>
+	<main class="meeting-page">
+		<h1>Create / Manage Meetings</h1>
+
+		<section class="meeting-form">
+			<h2>New / Edit Meeting</h2>
+			<form id="meetingForm">
+				<input type="hidden" id="meetingId" />
+				<label>Title
+					<input id="title" type="text" required />
+				</label>
+
+				<label>Type
+					<select id="type">
+						<option>Lecture</option>
+						<option>Discussion</option>
+						<option>Office Hours</option>
+						<option>TA Check-In</option>
+						<option>Team Meeting</option>
+					</select>
+				</label>
+
+				<label>Date
+					<input id="date" type="date" required />
+				</label>
+				<label>Time
+					<input id="time" type="time" required />
+				</label>
+
+				<label>Description
+					<textarea id="description" rows="3"></textarea>
+				</label>
+
+				<div class="invitees">
+					<h3>Invitees</h3>
+					<div class="invite-controls">
+						<input id="studentSearch" placeholder="Search students by name" />
+						<button type="button" id="addBySearch">Add</button>
+						<select id="teamSelect">
+							<option value="">--Pick team--</option>
+						</select>
+						<button type="button" id="addTeam">Add Team</button>
+						<button type="button" id="addAll">Add All Students</button>
+					</div>
+
+					<ul id="studentResults" class="student-results"></ul>
+
+					<h4>Selected Invitees</h4>
+					<ul id="selectedInvitees" class="selected-invitees"></ul>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" id="saveMeeting">Save Meeting</button>
+					<button type="button" id="cancelEdit">Cancel</button>
+				</div>
+			</form>
+		</section>
+
+		<section class="meeting-list">
+			<h2>Meetings</h2>
+			<ul id="meetings"></ul>
+		</section>
+
+		<section class="attendance">
+			<h2>Attendance (Owner view & student check-in)</h2>
+			<div class="owner-controls">
+				<label>Pick meeting
+					<select id="meetingPicker"></select>
+				</label>
+				<button id="generateCodes">Generate QR & Code</button>
+				<div id="codeDisplay" class="code-display" aria-live="polite"></div>
+				<div id="qrcode"></div>
+			</div>
+
+			<div class="student-checkin">
+				<h3>Student check-in</h3>
+				<div class="scanner">
+					<video id="video" muted playsinline></video>
+					<button id="startCamera">Start Camera</button>
+					<button id="stopCamera">Stop Camera</button>
+				</div>
+
+				<div class="manual-code">
+					<label>Enter code
+						<input id="attendanceCode" />
+					</label>
+					<button id="submitCode">Submit</button>
+				</div>
+
+				<div id="attendanceResult" class="attendance-result"></div>
+			</div>
+		</section>
+	</main>
+
+		<script type="module" src="./meeting.js"></script>
+</body>
+</html>
