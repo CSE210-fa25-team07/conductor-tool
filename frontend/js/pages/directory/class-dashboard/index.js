@@ -72,11 +72,9 @@ async function initDashboard() {
     const isInstructor = roleData.role === "instructor" || roleData.role === "ta";
 
     if (isInstructor) {
-      // Render instructor view
       await renderInstructorDashboard(courseUuid, container);
     } else {
-      // Render student view
-      await renderStudentDashboard(courseUuid, container);
+      await renderStudentDashboard(courseUuid, container, roleData);
     }
 
   } catch (error) {

@@ -158,3 +158,103 @@ export async function getCourseRoster(_courseUuid, page = 1, limit = 12, filter 
   };
   /* eslint-enable camelcase */
 }
+
+/**
+ * Get detailed team profile information
+ * @param {string} teamUuid - Team UUID
+ * @returns {Promise<Object>} Team profile including members and status
+ */
+export async function getTeamProfile(teamUuid) {
+  await delay(420);
+
+  if (mockData.teamProfiles && mockData.teamProfiles[teamUuid]) {
+    return mockData.teamProfiles[teamUuid];
+  }
+
+  // Derive basic information from user profiles if explicit profile is missing
+  const derivedMembers = [];
+  let derivedTeamInfo = null;
+
+  Object.keys(mockData)
+    .filter((key) => key.startsWith("userProfile"))
+    .forEach((key) => {
+      const profile = mockData[key];
+      if (!profile || !profile.teams) {
+        return;
+      }
+
+      const membership = profile.teams.find((team) => team.team_uuid === teamUuid);
+      if (!membership) {
+        return;
+      }
+
+      if (!derivedTeamInfo) {
+        derivedTeamInfo = {
+          team_uuid: membership.team_uuid,
+          team_name: membership.team_name,
+          course_uuid: membership.course_uuid,
+          course_name: membership.course_name,
+          project_name: membership.project_name,
+          mission: "Team details coming soon.",
+          summary: "This team has not added an overview yet.",
+          repo_url: null,
+          docs_url: null,
+          chat_url: null,
+          status_health: "Unknown",
+          status_summary: "No status updates available.",
+          status_updated: null,
+          tags: []
+        };
+      }
+
+      derivedMembers.push({
+        user_uuid: profile.user.user_uuid,
+        name: `${profile.user.first_name} ${profile.user.last_name}`,
+        role: membership.is_team_leader ? "Team Leader" : "Contributor",
+        responsibilities: null,
+        pronouns: profile.user.pronouns,
+        email: profile.user.email,
+        github: profile.user.github_username
+      });
+    });
+
+  if (derivedTeamInfo) {
+    return {
+      team_info: derivedTeamInfo,
+      metrics: {},
+      meeting_schedule: [],
+      members: derivedMembers,
+      recent_updates: [],
+      upcoming_milestones: [],
+      status_notes: [],
+      resources: []
+    };
+  }
+
+  // Final fallback if no data found at all
+  return {
+    team_info: {
+      team_uuid: teamUuid,
+      team_name: "Project Team",
+      course_uuid: null,
+      course_name: "Unknown Course",
+      project_name: null,
+      mission: "Team details have not been configured yet.",
+      summary: "Once this team is set up, their overview and members will appear here.",
+      repo_url: null,
+      docs_url: null,
+      chat_url: null,
+      status_health: "Unknown",
+      status_summary: "No data available.",
+      status_updated: null,
+      tags: []
+    },
+    metrics: {},
+    meeting_schedule: [],
+    members: [],
+    recent_updates: [],
+    upcoming_milestones: [],
+    status_notes: [],
+    resources: []
+  };
+}

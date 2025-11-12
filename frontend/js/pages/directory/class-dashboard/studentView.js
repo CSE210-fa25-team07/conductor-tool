@@ -6,8 +6,10 @@
 // USING MOCK DATA - Switch to directoryApi.js when backend is ready
 import {
   getCourseOverview,
-  getCourseStaff
+  getCourseStaff,
+  getUserProfile
 } from "../../../api/directory/directoryApiMock.js";
+import { mockData } from "../../../api/directory/mockData.js";
 
 /**
  * Render course information header
@@ -97,18 +99,42 @@ function renderStaff(staff) {
  * @param {string} courseUuid - Course UUID
  * @returns {string} HTML string
  */
-function renderNavigationButtons(courseUuid) {
+function renderNavigationButtons(courseUuid, options = {}) {
+  const userUuid = options.userUuid || "student-1-uuid";
+  const teamLink = options.teamLink || null;
+  const teamName = options.teamName || null;
+
+  const rosterLink = `user-directory.html?course=${courseUuid}`;
+  const profileLink = `user-profile.html?user=${userUuid}`;
+
+  const groupButton = teamLink
+    ? `
+      <a href="${teamLink}" class="nav-btn">
+        <span class="icon">🔧</span>
+        <span class="label">
+          My Group
+          ${teamName ? `<small>${teamName}</small>` : ""}
+        </span>
+      </a>
+    `
+    : `
+      <div class="nav-btn nav-btn--disabled" role="button" aria-disabled="true">
+        <span class="icon">🔧</span>
+        <span class="label">
+          My Group
+          <span class="nav-helper">Join a team to unlock this link</span>
+        </span>
+      </div>
+    `;
+
   return `
     <div class="dashboard-navigation">
-      <a href="user-directory.html?course=${courseUuid}" class="nav-btn">
+      <a href="${rosterLink}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
-      <a href="group-profile.html?team=team-1-uuid" class="nav-btn">
-        <span class="icon">🔧</span>
-        <span class="label">My Group</span>
-      </a>
-      <a href="user-profile.html?user=student-1-uuid" class="nav-btn">
+      ${groupButton}
+      <a href="${profileLink}" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
       </a>
@@ -121,7 +147,7 @@ function renderNavigationButtons(courseUuid) {
  * @param {string} courseUuid - Course UUID
  * @param {HTMLElement} container - Container element to render into
  */
-export async function renderStudentDashboard(courseUuid, container) {
+export async function renderStudentDashboard(courseUuid, container, roleData = null) {
   try {
     // Show loading state
     container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
@@ -132,13 +158,47 @@ export async function renderStudentDashboard(courseUuid, container) {
       getCourseStaff(courseUuid)
     ]);
 
+    // Resolve current user/team information for navigation
+    let teamLink = null;
+    let teamName = null;
+    let userUuid = roleData?.user_uuid || mockData.userRole.user_uuid || "student-1-uuid";
+
+    if (userUuid) {
+      try {
+        const userProfile = await getUserProfile(userUuid);
+        const teams = userProfile.teams || [];
+        const canonicalCourseUuid = courseData.course_uuid || courseUuid;
+
+        let teamMembership = teams.find((team) => team.course_uuid === canonicalCourseUuid);
+
+        if (!teamMembership) {
+          teamMembership = teams.find((team) => team.course_uuid === courseUuid);
+        }
+
+        if (!teamMembership && courseUuid && courseUuid.startsWith("test-")) {
+          teamMembership = teams.find((team) => team.course_uuid === canonicalCourseUuid);
+        }
+
+        if (!teamMembership && teams.length > 0) {
+          teamMembership = teams.find((team) => team.course_uuid === canonicalCourseUuid) || teams[0];
+        }
+
+        if (teamMembership) {
+          teamLink = `group-profile.html?team=${teamMembership.team_uuid}`;
+          teamName = teamMembership.team_name;
+        }
+      } catch (profileError) {
+        console.warn("Unable to load user profile for navigation", profileError);
+      }
+    }
+
     // Render the complete dashboard
     container.innerHTML = `
       <div class="student-dashboard">
         ${renderCourseHeader(courseData)}
 
         <div class="student-navigation-section">
-          ${renderNavigationButtons(courseUuid)}
+          ${renderNavigationButtons(courseUuid, { teamLink, teamName, userUuid })}
         </div>
 
         ${renderStaff(staffData)}

@@ -856,5 +856,593 @@ export const mockData = {
         office_location: "CSE B260"
       }
     ]
+  },
+
+  teamProfiles: {
+    "team-1-uuid": {
+      team_info: {
+        team_uuid: "team-1-uuid",
+        team_name: "Team Alpha",
+        course_uuid: "course-123-uuid",
+        course_name: "CSE 210 - Software Engineering",
+        project_name: "TaskMaster Pro",
+        mission: "Automate weekly task planning for large student project teams.",
+        summary: "Building a collaborative planning dashboard that syncs sprint notes, standups, and grading checkpoints in one surface.",
+        repo_url: "https://github.com/conductor-tool/team-alpha",
+        docs_url: "https://docs.example.com/team-alpha",
+        chat_url: "https://chat.example.com/team-alpha",
+        status_health: "On Track",
+        status_summary: "Velocity increased 10% after adding backlog grooming. Finalizing integration tests.",
+        status_updated: "2024-11-10",
+        tags: ["Productivity", "Full Stack", "Accessibility"]
+      },
+      metrics: {
+        current_sprint: "Sprint 4",
+        story_points_completed: 26,
+        velocity: 28,
+        bug_count: 2
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-1-meeting-1",
+          title: "Sprint Planning",
+          schedule: "Mondays • 6:00 PM • Zoom"
+        },
+        {
+          meeting_uuid: "team-1-meeting-2",
+          title: "Design Sync",
+          schedule: "Wednesdays • 4:30 PM • Jacobs 2315"
+        },
+        {
+          meeting_uuid: "team-1-meeting-3",
+          title: "Office Hours",
+          schedule: "Fridays • 2:00 PM • CSE Basement"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-1-uuid",
+          name: "Alice Williams",
+          role: "Team Lead",
+          responsibilities: "Product direction, sprint facilitation, frontend architecture",
+          pronouns: "she/her",
+          email: "awilliams@ucsd.edu",
+          github: "awilliams42"
+        },
+        {
+          user_uuid: "student-6-uuid",
+          name: "Frank Chen",
+          role: "Backend Engineer",
+          responsibilities: "Task ingestion service, database schema, CI workflows",
+          pronouns: "he/him",
+          email: "fchen@ucsd.edu",
+          github: "frank-chen"
+        },
+        {
+          user_uuid: "student-7-uuid",
+          name: "Grace Kim",
+          role: "UX Designer",
+          responsibilities: "Interaction design, Figma prototypes, accessibility review",
+          pronouns: "she/her",
+          email: "gkim@ucsd.edu",
+          github: "grace-k"
+        },
+        {
+          user_uuid: "student-8-uuid",
+          name: "Henry Patel",
+          role: "QA & Release Manager",
+          responsibilities: "Regression suites, release notes, triage of customer bugs",
+          pronouns: "he/him",
+          email: "hpatel@ucsd.edu",
+          github: "hpatel-dev"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Completed usability study",
+          date: "2024-11-09",
+          summary: "Ran 5 moderated sessions; action items created for sprint 4 backlog."
+        },
+        {
+          title: "Integrated calendar sync",
+          date: "2024-11-06",
+          summary: "Course-wide calendar now mirrors sprint deadlines automatically."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "Sprint 4 Demo",
+          due_date: "2024-11-18",
+          status: "Scheduled"
+        },
+        {
+          title: "TA feedback incorporation",
+          due_date: "2024-11-20",
+          status: "In progress"
+        }
+      ],
+      status_notes: [
+        {
+          author: "Alice Williams",
+          date: "2024-11-08",
+          sentiment: "positive",
+          note: "Team has solid test coverage; only dependency is analytics API credentials."
+        },
+        {
+          author: "Grace Kim",
+          date: "2024-11-07",
+          sentiment: "neutral",
+          note: "Need clearer copy for capacity planning widget; scheduled design clinic."
+        }
+      ],
+      resources: [
+        {
+          label: "Design Figma",
+          url: "https://figma.com/team-alpha",
+          type: "design"
+        },
+        {
+          label: "Standup Notes",
+          url: "https://docs.example.com/team-alpha/standups",
+          type: "documentation"
+        }
+      ]
+    },
+
+    "team-2-uuid": {
+      team_info: {
+        team_uuid: "team-2-uuid",
+        team_name: "Data Wizards",
+        course_uuid: "course-456-uuid",
+        course_name: "CSE 158 - Recommender Systems",
+        project_name: "RecSys Engine",
+        mission: "Deliver personalized course recommendations for incoming transfer students.",
+        summary: "Exploring matrix factorization approaches with explainability dashboards.",
+        repo_url: "https://github.com/conductor-tool/data-wizards",
+        docs_url: "https://docs.example.com/data-wizards",
+        chat_url: "https://chat.example.com/data-wizards",
+        status_health: "At Risk",
+        status_summary: "Cold-start evaluation blocked while waiting on anonymized dataset.",
+        status_updated: "2024-11-08",
+        tags: ["Machine Learning", "Recommender Systems"]
+      },
+      metrics: {
+        current_sprint: "Sprint 3",
+        story_points_completed: 18,
+        velocity: 20,
+        bug_count: 4
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-2-meeting-1",
+          title: "Model Review",
+          schedule: "Tuesdays • 5:00 PM • Zoom"
+        },
+        {
+          meeting_uuid: "team-2-meeting-2",
+          title: "Data Cleaning Session",
+          schedule: "Thursdays • 3:00 PM • CSE Basement"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-1-uuid",
+          name: "Alice Williams",
+          role: "Consulting PM",
+          responsibilities: "Shared PM work between CSE 210 and 158 projects",
+          pronouns: "she/her",
+          email: "awilliams@ucsd.edu",
+          github: "awilliams42"
+        },
+        {
+          user_uuid: "student-4-uuid",
+          name: "David Garcia",
+          role: "ML Engineer",
+          responsibilities: "Model experimentation, evaluation pipeline",
+          pronouns: "he/him",
+          email: "dgarcia@ucsd.edu",
+          github: "dgarcia42"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Hyperparameter sweep",
+          date: "2024-11-02",
+          summary: "Tuned baseline matrix-factorization; preparing neural CF prototype."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "Dataset release",
+          due_date: "2024-11-12",
+          status: "Blocked"
+        }
+      ],
+      status_notes: [
+        {
+          author: "David Garcia",
+          date: "2024-11-07",
+          sentiment: "neutral",
+          note: "Need sanitized enrollment data to continue offline evaluation."
+        }
+      ],
+      resources: [
+        {
+          label: "Experiment Tracking",
+          url: "https://wandb.ai/data-wizards",
+          type: "tooling"
+        }
+      ]
+    },
+
+    "team-3-uuid": {
+      team_info: {
+        team_uuid: "team-3-uuid",
+        team_name: "IoT Innovators",
+        course_uuid: "course-123-uuid",
+        course_name: "CSE 210 - Software Engineering",
+        project_name: "SmartHome Hub",
+        mission: "Help student households automate daily chores using affordable IoT sensors.",
+        summary: "Building a centralized dashboard for scheduling devices and monitoring energy usage.",
+        repo_url: "https://github.com/conductor-tool/iot-innovators",
+        docs_url: "https://docs.example.com/iot-innovators",
+        chat_url: "https://chat.example.com/iot-innovators",
+        status_health: "Needs Attention",
+        status_summary: "Hardware procurement delays slowed integration tests.",
+        status_updated: "2024-11-09",
+        tags: ["IoT", "Embedded", "Web"]
+      },
+      metrics: {
+        current_sprint: "Sprint 4",
+        story_points_completed: 20,
+        velocity: 22,
+        bug_count: 5
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-3-meeting-1",
+          title: "Hardware Integration Lab",
+          schedule: "Mondays • 3:00 PM • Makerspace"
+        },
+        {
+          meeting_uuid: "team-3-meeting-2",
+          title: "Sprint Retro",
+          schedule: "Fridays • 11:00 AM • Zoom"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-2-uuid",
+          name: "Bob Martinez",
+          role: "Firmware Engineer",
+          responsibilities: "ESP32 firmware, OTA updates, device provisioning",
+          pronouns: "he/him",
+          email: "bmartinez@ucsd.edu",
+          github: "bmartinez-dev"
+        },
+        {
+          user_uuid: "student-11-uuid",
+          name: "Kelly Brown",
+          role: "Data Engineer",
+          responsibilities: "Telemetry ingestion, analytics dashboards",
+          pronouns: "she/her",
+          email: "kbrown@ucsd.edu",
+          github: "kelly-brown"
+        },
+        {
+          user_uuid: "student-12-uuid",
+          name: "Liam Taylor",
+          role: "Product Designer",
+          responsibilities: "Mobile app wireframes, user interviews",
+          pronouns: "he/him",
+          email: "ltaylor@ucsd.edu",
+          github: "liam-t"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Prototype sensor network online",
+          date: "2024-11-08",
+          summary: "Kitchen and living room nodes reporting stable metrics."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "Safety testing walkthrough",
+          due_date: "2024-11-16",
+          status: "Scheduled"
+        }
+      ],
+      status_notes: [
+        {
+          author: "Bob Martinez",
+          date: "2024-11-05",
+          sentiment: "warning",
+          note: "Waiting on TA approval for additional sensor budget."
+        }
+      ],
+      resources: [
+        {
+          label: "Hardware BOM",
+          url: "https://docs.example.com/iot-innovators/bom",
+          type: "documentation"
+        }
+      ]
+    },
+
+    "team-4-uuid": {
+      team_info: {
+        team_uuid: "team-4-uuid",
+        team_name: "Product Pirates",
+        course_uuid: "course-123-uuid",
+        course_name: "CSE 210 - Software Engineering",
+        project_name: "CollabBoard",
+        mission: "Give lab sections a lightweight retro and planning board that works offline.",
+        summary: "Shipping a facilitation toolkit with templates, analytics, and prompts.",
+        repo_url: "https://github.com/conductor-tool/product-pirates",
+        docs_url: "https://docs.example.com/product-pirates",
+        chat_url: "https://chat.example.com/product-pirates",
+        status_health: "On Track",
+        status_summary: "Design system finalized, backend API ready for integration.",
+        status_updated: "2024-11-11",
+        tags: ["Facilitation", "Design Systems"]
+      },
+      metrics: {
+        current_sprint: "Sprint 3",
+        story_points_completed: 24,
+        velocity: 25,
+        bug_count: 1
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-4-meeting-1",
+          title: "Sprint Demo Rehearsal",
+          schedule: "Thursdays • 5:30 PM • Zoom"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-3-uuid",
+          name: "Carol Davis",
+          role: "Product Manager",
+          responsibilities: "Roadmap, stakeholder feedback, facilitation scripts",
+          pronouns: "she/her",
+          email: "cdavis@ucsd.edu",
+          github: "cdavis-code"
+        },
+        {
+          user_uuid: "student-5-uuid",
+          name: "Eva Rodriguez",
+          role: "UX Lead",
+          responsibilities: "Design system, prototypes, accessibility reviews",
+          pronouns: "she/her",
+          email: "erodriguez@ucsd.edu",
+          github: "eva-codes"
+        },
+        {
+          user_uuid: "student-13-uuid",
+          name: "Maya Singh",
+          role: "Insights Analyst",
+          responsibilities: "Engagement metrics, qualitative synthesis",
+          pronouns: "she/her",
+          email: "msingh@ucsd.edu",
+          github: "maya-singh"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Ran dry run with TA staff",
+          date: "2024-11-10",
+          summary: "Collected feedback on retro template phrasing and flow."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "Pilot with Monday lab",
+          due_date: "2024-11-18",
+          status: "Scheduled"
+        }
+      ],
+      status_notes: [
+        {
+          author: "Carol Davis",
+          date: "2024-11-09",
+          sentiment: "positive",
+          note: "Template iteration done; prepping facilitation guide PDF."
+        }
+      ],
+      resources: [
+        {
+          label: "Retro Template",
+          url: "https://docs.example.com/product-pirates/templates",
+          type: "documentation"
+        }
+      ]
+    },
+
+    "team-5-uuid": {
+      team_info: {
+        team_uuid: "team-5-uuid",
+        team_name: "AI Architects",
+        course_uuid: "course-123-uuid",
+        course_name: "CSE 210 - Software Engineering",
+        project_name: "ML Pipeline Manager",
+        mission: "Help CSE210 staff monitor ML coursework submissions and flag risk early.",
+        summary: "Delivering a dashboard that scores model health, fairness, and deadline risk.",
+        repo_url: "https://github.com/conductor-tool/ai-architects",
+        docs_url: "https://docs.example.com/ai-architects",
+        chat_url: "https://chat.example.com/ai-architects",
+        status_health: "On Track",
+        status_summary: "Pipeline deployed to staging; working on alerting rules.",
+        status_updated: "2024-11-11",
+        tags: ["Machine Learning", "Observability"]
+      },
+      metrics: {
+        current_sprint: "Sprint 4",
+        story_points_completed: 30,
+        velocity: 30,
+        bug_count: 1
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-5-meeting-1",
+          title: "Model Clinic",
+          schedule: "Wednesdays • 7:00 PM • Zoom"
+        },
+        {
+          meeting_uuid: "team-5-meeting-2",
+          title: "TA Office Hours Sync",
+          schedule: "Fridays • 12:00 PM • CSE B210"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-4-uuid",
+          name: "David Garcia",
+          role: "ML Engineer",
+          responsibilities: "Model evaluation, drift detection, CI/CD integrations",
+          pronouns: "he/him",
+          email: "dgarcia@ucsd.edu",
+          github: "dgarcia42"
+        },
+        {
+          user_uuid: "student-9-uuid",
+          name: "Iris Wong",
+          role: "Frontend Engineer",
+          responsibilities: "Dashboard UI, charting, accessibility QA",
+          pronouns: "she/her",
+          email: "iwong@ucsd.edu",
+          github: "iris-wong"
+        },
+        {
+          user_uuid: "student-14-uuid",
+          name: "Nathan Lee",
+          role: "Product Analyst",
+          responsibilities: "Alert policy tuning, stakeholder interviews",
+          pronouns: "he/him",
+          email: "nlee@ucsd.edu",
+          github: "nathan-lee"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Alert service deployed",
+          date: "2024-11-11",
+          summary: "Email notifications wired to TA distribution list for failing builds."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "Instructor demo",
+          due_date: "2024-11-17",
+          status: "In progress"
+        }
+      ],
+      status_notes: [
+        {
+          author: "David Garcia",
+          date: "2024-11-10",
+          sentiment: "positive",
+          note: "Latency improved after caching feature store queries."
+        }
+      ],
+      resources: [
+        {
+          label: "Model Registry",
+          url: "https://mlflow.example.com/ai-architects",
+          type: "tooling"
+        }
+      ]
+    },
+
+    "team-6-uuid": {
+      team_info: {
+        team_uuid: "team-6-uuid",
+        team_name: "Design Driven",
+        course_uuid: "course-123-uuid",
+        course_name: "CSE 210 - Software Engineering",
+        project_name: "Accessible Web Tools",
+        mission: "Provide quick accessibility audits for course project teams.",
+        summary: "Developing a browser-based scanner with guided remediation checklists.",
+        repo_url: "https://github.com/conductor-tool/design-driven",
+        docs_url: "https://docs.example.com/design-driven",
+        chat_url: "https://chat.example.com/design-driven",
+        status_health: "Stable",
+        status_summary: "Pilot extension ready; focusing on documentation polish.",
+        status_updated: "2024-11-09",
+        tags: ["Accessibility", "Browser Extensions"]
+      },
+      metrics: {
+        current_sprint: "Sprint 3",
+        story_points_completed: 22,
+        velocity: 23,
+        bug_count: 0
+      },
+      meeting_schedule: [
+        {
+          meeting_uuid: "team-6-meeting-1",
+          title: "Accessibility Testing Session",
+          schedule: "Tuesdays • 7:30 PM • Zoom"
+        }
+      ],
+      members: [
+        {
+          user_uuid: "student-5-uuid",
+          name: "Eva Rodriguez",
+          role: "Project Lead",
+          responsibilities: "Design strategy, accessibility audits, stakeholder sync",
+          pronouns: "she/her",
+          email: "erodriguez@ucsd.edu",
+          github: "eva-codes"
+        },
+        {
+          user_uuid: "student-10-uuid",
+          name: "Jack Anderson",
+          role: "Frontend Engineer",
+          responsibilities: "Extension architecture, audit rule engine",
+          pronouns: "he/him",
+          email: "janderson@ucsd.edu",
+          github: "jack-a"
+        },
+        {
+          user_uuid: "student-15-uuid",
+          name: "Olivia White",
+          role: "Research Specialist",
+          responsibilities: "Assistive technology testing, compliance research",
+          pronouns: "she/her",
+          email: "owhite@ucsd.edu",
+          github: "olivia-w"
+        }
+      ],
+      recent_updates: [
+        {
+          title: "Completed accessibility heuristics library",
+          date: "2024-11-07",
+          summary: "Documented WCAG mappings for 40+ common issues."
+        }
+      ],
+      upcoming_milestones: [
+        {
+          title: "TA training session",
+          due_date: "2024-11-19",
+          status: "Scheduled"
+        }
+      ],
+      status_notes: [
+        {
+          author: "Eva Rodriguez",
+          date: "2024-11-08",
+          sentiment: "positive",
+          note: "Extension reviewers gave high marks; prepping release blog post."
+        }
+      ],
+      resources: [
+        {
+          label: "Accessibility Checklist",
+          url: "https://docs.example.com/design-driven/checklist",
+          type: "documentation"
+        }
+      ]
+    }
   }
 };
