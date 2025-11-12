@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - Conductor</title>
+  <link rel="stylesheet" href="../src/css/pages/user-profile.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="class-dashboard.html?course=test-course">Conductor</a>
+      </div>
+      <div class="nav-links">
+        <a href="class-dashboard.html?course=test-course">Dashboard</a>
+        <a href="user-profile.html?user=student-1-uuid" id="myProfileLink">My Profile</a>
+        <a href="#logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <div class="profile-container" id="profileContainer">
+      <!-- Profile content will be rendered here by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2024 Conductor. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../src/js/pages/directory/user-profile/index.js"></script>
+</body>
+</html>

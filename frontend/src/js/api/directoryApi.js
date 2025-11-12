@@ -50,3 +50,12 @@ export async function getRecentEnrollments(courseUuid, limit = 10) {
 export async function getUserRole(courseUuid) {
   return apiClient.get(`/api/courses/${courseUuid}/my-role`);
 }
+
+/**
+ * Get user profile information including teams and staff info
+ * @param {string} userUuid - User UUID
+ * @returns {Promise<Object>} User profile with teams and staff information
+ */
+export async function getUserProfile(userUuid) {
+  return apiClient.get(`/api/users/${userUuid}/profile`);
+}

@@ -1,0 +1,416 @@
+/**
+ * User Profile Page Styles
+ */
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+/* CSS Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  color: #333;
+  background: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation */
+.main-nav {
+  background: #1967d2;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.nav-links a:hover {
+  opacity: 0.8;
+}
+
+/* Main Content */
+main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+/* Footer */
+.main-footer {
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  padding: 2rem;
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   PROFILE SPECIFIC STYLES
+   ======================================== */
+
+/* Profile Container */
+.profile-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Error Message */
+.error-message {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.error-message h2 {
+  color: #c33;
+  margin-bottom: 1rem;
+}
+
+.error-message p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Profile Header */
+.profile-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.profile-photo {
+  flex-shrink: 0;
+}
+
+.profile-photo img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e8f0fe;
+}
+
+.profile-header-info {
+  flex: 1;
+}
+
+.profile-header-info h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.year-label {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #e8f0fe;
+  color: #1967d2;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.email a {
+  color: #1967d2;
+  text-decoration: none;
+}
+
+.email a:hover {
+  text-decoration: underline;
+}
+
+/* Profile Content */
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Profile Section */
+.profile-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e8f0fe;
+  padding-bottom: 0.5rem;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.info-value {
+  color: #333;
+  font-size: 1rem;
+}
+
+.info-value a {
+  color: #1967d2;
+  text-decoration: none;
+}
+
+.info-value a:hover {
+  text-decoration: underline;
+}
+
+/* Bio Text */
+.bio-text {
+  color: #333;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* Teams Grid */
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Team Card */
+.team-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.team-card:hover {
+  border-color: #1967d2;
+  box-shadow: 0 4px 12px rgba(25, 103, 210, 0.1);
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.team-header h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin: 0;
+}
+
+.leader-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #ffd700;
+  color: #333;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.team-course {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.team-project {
+  color: #333;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* No Data Message */
+.no-data {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-primary {
+  background: #1967d2;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1557b0;
+}
+
+.btn-secondary {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+  background: #e8f0fe;
+  border-color: #1967d2;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Navigation */
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Profile Container */
+  .profile-container {
+    padding: 1rem;
+  }
+
+  /* Profile Header */
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-header-info h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Info Grid */
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Teams Grid */
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Profile Photo */
+  .profile-photo img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header {
+    padding: 1.5rem;
+  }
+
+  .profile-section {
+    padding: 1.5rem;
+  }
+
+  .profile-photo img {
+    width: 100px;
+    height: 100px;
+  }
+}
