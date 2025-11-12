@@ -34,15 +34,10 @@ function handleGoogleLogin() {
     console.log("Google login button clicked");
     
     // TODO: Replace with actual OAuth endpoint
-    window.location.href = "http://localhost:8081/auth/google";
+    window.location.href = "/auth/google";
     
-    // TODO: After successful OAuth, check with DB if user exists
-    // TODO: If new user, redirect to verification page
-    // TODO: If existing user, redirect to dashboard
+    // TODO: Bring in Backend functionality
 
-    // For now show message
-    // showMessage("Google OAuth flow needs to be implemented");
-    // window.location.href = "professor_dashboard.html";
 }
 
 // ==================== VERIFICATION FUNCTIONS ====================
@@ -64,9 +59,8 @@ function handleVerification() {
     
     // TODO: Check verification code with database
     
-    // Simulate verification
-    // For now, assume code is always valid and redirect to login
-    window.location.href = "http://localhost:8081/";
+    // Redirect to Class Directory on success
+    // window.location.href = "/";
 
 }
 
