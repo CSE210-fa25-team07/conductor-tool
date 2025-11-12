@@ -35,9 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function handleGoogleLogin() {
     console.log("Google login button clicked");
-    
     // Redirect to Google OAuth - backend handles user creation/login
-    window.location.href = "http://localhost:8081/auth/google";
+    window.location.href = "/auth/google";
+    
+    // TODO: Bring in Backend functionality
 }
 
 /**
@@ -48,7 +49,7 @@ async function checkUserSession() {
     try {
         // Try to get current session user info from backend
         // You may need to add a /auth/session endpoint to get current user
-        const response = await fetch("http://localhost:8081/auth/session", {
+        const response = await fetch("/auth/session", {
             credentials: "include" // Include session cookie
         });
         
@@ -89,7 +90,6 @@ async function handleVerification() {
     }
     
     console.log("Verifying code:", code);
-    
     try {
         // TODO: Implement actual verification code check with backend
         // For now, accept any code and redirect to dashboard
@@ -109,7 +109,7 @@ async function handleVerification() {
         // }
         
         // For now, just redirect to dashboard
-        window.location.href = "http://localhost:8081/dashboard";
+        window.location.href = "/dashboard";
         
     } catch (error) {
         console.error("Error during verification:", error);
