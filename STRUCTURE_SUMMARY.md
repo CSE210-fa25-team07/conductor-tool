@@ -10,7 +10,7 @@ Folder structure + READMEs explaining where to put code. **No prescriptive "do t
 
 ```
 conductor-tool/
-├── frontend/          # VanillaJS (Port 8080)
+├── frontend/          # VanillaJS
 ├── backend/           # Node.js + Express (Port 8081)
 ├── database/          # PostgreSQL migrations
 └── specs/             # Docs, ADRs
@@ -29,22 +29,6 @@ conductor-tool/
 
 **Organize within your folders however you want.**
 
----
-
-## Shared Code (Coordinate These)
-
-### Auth Team Implements First
-- `frontend/src/js/api/apiClient.js` - Everyone uses this
-- `backend/src/middleware/authMiddleware.js` - Everyone needs this
-- `backend/src/middleware/rbacMiddleware.js` - Everyone needs this
-
-### Directory Team (Others Need)
-- `backend/src/repositories/teamRepository.js` - Team membership checks
-
-**Other teams wait for these before starting routes.**
-
----
-
 ## 3-Layer Pattern
 
 Backend follows this:
@@ -53,7 +37,7 @@ Backend follows this:
 Route → Controller → Service → Repository
 ```
 
-- **Route:** URL mapping + middleware
+- **Route:** URL mapping
 - **Controller:** Extract request data, return response
 - **Service:** Business logic
 - **Repository:** SQL queries
@@ -70,18 +54,6 @@ One feature = matching files across layers:
 - `standupController.js`
 - `standupService.js`
 - `standupRepository.js`
-
----
-
-## Quick Start
-
-```bash
-cp .env.example .env
-docker-compose up --build
-
-# Frontend: http://localhost:8080
-# Backend: http://localhost:8081
-```
 
 ---
 

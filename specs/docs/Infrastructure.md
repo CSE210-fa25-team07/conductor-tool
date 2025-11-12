@@ -12,7 +12,7 @@ Our project uses a lightweight but structured setup centered around:
 
 This setup ensures all code changes go through consistent quality checks and that work items are clearly defined, traceable, and reviewable.
 
-## Linting and Code Quality — ESLint
+## Linting — ESLint
 
 We use [ESLint](https://eslint.org/) to enforce a consistent JavaScript style and prevent common programming mistakes.
 
@@ -29,6 +29,48 @@ We use [ESLint](https://eslint.org/) to enforce a consistent JavaScript style an
 - The ESLint flat configuration (`eslint.config.js`) defines base rules and ignores `node_modules` and build outputs.
 - Runs automatically in CI to ensure commits follow style guidelines.
 - Developers can run `npm run lint` locally before committing changes.
+
+## Documentation — JSDoc
+
+We use [JSDoc](https://jsdoc.app/) to automatically generate HTML documentation from inline comments in our JavaScript code.
+
+### Why JSDoc
+- Provides a clear, centralized reference for functions, classes, and modules  
+- Encourages consistent documentation across all components  
+- Helps new contributors understand the API quickly  
+- Supports examples, types, and modular organization for complex projects  
+
+### How It’s Configured
+- Configuration is defined in `jsdocs.json`
+- Generates HTML documentation automatically via `npm run docs`  
+- Deployed to [GitHub Pages](https://cse210-fa25-team07.github.io/conductor-tool/) using GitHub Actions, so the latest docs are always available online
+- Supports modular design using `@module` and `@memberof` tags to group functions and classes logically 
+
+### How to Use (for Devs)
+- Run `npm run docs` locally to preview documentation  
+- Navigate to the generated `./docs/index.html` to view the full HTML documentation 
+- - Use `@module`, `@param`, `@returns`, `@example`, and `@memberof` in code comments to enhance docs (example below)
+```
+/**
+* @module {moduleName} - Define in only one file
+*/
+
+/**
+ * [Short description of the function]
+ *
+ * @param {TYPE} param1 - [Description of parameter]
+ * @param {TYPE} param2 - [Description of parameter]
+ * @returns {TYPE} [Description of return value]
+ * @memberof module:{moduleName} - Only for other files
+ *
+ * @example
+ * // Example usage
+ * const result = functionName(arg1, arg2);
+ */
+function functionName(param1, param2) {
+  // function body
+}
+``` 
 
 ## Project Management — GitHub Projects (Iteration Taskboard)
 
@@ -89,7 +131,7 @@ Branch protection rules are enabled on the main branch to enforce:
 ## Future Enhancements
 
 We plan to expand this infrastructure to include:
-- Automated documentation generation using JSDoc
-- Continuous Integration/Deployment (CI/CD) workflows for testing and deployment
+- Unit Testing, possibly *Vitest*
+- E2E testing, possibly *Puppeteer*
 
 These additions will further strengthen our code quality and transparency.
