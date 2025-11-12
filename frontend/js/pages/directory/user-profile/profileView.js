@@ -206,7 +206,7 @@ function renderTeams(teams) {
         </div>
         <p class="team-course">${team.course_name}</p>
         ${team.project_name ? `<p class="team-project"><strong>Project:</strong> ${team.project_name}</p>` : ""}
-        <a href="/public/group-profile.html?team=${team.team_uuid}" class="btn btn-secondary">View Team Profile</a>
+        <a href="group-profile.html?team=${team.team_uuid}" class="btn btn-secondary">View Team Profile</a>
       </div>
     `;
   }).join("");

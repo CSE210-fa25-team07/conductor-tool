@@ -1,11 +1,13 @@
 /**
- * Student Dashboard View
- * Displays course information, personal grades, and staff details
+ * Instructor Dashboard View
+ * Displays course information, enrollment statistics, assignment stats, and recent enrollments
  */
 
 // USING MOCK DATA - Switch to directoryApi.js when backend is ready
 import {
   getCourseOverview,
+  getEnrollmentStats,
+  getRecentEnrollments,
   getCourseStaff
 } from "../../../api/directory/directoryApiMock.js";
 
@@ -41,6 +43,85 @@ function renderCourseHeader(course) {
 }
 
 /**
+ * Render enrollment statistics cards
+ * @param {Object} stats - Enrollment statistics
+ * @returns {string} HTML string
+ */
+function renderEnrollmentStats(stats) {
+  if (!stats) {
+    return `
+      <div class="stats-section">
+        <h2>Enrollment Statistics</h2>
+        <p class="no-data">No enrollment data available</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="stats-section">
+      <h2>Enrollment Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">${stats.total_students || 0}</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.active_students || 0}</div>
+          <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.dropped_students || 0}</div>
+          <div class="stat-label">Dropped Students</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render recent enrollments list
+ * @param {Array} enrollments - List of recent enrollments
+ * @returns {string} HTML string
+ */
+function renderRecentEnrollments(enrollments) {
+  if (!enrollments || enrollments.length === 0) {
+    return `
+      <div class="recent-enrollments-section">
+        <h2>Recent Enrollments</h2>
+        <p class="no-data">No recent enrollments</p>
+      </div>
+    `;
+  }
+
+  const enrollmentItems = enrollments.map(enrollment => {
+    const enrolledDate = new Date(enrollment.enrolled_at).toLocaleDateString();
+    const status = enrollment.enrollment_status === "active" ? "Active" : "Dropped";
+
+    return `
+      <div class="enrollment-item">
+        <div class="enrollment-student">
+          <strong><a href="user-profile.html?user=${enrollment.user_uuid}" class="profile-link">${enrollment.first_name} ${enrollment.last_name}</a></strong>
+          <span class="student-email">${enrollment.email}</span>
+        </div>
+        <div class="enrollment-details">
+          <span class="enrollment-date">${enrolledDate}</span>
+          <span class="status-badge status-${status.toLowerCase()}">${status}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="recent-enrollments-section">
+      <h2>Recent Enrollments</h2>
+      <div class="enrollments-list">
+        ${enrollmentItems}
+      </div>
+    </div>
+  `;
+}
+
+/**
  * Render teaching staff and office hours
  * @param {Array} staff - List of staff members
  * @returns {string} HTML string
@@ -67,7 +148,7 @@ function renderStaff(staff) {
     return `
       <div class="staff-card">
         <div class="staff-info">
-          <h3><a href="/public/user-profile.html?user=${member.user_uuid}" class="profile-link">${member.first_name} ${member.last_name}</a></h3>
+          <h3><a href="user-profile.html?user=${member.user_uuid}" class="profile-link">${member.first_name} ${member.last_name}</a></h3>
           <span class="staff-role">${role}</span>
         </div>
         <div class="contact-info">
@@ -100,15 +181,11 @@ function renderStaff(staff) {
 function renderNavigationButtons(courseUuid) {
   return `
     <div class="dashboard-navigation">
-      <a href="/public/roster.html?course=${courseUuid}" class="nav-btn">
+      <a href="roster.html?course=${courseUuid}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
-      <a href="/public/group-profile.html?team=team-1-uuid" class="nav-btn">
-        <span class="icon">🔧</span>
-        <span class="label">My Group</span>
-      </a>
-      <a href="/public/user-profile.html?user=student-1-uuid" class="nav-btn">
+      <a href="user-profile.html?user=staff-1-uuid" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
       </a>
@@ -117,28 +194,37 @@ function renderNavigationButtons(courseUuid) {
 }
 
 /**
- * Render complete student dashboard view
+ * Render complete instructor dashboard view
  * @param {string} courseUuid - Course UUID
  * @param {HTMLElement} container - Container element to render into
  */
-export async function renderStudentDashboard(courseUuid, container) {
+export async function renderInstructorDashboard(courseUuid, container) {
   try {
     // Show loading state
     container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
     // Fetch all data in parallel
-    const [courseData, staffData] = await Promise.all([
+    const [courseData, enrollmentStats, recentEnrollments, staffData] = await Promise.all([
       getCourseOverview(courseUuid),
+      getEnrollmentStats(courseUuid),
+      getRecentEnrollments(courseUuid, 10),
       getCourseStaff(courseUuid)
     ]);
 
     // Render the complete dashboard
     container.innerHTML = `
-      <div class="student-dashboard">
+      <div class="instructor-dashboard">
         ${renderCourseHeader(courseData)}
 
-        <div class="student-navigation-section">
-          ${renderNavigationButtons(courseUuid)}
+        <div class="dashboard-main">
+          <div class="left-column">
+            ${renderEnrollmentStats(enrollmentStats)}
+            ${renderNavigationButtons(courseUuid)}
+          </div>
+
+          <div class="right-column">
+            ${renderRecentEnrollments(recentEnrollments)}
+          </div>
         </div>
 
         ${renderStaff(staffData)}
