@@ -227,6 +227,12 @@ main {
   gap: 1.5rem;
 }
 
+/* Student Navigation Section */
+.student-navigation-section {
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
 /* Stats Section (Instructor View) */
 .stats-section {
   background: #fff;
@@ -344,6 +350,16 @@ main {
   color: #333;
 }
 
+.enrollment-student a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.enrollment-student a:hover {
+  color: #1967d2;
+}
+
 .student-email {
   font-size: 0.875rem;
   color: #666;
@@ -394,6 +410,16 @@ main {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
   color: #333;
+}
+
+.staff-info h3 a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.staff-info h3 a:hover {
+  color: #1967d2;
 }
 
 .staff-role {
@@ -493,6 +519,17 @@ main {
   font-style: italic;
   text-align: center;
   padding: 2rem;
+}
+
+/* Profile Links */
+.profile-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.profile-link:hover {
+  color: #1967d2;
 }
 
 /* ========================================

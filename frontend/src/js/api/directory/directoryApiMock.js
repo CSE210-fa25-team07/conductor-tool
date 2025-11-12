@@ -64,3 +64,36 @@ export async function getUserRole(_courseUuid) {
   await delay(300);
   return mockData.userRole;
 }
+
+/**
+ * Get user profile information including teams and staff info
+ * @param {string} userUuid - User UUID
+ * @returns {Promise<Object>} User profile with teams and staff information
+ */
+export async function getUserProfile(userUuid) {
+  await delay(450);
+
+  // Return specific profile based on UUID
+  const profileMap = {
+    "staff-1-uuid": mockData.userProfileStaff1,
+    "staff-2-uuid": mockData.userProfileStaff2,
+    "staff-3-uuid": mockData.userProfileStaff3,
+    "student-1-uuid": mockData.userProfileStudent,
+    "student-2-uuid": mockData.userProfileStudent2,
+    "student-3-uuid": mockData.userProfileStudent3,
+    "student-4-uuid": mockData.userProfileStudent4,
+    "student-5-uuid": mockData.userProfileStudent5
+  };
+
+  // Return specific profile if exists, otherwise return default based on type
+  if (profileMap[userUuid]) {
+    return profileMap[userUuid];
+  }
+
+  // Fallback: return default profile based on UUID pattern
+  if (userUuid.includes("staff")) {
+    return mockData.userProfileStaff1;
+  }
+
+  return mockData.userProfileStudent;
+}

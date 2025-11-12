@@ -67,7 +67,7 @@ function renderStaff(staff) {
     return `
       <div class="staff-card">
         <div class="staff-info">
-          <h3>${member.first_name} ${member.last_name}</h3>
+          <h3><a href="/public/user-profile.html?user=${member.user_uuid}" class="profile-link">${member.first_name} ${member.last_name}</a></h3>
           <span class="staff-role">${role}</span>
         </div>
         <div class="contact-info">
@@ -100,15 +100,15 @@ function renderStaff(staff) {
 function renderNavigationButtons(courseUuid) {
   return `
     <div class="dashboard-navigation">
-      <a href="/roster?course=${courseUuid}" class="nav-btn">
+      <a href="/public/roster.html?course=${courseUuid}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
-      <a href="/my-group?course=${courseUuid}" class="nav-btn">
+      <a href="/public/group-profile.html?team=team-1-uuid" class="nav-btn">
         <span class="icon">🔧</span>
         <span class="label">My Group</span>
       </a>
-      <a href="/profile" class="nav-btn">
+      <a href="/public/user-profile.html?user=student-1-uuid" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
       </a>
@@ -137,10 +137,8 @@ export async function renderStudentDashboard(courseUuid, container) {
       <div class="student-dashboard">
         ${renderCourseHeader(courseData)}
 
-        <div class="dashboard-main">
-          <div class="left-column">
-            ${renderNavigationButtons(courseUuid)}
-          </div>
+        <div class="student-navigation-section">
+          ${renderNavigationButtons(courseUuid)}
         </div>
 
         ${renderStaff(staffData)}

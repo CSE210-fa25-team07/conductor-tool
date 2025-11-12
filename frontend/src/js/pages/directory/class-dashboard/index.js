@@ -6,6 +6,7 @@
 
 // USING MOCK DATA - Switch to directoryApi.js when backend is ready
 import { getUserRole } from "../../../api/directory/directoryApiMock.js";
+import { mockData } from "../../../api/directory/mockData.js";
 import { renderStudentDashboard } from "./studentView.js";
 import { renderInstructorDashboard } from "./instructorView.js";
 
@@ -16,6 +17,21 @@ import { renderInstructorDashboard } from "./instructorView.js";
 function getCourseUuidFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get("course");
+}
+
+/**
+ * Update navigation bar "My Profile" link based on user role
+ * Uses direct mockData access for immediate update without delay
+ */
+function updateNavigationLinks() {
+  const myProfileLink = document.getElementById("myProfileLink");
+
+  if (myProfileLink) {
+    // Get role data directly from mockData (no async delay)
+    const roleData = mockData.userRole;
+    const userUuid = roleData.user_uuid || (roleData.role === "student" ? "student-1-uuid" : "staff-1-uuid");
+    myProfileLink.href = `user-profile.html?user=${userUuid}`;
+  }
 }
 
 /**
@@ -46,6 +62,9 @@ async function initDashboard() {
     // Show initial loading state
     container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
+    // Update navigation bar immediately without delay
+    updateNavigationLinks();
+
     // Fetch user role for this course
     const roleData = await getUserRole(courseUuid);
 
@@ -72,8 +91,4 @@ async function initDashboard() {
 }
 
 // Initialize dashboard when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initDashboard);
-} else {
-  initDashboard();
-}
+document.addEventListener("DOMContentLoaded", initDashboard);

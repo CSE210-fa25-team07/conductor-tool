@@ -100,7 +100,7 @@ function renderRecentEnrollments(enrollments) {
     return `
       <div class="enrollment-item">
         <div class="enrollment-student">
-          <strong>${enrollment.first_name} ${enrollment.last_name}</strong>
+          <strong><a href="/public/user-profile.html?user=${enrollment.user_uuid}" class="profile-link">${enrollment.first_name} ${enrollment.last_name}</a></strong>
           <span class="student-email">${enrollment.email}</span>
         </div>
         <div class="enrollment-details">
@@ -148,7 +148,7 @@ function renderStaff(staff) {
     return `
       <div class="staff-card">
         <div class="staff-info">
-          <h3>${member.first_name} ${member.last_name}</h3>
+          <h3><a href="/public/user-profile.html?user=${member.user_uuid}" class="profile-link">${member.first_name} ${member.last_name}</a></h3>
           <span class="staff-role">${role}</span>
         </div>
         <div class="contact-info">
@@ -181,11 +181,11 @@ function renderStaff(staff) {
 function renderNavigationButtons(courseUuid) {
   return `
     <div class="dashboard-navigation">
-      <a href="/roster?course=${courseUuid}" class="nav-btn">
+      <a href="/public/roster.html?course=${courseUuid}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
-      <a href="/profile" class="nav-btn">
+      <a href="/public/user-profile.html?user=staff-1-uuid" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
       </a>
