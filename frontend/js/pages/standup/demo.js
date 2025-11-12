@@ -2,94 +2,94 @@
 // NO STYLING - Pure HTML elements only
 // Navigation between different views
 
-import { renderStandupForm } from './standupForm.js';
-import { renderTeamDashboard } from './teamDashboard.js';
-import { renderTADashboard } from './taDashboard.js';
-import { renderIndividualHistory } from './individualHistory.js';
-import { currentUser, getUnreadNotificationCount } from './mockData.js';
+import { renderStandupForm } from "./standupForm.js";
+import { renderTeamDashboard } from "./teamDashboard.js";
+import { renderTADashboard } from "./taDashboard.js";
+import { renderIndividualHistory } from "./individualHistory.js";
+import { currentUser, getUnreadNotificationCount } from "./mockData.js";
 
 export function initStandupDemo() {
-  const appContainer = document.getElementById('app');
+  const appContainer = document.getElementById("app");
   if (!appContainer) {
-    console.error('App container not found!');
+    // App container not found - cannot initialize demo
     return;
   }
 
-  appContainer.innerHTML = '';
+  appContainer.innerHTML = "";
 
   // Main title
-  const mainTitle = document.createElement('h1');
-  mainTitle.textContent = 'Conductor - Standup Tool Demo';
+  const mainTitle = document.createElement("h1");
+  mainTitle.textContent = "Conductor - Standup Tool Demo";
   appContainer.appendChild(mainTitle);
 
   // Demo notice
-  const notice = document.createElement('p');
-  notice.textContent = '⚠️ DEMO MODE - All data is mocked, no backend connection, zero styling';
+  const notice = document.createElement("p");
+  notice.textContent = "⚠️ DEMO MODE - All data is mocked, no backend connection, zero styling";
   appContainer.appendChild(notice);
 
-  appContainer.appendChild(document.createElement('hr'));
+  appContainer.appendChild(document.createElement("hr"));
 
   // Navigation
   const nav = createNavigation();
   appContainer.appendChild(nav);
 
-  appContainer.appendChild(document.createElement('hr'));
+  appContainer.appendChild(document.createElement("hr"));
 
   // Content container
-  const contentContainer = document.createElement('div');
-  contentContainer.id = 'content';
+  const contentContainer = document.createElement("div");
+  contentContainer.id = "content";
   appContainer.appendChild(contentContainer);
 
   // Default view: Standup Form
-  renderStandupForm('content');
+  renderStandupForm("content");
 }
 
 function createNavigation() {
-  const nav = document.createElement('nav');
+  const nav = document.createElement("nav");
 
-  const navTitle = document.createElement('h2');
-  navTitle.textContent = 'Navigation';
+  const navTitle = document.createElement("h2");
+  navTitle.textContent = "Navigation";
   nav.appendChild(navTitle);
 
-  const navInfo = document.createElement('p');
+  const navInfo = document.createElement("p");
   navInfo.textContent = `Current User: ${currentUser.name} | Unread Notifications: ${getUnreadNotificationCount(currentUser.user_uuid)}`;
   nav.appendChild(navInfo);
 
   // Navigation buttons
-  const buttonContainer = document.createElement('div');
+  const buttonContainer = document.createElement("div");
 
   const buttons = [
     {
-      label: 'Submit Standup',
-      view: 'form',
-      description: 'Daily standup submission form (Student view)',
+      label: "Submit Standup",
+      view: "form",
+      description: "Daily standup submission form (Student view)",
       renderer: renderStandupForm
     },
     {
-      label: 'Team Dashboard',
-      view: 'team',
-      description: 'View team standups and collaborate (Student/Team Lead view)',
+      label: "Team Dashboard",
+      view: "team",
+      description: "View team standups and collaborate (Student/Team Lead view)",
       renderer: renderTeamDashboard
     },
     {
-      label: 'My History',
-      view: 'history',
-      description: 'Personal standup history and stats (Student view)',
+      label: "My History",
+      view: "history",
+      description: "Personal standup history and stats (Student view)",
       renderer: renderIndividualHistory
     },
     {
-      label: 'TA Dashboard',
-      view: 'ta',
-      description: 'Multi-team overview and alerts (TA/Instructor view)',
+      label: "TA Dashboard",
+      view: "ta",
+      description: "Multi-team overview and alerts (TA/Instructor view)",
       renderer: renderTADashboard
     }
   ];
 
   buttons.forEach(button => {
-    const btn = document.createElement('button');
+    const btn = document.createElement("button");
     btn.textContent = button.label;
     btn.onclick = () => {
-      button.renderer('content');
+      button.renderer("content");
       highlightActiveButton(button.view);
     };
     btn.id = `nav-${button.view}`;
@@ -97,11 +97,11 @@ function createNavigation() {
     buttonContainer.appendChild(btn);
 
     // Add description
-    const desc = document.createElement('span');
+    const desc = document.createElement("span");
     desc.textContent = ` - ${button.description}`;
     buttonContainer.appendChild(desc);
 
-    buttonContainer.appendChild(document.createElement('br'));
+    buttonContainer.appendChild(document.createElement("br"));
   });
 
   nav.appendChild(buttonContainer);
@@ -111,12 +111,12 @@ function createNavigation() {
 
 function highlightActiveButton(activeView) {
   // Simple highlight by adding text indicator (no CSS!)
-  const views = ['form', 'team', 'history', 'ta'];
+  const views = ["form", "team", "history", "ta"];
 
   views.forEach(view => {
     const btn = document.getElementById(`nav-${view}`);
     if (btn) {
-      const originalText = btn.textContent.replace(' [ACTIVE]', '');
+      const originalText = btn.textContent.replace(" [ACTIVE]", "");
       if (view === activeView) {
         btn.textContent = `${originalText} [ACTIVE]`;
       } else {
@@ -127,8 +127,8 @@ function highlightActiveButton(activeView) {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initStandupDemo);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initStandupDemo);
 } else {
   initStandupDemo();
 }
