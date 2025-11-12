@@ -196,7 +196,7 @@ function renderTeams(teams) {
   }
 
   const teamCards = teams.map(team => {
-    const leaderBadge = team.is_team_leader ? '<span class="leader-badge">Team Leader</span>' : "";
+    const leaderBadge = team.is_team_leader ? "<span class=\"leader-badge\">Team Leader</span>" : "";
 
     return `
       <div class="team-card">

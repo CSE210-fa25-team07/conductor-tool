@@ -8,14 +8,14 @@ export const mockData = {
   // User role data - change both user_uuid and role to switch views
   userRole: {
     course_uuid: "course-123-uuid",
-    
+
     // Change to "staff-1-uuid" for instructor view
-    user_uuid: "student-1-uuid", 
+    user_uuid: "student-1-uuid",
     // user_uuid: "staff-1-uuid",
 
     // Change to "instructor" or "ta" for instructor view
-    role: "student" 
-    // role: "instructor" 
+    role: "student"
+    // role: "instructor"
   },
 
   // Course overview data
