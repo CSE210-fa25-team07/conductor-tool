@@ -161,7 +161,7 @@ export async function renderStudentDashboard(courseUuid, container, roleData = n
     // Resolve current user/team information for navigation
     let teamLink = null;
     let teamName = null;
-    let userUuid = roleData?.user_uuid || mockData.userRole.user_uuid || "student-1-uuid";
+    const userUuid = roleData?.user_uuid || mockData.userRole.user_uuid || "student-1-uuid";
 
     if (userUuid) {
       try {

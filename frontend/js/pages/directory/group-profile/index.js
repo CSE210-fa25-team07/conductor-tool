@@ -39,8 +39,8 @@ function updateCourseLinks(courseUuid) {
   }
 
   const brandLink = document.querySelector(".nav-brand a");
-  const dashboardLink = document.querySelector('.nav-links a[href^="class-dashboard"]');
-  const rosterLink = document.querySelector('.nav-links a[href^="user-directory"]');
+  const dashboardLink = document.querySelector(".nav-links a[href^=\"class-dashboard\"]");
+  const rosterLink = document.querySelector(".nav-links a[href^=\"user-directory\"]");
 
   if (brandLink) {
     brandLink.href = `class-dashboard.html?course=${courseUuid}`;
