@@ -6,6 +6,7 @@ import express from "express";
 import fetch from "node-fetch";
 import path from "path";
 import { fileURLToPath } from "url";
+import * as userService from "../services/userService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -77,11 +78,159 @@ router.get("/google/callback", async (req, res) => {
     });
     const profile = await profileRes.json();
 
+    // Store or update user in database
+    try {
+      const existingUser = await userService.getUserByEmail(profile.email);
+      if (!existingUser) {
+        // Extract first and last name from profile
+        const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
+        const firstName = profile.given_name || nameParts[0] || "Unknown";
+        const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
+        
+        await userService.addUser({
+          firstName,
+          lastName,
+          email: profile.email
+        });
+      }
+    } catch (error) {
+      console.error("Error storing user:", error.message);
+      // Continue even if user storage fails
+    }
+
     // Store user in session
     req.session.user = profile;
     res.redirect("/auth/verification");
   } catch {
     res.redirect("/");
+  }
+});
+
+/**
+ * Create a new user (signup endpoint)
+ * 
+ * @name POST /auth/signup
+ * @param {Object} req.body - User data with firstName, lastName, and email
+ * @returns {Object} 201 - Created user object
+ * @returns {Object} 400 - Validation error
+ * @returns {Object} 409 - User already exists
+ */
+router.post("/signup", express.json(), async (req, res) => {
+  try {
+    const { firstName, lastName, email } = req.body;
+    
+    const newUser = await userService.addUser({ firstName, lastName, email });
+    
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: newUser
+    });
+  } catch (error) {
+    if (error.message.includes("already exists")) {
+      return res.status(409).json({
+        success: false,
+        error: error.message
+      });
+    }
+    
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get a user by email
+ * 
+ * @name GET /auth/users
+ * @param {string} req.query.email - Email address to search for
+ * @returns {Object} 200 - User object
+ * @returns {Object} 404 - User not found
+ * @returns {Object} 400 - Missing email parameter
+ */
+router.get("/users", async (req, res) => {
+  try {
+    const { email } = req.query;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: "Email query parameter is required"
+      });
+    }
+    
+    const user = await userService.getUserByEmail(email);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found"
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get all users
+ * 
+ * @name GET /auth/users/all
+ * @returns {Object} 200 - Array of all users
+ */
+router.get("/users/all", async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get current session user
+ * 
+ * @name GET /auth/session
+ * @returns {Object} 200 - Current user from session
+ * @returns {Object} 401 - Not authenticated
+ */
+router.get("/session", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+    
+    // Return user from session
+    res.status(200).json({
+      success: true,
+      user: req.session.user
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 });
 
