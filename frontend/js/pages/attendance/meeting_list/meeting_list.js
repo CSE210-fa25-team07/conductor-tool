@@ -58,11 +58,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if(e.target.matches('.open')){
       const id = e.target.dataset.id;
       // open editor with read-only view: for now open editor and scroll to form
-  window.location.href = `../meeting/meeting.html?edit=${id}`;
+      window.location.href = `../meeting/meeting.html?edit=${id}`;
     }
     if(e.target.matches('.edit')){
       const id = e.target.dataset.id;
-  window.location.href = `../meeting/meeting.html?edit=${id}`;
+      window.location.href = `../meeting/meeting.html?edit=${id}`;
     }
     if(e.target.matches('.delete')){
       deleteMeeting(e.target.dataset.id);
