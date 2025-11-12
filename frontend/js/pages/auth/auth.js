@@ -24,6 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
             handleVerification();
         });
     }
+    // ==================== REQUEST ACCESS PAGE ====================
+    // USER EMAIL DISPLAY
+    // Load user email on any page that needs it
+    const userEmailDisplay = document.getElementById("user-email-display");
+    if (userEmailDisplay) {
+        loadUserEmail();
+    }
+
+    // LOGOUT FUNCTIONALITY
+    const logoutButton = document.getElementById("logout-button");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            logout();
+        });
+    }
 });
 
 // ==================== LOGIN FUNCTIONS ====================
@@ -124,6 +140,49 @@ async function handleVerification() {
     }
 }
 
+// ==================== REQUEST ACCESS FUNCTIONS ====================
+
+/**
+ * Load and display user's email from session
+ */
+async function loadUserEmail() {
+    try {
+        const response = await fetch('/auth/session', {
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.user && data.user.email) {
+                const emailDisplay = document.getElementById('user-email-display');
+                if (emailDisplay) {
+                    emailDisplay.innerHTML = `
+                        <p class="response-txt">
+                            You signed in with:
+                        </p>
+                        <output class="email-display">${data.user.email}</output>
+                    `;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching user session:', error);
+    }
+}
+
+/**
+ * Handle user logout
+ */
+function logout() {
+    fetch('/logout', {
+        method: 'GET',
+        credentials: 'include'
+    }).then(() => {
+        window.location.href = '/';
+    }).catch((error) => {
+        console.error('Error during logout:', error);
+    });
+}
 // ==================== UTILITY FUNCTIONS ====================
 
 /**
