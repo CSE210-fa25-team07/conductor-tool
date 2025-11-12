@@ -37,7 +37,7 @@ app.get("/dashboard", (req, res) => {
   res.send(`
     <h1>Welcome, ${user.name}</h1>
     <p>Email: ${user.email}</p>
-    <img src="${pictureUrl}" alt="Profile Picture" onerror="this.onerror=null; this.src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg";" />
+    <img src="${pictureUrl}" alt="Profile Picture" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';" />
     <p><a href="/logout">Logout</a></p>
     <pre>${JSON.stringify(user, null, 2)}</pre>
   `);
