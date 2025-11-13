@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleGoogleLogin() {
     console.log("Google login button clicked");
     // Redirect to Google OAuth - backend handles user creation/login
-    window.location.href = "/auth/google";
+    window.location.href = "/google/auth";
     
     // TODO: Bring in Backend functionality
 }
