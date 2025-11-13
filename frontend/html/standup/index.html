@@ -4,11 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Standup Tool - Conductor</title>
-    <!-- NO CSS - Zero styling as requested -->
+
+    <!-- Shared Stylesheets -->
+    <link rel="stylesheet" href="../../css/shared/variables.css">
+    <link rel="stylesheet" href="../../css/shared/global.css">
+    <link rel="stylesheet" href="../../css/components/navigation.css">
 </head>
 <body>
+    <!-- Navigation will be injected by shared navigation component -->
+
     <div id="app"></div>
 
-    <script type="module" src="../../js/pages/standup/main.js"></script>
+    <!-- Footer will be injected by shared navigation component -->
+
+    <script type="module">
+        import { renderNavigation, renderFooter } from '../../js/shared/navigation.js';
+
+        // Render navigation and footer
+        renderNavigation('standup');
+        renderFooter();
+
+        // Import and initialize the standup tool
+        import('../../js/pages/standup/main.js');
+    </script>
 </body>
 </html>

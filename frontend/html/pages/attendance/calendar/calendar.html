@@ -4,11 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calendar</title>
+  <!-- Shared Stylesheets -->
+  <link rel="stylesheet" href="../../../../css/shared/variables.css">
+  <link rel="stylesheet" href="../../../../css/shared/global.css">
+  <link rel="stylesheet" href="../../../../css/components/navigation.css">
+
+  <!-- Page-specific Stylesheets -->
   <link rel="stylesheet" href="../../../../css/components/meeting.css" />
   <link rel="stylesheet" href="../../../../css/components/calendar.css" />
   <meta name="robots" content="noindex" />
   </head>
 <body class="calendar-view">
+  <!-- Navigation will be injected by shared navigation component -->
   <main class="calendar-container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h1>Calendar</h1>
@@ -47,6 +54,17 @@
     </div>
   </div>
 
-  <script type="module" src="../../../../js/pages/attendance/calendar/calendar.js"></script>
+  <!-- Footer will be injected by shared navigation component -->
+
+  <script type="module">
+    import { renderNavigation, renderFooter } from '../../../../js/shared/navigation.js';
+
+    // Render navigation and footer
+    renderNavigation('attendance');
+    renderFooter();
+
+    // Import and initialize the page
+    import('../../../../js/pages/attendance/calendar/calendar.js');
+  </script>
 </body>
 </html>

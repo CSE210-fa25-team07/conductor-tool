@@ -1,0 +1,239 @@
+/**
+ * Global Base Styles for Conductor Tool
+ * Consolidated from all features to eliminate duplication
+ *
+ * WHAT THIS CONSOLIDATES:
+ * - CSS resets from: directory/dashboard.css, auth/auth_stylesheet.css, components/calendar.css
+ * - All had identical resets: margin:0, padding:0, box-sizing:border-box
+ * - All used same font-family (Apple system fonts)
+ * - All used line-height: 1.5
+ *
+ * BEFORE: Each CSS file had duplicate resets (~20 lines each x 8 files = 160+ lines)
+ * AFTER: Single source of truth here
+ */
+
+/* Import variables first */
+@import './variables.css';
+
+/* ========================================
+   CSS RESET
+   ======================================== */
+
+/* Universal box-sizing - was duplicated in ALL feature CSS files */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   BASE HTML ELEMENTS
+   ======================================== */
+
+html {
+  font-size: 16px; /* Base font size for rem calculations */
+}
+
+body {
+  /* Font family - identical across directory, auth, attendance */
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Typography - was consistent across all features */
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+
+  /* Layout - directory used flex column for sticky footer */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  /* Background - using directory's light gray as default */
+  /* Auth used gradient, but only for login page - handled separately */
+  background: var(--bg-secondary);
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+p {
+  margin: 0 0 var(--space-4) 0;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-base);
+}
+
+.btn {
+  display: inline-block;
+  padding: var(--space-3) var(--space-6);
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  transition: background-color var(--transition-base);
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+  color: var(--text-inverse);
+}
+
+.btn-secondary {
+  background: var(--gray-200);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-300);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   FORMS
+   ======================================== */
+
+input,
+textarea,
+select {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* ========================================
+   LAYOUT CONTAINERS
+   ======================================== */
+
+/* Main content area - pushes footer to bottom */
+main {
+  flex: 1;
+  width: 100%;
+}
+
+/* Container with max-width - used in directory */
+.container {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Loading states */
+.loading {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+/* Hidden elements */
+.hidden {
+  display: none !important;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Text utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
+/* Spacing utilities */
+.mt-4 {
+  margin-top: var(--space-4);
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+.p-4 {
+  padding: var(--space-4);
+}

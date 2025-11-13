@@ -1,0 +1,145 @@
+/**
+ * Shared CSS Variables for Conductor Tool
+ * Unified design tokens for all features
+ *
+ * DESIGN DECISIONS:
+ * - Primary blue (#1967d2) taken from directory feature (most mature UI)
+ * - Secondary blue tones for accents and gradients
+ * - Gray scale standardized across all features
+ * - Spacing follows 4px base scale (common web standard)
+ * - Font family matches all existing features (Apple system fonts)
+ */
+
+:root {
+  /* Color Palette */
+  /* Primary: Blue from directory feature - used for main nav, primary actions */
+  --primary-color: #1967d2;
+  --primary-dark: #1557b0;
+  --primary-light: #4285f4;
+
+  /* Secondary: Also blue - used for accents, gradients */
+  --secondary-color: #4285f4;
+  --secondary-dark: #1557b0;
+  --accent-color: #5ba4fc;
+
+  /* Neutral Colors - standardized gray scale */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;   /* Used as main background in directory */
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;   /* Used for borders */
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+
+  /* Semantic Colors */
+  --success-color: #34a853;
+  --success-light: #e8f5e9;
+  --warning-color: #fbbc04;
+  --warning-light: #fff9e6;
+  --error-color: #ea4335;
+  --error-light: #fdecea;
+  --info-color: #4285f4;
+  --info-light: #e8f0fe;
+
+  /* Text Colors */
+  --text-primary: #333333;     /* Main text color used across all features */
+  --text-secondary: #666666;
+  --text-disabled: #9e9e9e;
+  --text-inverse: #ffffff;     /* White text on dark backgrounds */
+
+  /* Background Colors */
+  --bg-primary: #ffffff;       /* White cards and containers */
+  --bg-secondary: #f5f5f5;     /* Page background from directory */
+  --bg-tertiary: #fafafa;
+  --bg-calendar: #f4f4f9;      /* Special background from attendance calendar */
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Border Colors */
+  --border-light: #e0e0e0;     /* Light borders used throughout */
+  --border-medium: #bdbdbd;
+  --border-dark: #757575;
+
+  /* Shadows - from directory feature */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Typography - matches all existing features */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'Courier New', Courier, monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px - base font size */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;   /* Used across all features */
+  --line-height-relaxed: 1.75;
+
+  /* Spacing Scale - 4px base unit */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px - most common spacing */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px - used in directory for padding */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;  /* 4px */
+  --radius-md: 0.5rem;   /* 8px - used in cards */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-xl: 1rem;     /* 16px */
+  --radius-full: 9999px; /* Fully rounded */
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+
+  /* Z-Index Scale - for layering elements */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  /* Container Widths - from directory feature */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1400px;   /* Max width used in directory */
+
+  /* Navigation Height */
+  --nav-height: 64px;
+
+  /* Status Colors - used in directory team profiles */
+  --status-excellent: #34a853;
+  --status-on-track: #34a853;
+  --status-at-risk: #fbbc04;
+  --status-critical: #ea4335;
+}

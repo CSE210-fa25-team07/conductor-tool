@@ -4,12 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Create Meeting</title>
+  <!-- Shared Stylesheets -->
+  <link rel="stylesheet" href="../../../../css/shared/variables.css">
+  <link rel="stylesheet" href="../../../../css/shared/global.css">
+  <link rel="stylesheet" href="../../../../css/components/navigation.css">
+
+  <!-- Page-specific Stylesheets -->
   <link rel="stylesheet" href="../../../../css/components/meeting.css" />
   <!-- QR code generator and scanner (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
 </head>
 <body>
+  <!-- Navigation will be injected by shared navigation component -->
   <main class="meeting-page">
     <h1>Create / Manage Meetings</h1>
 
@@ -116,6 +123,17 @@
 
   <div id="toast" class="toast hidden" aria-live="polite"></div>
 
-  <script type="module" src="../../../../js/pages/attendance/meeting/meeting.js"></script>
+  <!-- Footer will be injected by shared navigation component -->
+
+  <script type="module">
+    import { renderNavigation, renderFooter } from '../../../../js/shared/navigation.js';
+
+    // Render navigation and footer
+    renderNavigation('attendance');
+    renderFooter();
+
+    // Import and initialize the page
+    import('../../../../js/pages/attendance/meeting/meeting.js');
+  </script>
 </body>
 </html>

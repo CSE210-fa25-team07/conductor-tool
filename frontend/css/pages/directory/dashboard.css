@@ -1,118 +1,15 @@
 /**
  * Dashboard Page Styles
- * Includes global styles and dashboard-specific styles
+ *
+ * NOTE: Global styles (CSS resets, navigation, footer, utility classes) have been
+ * removed from this file as they are now centralized in shared CSS files:
+ * - base.css: CSS resets and base typography
+ * - navigation.css: Navigation component styles
+ * - footer.css: Footer component styles
+ * - utilities.css: Utility classes
+ *
+ * This file now contains only dashboard-specific component styles.
  */
-
-/* ========================================
-   GLOBAL STYLES
-   ======================================== */
-
-/* CSS Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 16px;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  color: #333;
-  background: #f5f5f5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Navigation */
-.main-nav {
-  background: #1967d2;
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-brand a {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-}
-
-.nav-links a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-
-.nav-links a:hover {
-  opacity: 0.8;
-}
-
-/* Main Content */
-main {
-  flex: 1;
-  padding: 2rem 0;
-}
-
-/* Footer */
-.main-footer {
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
-  padding: 2rem;
-  margin-top: auto;
-}
-
-.footer-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  text-align: center;
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* Utility Classes */
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-.mt-4 { margin-top: 2rem; }
-
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-3 { margin-bottom: 1.5rem; }
-.mb-4 { margin-bottom: 2rem; }
 
 /* ========================================
    DASHBOARD SPECIFIC STYLES
@@ -122,73 +19,73 @@ main {
 .dashboard-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-8);
 }
 
 /* Loading State */
 .loading {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: var(--space-16) var(--space-8);
   font-size: 1.2rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Error Message */
 .error-message {
   max-width: 600px;
-  margin: 4rem auto;
-  padding: 2rem;
-  background: #fee;
+  margin: var(--space-16) auto;
+  padding: var(--space-8);
+  background: var(--error-light);
   border: 1px solid #fcc;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-align: center;
 }
 
 .error-message h2 {
-  color: #c33;
-  margin-bottom: 1rem;
+  color: var(--error-color);
+  margin-bottom: var(--space-4);
 }
 
 .error-message p {
-  color: #666;
-  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
 }
 
 /* Course Header */
 .course-header {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .course-title {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .course-title h1 {
   display: inline-block;
-  margin: 0 1rem 0 0;
+  margin: 0 var(--space-4) 0 0;
   font-size: 2rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .course-code,
 .course-term {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  margin-right: 0.5rem;
+  padding: var(--space-2) var(--space-4);
+  margin-right: var(--space-2);
   background: #e8f0fe;
-  color: #1967d2;
-  border-radius: 6px;
+  color: var(--primary-color);
+  border-radius: var(--radius-sm);
   font-weight: 600;
 }
 
 .course-info {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-8);
+  margin-bottom: var(--space-6);
 }
 
 .info-item {
@@ -198,78 +95,78 @@ main {
 
 .info-item .label {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.25rem;
 }
 
 .info-item .value {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .course-links {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 /* Dashboard Main Layout */
 .dashboard-main {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
 }
 
 .left-column,
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 /* Student Navigation Section */
 .student-navigation-section {
   max-width: 600px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto var(--space-8) auto;
 }
 
 /* Stats Section (Instructor View) */
 .stats-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stats-section h2 {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--space-6) 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .stat-card {
   background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
   text-align: center;
 }
 
 .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1967d2;
-  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  margin-bottom: var(--space-2);
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -277,30 +174,30 @@ main {
 .dashboard-navigation {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
+  gap: var(--space-4);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--space-4);
+  padding: var(--space-4);
   background: #f8f9fa;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-decoration: none;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
   transition: all 0.2s;
 }
 
 .nav-btn:hover {
   background: #e8f0fe;
-  border-color: #1967d2;
+  border-color: var(--primary-color);
 }
 
 .nav-btn .label small {
@@ -340,31 +237,31 @@ main {
 
 /* Recent Enrollments Section (Instructor View) */
 .recent-enrollments-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .recent-enrollments-section h2 {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--space-6) 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .enrollments-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .enrollment-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: var(--space-4);
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 
 .enrollment-student {
@@ -374,103 +271,103 @@ main {
 }
 
 .enrollment-student strong {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .enrollment-student a {
-  color: #333;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .enrollment-student a:hover {
-  color: #1967d2;
+  color: var(--primary-color);
 }
 
 .student-email {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .enrollment-details {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .enrollment-date {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Staff Section */
 .staff-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .staff-section h2 {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--space-6) 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .staff-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .staff-card {
   background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
 }
 
 .staff-info {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .staff-info h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 var(--space-2) 0;
   font-size: 1.25rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .staff-info h3 a {
-  color: #333;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .staff-info h3 a:hover {
-  color: #1967d2;
+  color: var(--primary-color);
 }
 
 .staff-role {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background: #e8f0fe;
-  color: #1967d2;
+  color: var(--primary-color);
   border-radius: 4px;
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 .contact-info {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
   font-size: 0.875rem;
 }
 
 .contact-info p {
-  margin: 0.5rem 0;
-  color: #666;
+  margin: var(--space-2) 0;
+  color: var(--text-secondary);
 }
 
 .contact-info a {
-  color: #1967d2;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -480,13 +377,13 @@ main {
 
 .office-hours {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .office-hours strong {
   display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
 }
 
 /* Status Badges */
@@ -511,9 +408,9 @@ main {
 /* Buttons */
 .btn {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem var(--space-6);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -521,8 +418,8 @@ main {
 }
 
 .btn-primary {
-  background: #1967d2;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--text-inverse);
 }
 
 .btn-primary:hover {
@@ -531,21 +428,21 @@ main {
 
 .btn-secondary {
   background: #f8f9fa;
-  color: #333;
+  color: var(--text-primary);
   border: 1px solid #ddd;
 }
 
 .btn-secondary:hover {
   background: #e8f0fe;
-  border-color: #1967d2;
+  border-color: var(--primary-color);
 }
 
 /* No Data Message */
 .no-data {
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
   text-align: center;
-  padding: 2rem;
+  padding: var(--space-8);
 }
 
 /* Profile Links */
@@ -556,7 +453,7 @@ main {
 }
 
 .profile-link:hover {
-  color: #1967d2;
+  color: var(--primary-color);
 }
 
 /* ========================================
@@ -581,22 +478,22 @@ main {
   /* Navigation */
   .nav-container {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-4);
     text-align: center;
   }
 
   .nav-links {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   /* Dashboard */
   .dashboard-container {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .course-header {
-    padding: 1.5rem;
+    padding: var(--space-6);
   }
 
   .course-title h1 {
@@ -605,6 +502,6 @@ main {
 
   .course-info {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-4);
   }
 }

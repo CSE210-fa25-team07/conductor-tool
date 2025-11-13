@@ -1,0 +1,185 @@
+/**
+ * Shared Navigation Component Styles
+ * Unified navigation bar for all features
+ *
+ * DESIGN SOURCE: Based on directory/dashboard.css navigation
+ * - Blue background (#1967d2) from directory feature
+ * - Horizontal layout with brand and links
+ * - Responsive design
+ *
+ * REPLACES:
+ * - Inline nav styles in directory HTML files
+ * - Missing navigation in attendance and standup features
+ * - Auth feature didn't have navigation (login page only)
+ *
+ * USAGE: All internal pages (not login) will use this navigation
+ */
+
+/* ========================================
+   MAIN NAVIGATION BAR
+   ======================================== */
+
+.main-nav {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: var(--nav-height);
+}
+
+.nav-container {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+/* ========================================
+   BRAND/LOGO
+   ======================================== */
+
+.nav-brand {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.nav-brand a {
+  color: var(--text-inverse);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.nav-brand a:hover {
+  opacity: 0.9;
+  color: var(--text-inverse);
+}
+
+/* ========================================
+   NAVIGATION LINKS
+   ======================================== */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.nav-links a {
+  color: var(--text-inverse);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-inverse);
+}
+
+.nav-links a.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   USER PROFILE IN NAV
+   ======================================== */
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-inverse);
+}
+
+.nav-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.nav-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+
+/* Hamburger menu button (hidden on desktop) */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-inverse);
+  font-size: var(--font-size-2xl);
+  cursor: pointer;
+  padding: var(--space-2);
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    right: -100%;
+    width: 250px;
+    height: calc(100vh - var(--nav-height));
+    background: var(--primary-color);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-4);
+    gap: var(--space-2);
+    transition: right var(--transition-base);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links a {
+    width: 100%;
+    padding: var(--space-3);
+  }
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.main-footer {
+  background: var(--gray-800);
+  color: var(--text-inverse);
+  padding: var(--space-6) 0;
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+  text-align: center;
+}
+
+.footer-container p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--gray-300);
+}

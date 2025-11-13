@@ -4,22 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile - Conductor</title>
+
+  <!-- Shared Stylesheets -->
+  <link rel="stylesheet" href="../../css/shared/variables.css">
+  <link rel="stylesheet" href="../../css/shared/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+
+  <!-- Page-specific Stylesheets -->
   <link rel="stylesheet" href="../../css/pages/directory/user-profile.css">
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="main-nav">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <a href="class-dashboard.html?course=test-course">Conductor</a>
-      </div>
-      <div class="nav-links">
-        <a href="class-dashboard.html?course=test-course">Dashboard</a>
-        <a href="user-profile.html?user=student-1-uuid" id="myProfileLink">My Profile</a>
-        <a href="#logout">Logout</a>
-      </div>
-    </div>
-  </nav>
+  <!-- Navigation will be injected by shared navigation component -->
 
   <!-- Main Content -->
   <main>
@@ -28,13 +23,18 @@
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="footer-container">
-      <p>&copy; 2024 Conductor. All rights reserved.</p>
-    </div>
-  </footer>
+  <!-- Footer will be injected by shared navigation component -->
 
-  <script type="module" src="../../js/pages/directory/user-profile/index.js"></script>
+  <!-- Scripts -->
+  <script type="module">
+    import { renderNavigation, renderFooter } from '../../js/shared/navigation.js';
+
+    // Render navigation and footer
+    renderNavigation('directory');
+    renderFooter();
+
+    // Import and initialize the page
+    import('../../js/pages/directory/user-profile/index.js');
+  </script>
 </body>
 </html>

@@ -5,23 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Class Dashboard - Conductor Tool</title>
 
-  <!-- Stylesheets -->
+  <!-- Shared Stylesheets -->
+  <link rel="stylesheet" href="../../css/shared/variables.css">
+  <link rel="stylesheet" href="../../css/shared/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+
+  <!-- Page-specific Stylesheets -->
   <link rel="stylesheet" href="../../css/pages/directory/dashboard.css">
 </head>
 <body>
-  <!-- Navigation Header (shared component placeholder) -->
-  <nav id="main-nav" class="main-nav">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <a href="class-dashboard.html?course=test-course">Conductor Tool</a>
-      </div>
-      <div class="nav-links">
-        <a href="class-dashboard.html?course=test-course">Dashboard</a>
-        <a href="user-profile.html?user=student-1-uuid" id="myProfileLink">My Profile</a>
-        <a href="#logout">Logout</a>
-      </div>
-    </div>
-  </nav>
+  <!-- Navigation will be injected by shared navigation component -->
 
   <!-- Main Dashboard Container -->
   <main id="dashboard-container" class="dashboard-container">
@@ -29,14 +22,18 @@
     <div class="loading">Loading dashboard...</div>
   </main>
 
-  <!-- Footer (shared component placeholder) -->
-  <footer class="main-footer">
-    <div class="footer-container">
-      <p>&copy; 2025 Conductor Tool. All rights reserved.</p>
-    </div>
-  </footer>
+  <!-- Footer will be injected by shared navigation component -->
 
   <!-- Scripts -->
-  <script type="module" src="../../js/pages/directory/class-dashboard/index.js"></script>
+  <script type="module">
+    import { renderNavigation, renderFooter } from '../../js/shared/navigation.js';
+
+    // Render navigation and footer
+    renderNavigation('directory');
+    renderFooter();
+
+    // Import and initialize the dashboard
+    import('../../js/pages/directory/class-dashboard/index.js');
+  </script>
 </body>
 </html>

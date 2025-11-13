@@ -14,7 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   color: #333;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -68,8 +68,8 @@ button {
     font-size: 1rem;
     font-weight: 600;
     color: white;
-    background: #667eea;
-    border: 2px solid #667eea;
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -77,9 +77,9 @@ button {
 }
 
 button:hover {
-    background: #5568d3;
-    border-color: #5568d3;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(25, 103, 210, 0.3);
     transform: translateY(-1px);
 }
 
@@ -89,14 +89,14 @@ button:active {
 
 
 a {
-    color: #667eea;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
 a:hover {
-    color: #764ba2;
+    color: var(--primary-dark);
     text-decoration: underline;
 }
 
