@@ -4,197 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Access - Conductor</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .icon {
-            width: 80px;
-            height: 80px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
-        }
-
-        h1 {
-            color: #2d3748;
-            font-size: 28px;
-            margin-bottom: 16px;
-        }
-
-        .message {
-            color: #718096;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .info-box {
-            background: #f7fafc;
-            border-left: 4px solid #667eea;
-            padding: 16px;
-            text-align: left;
-            margin: 24px 0;
-            border-radius: 4px;
-        }
-
-        .info-box h3 {
-            color: #2d3748;
-            font-size: 14px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .info-box p {
-            color: #718096;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .email-display {
-            background: #edf2f7;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            color: #2d3748;
-            margin: 16px 0;
-            word-break: break-all;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #2d3748;
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e0;
-        }
-    </style>
+    <link rel="stylesheet" href="../../css/pages/auth/auth_stylesheet.css">
 </head>
 <body>
-    <div class="container">
-        <div class="icon">🔒</div>
-        <h1>Access Restricted</h1>
-        <p class="message">
-            This application is currently only available to UCSD email accounts (@ucsd.edu).
-        </p>
-
-        <div id="user-email-display"></div>
-
-        <div class="info-box">
-            <h3>📧 Need Access?</h3>
-            <p>
-                If you believe you should have access to this application, please contact your system administrator 
-                or use a UCSD email address to sign in.
+    <header>
+        <h1>Conductor Tool</h1>
+    </header>
+    <main>
+        <section class="container">
+            <figure class="icon" aria-label="Lock icon">🔒</figure>
+            <h1 class="page-title">Access Restricted</h1>
+            <p class="message">
+                This application is currently only available to UCSD email accounts (@ucsd.edu).
             </p>
-        </div>
 
-        <div class="info-box">
-            <h3>✅ For UCSD Users</h3>
-            <p>
-                Please sign in again using your @ucsd.edu email address to access the system.
-            </p>
-        </div>
+            <article id="user-email-display"></article>
 
-        <div class="button-group">
-            <a href="/" class="btn btn-primary">Try Again</a>
-            <button onclick="logout()" class="btn btn-secondary">Logout</button>
-        </div>
-    </div>
+            <aside class="info-box">
+                <h3>📧 Need Access?</h3>
+                <p>
+                    If you believe you should have access to this application, please fill out the access request form to contact your system administrator 
+                    or use a UCSD email address to sign in.
+                </p>
+            </aside>
 
-    <script>
-        // Display user's email if available in session
-        async function loadUserEmail() {
-            try {
-                const response = await fetch('/auth/session', {
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.user && data.user.email) {
-                        const emailDisplay = document.getElementById('user-email-display');
-                        emailDisplay.innerHTML = `
-                            <p style="color: #718096; font-size: 14px; margin-bottom: 8px;">
-                                You signed in with:
-                            </p>
-                            <div class="email-display">${data.user.email}</div>
-                        `;
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching user session:', error);
-            }
-        }
+            <aside class="info-box">
+                <h3>✅ For UCSD Users</h3>
+                <p>
+                    Please sign in again using your @ucsd.edu email address to access the system.
+                </p>
+            </aside>
 
-        function logout() {
-            fetch('/logout', {
-                method: 'GET',
-                credentials: 'include'
-            }).then(() => {
-                window.location.href = '/';
-            });
-        }
+            <nav class="button-group">
+                <button id="logout-button" class="btn btn-primary">Back to Login</button>
+                <a href="/auth/request-form" class="btn btn-secondary">Request Access</a>
+            </nav>
+        </section>
+    </main>
 
-        // Load user email on page load
-        loadUserEmail();
-    </script>
+    <script src="../../js/pages/auth/auth.js"></script>
 </body>
 </html>

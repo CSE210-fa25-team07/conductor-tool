@@ -25,6 +25,10 @@ router.get("/request-access", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-access.html"));
 });
 
+router.get("/request-form", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-form.html"));
+});
+
 /**
  * Initiates Google OAuth login by redirecting the user to Google's OAuth consent screen to authenticate.
  *
@@ -94,17 +98,20 @@ router.get("/google/callback", async (req, res) => {
         return res.redirect("/dashboard");
       }
       
-      // User doesn't exist - check if UCSD email
-      const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
+      // // User doesn't exist - check if UCSD email
+      // const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
       
-      if (isUCSDEmail) {
-        // Case 2: New UCSD user -> redirect to verification page
-        // They will be added to DB after verification
-        return res.redirect("/auth/verification");
-      } else {
-        // Case 3: Non-UCSD email -> redirect to request form (no DB entry)
-        return res.redirect("/auth/request-access");
-      }
+      // if (isUCSDEmail) {
+      //   // Case 2: New UCSD user -> redirect to verification page
+      //   // They will be added to DB after verification
+      //   return res.redirect("/auth/verification");
+      // } else {
+      //   // Case 3: Non-UCSD email -> redirect to request form (no DB entry)
+      //   return res.redirect("/auth/request-access");
+      // }
+
+      // User doesn't exist -> send everyone to verification page
+      return res.redirect("/auth/verification");
       
     } catch (error) {
       console.error("Error processing user:", error.message);
