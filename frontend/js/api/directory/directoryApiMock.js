@@ -307,3 +307,73 @@ export async function getTeamProfile(teamUuid) {
   };
   /* eslint-enable camelcase */
 }
+
+/**
+ * Get paginated list of teams/groups for a course
+ * @param {string} courseUuid - Course UUID
+ * @param {number} page - Page number (1-indexed)
+ * @param {number} limit - Items per page
+ * @param {string} filter - Status filter (all, healthy, at-risk, critical, excellent)
+ * @returns {Promise<Object>} Paginated team list with counts
+ */
+export async function getCourseTeams(courseUuid, page = 1, limit = 12, filter = "all") {
+  void courseUuid; // Ignore courseUuid for mock data - return all teams
+  await delay(450);
+
+  /* eslint-disable camelcase */
+  // Extract all teams from teamProfiles
+  const allTeams = Object.values(mockData.teamProfiles || {})
+    .map(teamProfile => ({
+      team_uuid: teamProfile.team_info.team_uuid,
+      team_name: teamProfile.team_info.team_name,
+      project_name: teamProfile.team_info.project_name,
+      status_health: teamProfile.team_info.status_health,
+      tags: teamProfile.team_info.tags || [],
+      member_count: teamProfile.members ? teamProfile.members.length : 0,
+      course_uuid: teamProfile.team_info.course_uuid,
+      course_name: teamProfile.team_info.course_name
+    }));
+
+  // Count teams by status
+  const counts = {
+    all: allTeams.length,
+    healthy: allTeams.filter(t => t.status_health === "On Track").length,
+    at_risk: allTeams.filter(t => t.status_health === "At Risk").length,
+    critical: allTeams.filter(t => t.status_health === "Critical").length,
+    excellent: allTeams.filter(t => t.status_health === "Excellent").length
+  };
+
+  // Apply filter
+  let filteredTeams = allTeams;
+  if (filter === "healthy") {
+    filteredTeams = allTeams.filter(t => t.status_health === "On Track");
+  } else if (filter === "at-risk") {
+    filteredTeams = allTeams.filter(t => t.status_health === "At Risk");
+  } else if (filter === "critical") {
+    filteredTeams = allTeams.filter(t => t.status_health === "Critical");
+  } else if (filter === "excellent") {
+    filteredTeams = allTeams.filter(t => t.status_health === "Excellent");
+  }
+
+  // Calculate pagination
+  const totalCount = filteredTeams.length;
+  const totalPages = Math.ceil(totalCount / limit);
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  // Get page slice
+  const paginatedTeams = filteredTeams.slice(startIndex, endIndex);
+
+  // Get course name from courseOverview
+  const courseName = mockData.courseOverview.course_name || "Unknown Course";
+
+  return {
+    teams: paginatedTeams,
+    total_count: totalCount,
+    total_pages: totalPages,
+    current_page: page,
+    course_name: courseName,
+    counts: counts
+  };
+  /* eslint-enable camelcase */
+}
