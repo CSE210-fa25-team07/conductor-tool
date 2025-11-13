@@ -1,3 +1,4 @@
+/** @module authentication/frontend */
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -66,7 +67,12 @@ function handleGoogleLogin() {
 // ==================== VERIFICATION FUNCTIONS ====================
 
 /**
- * Handle verification code submission
+ * Handles verification form submission by validating the user's code
+ * and checking if the authenticated email belongs to UCSD.
+ *
+ * Retrieves the user session from `/auth/session`, confirms the email domain,
+ * and sends the entered verification code to `/auth/verify`. Redirects to the
+ * dashboard upon success or shows an alert on failure.
  */
 async function handleVerification() {
   const codeInput = document.getElementById("verification-code");
@@ -126,7 +132,7 @@ async function handleVerification() {
 // ==================== REQUEST ACCESS FUNCTIONS ====================
 
 /**
- * Load and display user's email from session
+ * Loads and displays the user's email address from the current session.
  */
 async function loadUserEmail() {
   try {
@@ -154,7 +160,7 @@ async function loadUserEmail() {
 }
 
 /**
- * Handle user logout
+ * Logs the user out by invalidating their session and redirecting to login.
  */
 function logout() {
   fetch("/logout", {

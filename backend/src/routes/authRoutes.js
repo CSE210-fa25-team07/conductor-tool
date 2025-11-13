@@ -1,5 +1,5 @@
 /**
- * @module authentication
+ * @module authentication/routes
  */
 import express from "express";
 import path from "path";
