@@ -274,16 +274,6 @@
   background: #ffb300;
 }
 
-#noRiskStudents {
-  padding: 40px 20px;
-  text-align: center;
-  color: #666;
-  overflow-y: auto;
-  flex: 1;
-}
-
-/* Scrollbar styling for student risk list */
-
 .student-risk-item {
   display: flex;
   justify-content: space-between;

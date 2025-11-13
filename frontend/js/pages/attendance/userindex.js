@@ -171,7 +171,7 @@ function showMeetingListModal(meetingType) {
   modalTitle.textContent = `${meetingType.type} Meetings (${meetingType.attended}/${meetingType.total})`;
 
   // Load meetings for this type
-  loadMeetingsForType(meetingType.type.toLowerCase().replace(" ", "-"), modalBody);
+  loadMeetingsForType(meetingType.type.toLowerCase().replace(/\s+/g, "-"), modalBody);
 
   // Show modal
   modal.classList.add("show");
