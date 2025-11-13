@@ -3,20 +3,62 @@
 // Reusable chart configurations and utilities
 // =============================================
 
+function readCssVar(varName, fallback) {
+  if (typeof window === "undefined" || !window.getComputedStyle) {
+    return fallback;
+  }
+
+  const value = window.getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+
+  return value || fallback;
+}
+
+function applyAlpha(color, alphaHex = "dd") {
+  if (!color) {
+    return color;
+  }
+
+  if (color.startsWith("#")) {
+    const hex = color.slice(1);
+    if (hex.length === 8) {
+      return `#${hex.slice(0, 6)}${alphaHex}`;
+    }
+    if (hex.length === 6) {
+      return `#${hex}${alphaHex}`;
+    }
+  }
+
+  return color;
+}
+
 const ChartHelper = {
-  // Default chart colors
+  // Default chart colors loaded from CSS custom properties with fallbacks
   colors: {
-    primary: "#4CAF50",
-    secondary: "#2196F3",
-    warning: "#ff9800",
-    danger: "#f44336",
-    info: "#00bcd4",
-    purple: "#9c27b0",
+    primary: readCssVar("--chart-color-primary", "#16891a"),
+    secondary: readCssVar("--chart-color-secondary", "#0c6dbc"),
+    warning: readCssVar("--chart-color-warning", "#ff9800"),
+    danger: readCssVar("--chart-color-danger", "#f44336"),
+    info: readCssVar("--chart-color-info", "#00bcd4"),
+    purple: readCssVar("--chart-color-purple", "#9c27b0"),
     gradient: {
-      green: ["rgba(76, 175, 80, 0.8)", "rgba(76, 175, 80, 0.2)"],
-      blue: ["rgba(33, 150, 243, 0.8)", "rgba(33, 150, 243, 0.2)"],
-      orange: ["rgba(255, 152, 0, 0.8)", "rgba(255, 152, 0, 0.2)"],
-      red: ["rgba(244, 67, 54, 0.8)", "rgba(244, 67, 54, 0.2)"]
+      green: [
+        readCssVar("--chart-gradient-green-start", "rgba(22, 137, 26, 0.85)"),
+        readCssVar("--chart-gradient-green-end", "rgba(22, 137, 26, 0.25)")
+      ],
+      blue: [
+        readCssVar("--chart-gradient-blue-start", "rgba(12, 109, 188, 0.85)"),
+        readCssVar("--chart-gradient-blue-end", "rgba(12, 109, 188, 0.25)")
+      ],
+      orange: [
+        readCssVar("--chart-gradient-orange-start", "rgba(255, 152, 0, 0.85)"),
+        readCssVar("--chart-gradient-orange-end", "rgba(255, 152, 0, 0.25)")
+      ],
+      red: [
+        readCssVar("--chart-gradient-red-start", "rgba(244, 67, 54, 0.85)"),
+        readCssVar("--chart-gradient-red-end", "rgba(244, 67, 54, 0.25)")
+      ]
     }
   },
 
@@ -223,7 +265,7 @@ const ChartHelper = {
         label: "Lecture",
         data: datasets.lecture,
         borderColor: this.colors.secondary,
-        backgroundColor: "rgba(33, 150, 243, 0.1)",
+        backgroundColor: this.colors.gradient.blue[1],
         borderWidth: 3,
         fill: true,
         tension: 0.4,
@@ -241,7 +283,7 @@ const ChartHelper = {
         label: "Office Hours",
         data: datasets.officeHours,
         borderColor: this.colors.warning,
-        backgroundColor: "rgba(255, 152, 0, 0.1)",
+        backgroundColor: this.colors.gradient.orange[1],
         borderWidth: 3,
         fill: true,
         tension: 0.4,
@@ -259,7 +301,7 @@ const ChartHelper = {
         label: "TA Check-ins",
         data: datasets.taCheckin,
         borderColor: this.colors.primary,
-        backgroundColor: "rgba(76, 175, 80, 0.1)",
+        backgroundColor: this.colors.gradient.green[1],
         borderWidth: 3,
         fill: true,
         tension: 0.4,
@@ -302,7 +344,7 @@ const ChartHelper = {
         borderColor: colors.map(c => c),
         borderWidth: 2,
         borderRadius: 8,
-        hoverBackgroundColor: colors.map(c => c + "dd")
+        hoverBackgroundColor: colors.map(color => applyAlpha(color, "dd"))
       }]
     };
 

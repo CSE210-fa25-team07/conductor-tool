@@ -3,10 +3,41 @@
 // Professor/TA view for class-wide attendance
 // =============================================
 
+/**
+ * @typedef {Object} StudentRisk
+ * @property {number} id - Unique student identifier.
+ * @property {string} name - Student full name.
+ * @property {string} [group] - Team or cohort assignment.
+ * @property {number} attendanceRate - Attendance percentage in range 0-100.
+ */
+
+/**
+ * @typedef {Object} ClassTrendData
+ * @property {string[]} dates - Ordered labels for each data point.
+ * @property {number[]} lecture - Attendance percentages for lectures.
+ * @property {number[]} officeHours - Attendance percentages for office hours.
+ * @property {number[]} taCheckin - Attendance percentages for TA check-ins.
+ */
+
+/**
+ * @typedef {Object} ClassAttendanceData
+ * @property {number} overallRate - Average attendance across all meetings.
+ * @property {number} totalStudents - Count of enrolled students.
+ * @property {number} totalMeetings - Number of meetings analysed.
+ * @property {StudentRisk[]} students - Full roster with latest attendance values.
+ * @property {StudentRisk[]} studentsAtRisk - Students below the defined threshold.
+ * @property {ClassTrendData} trendData - Time-series data for charting.
+ */
+
 let classChart = null;
 let currentClassData = null;
 
-// Initialize class analytics
+/**
+ * Initializes the class analytics dashboard by loading initial data
+ * and wiring up UI interactions.
+ *
+ * @returns {void}
+ */
 function initClassAnalytics() {
   // eslint-disable-next-line no-console
   console.log("Initializing Class Analytics...");
@@ -18,7 +49,13 @@ function initClassAnalytics() {
   setupClassEventListeners();
 }
 
-// Load class attendance data
+/**
+ * Fetches class-level attendance data based on the meeting filter
+ * and updates the associated UI widgets.
+ *
+ * @param {"all"|"lecture"|"office-hours"|"ta-checkin"} [meetingType="all"] - Meeting type filter.
+ * @returns {Promise<void>} Resolves once the UI is updated.
+ */
 async function loadClassData(meetingType = "all") {
   try {
     // Show loading state
@@ -40,7 +77,12 @@ async function loadClassData(meetingType = "all") {
   }
 }
 
-// Update statistics display
+/**
+ * Updates the headline metrics and at-risk count using the latest data payload.
+ *
+ * @param {ClassAttendanceData} data - Aggregated class attendance details.
+ * @returns {void}
+ */
 function updateClassStats(data) {
   // Update students at risk count in the risk section
   const threshold = parseFloat(document.getElementById("thresholdInput").value) || 75;
@@ -53,7 +95,13 @@ function updateClassStats(data) {
   }
 }
 
-// Update attendance trend chart
+/**
+ * Renders or updates the attendance line chart depending on the active meeting filter.
+ *
+ * @param {ClassTrendData} trendData - Time-series data for each meeting type.
+ * @param {"all"|"lecture"|"office-hours"|"ta-checkin"} [meetingType="all"] - Selected meeting type filter.
+ * @returns {void}
+ */
 function updateClassChart(trendData, meetingType = "all") {
   // Destroy existing chart
   if (classChart) {
@@ -103,7 +151,12 @@ function updateClassChart(trendData, meetingType = "all") {
   }
 }
 
-// Update students at risk list
+/**
+ * Populates the students-at-risk list with the provided roster, ordered by attendance.
+ *
+ * @param {StudentRisk[]} studentsAtRisk - Students currently below the threshold.
+ * @returns {void}
+ */
 function updateStudentRiskList(studentsAtRisk) {
   const listElement = document.getElementById("studentRiskList");
   const noRiskElement = document.getElementById("noRiskStudents");
@@ -145,12 +198,22 @@ function updateStudentRiskList(studentsAtRisk) {
   });
 }
 
-// Show student details (placeholder for future implementation)
+/**
+ * Displays a placeholder alert with student details. Future iterations
+ * will replace this with a dedicated profile view.
+ *
+ * @param {StudentRisk} student - Selected student record.
+ * @returns {void}
+ */
 function showStudentDetails(student) {
   alert(`Student Details:\nName: ${student.name}\nGroup: ${student.group || "Unassigned"}\nAttendance: ${student.attendanceRate}%\n\n(Full details view to be implemented)`);
 }
 
-// Set up event listeners
+/**
+ * Binds DOM event listeners for filters and threshold adjustments.
+ *
+ * @returns {void}
+ */
 function setupClassEventListeners() {
   // Meeting type filter
   const filterSelect = document.getElementById("meetingTypeFilter");
@@ -179,7 +242,11 @@ function setupClassEventListeners() {
   }
 }
 
-// Loading state
+/**
+ * Applies a temporary loading state to the class analytics card.
+ *
+ * @returns {void}
+ */
 function showLoadingState() {
   const card = document.getElementById("classAnalyticsCard");
   if (card) {
@@ -187,14 +254,25 @@ function showLoadingState() {
   }
 }
 
-// Error state
+/**
+ * Presents an error notification and restores the analytics card state.
+ *
+ * @param {string} message - Error message shown to the user.
+ * @returns {void}
+ */
 function showErrorState(message) {
   // eslint-disable-next-line no-console
   console.error(message);
   alert(message);
 }
 
-// Debounce utility
+/**
+ * Creates a debounced wrapper that delays execution until after the specified wait time.
+ *
+ * @param {Function} func - Callback to debounce.
+ * @param {number} wait - Delay in milliseconds.
+ * @returns {Function} Debounced function respecting the provided delay.
+ */
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {

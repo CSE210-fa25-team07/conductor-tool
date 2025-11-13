@@ -1,0 +1,20 @@
+:root {
+  --chart-color-primary: #16891a;
+  --chart-color-secondary: #0c6dbc;
+  --chart-color-warning: #ff9800;
+  --chart-color-danger: #f44336;
+  --chart-color-info: #00bcd4;
+  --chart-color-purple: #9c27b0;
+
+  --chart-gradient-green-start: rgba(22, 137, 26, 0.85);
+  --chart-gradient-green-end: rgba(22, 137, 26, 0.25);
+
+  --chart-gradient-blue-start: rgba(12, 109, 188, 0.85);
+  --chart-gradient-blue-end: rgba(12, 109, 188, 0.25);
+
+  --chart-gradient-orange-start: rgba(255, 152, 0, 0.85);
+  --chart-gradient-orange-end: rgba(255, 152, 0, 0.25);
+
+  --chart-gradient-red-start: rgba(244, 67, 54, 0.85);
+  --chart-gradient-red-end: rgba(244, 67, 54, 0.25);
+}

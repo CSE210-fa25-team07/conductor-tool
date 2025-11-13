@@ -3,10 +3,39 @@
 // Team profile view for group attendance
 // =============================================
 
+/**
+ * @typedef {Object} GroupTrendPoint
+ * @property {string} date - Label for the data point.
+ * @property {number} attendanceRate - Attendance percentage for the date.
+ */
+
+/**
+ * @typedef {Object} GroupMember
+ * @property {number} id - Unique identifier for the team member.
+ * @property {string} name - Team member name.
+ * @property {number} attendanceRate - Attendance percentage for the member.
+ */
+
+/**
+ * @typedef {Object} GroupAttendanceData
+ * @property {string} groupName - Display name of the group.
+ * @property {number} teamRate - Overall team attendance percentage.
+ * @property {number} memberCount - Number of members in the group.
+ * @property {number} meetingCount - Total meetings considered.
+ * @property {number} avgResponseTime - Average response time in hours.
+ * @property {GroupTrendPoint[]} trendData - Time-series data for the team chart.
+ * @property {GroupMember[]} [members] - Optional roster for future enhancements.
+ */
+
 let groupChart = null;
 let currentGroupData = null;
 
-// Initialize group analytics
+/**
+ * Initializes the group analytics card, loading initial data and events.
+ *
+ * @param {number} [groupId=1] - Identifier for the group to load.
+ * @returns {void}
+ */
 function initGroupAnalytics(groupId = 1) {
   // eslint-disable-next-line no-console
   console.log("Initializing Group Analytics...");
@@ -18,7 +47,12 @@ function initGroupAnalytics(groupId = 1) {
   setupGroupEventListeners();
 }
 
-// Load group attendance data
+/**
+ * Retrieves group attendance data and refreshes key UI components.
+ *
+ * @param {number} groupId - Identifier for the group to retrieve.
+ * @returns {Promise<void>} Resolves once the view has been updated.
+ */
 async function loadGroupData(groupId) {
   try {
     // Show loading state
@@ -29,7 +63,7 @@ async function loadGroupData(groupId) {
     currentGroupData = data;
 
     // Update UI
-    // updateGroupStats(data);
+    updateGroupStats(data);
     updateGroupChart(data.trendData);
     updateGroupInfo(data);
 
@@ -41,16 +75,41 @@ async function loadGroupData(groupId) {
 }
 
 // Update statistics cards
-// eslint-disable-next-line no-unused-vars
+/**
+ * Updates the summary statistic tiles with the provided group data.
+ *
+ * @param {GroupAttendanceData} data - Group attendance overview.
+ * @returns {void}
+ */
 function updateGroupStats(data) {
-  document.getElementById("teamAttendanceRate").textContent =
-    ChartHelper.formatPercentage(data.teamRate);
-  document.getElementById("teamMemberCount").textContent = data.memberCount;
-  document.getElementById("teamMeetingCount").textContent = data.meetingCount;
-  document.getElementById("avgResponseTime").textContent = data.avgResponseTime + "h";
+  const attendanceRateElement = document.getElementById("teamAttendanceRate");
+  const memberCountElement = document.getElementById("teamMemberCount");
+  const meetingCountElement = document.getElementById("teamMeetingCount");
+  const responseTimeElement = document.getElementById("avgResponseTime");
+
+  if (attendanceRateElement) {
+    attendanceRateElement.textContent = ChartHelper.formatPercentage(data.teamRate);
+  }
+
+  if (memberCountElement) {
+    memberCountElement.textContent = data.memberCount;
+  }
+
+  if (meetingCountElement) {
+    meetingCountElement.textContent = data.meetingCount;
+  }
+
+  if (responseTimeElement) {
+    responseTimeElement.textContent = `${data.avgResponseTime}h`;
+  }
 }
 
-// Update group information
+/**
+ * Synchronises the UI labels with the latest group information.
+ *
+ * @param {GroupAttendanceData} data - Group attendance overview.
+ * @returns {void}
+ */
 function updateGroupInfo(data) {
   const teamNameElement = document.getElementById("teamName");
   if (teamNameElement) {
@@ -58,7 +117,12 @@ function updateGroupInfo(data) {
   }
 }
 
-// Update attendance trend chart
+/**
+ * Renders or updates the group attendance chart using time-series data.
+ *
+ * @param {GroupTrendPoint[]} trendData - Chronological attendance records.
+ * @returns {void}
+ */
 function updateGroupChart(trendData) {
   const labels = trendData.map(d => d.date);
   const dataPoints = trendData.map(d => d.attendanceRate);
@@ -75,7 +139,11 @@ function updateGroupChart(trendData) {
   }
 }
 
-// Set up event listeners
+/**
+ * Binds UI interactions related to the group analytics card.
+ *
+ * @returns {void}
+ */
 function setupGroupEventListeners() {
   // Team members toggle (future feature)
   const toggleButton = document.getElementById("teamMembersToggle");
@@ -86,7 +154,11 @@ function setupGroupEventListeners() {
   }
 }
 
-// Toggle team members list (future feature)
+/**
+ * Expands or collapses the team member list container.
+ *
+ * @returns {void}
+ */
 function toggleTeamMembers() {
   const membersList = document.getElementById("teamMembersList");
   const expandIcon = document.querySelector(".expand-icon");
@@ -102,7 +174,11 @@ function toggleTeamMembers() {
   }
 }
 
-// Load team members (future feature)
+/**
+ * Lazily populates the team member list using the cached data set.
+ *
+ * @returns {void}
+ */
 function loadTeamMembers() {
   if (!currentGroupData || !currentGroupData.members) return;
 
@@ -131,12 +207,21 @@ function loadTeamMembers() {
   });
 }
 
-// Show member details
+/**
+ * Displays a placeholder alert for the selected team member.
+ *
+ * @param {GroupMember} member - Team member whose details are requested.
+ * @returns {void}
+ */
 function showMemberDetails(member) {
   alert(`Team Member Details:\nName: ${member.name}\nAttendance: ${member.attendanceRate}%\n\n(Full details view to be implemented)`);
 }
 
-// Loading state
+/**
+ * Applies a loading affordance to the group analytics card.
+ *
+ * @returns {void}
+ */
 function showGroupLoadingState() {
   const card = document.getElementById("groupAnalyticsCard");
   if (card) {
@@ -144,7 +229,12 @@ function showGroupLoadingState() {
   }
 }
 
-// Error state
+/**
+ * Displays an error notification and restores the card opacity.
+ *
+ * @param {string} message - Error message shown to the user.
+ * @returns {void}
+ */
 function showGroupErrorState(message) {
   // eslint-disable-next-line no-console
   console.error(message);

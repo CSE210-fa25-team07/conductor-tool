@@ -3,9 +3,45 @@
 // Individual student view with clickable bar chart
 // =============================================
 
+/**
+ * @typedef {Object} MeetingTypeSummary
+ * @property {string} type - Human-readable meeting type label.
+ * @property {number} rate - Attendance percentage for the type.
+ * @property {number} attended - Number of meetings attended.
+ * @property {number} total - Total meetings scheduled.
+ */
+
+/**
+ * @typedef {Object} UserAttendanceData
+ * @property {string} userName - Display name for the user.
+ * @property {number} overall - Aggregate attendance rate.
+ * @property {number} lecture - Lecture attendance percentage.
+ * @property {number} officeHours - Office hours attendance percentage.
+ * @property {number} teamMeeting - Team meeting attendance percentage.
+ * @property {MeetingTypeSummary[]} meetingTypes - Attendance breakdown by meeting type.
+ */
+
+/**
+ * @typedef {Object} MeetingDetail
+ * @property {number} id - Identifier for the meeting.
+ * @property {string} type - Machine-readable meeting type.
+ * @property {string} typeName - Display label for the type.
+ * @property {string} title - Meeting title.
+ * @property {string} date - ISO date string.
+ * @property {string} time - Meeting start time.
+ * @property {"attended"|"missed"} status - Attendance status flag.
+ * @property {string} location - Meeting location descriptor.
+ * @property {string} duration - Meeting duration summary (e.g. "90 min").
+ */
+
 let userChart = null;
 
-// Initialize user analytics
+/**
+ * Bootstraps the user analytics view for the supplied user identifier.
+ *
+ * @param {number} [userId=1] - Identifier for the user to load.
+ * @returns {void}
+ */
 function initUserAnalytics(userId = 1) {
   // eslint-disable-next-line no-console
   console.log("Initializing User Analytics...");
@@ -17,7 +53,12 @@ function initUserAnalytics(userId = 1) {
   setupUserEventListeners();
 }
 
-// Load user attendance data
+/**
+ * Fetches user-level analytics data and updates key UI components.
+ *
+ * @param {number} userId - Identifier for the user to retrieve.
+ * @returns {Promise<void>} Resolves once UI elements have been refreshed.
+ */
 async function loadUserData(userId) {
   try {
     // Show loading state
@@ -27,7 +68,7 @@ async function loadUserData(userId) {
     const data = await API.getUserAttendance(userId);
 
     // Update UI
-    // updateUserStats(data);
+    updateUserStats(data);
     updateUserChart(data.meetingTypes);
     updateUserInfo(data);
 
@@ -39,19 +80,41 @@ async function loadUserData(userId) {
 }
 
 // Update statistics cards
-// eslint-disable-next-line no-unused-vars
+/**
+ * Writes the numeric attendance metrics into the stat tiles.
+ *
+ * @param {UserAttendanceData} data - Attendance summary payload.
+ * @returns {void}
+ */
 function updateUserStats(data) {
-  document.getElementById("overallUserAttendance").textContent =
-    ChartHelper.formatPercentage(data.overall);
-  document.getElementById("lectureAttendance").textContent =
-    ChartHelper.formatPercentage(data.lecture);
-  document.getElementById("officeHoursAttendance").textContent =
-    ChartHelper.formatPercentage(data.officeHours);
-  document.getElementById("teamMeetingAttendance").textContent =
-    ChartHelper.formatPercentage(data.teamMeeting);
+  const overallElement = document.getElementById("overallUserAttendance");
+  const lectureElement = document.getElementById("lectureAttendance");
+  const officeHoursElement = document.getElementById("officeHoursAttendance");
+  const teamMeetingElement = document.getElementById("teamMeetingAttendance");
+
+  if (overallElement) {
+    overallElement.textContent = ChartHelper.formatPercentage(data.overall);
+  }
+
+  if (lectureElement) {
+    lectureElement.textContent = ChartHelper.formatPercentage(data.lecture);
+  }
+
+  if (officeHoursElement) {
+    officeHoursElement.textContent = ChartHelper.formatPercentage(data.officeHours);
+  }
+
+  if (teamMeetingElement) {
+    teamMeetingElement.textContent = ChartHelper.formatPercentage(data.teamMeeting);
+  }
 }
 
-// Update user information
+/**
+ * Updates the user-specific labels (e.g., display name).
+ *
+ * @param {UserAttendanceData} data - Attendance summary payload.
+ * @returns {void}
+ */
 function updateUserInfo(data) {
   const userNameElement = document.getElementById("userName");
   if (userNameElement) {
@@ -59,7 +122,12 @@ function updateUserInfo(data) {
   }
 }
 
-// Update attendance by type bar chart
+/**
+ * Renders the bar chart showing attendance by meeting type.
+ *
+ * @param {MeetingTypeSummary[]} meetingTypes - Attendance rates grouped by meeting type.
+ * @returns {void}
+ */
 function updateUserChart(meetingTypes) {
   const types = meetingTypes.map(mt => mt.type);
   const rates = meetingTypes.map(mt => mt.rate);
@@ -75,15 +143,20 @@ function updateUserChart(meetingTypes) {
     rates,
     (event, activeElements) => {
       if (activeElements.length > 0) {
-        // const index = activeElements[0].index;
-        // showMeetingListModal(meetingTypes[index]);
+        const index = activeElements[0].index;
+        showMeetingListModal(meetingTypes[index]);
       }
     }
   );
 }
 
 // Show meeting list modal when clicking on chart bar
-// eslint-disable-next-line no-unused-vars
+/**
+ * Opens the meeting list modal for the provided meeting type data.
+ *
+ * @param {MeetingTypeSummary} meetingType - Meeting type meta with counts used for the modal.
+ * @returns {void}
+ */
 function showMeetingListModal(meetingType) {
   // eslint-disable-next-line no-console
   console.log("Showing meeting list for:", meetingType.type);
@@ -104,7 +177,13 @@ function showMeetingListModal(meetingType) {
   modal.classList.add("show");
 }
 
-// Load meetings for a specific type and display in modal
+/**
+ * Loads meetings filtered by type and injects the rendered list into the modal.
+ *
+ * @param {string} type - Meeting type slug used for filtering.
+ * @param {HTMLElement} container - DOM container that receives the rendered list.
+ * @returns {Promise<void>} Resolves once the list has been rendered.
+ */
 async function loadMeetingsForType(type, container) {
   try {
     // Fetch meetings filtered by type
@@ -160,7 +239,12 @@ async function loadMeetingsForType(type, container) {
   }
 }
 
-// Get icon for meeting type
+/**
+ * Selects an emoji icon corresponding to the meeting type.
+ *
+ * @param {string} type - Meeting type slug.
+ * @returns {string} Icon representing the type.
+ */
 function getMeetingIcon(type) {
   const icons = {
     "lecture": "📚",
@@ -170,7 +254,12 @@ function getMeetingIcon(type) {
   return icons[type] || "📅";
 }
 
-// Format date for display
+/**
+ * Formats an ISO date string into a short, user-friendly label.
+ *
+ * @param {string} dateString - Date string to format.
+ * @returns {string} Localised date label.
+ */
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
@@ -180,12 +269,21 @@ function formatDate(dateString) {
   });
 }
 
-// Show meeting details (placeholder)
+/**
+ * Displays a placeholder alert for meeting details.
+ *
+ * @param {number} meetingId - Identifier for the meeting.
+ * @returns {void}
+ */
 function showMeetingDetails(meetingId) {
   alert(`Meeting Details (ID: ${meetingId})\n\nDetailed meeting information will be displayed here.`);
 }
 
-// Set up event listeners
+/**
+ * Binds DOM events for modal interactions in the user analytics view.
+ *
+ * @returns {void}
+ */
 function setupUserEventListeners() {
   // Close modal button
   const closeButton = document.getElementById("closeModal");
@@ -213,7 +311,11 @@ function setupUserEventListeners() {
   });
 }
 
-// Close meeting list modal
+/**
+ * Hides the meeting list modal if it is open.
+ *
+ * @returns {void}
+ */
 function closeMeetingListModal() {
   const modal = document.getElementById("meetingListModal");
   if (modal) {
@@ -221,7 +323,11 @@ function closeMeetingListModal() {
   }
 }
 
-// Loading state
+/**
+ * Applies a loading affordance to the user analytics card.
+ *
+ * @returns {void}
+ */
 function showUserLoadingState() {
   const card = document.getElementById("userAnalyticsCard");
   if (card) {
@@ -229,7 +335,12 @@ function showUserLoadingState() {
   }
 }
 
-// Error state
+/**
+ * Displays an error notification and restores the card state.
+ *
+ * @param {string} message - Error message presented to the user.
+ * @returns {void}
+ */
 function showUserErrorState(message) {
   // eslint-disable-next-line no-console
   console.error(message);
