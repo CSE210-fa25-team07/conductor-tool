@@ -10,12 +10,12 @@ export const mockData = {
     course_uuid: "course-123-uuid",
 
     // Change to "staff-1-uuid" for instructor view
-    user_uuid: "student-1-uuid",
-    // user_uuid: "staff-1-uuid",
+    // user_uuid: "student-1-uuid",
+    user_uuid: "staff-1-uuid",
 
     // Change to "instructor" or "ta" for instructor view
-    role: "student"
-    // role: "instructor"
+    // role: "student"
+    role: "instructor"
   },
 
   // Course overview data
@@ -1088,7 +1088,7 @@ export const mockData = {
         repo_url: "https://github.com/conductor-tool/iot-innovators",
         docs_url: "https://docs.example.com/iot-innovators",
         chat_url: "https://chat.example.com/iot-innovators",
-        status_health: "Needs Attention",
+        status_health: "Critical",
         status_summary: "Hardware procurement delays slowed integration tests.",
         status_updated: "2024-11-09",
         tags: ["IoT", "Embedded", "Web"]
@@ -1368,7 +1368,7 @@ export const mockData = {
         repo_url: "https://github.com/conductor-tool/design-driven",
         docs_url: "https://docs.example.com/design-driven",
         chat_url: "https://chat.example.com/design-driven",
-        status_health: "Stable",
+        status_health: "Excellent",
         status_summary: "Pilot extension ready; focusing on documentation polish.",
         status_updated: "2024-11-09",
         tags: ["Accessibility", "Browser Extensions"]

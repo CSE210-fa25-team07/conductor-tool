@@ -54,6 +54,19 @@ View all students and staff in the course: `http://localhost:8080/html/directory
 - Shows 18 total users (15 students + 3 staff)
 - Page navigation at the bottom
 
+### Group Directory
+
+#### Group Directory Page
+View all teams/groups in the course: `http://localhost:8080/html/directory/group-directory.html?course=test-course`
+
+**Features:**
+- Paginated grid of group cards (3 per page, 2 pages total)
+- Filter by status (All, On Track, At Risk, Critical, Excellent)
+- Click any card to navigate to that group's profile
+- Shows 6 total teams with project names, member counts, and status
+- Page navigation at the bottom (Previous, 1, 2, Next)
+- Each card displays team icon, name, project name, status badge, member count, and tags
+
 ### User Profile Page
 
 #### Student Profiles (15 total)
@@ -111,7 +124,7 @@ View all students and staff in the course: `http://localhost:8080/html/directory
 - Enrollment statistics (523 students, 498 active)
 - Recent enrollments list (clickable names link to student profiles)
 - Teaching staff cards with office hours (clickable names link to profiles)
-- Navigation buttons (Class Roster, My Profile)
+- Navigation buttons (Class Roster, Group Directory, My Profile)
 
 ### User Directory (Roster):
 - Paginated grid of user cards (12 per page, 2 pages total)
@@ -129,6 +142,14 @@ View all students and staff in the course: `http://localhost:8080/html/directory
 - Staff information (office location, research interests) - for staff users only
 - Team membership cards with leader badge (links to team profile pages)
 - Group profile pages surface mission, status, meeting cadence, members, milestones, and notes.
+
+### Group Directory:
+- Paginated grid of group cards (3 per page, 2 pages total)
+- Filter buttons (All, On Track, At Risk, Critical, Excellent) with counts
+- Group cards show team icon, name, project name, status badge, member count, and tags
+- Clickable cards navigate to group profiles
+- Page navigation (Previous, 1, 2, Next)
+- Results count display
 
 ## Switching to Real API
 
@@ -152,7 +173,7 @@ When the backend is ready:
    }
    ```
 
-3. Make similar changes in `studentView.js`, `instructorView.js`, `user-profile/index.js`, `group-profile/index.js`, and `user-directory/directoryView.js`:
+3. Make similar changes in `studentView.js`, `instructorView.js`, `user-profile/index.js`, `group-profile/index.js`, `user-directory/directoryView.js`, and `group-directory/directoryView.js`:
    ```javascript
    // Change from:
    import { ... } from "../../../api/directory/directoryApiMock.js";
@@ -161,7 +182,7 @@ When the backend is ready:
    import { ... } from "../../../api/directoryApi.js";
    ```
 
-4. For `user-directory/index.js`, remove the mockData import:
+4. For `user-directory/index.js` and `group-directory/index.js`, remove the mockData import:
    ```javascript
    // Remove:
    import { mockData } from "../../../api/directory/mockData.js";
@@ -178,7 +199,9 @@ frontend/
 │   └── pages/
 │       └── directory/
 │           ├── dashboard.css          # Dashboard styles
-│           └── user-profile.css       # User profile page styles
+│           ├── user-profile.css       # User profile page styles
+│           ├── user-directory.css     # User directory/roster styles
+│           └── group-directory.css    # Group directory styles
 ├── js/
 │   ├── api/
 │   │   ├── directoryApi.js            # Real API stubs (swap in apiClient once ready)
@@ -194,6 +217,9 @@ frontend/
 │           ├── group-profile/         # Team profile feature
 │           │   ├── index.js           # Main controller
 │           │   └── profileView.js     # Profile rendering
+│           ├── group-directory/       # Group directory feature
+│           │   ├── index.js           # Main controller
+│           │   └── directoryView.js   # Directory rendering with pagination
 │           ├── user-profile/          # User profile feature
 │           │   ├── index.js           # Main controller
 │           │   └── profileView.js     # Profile rendering
@@ -204,6 +230,7 @@ frontend/
     └── directory/
         ├── class-dashboard.html       # Dashboard HTML page
         ├── group-profile.html         # Group profile HTML page
+        ├── group-directory.html       # Group directory HTML page
         ├── user-profile.html          # User profile HTML page
         └── user-directory.html        # User directory/roster HTML page
 ```
@@ -214,11 +241,13 @@ Just edit the files and refresh your browser:
 
 - Edit Dashboard CSS: `frontend/css/pages/directory/dashboard.css`
 - Edit Profile CSS: `frontend/css/pages/directory/user-profile.css`
-- Edit Directory CSS: `frontend/css/pages/directory/user-directory.css`
+- Edit User Directory CSS: `frontend/css/pages/directory/user-directory.css`
+- Edit Group Directory CSS: `frontend/css/pages/directory/group-directory.css`
 - Edit Mock Data: `frontend/js/api/directory/mockData.js`
 - Edit Dashboard Views: `frontend/js/pages/directory/class-dashboard/*.js`
 - Edit Profile View: `frontend/js/pages/directory/user-profile/profileView.js`
-- Edit Directory View: `frontend/js/pages/directory/user-directory/directoryView.js`
+- Edit User Directory View: `frontend/js/pages/directory/user-directory/directoryView.js`
+- Edit Group Directory View: `frontend/js/pages/directory/group-directory/directoryView.js`
 - Edit HTML: `frontend/html/directory/*.html`
 
 **No build step required!** The HTML files reference JS and CSS directly with relative paths.

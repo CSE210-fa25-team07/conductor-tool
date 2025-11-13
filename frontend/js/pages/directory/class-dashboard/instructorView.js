@@ -185,6 +185,10 @@ function renderNavigationButtons(courseUuid) {
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
+      <a href="group-directory.html?course=${courseUuid}" class="nav-btn">
+        <span class="icon">🏢</span>
+        <span class="label">Group Directory</span>
+      </a>
       <a href="user-profile.html?user=staff-1-uuid" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
