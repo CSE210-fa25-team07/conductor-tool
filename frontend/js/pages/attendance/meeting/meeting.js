@@ -357,7 +357,7 @@ async function generateCodesForMeeting(id) {
     const canvas = document.createElement("canvas");
     if(qroot) qroot.appendChild(canvas);
     await QRCode.toCanvas(canvas, payload, { width: 200 });
-  } catch(err) { console.error("QR gen err", err); qroot.textContent = payload; }
+  } catch(err) { try{ showToast("QR generation failed"); }catch(e) {} if(qroot) qroot.textContent = payload; }
 }
 
 function startScanner() {
@@ -383,7 +383,7 @@ function startScanner() {
         saveAll();
         $("attendanceResult").textContent = `${student.name} recorded as present for ${meeting.title}`;
       }
-    }catch(e) { console.warn("scan result", result); }
+    }catch(e) { try{ showToast("Scan processing failed"); }catch(ex) {} }
   });
   scanner.start();
 }

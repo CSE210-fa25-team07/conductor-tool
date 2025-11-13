@@ -77,24 +77,24 @@ document.addEventListener("DOMContentLoaded", ()=>{
 function openEmbedEditorView(meetingId) {
   const url = new URL(window.location.origin + "/frontend/html/pages/attendance/meeting/meeting.html");
   url.searchParams.set("view", meetingId);
-  if(!window._ct_embed_modal) window._ct_embed_modal = createEmbedModal({ id: "embed-modal" });
-  window._ct_embed_modal.titleEl.textContent = "About the meeting";
-  window._ct_embed_modal.show(url.toString());
+  if(!window.ctEmbedModal) window.ctEmbedModal = createEmbedModal({ id: "embed-modal" });
+  window.ctEmbedModal.titleEl.textContent = "About the meeting";
+  window.ctEmbedModal.show(url.toString());
 }
 
 function openEmbedEditorEdit(meetingId) {
   const url = new URL(window.location.origin + "/frontend/html/pages/attendance/meeting/meeting.html");
   url.searchParams.set("edit", meetingId);
-  if(!window._ct_embed_modal) window._ct_embed_modal = createEmbedModal({ id: "embed-modal" });
-  window._ct_embed_modal.titleEl.textContent = "Edit meeting";
-  window._ct_embed_modal.show(url.toString());
+  if(!window.ctEmbedModal) window.ctEmbedModal = createEmbedModal({ id: "embed-modal" });
+  window.ctEmbedModal.titleEl.textContent = "Edit meeting";
+  window.ctEmbedModal.show(url.toString());
 }
 
 // listen for embedded save message to refresh list and close modal
 window.addEventListener("message", (ev)=>{
   if(!ev.data) return;
   if(ev.data.type === "meetingSaved") {
-    if(window._ct_embed_modal) window._ct_embed_modal.hide();
+    if(window.ctEmbedModal) window.ctEmbedModal.hide();
     render();
   }
 });
