@@ -214,7 +214,8 @@ async function handleAccessRequest() {
         firstName: document.getElementById('first-name').value,
         lastName: document.getElementById('last-name').value,
         email: document.getElementById('email').value,
-        institution: document.getElementById('institution').value
+        institution: document.getElementById('institution').value,
+        verificationCode: document.getElementById('verification-code').value
     };
     
     console.log("Submitting access request:", formData);

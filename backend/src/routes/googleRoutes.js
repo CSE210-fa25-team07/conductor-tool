@@ -80,20 +80,17 @@ router.get("/callback", async (req, res) => {
         return res.redirect("/dashboard");
       }
       
-      // // User doesn't exist - check if UCSD email
-      // const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
+      // User doesn't exist - check if UCSD email
+      const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
       
-      // if (isUCSDEmail) {
-      //   // Case 2: New UCSD user -> redirect to verification page
-      //   // They will be added to DB after verification
-      //   return res.redirect("/auth/verification");
-      // } else {
-      //   // Case 3: Non-UCSD email -> redirect to request form (no DB entry)
-      //   return res.redirect("/auth/request-access");
-      // }
-
-      // User doesn't exist -> send everyone to verification page
-      return res.redirect("/auth/verification");
+      if (isUCSDEmail) {
+        // Case 2: New UCSD user -> redirect to verification page
+        // They will be added to DB after verification
+        return res.redirect("/auth/verification");
+      } else {
+        // Case 3: Non-UCSD email -> redirect to request form (no DB entry)
+        return res.redirect("/auth/request-access");
+      }
       
     } catch (error) {
       console.error("Error processing user:", error.message);
