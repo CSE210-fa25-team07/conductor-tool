@@ -1,8 +1,17 @@
-// Standup Form Page - Student submits daily standup
-// NO STYLING - Pure HTML elements only
+/**
+ * @fileoverview Standup Form Page - Student submits daily standup
+ * NO STYLING - Pure HTML elements only
+ * @module standup/standupForm
+ */
 
 import { currentUser, getGithubActivityByUser, mockTeams } from "./mockData.js";
 
+/**
+ * Renders the standup submission form
+ * @function renderStandupForm
+ * @param {string} containerId - ID of the container element to render into
+ * @returns {void}
+ */
 export function renderStandupForm(containerId) {
   const container = document.getElementById(containerId);
 

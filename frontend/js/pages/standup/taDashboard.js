@@ -1,5 +1,8 @@
-// TA Multi-Team Dashboard - Shows overview of all teams
-// NO STYLING - Pure HTML elements only
+/**
+ * @fileoverview TA Multi-Team Dashboard - Shows overview of all teams
+ * NO STYLING - Pure HTML elements only
+ * @module standup/taDashboard
+ */
 
 import {
   mockTeams,
@@ -10,6 +13,12 @@ import {
   getGithubStatsByTeam
 } from "./mockData.js";
 
+/**
+ * Renders the TA dashboard with multi-team overview and alerts
+ * @function renderTADashboard
+ * @param {string} containerId - ID of the container element to render into
+ * @returns {void}
+ */
 export function renderTADashboard(containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";

@@ -1,5 +1,8 @@
-// Individual Student History - Shows personal standup history
-// NO STYLING - Pure HTML elements only
+/**
+ * @fileoverview Individual Student History - Shows personal standup history
+ * NO STYLING - Pure HTML elements only
+ * @module standup/individualHistory
+ */
 
 import {
   currentUser,
@@ -8,6 +11,12 @@ import {
   getGithubActivityByUser
 } from "./mockData.js";
 
+/**
+ * Renders the individual student's standup history and statistics
+ * @function renderIndividualHistory
+ * @param {string} containerId - ID of the container element to render into
+ * @returns {void}
+ */
 export function renderIndividualHistory(containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";

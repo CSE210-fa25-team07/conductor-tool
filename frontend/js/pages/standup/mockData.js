@@ -1,8 +1,22 @@
-// Mock data for standup demo
-// NO BACKEND - Pure frontend demo with mock data
-/* eslint-disable camelcase */
-// Using snake_case to match database schema conventions
+/**
+ * @fileoverview Mock data for standup demo
+ * NO BACKEND - Pure frontend demo with mock data
+ * Using snake_case to match database schema conventions
+ * @module standup/mockData
+ */
 
+/* eslint-disable camelcase */
+
+/**
+ * Mock user data
+ * @type {Array<Object>}
+ * @property {string} user_uuid - Unique user identifier
+ * @property {string} name - User's full name
+ * @property {string} email - User's email address
+ * @property {string} role - User's role (student, ta, instructor)
+ * @property {string} github_username - GitHub username
+ * @property {boolean} github_connected - Whether GitHub is connected
+ */
 export const mockUsers = [
   {
     user_uuid: "user-001",
@@ -46,6 +60,15 @@ export const mockUsers = [
   }
 ];
 
+/**
+ * Mock team data
+ * @type {Array<Object>}
+ * @property {string} team_uuid - Unique team identifier
+ * @property {string} name - Team name
+ * @property {string} course_uuid - Associated course identifier
+ * @property {string} github_org - GitHub organization name
+ * @property {string} github_org_url - GitHub organization URL
+ */
 export const mockTeams = [
   {
     team_uuid: "team-001",
@@ -63,6 +86,13 @@ export const mockTeams = [
   }
 ];
 
+/**
+ * Mock course data
+ * @type {Array<Object>}
+ * @property {string} course_uuid - Unique course identifier
+ * @property {string} name - Course name
+ * @property {string} term - Academic term
+ */
 export const mockCourses = [
   {
     course_uuid: "course-001",
@@ -71,6 +101,24 @@ export const mockCourses = [
   }
 ];
 
+/**
+ * Mock standup submission data
+ * @type {Array<Object>}
+ * @property {string} standup_uuid - Unique standup identifier
+ * @property {string} user_uuid - User who submitted the standup
+ * @property {string} team_uuid - Team associated with standup
+ * @property {string} course_uuid - Course associated with standup
+ * @property {string} date_submitted - ISO timestamp of submission
+ * @property {string} what_done - What was accomplished
+ * @property {string} what_next - What will be worked on next
+ * @property {string} blockers - Any blockers or issues
+ * @property {string} reflection - Personal reflection
+ * @property {number} sentiment_score - Sentiment score (-1 to 1)
+ * @property {string} sentiment_emoji - Emoji representing sentiment
+ * @property {string} visibility - Visibility level (Team, Instructor, Private)
+ * @property {string} created_at - ISO timestamp of creation
+ * @property {string} updated_at - ISO timestamp of last update
+ */
 export const mockStandups = [
   {
     standup_uuid: "standup-001",
@@ -186,6 +234,16 @@ export const mockStandups = [
   }
 ];
 
+/**
+ * Mock comment data
+ * @type {Array<Object>}
+ * @property {string} comment_uuid - Unique comment identifier
+ * @property {string} standup_uuid - Standup being commented on
+ * @property {string} commenter_uuid - User who made the comment
+ * @property {string} comment_text - Comment text content
+ * @property {string} created_at - ISO timestamp of creation
+ * @property {string} updated_at - ISO timestamp of last update
+ */
 export const mockComments = [
   {
     comment_uuid: "comment-001",
@@ -213,6 +271,17 @@ export const mockComments = [
   }
 ];
 
+/**
+ * Mock notification data
+ * @type {Array<Object>}
+ * @property {string} notif_uuid - Unique notification identifier
+ * @property {string} sender_uuid - User who triggered the notification
+ * @property {string} receiver_uuid - User receiving the notification
+ * @property {string} standup_uuid - Related standup
+ * @property {string} message - Notification message
+ * @property {string} status - Status (Read/Unread)
+ * @property {string} created_at - ISO timestamp of creation
+ */
 export const mockNotifications = [
   {
     notif_uuid: "notif-001",
@@ -243,36 +312,86 @@ export const mockNotifications = [
   }
 ];
 
-// Helper functions
+/**
+ * Gets a user by their unique identifier
+ * @function getUserById
+ * @param {string} userId - The user UUID to search for
+ * @returns {Object|undefined} The user object or undefined if not found
+ */
 export function getUserById(userId) {
   return mockUsers.find(u => u.user_uuid === userId);
 }
 
+/**
+ * Gets a team by their unique identifier
+ * @function getTeamById
+ * @param {string} teamId - The team UUID to search for
+ * @returns {Object|undefined} The team object or undefined if not found
+ */
 export function getTeamById(teamId) {
   return mockTeams.find(t => t.team_uuid === teamId);
 }
 
+/**
+ * Gets all standups for a specific team
+ * @function getStandupsByTeam
+ * @param {string} teamId - The team UUID to filter by
+ * @returns {Array<Object>} Array of standup objects for the team
+ */
 export function getStandupsByTeam(teamId) {
   return mockStandups.filter(s => s.team_uuid === teamId);
 }
 
+/**
+ * Gets all standups submitted by a specific user
+ * @function getStandupsByUser
+ * @param {string} userId - The user UUID to filter by
+ * @returns {Array<Object>} Array of standup objects for the user
+ */
 export function getStandupsByUser(userId) {
   return mockStandups.filter(s => s.user_uuid === userId);
 }
 
+/**
+ * Gets all comments for a specific standup
+ * @function getCommentsByStandup
+ * @param {string} standupId - The standup UUID to filter by
+ * @returns {Array<Object>} Array of comment objects for the standup
+ */
 export function getCommentsByStandup(standupId) {
   return mockComments.filter(c => c.standup_uuid === standupId);
 }
 
+/**
+ * Gets all notifications for a specific user
+ * @function getNotificationsByUser
+ * @param {string} userId - The user UUID to filter by
+ * @returns {Array<Object>} Array of notification objects for the user
+ */
 export function getNotificationsByUser(userId) {
   return mockNotifications.filter(n => n.receiver_uuid === userId);
 }
 
+/**
+ * Gets the count of unread notifications for a user
+ * @function getUnreadNotificationCount
+ * @param {string} userId - The user UUID to count for
+ * @returns {number} Number of unread notifications
+ */
 export function getUnreadNotificationCount(userId) {
   return mockNotifications.filter(n => n.receiver_uuid === userId && n.status === "Unread").length;
 }
 
-// Mock GitHub repositories in team orgs
+/**
+ * Mock GitHub repository data for team organizations
+ * @type {Array<Object>}
+ * @property {string} repo_uuid - Unique repository identifier
+ * @property {string} team_uuid - Associated team identifier
+ * @property {string} repo_name - Repository name
+ * @property {string} repo_full_name - Full repository name with org
+ * @property {string} description - Repository description
+ * @property {string} last_activity - ISO timestamp of last activity
+ */
 export const mockGithubRepos = [
   {
     repo_uuid: "repo-001",
@@ -308,7 +427,17 @@ export const mockGithubRepos = [
   }
 ];
 
-// Mock GitHub activity (commits, PRs, reviews, issues)
+/**
+ * Mock GitHub activity data (commits, PRs, reviews, issues)
+ * @type {Array<Object>}
+ * @property {string} activity_uuid - Unique activity identifier
+ * @property {string} user_uuid - User who performed the activity
+ * @property {string} repo_uuid - Repository where activity occurred
+ * @property {string} activity_type - Type of activity (commit, pr, review, issue)
+ * @property {string} activity_title - Title or description of activity
+ * @property {string} activity_url - GitHub URL to the activity
+ * @property {string} timestamp - ISO timestamp of activity
+ */
 export const mockGithubActivity = [
   // Alice's activity
   {
@@ -574,5 +703,9 @@ export function getGithubStatsByTeam(teamId, days = 7) {
   };
 }
 
-// Current logged in user (for demo purposes)
+/**
+ * Current logged in user for demo purposes
+ * @type {Object}
+ * @constant
+ */
 export const currentUser = mockUsers[0]; // Alice Chen

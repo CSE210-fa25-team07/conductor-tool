@@ -1,5 +1,8 @@
-// Team Dashboard Page - Shows team members' standups
-// NO STYLING - Pure HTML elements only
+/**
+ * @fileoverview Team Dashboard Page - Shows team members' standups
+ * NO STYLING - Pure HTML elements only
+ * @module standup/teamDashboard
+ */
 
 import {
   currentUser,
@@ -14,6 +17,12 @@ import {
   mockUsers
 } from "./mockData.js";
 
+/**
+ * Renders the team dashboard with team standups and collaboration features
+ * @function renderTeamDashboard
+ * @param {string} containerId - ID of the container element to render into
+ * @returns {void}
+ */
 export function renderTeamDashboard(containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";

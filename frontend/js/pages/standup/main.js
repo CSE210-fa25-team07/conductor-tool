@@ -1,6 +1,9 @@
-// Main Demo Entry Point for Standup Pages
-// NO STYLING - Pure HTML elements only
-// Navigation between different views
+/**
+ * @fileoverview Main Demo Entry Point for Standup Pages
+ * NO STYLING - Pure HTML elements only
+ * Navigation between different views
+ * @module standup/main
+ */
 
 import { renderStandupForm } from "./standupForm.js";
 import { renderTeamDashboard } from "./teamDashboard.js";
@@ -8,6 +11,12 @@ import { renderTADashboard } from "./taDashboard.js";
 import { renderIndividualHistory } from "./individualHistory.js";
 import { currentUser, getUnreadNotificationCount } from "./mockData.js";
 
+/**
+ * Initializes the standup demo application
+ * Creates the main UI structure with navigation and content container
+ * @function initStandupDemo
+ * @returns {void}
+ */
 export function initStandupDemo() {
   const appContainer = document.getElementById("app");
   if (!appContainer) {
@@ -44,6 +53,12 @@ export function initStandupDemo() {
   renderStandupForm("content");
 }
 
+/**
+ * Creates the navigation bar with buttons to switch between different views
+ * @function createNavigation
+ * @returns {HTMLElement} Navigation element with buttons and descriptions
+ * @private
+ */
 function createNavigation() {
   const nav = document.createElement("nav");
 
@@ -109,6 +124,13 @@ function createNavigation() {
   return nav;
 }
 
+/**
+ * Highlights the currently active navigation button by adding [ACTIVE] text
+ * @function highlightActiveButton
+ * @param {string} activeView - The view identifier to highlight (form, team, history, or ta)
+ * @returns {void}
+ * @private
+ */
 function highlightActiveButton(activeView) {
   // Simple highlight by adding text indicator (no CSS!)
   const views = ["form", "team", "history", "ta"];
