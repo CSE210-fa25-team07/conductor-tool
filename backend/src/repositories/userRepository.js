@@ -1,6 +1,6 @@
 /**
  * User Repository
- * 
+ *
  * Handles data persistence for users in a JSON file.
  * Provides CRUD operations for user management.
  */
@@ -50,23 +50,23 @@ async function saveUsers(users) {
  */
 async function addUser(user) {
   const users = await loadUsers();
-  
+
   // Check if user with email already exists
   const existingUser = users.find(u => u.email === user.email);
   if (existingUser) {
     throw new Error("User with this email already exists");
   }
-  
+
   // Add ID and timestamp
   const newUser = {
     id: Date.now().toString(),
     ...user,
     createdAt: new Date().toISOString()
   };
-  
+
   users.push(newUser);
   await saveUsers(users);
-  
+
   return newUser;
 }
 
