@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // ==================== VERIFICATION PAGE ====================
     const verificationForm = document.getElementById("verification-form");
-    const verificationCodeInput = document.getElementById("verification-code");
 
     // Check if we're on verification page and have user data in session
     if (verificationForm) {
@@ -38,6 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutButton.addEventListener("click", (e) => {
             e.preventDefault();
             logout();
+        });
+    }
+
+    // ==================== ACCESS REQUEST FORM PAGE ====================
+    const accessRequestForm = document.getElementById("access-request-form");
+    if (accessRequestForm) {
+        accessRequestForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            handleAccessRequest();
         });
     }
 });
@@ -71,15 +79,6 @@ async function checkUserSession() {
         if (response.ok) {
             const data = await response.json();
             if (data.user && data.user.email) {
-                // Check if UCSD email
-                const isUCSDEmail = data.user.email.endsWith("@ucsd.edu");
-                
-                if (!isUCSDEmail) {
-                    // Redirect to request access page if not UCSD email
-                    window.location.href = "/auth/request-access";
-                    return;
-                }
-                
                 displayUserInfo(data.user);
             }
         }
@@ -116,6 +115,26 @@ async function handleVerification() {
     console.log("Verifying code:", code);
     
     try {
+        // First, get user session to check email
+        const sessionResponse = await fetch("/auth/session", {
+            credentials: "include"
+        });
+        
+        if (!sessionResponse.ok) {
+            showMessage("Session expired. Please log in again.");
+            window.location.href = "/";
+            return;
+        }
+        
+        const sessionData = await sessionResponse.json();
+        const isUCSDEmail = sessionData.user.email.endsWith("@ucsd.edu");
+        
+        if (!isUCSDEmail) {
+            // Non-UCSD user -> redirect to request access
+            window.location.href = "/auth/request-access";
+            return;
+        }
+
         // Call backend to verify code and create user
         const response = await fetch("/auth/verify", {
             method: "POST",
@@ -182,6 +201,65 @@ function logout() {
     }).catch((error) => {
         console.error('Error during logout:', error);
     });
+}
+
+// ==================== ACCESS REQUEST FORM FUNCTIONS ====================
+
+/**
+ * Handle access request form submission
+ */
+async function handleAccessRequest() {
+    // Get form data
+    const formData = {
+        firstName: document.getElementById('first-name').value,
+        lastName: document.getElementById('last-name').value,
+        email: document.getElementById('email').value,
+        institution: document.getElementById('institution').value
+    };
+    
+    console.log("Submitting access request:", formData);
+    
+    // TODO: Send form data to backend API
+    // Example:
+    // try {
+    //     const response = await fetch('/api/access-request', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         credentials: 'include',
+    //         body: JSON.stringify(formData)
+    //     });
+    //     
+    //     if (response.ok) {
+    //         showSuccessMessage();
+    //     } else {
+    //         showMessage("Failed to submit access request. Please try again.");
+    //     }
+    // } catch (error) {
+    //     console.error('Error submitting access request:', error);
+    //     showMessage("An error occurred. Please try again.");
+    // }
+    
+    // For now, just show success message
+    showSuccessMessage();
+}
+
+/**
+ * Show success message after form submission
+ */
+function showSuccessMessage() {
+    const container = document.querySelector('.container');
+    
+    container.innerHTML = `
+        <figure class="icon" aria-label="Success icon" style="background: #48bb78;">✓</figure>
+        <h1 class="page-title">Request Submitted</h1>
+        <p class="message">
+            Your access request has been sent to the system administrator. 
+            You will get a notification once your account has been approved.
+        </p>
+        <nav class="button-group">
+            <button onclick="logout()" class="btn btn-primary">Return to Login</button>
+        </nav>
+    `;
 }
 // ==================== UTILITY FUNCTIONS ====================
 
