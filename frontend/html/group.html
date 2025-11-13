@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Dashboard - Conductor Tool</title>
+  <link rel="stylesheet" href="../css/pages/group.css">
+</head>
+<body>
+  <nav id="main-nav" class="main-nav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="class-dashboard.html?course=test-course">Conductor</a>
+      </div>
+      <div class="nav-links">
+        
+      </div>
+    </div>
+  </nav>
+  <main id="main" class="page page--group" role="main">
+    <header class="page-header">
+      <p class="backlink">
+        <a href="group-directory.html" class="backlink__link">← Back to Group Directory</a>
+      </p>
+      <h1 id="team-title" class="page-title">Loading team…</h1>
+      <p id="team-subtitle" class="page-subtitle"></p>
+      <div class="quick-links" aria-label="Team quick links">
+        <a id="repo-link" class="chip" href="#" target="_blank" rel="noopener" hidden>Repository</a>
+        <a id="docs-link" class="chip" href="#" target="_blank" rel="noopener" hidden>Docs</a>
+        <a id="chat-link" class="chip" href="#" target="_blank" rel="noopener" hidden>Chat</a>
+      </div>
+    </header>
+    <div id="status-message" class="status" role="status" aria-live="polite">Loading team…</div>
+    <section class="layout">
+      <div class="layout__main">
+        <section class="card" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="card__title">Overview</h2>
+          <div class="overview">
+            <div class="overview__row"><span class="label">Team:</span><span id="overview-team">—</span></div>
+            <div class="overview__row"><span class="label">Course:</span><span id="overview-course">—</span></div>
+            <div class="overview__row"><span class="label">Project:</span><span id="overview-project">—</span></div>
+            <div class="overview__row"><span class="label">Mission:</span><span id="overview-mission">—</span></div>
+            <div class="overview__row"><span class="label">Summary:</span><span id="overview-summary">—</span></div>
+            <div class="overview__row"><span class="label">Status:</span><span id="overview-status">—</span></div>
+            <div class="overview__row"><span class="label">Last Updated:</span><span id="overview-updated">—</span></div>
+            <div class="overview__row"><span class="label">Tags:</span><span id="overview-tags">—</span></div>
+          </div>
+        </section>
+        <section class="card" aria-labelledby="metrics-heading">
+          <h2 id="metrics-heading" class="card__title">Metrics</h2>
+          <div id="metrics-body" class="kv-list"></div>
+        </section>
+        <section class="card" aria-labelledby="members-heading">
+          <h2 id="members-heading" class="card__title">Members</h2>
+          <ul id="members-list" class="list" role="list"></ul>
+        </section>
+        <section class="card" aria-labelledby="updates-heading">
+          <h2 id="updates-heading" class="card__title">Recent Updates</h2>
+          <ul id="updates-list" class="list" role="list"></ul>
+        </section>
+        <section class="card" aria-labelledby="milestones-heading">
+          <h2 id="milestones-heading" class="card__title">Upcoming Milestones</h2>
+          <ul id="milestones-list" class="list" role="list"></ul>
+        </section>
+      </div>
+      <aside class="layout__side">
+        <section class="card" aria-labelledby="meetings-heading">
+          <h2 id="meetings-heading" class="card__title">Meeting Schedule</h2>
+          <ul id="meetings-list" class="list" role="list"></ul>
+        </section>
+        <section class="card" aria-labelledby="notes-heading">
+          <h2 id="notes-heading" class="card__title">Status Notes</h2>
+          <ul id="notes-list" class="list" role="list"></ul>
+        </section>
+        <section class="card" aria-labelledby="resources-heading">
+          <h2 id="resources-heading" class="card__title">Resources</h2>
+          <ul id="resources-list" class="list" role="list"></ul>
+        </section>
+      </aside>
+    </section>
+  </main>
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2025 Conductor Tool. All rights reserved.</p>
+    </div>
+  </footer>
+  <script type="module" src="../js/pages/directory/group/index.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Dashboard - Conductor Tool</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/pages/group-directory.css">
+</head>
+<body>
+  <!-- Navigation Header (shared component placeholder) -->
+  <nav id="main-nav" class="main-nav">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="class-dashboard.html?course=test-course">Conductor</a>
+      </div>
+      <div class="nav-links">
+        
+      </div>
+    </div>
+  </nav>
+
+  <main id="main" class="page page--group-directory" role="main">
+    <header class="page-header">
+      <h1 class="page-title">Group Directory</h1>
+      <p class="page-subtitle">Browse all project teams.</p>
+    </header>
+
+    <section class="directory" aria-labelledby="directory-heading">
+      <h2 id="directory-heading" class="visually-hidden">Teams</h2>
+
+      <div id="status-message" class="status" role="status" aria-live="polite"></div>
+
+      <ul id="group-list" class="group-grid" role="list" aria-label="Group cards"></ul>
+
+      <div class="directory-actions">
+        <button id="load-more" class="button button--load-more" type="button" aria-controls="group-list" hidden>
+          Load more groups
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (shared component placeholder) -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2025 Conductor Tool. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/pages/directory/group-directory/index.js"></script>
+</body>
+</html>
