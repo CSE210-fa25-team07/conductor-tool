@@ -17,14 +17,29 @@ const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = `http://localhost:${PORT}/auth/google/callback`;
 
+/**
+ * Serves verification page for new users
+ * @name GET /auth/verification
+ * @status IN USE
+ */
 router.get("/verification", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../frontend/html/auth/verification.html"));
 });
 
+/**
+ * Serves access restriction page for non-UCSD emails
+ * @name GET /auth/request-access
+ * @status IN USE
+ */
 router.get("/request-access", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-access.html"));
 });
 
+/**
+ * Request form page (placeholder)
+ * @name GET /auth/request-form
+ * @status IN USE
+ */
 router.get("/request-form", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-form.html"));
 });
@@ -33,6 +48,7 @@ router.get("/request-form", (req, res) => {
  * Initiates Google OAuth login by redirecting the user to Google's OAuth consent screen to authenticate.
  *
  * @name GET /auth/google
+ * @status IN USE
  */
 router.get("/google", (req, res) => {
   const redirectUrl =
@@ -56,6 +72,7 @@ router.get("/google", (req, res) => {
  * Redirects to /dashboard on success, or back to / on failure.
  *
  * @name GET /auth/google/callback
+ * @status IN USE
  */
 router.get("/google/callback", async (req, res) => {
   const code = req.query.code;
@@ -131,6 +148,7 @@ router.get("/google/callback", async (req, res) => {
  * @returns {Object} 200 - User object
  * @returns {Object} 404 - User not found
  * @returns {Object} 400 - Missing email parameter
+ * @status NOT IN USE - Debug/testing endpoint for checking if user exists
  */
 router.get("/users", async (req, res) => {
   try {
@@ -169,6 +187,7 @@ router.get("/users", async (req, res) => {
  * 
  * @name GET /auth/users/all
  * @returns {Object} 200 - Array of all users
+ * @status NOT IN USE - Debug/testing endpoint (security risk - remove in production)
  */
 router.get("/users/all", async (req, res) => {
   try {
@@ -193,6 +212,7 @@ router.get("/users/all", async (req, res) => {
  * @name GET /auth/session
  * @returns {Object} 200 - Current user from session
  * @returns {Object} 401 - Not authenticated
+ * @status IN USE - Frontend fetches current user session data
  */
 router.get("/session", async (req, res) => {
   try {
@@ -224,6 +244,7 @@ router.get("/session", async (req, res) => {
  * @returns {Object} 200 - Success, user created
  * @returns {Object} 400 - Invalid code or error
  * @returns {Object} 401 - Not authenticated
+ * @status IN USE - Verifies code and creates user in database
  */
 router.post("/verify", express.json(), async (req, res) => {
   try {
