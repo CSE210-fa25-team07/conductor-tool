@@ -11,6 +11,7 @@ import * as userRepository from "../repositories/userRepository.js";
  * Validate user data
  * @param {Object} userData - User data to validate
  * @throws {Error} If validation fails
+ * @status IN USE
  */
 function validateUserData(userData) {
   const { firstName, lastName, email } = userData;
@@ -38,6 +39,7 @@ function validateUserData(userData) {
  * Add a new user
  * @param {Object} userData - User data with firstName, lastName, and email
  * @returns {Promise<Object>} The created user object
+ * @status IN USE
  */
 async function addUser(userData) {
   // Validate input
@@ -58,6 +60,7 @@ async function addUser(userData) {
  * Get a user by email
  * @param {string} email - Email address to search for
  * @returns {Promise<Object|null>} User object or null if not found
+ * @status IN USE
  */
 async function getUserByEmail(email) {
   if (!email || typeof email !== "string") {
@@ -71,6 +74,7 @@ async function getUserByEmail(email) {
 /**
  * Get all users
  * @returns {Promise<Array>} Array of all user objects
+ * @status NOT IN USE
  */
 async function getAllUsers() {
   return await userRepository.getAllUsers();
@@ -80,6 +84,7 @@ async function getAllUsers() {
  * Get a user by ID
  * @param {string} id - User ID to search for
  * @returns {Promise<Object|null>} User object or null if not found
+ * @status NOT IN USE
  */
 async function getUserById(id) {
   if (!id || typeof id !== "string") {

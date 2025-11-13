@@ -36,7 +36,7 @@ router.get("/request-access", (req, res) => {
 });
 
 /**
- * Request form page (placeholder)
+ * Request form page
  * @name GET /auth/request-form
  * @status IN USE
  */
@@ -66,10 +66,10 @@ router.get("/google", (req, res) => {
  * OAuth callback route for Google login.
  *
  * Handles the redirect from Google after the user authenticates.
- * Exchanges the authorization code for tokens, fetches the user"s profile,
+ * Exchanges the authorization code for tokens, fetches the user's profile,
  * and stores it in the Express session.
  *
- * Redirects to /dashboard on success, or back to / on failure.
+ * Redirects to /dashboard if the user exists, or to /auth/verification if new.
  *
  * @name GET /auth/google/callback
  * @status IN USE
@@ -237,7 +237,8 @@ router.get("/session", async (req, res) => {
 });
 
 /**
- * Verify user and create account
+ * Verify the logged in user's verification code; if valid, create an
+ * account for the new user in the database, or return existing user.
  * 
  * @name POST /auth/verify
  * @param {string} req.body.code - Verification code
