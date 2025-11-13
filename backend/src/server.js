@@ -1,9 +1,17 @@
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
+import googleRoutes from "./routes/googleRoutes.js";
 import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 8081;
+
+app.use(express.json());
 
 app.use(session({
   secret: process.env.SESSION_SECRET,    // signs the session ID cookie
@@ -12,22 +20,29 @@ app.use(session({
   cookie: { secure: false }  // true if HTTPS/production
 }));
 
+// Middleware to check if user is authenticated
+function checkSession(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/");
+  }
+  next();
+}
+
+app.use(express.static(path.join(__dirname, "../../frontend")));
+
 app.get("/", (req, res) => {
-  res.send("<a href='/auth/google'>Login with Google</a>");
+  res.sendFile(path.join(__dirname, "../../frontend/html/auth/login.html"));
 });
 
-app.get("/dashboard", (req, res) => {
-  if (!req.session.user) return res.redirect("/");
-
+app.get("/dashboard", checkSession, (req, res) => {
   const user = req.session.user;
   const pictureUrl = user.picture;
 
   res.send(`
     <h1>Welcome, ${user.name}</h1>
     <p>Email: ${user.email}</p>
-    <img src="${pictureUrl}" alt="Profile Picture" onerror="this.onerror=null; this.src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg";" />
+    <img src='${pictureUrl}' alt="Profile Picture" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';" />
     <p><a href="/logout">Logout</a></p>
-    <pre>${JSON.stringify(user, null, 2)}</pre>
   `);
 });
 
@@ -37,6 +52,8 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.use("/auth", authRoutes);
+app.use("/auth", checkSession, authRoutes);
+
+app.use("/google", googleRoutes);
 
 app.listen(PORT);
