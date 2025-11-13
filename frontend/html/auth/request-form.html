@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Request Form - Conductor Tool</title>
+    <link rel="stylesheet" href="../../css/pages/auth/auth_stylesheet.css">
+</head>
+<body>
+    <header>
+        <h1>Conductor Tool</h1>
+    </header>
+    <main>
+        <section class="container">
+            <h1 class="page-title">Access Request Form</h1>
+            <p class="message">
+                Access to the system is only granted to students affiliated with UCSD but do not have a UCSD email. 
+                If you think you fall into this category, please fill out the form and wait for the system administrator's approval.
+            </p>
+
+            <form id="access-request-form" class="access-form">
+                <fieldset>
+                    <label for="first-name">First Name <span class="required">*</span></label>
+                    <input type="text" id="first-name" name="firstName" required>
+                </fieldset>
+
+                <fieldset>
+                    <label for="last-name">Last Name <span class="required">*</span></label>
+                    <input type="text" id="last-name" name="lastName" required>
+                </fieldset>
+
+                <fieldset>
+                    <label for="email">Email Associated with UCSD <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </fieldset>
+
+                <fieldset>
+                    <label for="institution">Associated Institution <span class="required">*</span></label>
+                    <input type="text" id="institution" name="institution" required 
+                           placeholder="e.g., UCSD Extension, Partner University">
+                </fieldset>
+
+                <fieldset>
+                    <label for="verification-code">Verification Code (Provided by the professor) <span class="required">*</span></label>
+                    <input type="text" id="verification-code" name="verificationCode" required>
+                </fieldset>
+
+                <nav class="button-group">
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                    <a href="/auth/request-access" class="btn btn-secondary">Cancel</a>
+                </nav>
+            </form>
+        </section>
+    </main>
+
+    <script src="../../js/pages/auth/auth.js"></script>
+</body>
+</html>
