@@ -6,17 +6,17 @@
 const ChartHelper = {
   // Default chart colors
   colors: {
-    primary: '#4CAF50',
-    secondary: '#2196F3',
-    warning: '#ff9800',
-    danger: '#f44336',
-    info: '#00bcd4',
-    purple: '#9c27b0',
+    primary: "#4CAF50",
+    secondary: "#2196F3",
+    warning: "#ff9800",
+    danger: "#f44336",
+    info: "#00bcd4",
+    purple: "#9c27b0",
     gradient: {
-      green: ['rgba(76, 175, 80, 0.8)', 'rgba(76, 175, 80, 0.2)'],
-      blue: ['rgba(33, 150, 243, 0.8)', 'rgba(33, 150, 243, 0.2)'],
-      orange: ['rgba(255, 152, 0, 0.8)', 'rgba(255, 152, 0, 0.2)'],
-      red: ['rgba(244, 67, 54, 0.8)', 'rgba(244, 67, 54, 0.2)']
+      green: ["rgba(76, 175, 80, 0.8)", "rgba(76, 175, 80, 0.2)"],
+      blue: ["rgba(33, 150, 243, 0.8)", "rgba(33, 150, 243, 0.2)"],
+      orange: ["rgba(255, 152, 0, 0.8)", "rgba(255, 152, 0, 0.2)"],
+      red: ["rgba(244, 67, 54, 0.8)", "rgba(244, 67, 54, 0.2)"]
     }
   },
 
@@ -31,7 +31,7 @@ const ChartHelper = {
   // Default configuration for line charts
   lineChartConfig(data, options = {}) {
     return {
-      type: 'line',
+      type: "line",
       data: data,
       options: {
         responsive: true,
@@ -39,35 +39,35 @@ const ChartHelper = {
         plugins: {
           legend: {
             display: options.showLegend !== false,
-            position: 'top',
+            position: "top",
             labels: {
               padding: 15,
               font: {
                 size: 12,
-                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'
+                family: "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto"
               }
             }
           },
           tooltip: {
-            mode: 'index',
+            mode: "index",
             intersect: false,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
             padding: 12,
             cornerRadius: 8,
             titleFont: {
               size: 14,
-              weight: 'bold'
+              weight: "bold"
             },
             bodyFont: {
               size: 13
             },
             callbacks: {
               label: function(context) {
-                let label = context.dataset.label || '';
+                let label = context.dataset.label || "";
                 if (label) {
-                  label += ': ';
+                  label += ": ";
                 }
-                label += Math.round(context.parsed.y * 10) / 10 + '%';
+                label += Math.round(context.parsed.y * 10) / 10 + "%";
                 return label;
               }
             }
@@ -88,11 +88,11 @@ const ChartHelper = {
             beginAtZero: true,
             max: 100,
             grid: {
-              color: 'rgba(0, 0, 0, 0.05)'
+              color: "rgba(0, 0, 0, 0.05)"
             },
             ticks: {
               callback: function(value) {
-                return value + '%';
+                return value + "%";
               },
               font: {
                 size: 11
@@ -101,8 +101,8 @@ const ChartHelper = {
           }
         },
         interaction: {
-          mode: 'nearest',
-          axis: 'x',
+          mode: "nearest",
+          axis: "x",
           intersect: false
         },
         ...options
@@ -113,7 +113,7 @@ const ChartHelper = {
   // Default configuration for bar charts
   barChartConfig(data, options = {}) {
     return {
-      type: 'bar',
+      type: "bar",
       data: data,
       options: {
         responsive: true,
@@ -123,19 +123,19 @@ const ChartHelper = {
             display: false
           },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
             padding: 12,
             cornerRadius: 8,
             titleFont: {
               size: 14,
-              weight: 'bold'
+              weight: "bold"
             },
             bodyFont: {
               size: 13
             },
             callbacks: {
               label: function(context) {
-                return 'Attendance: ' + Math.round(context.parsed.y * 10) / 10 + '%';
+                return "Attendance: " + Math.round(context.parsed.y * 10) / 10 + "%";
               }
             }
           }
@@ -148,7 +148,7 @@ const ChartHelper = {
             ticks: {
               font: {
                 size: 12,
-                weight: '500'
+                weight: "500"
               }
             }
           },
@@ -156,11 +156,11 @@ const ChartHelper = {
             beginAtZero: true,
             max: 100,
             grid: {
-              color: 'rgba(0, 0, 0, 0.05)'
+              color: "rgba(0, 0, 0, 0.05)"
             },
             ticks: {
               callback: function(value) {
-                return value + '%';
+                return value + "%";
               },
               font: {
                 size: 11
@@ -175,14 +175,15 @@ const ChartHelper = {
   },
 
   // Create attendance trend line chart with multiple datasets
-  createAttendanceTrendChart(canvasId, labels, dataPoints, label = 'Attendance Rate') {
+  createAttendanceTrendChart(canvasId, labels, dataPoints, label = "Attendance Rate") {
     const ctx = document.getElementById(canvasId);
     if (!ctx) {
+      // eslint-disable-next-line no-console
       console.error(`Canvas element with id '${canvasId}' not found`);
       return null;
     }
 
-    const gradient = this.createGradient(ctx.getContext('2d'), this.colors.gradient.green);
+    const gradient = this.createGradient(ctx.getContext("2d"), this.colors.gradient.green);
 
     const data = {
       labels: labels,
@@ -196,7 +197,7 @@ const ChartHelper = {
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-        pointBackgroundColor: '#fff',
+        pointBackgroundColor: "#fff",
         pointBorderColor: this.colors.primary,
         pointBorderWidth: 2
       }]
@@ -209,61 +210,62 @@ const ChartHelper = {
   createMultiLineAttendanceChart(canvasId, labels, datasets) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) {
+      // eslint-disable-next-line no-console
       console.error(`Canvas element with id '${canvasId}' not found`);
       return null;
     }
 
     const chartDatasets = [];
-    
+
     // Lecture dataset (Blue)
     if (datasets.lecture) {
       chartDatasets.push({
-        label: 'Lecture',
+        label: "Lecture",
         data: datasets.lecture,
         borderColor: this.colors.secondary,
-        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+        backgroundColor: "rgba(33, 150, 243, 0.1)",
         borderWidth: 3,
         fill: true,
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-        pointBackgroundColor: '#fff',
+        pointBackgroundColor: "#fff",
         pointBorderColor: this.colors.secondary,
         pointBorderWidth: 2
       });
     }
-    
+
     // Office Hours dataset (Orange)
     if (datasets.officeHours) {
       chartDatasets.push({
-        label: 'Office Hours',
+        label: "Office Hours",
         data: datasets.officeHours,
         borderColor: this.colors.warning,
-        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+        backgroundColor: "rgba(255, 152, 0, 0.1)",
         borderWidth: 3,
         fill: true,
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-        pointBackgroundColor: '#fff',
+        pointBackgroundColor: "#fff",
         pointBorderColor: this.colors.warning,
         pointBorderWidth: 2
       });
     }
-    
+
     // TA Check-in dataset (Green)
     if (datasets.taCheckin) {
       chartDatasets.push({
-        label: 'TA Check-ins',
+        label: "TA Check-ins",
         data: datasets.taCheckin,
         borderColor: this.colors.primary,
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+        backgroundColor: "rgba(76, 175, 80, 0.1)",
         borderWidth: 3,
         fill: true,
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-        pointBackgroundColor: '#fff',
+        pointBackgroundColor: "#fff",
         pointBorderColor: this.colors.primary,
         pointBorderWidth: 2
       });
@@ -281,6 +283,7 @@ const ChartHelper = {
   createAttendanceByTypeChart(canvasId, types, rates, onClick) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) {
+      // eslint-disable-next-line no-console
       console.error(`Canvas element with id '${canvasId}' not found`);
       return null;
     }
@@ -299,7 +302,7 @@ const ChartHelper = {
         borderColor: colors.map(c => c),
         borderWidth: 2,
         borderRadius: 8,
-        hoverBackgroundColor: colors.map(c => c + 'dd')
+        hoverBackgroundColor: colors.map(c => c + "dd")
       }]
     };
 
@@ -309,7 +312,7 @@ const ChartHelper = {
   // Update chart data
   updateChart(chart, newLabels, newData) {
     if (!chart) return;
-    
+
     chart.data.labels = newLabels;
     chart.data.datasets[0].data = newData;
     chart.update();
@@ -332,11 +335,11 @@ const ChartHelper = {
 
   // Format percentage
   formatPercentage(value) {
-    return Math.round(value * 10) / 10 + '%';
+    return Math.round(value * 10) / 10 + "%";
   }
 };
 
 // Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = ChartHelper;
 }
