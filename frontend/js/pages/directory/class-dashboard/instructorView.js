@@ -7,7 +7,6 @@
 import {
   getCourseOverview,
   getEnrollmentStats,
-  getAssignmentStats,
   getRecentEnrollments,
   getCourseStaff
 } from "../../../api/directory/directoryApiMock.js";
@@ -74,83 +73,7 @@ function renderEnrollmentStats(stats) {
           <div class="stat-value">${stats.dropped_students || 0}</div>
           <div class="stat-label">Dropped Students</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">${stats.average_grade !== null ? parseFloat(stats.average_grade).toFixed(2) + "%" : "N/A"}</div>
-          <div class="stat-label">Average Grade</div>
-        </div>
       </div>
-    </div>
-  `;
-}
-
-/**
- * Render assignment statistics table
- * @param {Array} assignments - List of assignments with statistics
- * @returns {string} HTML string
- */
-function renderAssignmentStats(assignments) {
-  if (!assignments || assignments.length === 0) {
-    return `
-      <div class="assignment-stats-section">
-        <h2>Assignment Statistics</h2>
-        <p class="no-data">No assignments yet</p>
-      </div>
-    `;
-  }
-
-  const assignmentRows = assignments.map(assignment => {
-    const dueDate = assignment.due_date
-      ? new Date(assignment.due_date).toLocaleDateString()
-      : "No due date";
-
-    const submissionRate = assignment.total_students > 0
-      ? `${assignment.submissions_count} / ${assignment.total_students} (${((assignment.submissions_count / assignment.total_students) * 100).toFixed(1)}%)`
-      : "N/A";
-
-    const gradingRate = assignment.submissions_count > 0
-      ? `${assignment.graded_count} / ${assignment.submissions_count} (${((assignment.graded_count / assignment.submissions_count) * 100).toFixed(1)}%)`
-      : "N/A";
-
-    const avgScore = assignment.average_score !== null
-      ? `${parseFloat(assignment.average_score).toFixed(2)} / ${assignment.points_possible} (${parseFloat(assignment.average_percentage).toFixed(1)}%)`
-      : "N/A";
-
-    const publishedStatus = assignment.is_published ? "Published" : "Draft";
-
-    return `
-      <tr>
-        <td>${assignment.assignment_name}</td>
-        <td><span class="category-badge">${assignment.assignment_category}</span></td>
-        <td>${dueDate}</td>
-        <td>${assignment.points_possible}</td>
-        <td>${submissionRate}</td>
-        <td>${gradingRate}</td>
-        <td>${avgScore}</td>
-        <td><span class="status-badge status-${publishedStatus.toLowerCase()}">${publishedStatus}</span></td>
-      </tr>
-    `;
-  }).join("");
-
-  return `
-    <div class="assignment-stats-section">
-      <h2>Assignment Statistics</h2>
-      <table class="assignment-stats-table">
-        <thead>
-          <tr>
-            <th>Assignment</th>
-            <th>Category</th>
-            <th>Due Date</th>
-            <th>Points</th>
-            <th>Submissions</th>
-            <th>Graded</th>
-            <th>Average Score</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${assignmentRows}
-        </tbody>
-      </table>
     </div>
   `;
 }
@@ -177,7 +100,7 @@ function renderRecentEnrollments(enrollments) {
     return `
       <div class="enrollment-item">
         <div class="enrollment-student">
-          <strong>${enrollment.first_name} ${enrollment.last_name}</strong>
+          <strong><a href="user-profile.html?user=${enrollment.user_uuid}" class="profile-link">${enrollment.first_name} ${enrollment.last_name}</a></strong>
           <span class="student-email">${enrollment.email}</span>
         </div>
         <div class="enrollment-details">
@@ -225,7 +148,7 @@ function renderStaff(staff) {
     return `
       <div class="staff-card">
         <div class="staff-info">
-          <h3>${member.first_name} ${member.last_name}</h3>
+          <h3><a href="user-profile.html?user=${member.user_uuid}" class="profile-link">${member.first_name} ${member.last_name}</a></h3>
           <span class="staff-role">${role}</span>
         </div>
         <div class="contact-info">
@@ -258,19 +181,15 @@ function renderStaff(staff) {
 function renderNavigationButtons(courseUuid) {
   return `
     <div class="dashboard-navigation">
-      <a href="/roster?course=${courseUuid}" class="nav-btn">
+      <a href="user-directory.html?course=${courseUuid}" class="nav-btn">
         <span class="icon">👥</span>
         <span class="label">Class Roster</span>
       </a>
-      <a href="/grades?course=${courseUuid}" class="nav-btn">
-        <span class="icon">📊</span>
-        <span class="label">Manage Grades</span>
+      <a href="group-directory.html?course=${courseUuid}" class="nav-btn">
+        <span class="icon">🏢</span>
+        <span class="label">Group Directory</span>
       </a>
-      <a href="/assignments?course=${courseUuid}" class="nav-btn">
-        <span class="icon">📝</span>
-        <span class="label">Assignments</span>
-      </a>
-      <a href="/profile" class="nav-btn">
+      <a href="user-profile.html?user=staff-1-uuid" class="nav-btn">
         <span class="icon">👤</span>
         <span class="label">My Profile</span>
       </a>
@@ -289,10 +208,9 @@ export async function renderInstructorDashboard(courseUuid, container) {
     container.innerHTML = "<div class=\"loading\">Loading dashboard...</div>";
 
     // Fetch all data in parallel
-    const [courseData, enrollmentStats, assignmentStats, recentEnrollments, staffData] = await Promise.all([
+    const [courseData, enrollmentStats, recentEnrollments, staffData] = await Promise.all([
       getCourseOverview(courseUuid),
       getEnrollmentStats(courseUuid),
-      getAssignmentStats(courseUuid),
       getRecentEnrollments(courseUuid, 10),
       getCourseStaff(courseUuid)
     ]);
@@ -313,13 +231,12 @@ export async function renderInstructorDashboard(courseUuid, container) {
           </div>
         </div>
 
-        ${renderAssignmentStats(assignmentStats)}
         ${renderStaff(staffData)}
       </div>
     `;
 
     // Add event listeners if needed
-    setupEventListeners(container);
+    setupEventListeners();
 
   } catch (error) {
     container.innerHTML = `
@@ -335,7 +252,7 @@ export async function renderInstructorDashboard(courseUuid, container) {
  * Setup event listeners for interactive elements
  * @param {HTMLElement} _container - Dashboard container
  */
-function setupEventListeners(_container) {
+function setupEventListeners() {
   // Add any interactive behavior here
   // For example: sorting tables, filtering, etc.
 }

@@ -70,7 +70,7 @@ function functionName(param1, param2) {
 ``` 
 
 ## Running the Web App (Local)
-> [!NOTE] Disclaimer
+> [!NOTE]
 > In order to use authentication (Log in with Google), you must have the `.env` file.
 > The `.env` file contains the necessary secrets and information that our web app uses for the Google Auth API.
 > Please ask the authentication team for more info.

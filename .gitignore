@@ -1,3 +1,6 @@
 node_modules/
 /docs/
 .env
+.claude/
+.DS_Store
+.vscode/
