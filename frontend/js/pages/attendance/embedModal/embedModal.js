@@ -1,4 +1,6 @@
-// embedModal.js — small reusable embed modal component for iframe-based editors
+/** @module attendance/embedModal */
+
+// This is used for embedding the meeting view in the list and calendar views
 export function createEmbedModal(opts = {}) {
   const id = opts.id || "embed-modal";
   // don't create twice

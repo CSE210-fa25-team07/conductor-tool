@@ -1,4 +1,10 @@
-// calendar.js — calendar UI integrated with shared meetings storage
+/** @module attendance/calendar */
+
+// Calendar functionality for processing the stored data and
+// displaying it on the page.
+
+// TODO(bukhradze) This is designed for the mock data, will have to be rewritten for
+// future integration with the proper backend and databases
 import { createEmbedModal } from "../embedModal/embedModal.js";
 const calendarEl = document.getElementById("calendar");
 const monthYear = document.getElementById("month-year");

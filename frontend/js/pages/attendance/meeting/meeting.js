@@ -1,4 +1,12 @@
-// meeting.js — handles meeting creation/editing, invitees, and attendance QR/code
+/** @module attendance/meeting */
+
+// ===== MEETING =====
+// This part handles the logic for a single meeting
+
+
+// Mock student data for the demo purposes.
+// TODO(bukhradze) Obviously, move this to the database and implement
+// a backend way to access this data
 const STUDENTS = [
   { id: "s1", name: "Alice Johnson", team: "Team A" },
   { id: "s2", name: "Bob Smith", team: "Team A" },
@@ -10,6 +18,8 @@ const STUDENTS = [
   { id: "s8", name: "Hannah Park", team: "Team B" }
 ];
 
+// TODO(bukhradze): This is also in `meeting_list`, this should be
+// backend logic. But, again, for the demo it's fine.
 const LS_KEY = "ct_meetings_v1";
 const TYPE_LABELS = { lecture: "Lecture", office: "Office Hours", ta: "TA Check-In", group: "Discussion/Team Meeting" };
 let meetings = [];
@@ -19,19 +29,31 @@ let isViewing = false;
 let isEditing = false;
 let currentLoadedMeetingId = null;
 
+// Creates a random ID for a meeting.
+// TODO(bukhradze) change to UUID and generate using pg functions
+// when we move to proper db/backend implementation
 function uid() { return "m_" + Math.random().toString(36).slice(2,9); }
 
+// Load from local storage (for mock data)
+// TODO(bukhradze) convert to backend -> database
 function load() {
   const raw = localStorage.getItem(LS_KEY);
   meetings = raw ? JSON.parse(raw) : [];
 }
 
+// Save all meetings to local storage
+// TODO(bukhradze) convert to backend->database
 function saveAll() {
   localStorage.setItem(LS_KEY, JSON.stringify(meetings));
 }
 
+// Fast element getter by id
+// TODO(bukhradze) there is a similar function in `meeting_list`, maybe make it
+// a helper function available everywhere?
 function $(id) {return document.getElementById(id);}
 
+
+// Fills the team selector with whatever teams are found in the data
 function populateTeams() {
   const teams = Array.from(new Set(STUDENTS.map(s=>s.team)));
   const sel = $("teamSelect");
@@ -39,6 +61,8 @@ function populateTeams() {
   sel.innerHTML = "<option value=\"\">--Pick team--</option>" + teams.map(t => `<option value="${t}">${t}</option>`).join("");
 }
 
+// Search students
+// TODO(bukhradze) conver to backend -> database
 function renderStudentResults(filter="") {
   const ul = $("studentResults");
   if(!ul) return; // page may omit the search UI when used as a lightweight viewer
@@ -79,6 +103,8 @@ function populateMeetingPicker() {
   sel.innerHTML = meetings.map(m => `<option value="${m.id}">${m.title} — ${m.date} ${m.time}</option>`).join("") || "<option value=\"\">(no meetings)</option>";
 }
 
+
+// ===== MEETING CREATION/EDITING/VIEWING INTERFACE =====
 function initForm() {
   populateTeams();
   renderStudentResults();
@@ -263,6 +289,7 @@ function setFormEditable(val) {
   const cancelBtn = $("cancelEdit"); if(cancelBtn) cancelBtn.style.display = val ? "inline-block" : "none";
 }
 
+// This function is for showing recorded attendance for the current meeting
 function revealAttendanceForCurrent() {
   if(!currentLoadedMeetingId) return alert("No meeting loaded");
   if($("attendanceSection")) $("attendanceSection").style.display = "block";
@@ -336,6 +363,8 @@ function viewAttendance(id) {
   }).join("") || "<li class=\"muted\">No attendance recorded</li>";
   alert(`Attendance for ${m.title}:\n` + (lines.replace(/<[^>]+>/g," ")));
 }
+
+// ===== ATTENDANCE FUNCTIONALITY FOR MEETING (GENERATING/RECORDING CODES) =====
 
 function generateRandomCode(len=5) {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
