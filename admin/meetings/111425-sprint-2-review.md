@@ -164,3 +164,186 @@
 
 - [Conductor Tool Repository](https://github.com/CSE210-fa25-team07/conductor-tool)
 - [Sprint 2 Retrospective](./111425-retrospective.md)
+
+
+## Design Meeting Tab Notes
+
+### Database Design
+
+#### Class Term - ASSIGNED: user management & auth
+- Term_uuid (PK)
+- year
+- season
+- start_date: timestamp
+- end_date: timestamp
+- is_active: boolean
+
+#### Users - ASSIGNED: user management & auth
+- user_uuid (PK)
+- email
+- first_name
+- last_name
+- Photo_url
+  - TODO: storage
+- pronouns
+- Bio: string
+- phone_number
+- github_username
+- last_login: timestamp
+
+#### Staff_profiles - ASSIGNED: user management & auth
+- user_uuid (PK, FK)
+  - From users table
+- office_location
+- research_interests
+- Personal_website
+- Is_prof
+- is_system_admin
+
+#### Courses - ASSIGNED: user management & auth, class directory
+- course_uuid (PK)
+- course_code
+- course_name
+- term_uuid (FK)
+- description
+- syllabus_url
+- canvas_url
+- lecture_uuid (FK)
+
+#### Course_enrollment - ASSIGNED: user management & auth, class directory
+- User_uuid (PK, FK)
+- Course_uuid (PK, FK)
+- enrollment_status
+- enrolled_at
+- Dropped_at
+- Role_uuid (PK, FK)
+
+#### Role - ASSIGNED: user management & auth
+- Role_uuid (PK)
+- role
+
+#### Meeting - ASSIGNED: attendance
+- meeting_uuid (PK)
+- creator_uuid (FK)
+- course_uuid (FK)
+- meeting_type (int)
+- meeting_date
+- meeting_start_time
+- meeting_end_time
+- Location [string]
+- Meeting_description
+- Is_recurring [boolean]
+- parent_meeting_uuid
+- Day
+- meeting_type
+
+#### Participants - ASSIGNED: attendance
+- Meeting_uuid (FK)
+- Participant_uuid (FK) (together with meeting_uuid constitutes PK)
+- Present [boolean]
+- Attendance_time [datetime] (can be null)
+
+#### Meeting_codes - ASSIGNED: attendance
+- code_uuid
+- Meeting_code [varchar]
+- Meeting_uuid (FK)
+- Qr_code_link [url]
+- valid_start_datetime
+- valid_end_datetime [timestamp]
+
+#### Teams - ASSIGNED: class directory
+- team_uuid (PK)
+- course_uuid (FK)
+- team_name
+- team_page_url
+- Repo_url
+- team_ta_uuid (FK)
+
+#### Team_members - ASSIGNED: class directory
+- Team_uuid (FK)
+- User_uuid (FK)
+- Joined_at
+- Left_at
+
+#### Standups - ASSIGNED: Standup
+- Standup_uuid (PK)
+- user_uuid (FK)
+- Team_uuid (FK)
+- Course_uuid (FK)
+- Date_submitted
+- What_done
+- what_next
+- Blockers
+- Reflection
+- Sentiment_score
+- Visibility
+- Created_at
+- Updated_at
+
+#### Standup_comments - ASSIGNED: Standup
+- Comment_uuid (PK)
+- Standup_uuid (FK)
+- Commenter_uuid (FK)
+- Comment_text
+- Created_at
+- Updated_at
+
+#### Standup_notifications - ASSIGNED: Standup
+- Notif_uuid (PK)
+- Sender_uuid (FK)
+- Receiver_uuid (FK)
+- Standup_uuid (FK)
+- Message
+- Status
+- Created_at
+
+#### Sentiment_logs - ASSIGNED: Standup
+- Log_uuid (PK)
+- Standup_uuid
+- Sentiment_score
+- Detected_keywords [json]
+- Created_at
+
+#### Verification_code - ASSIGNED: user management & auth
+- Course_uuid (PK, FK)
+- Role_uuid (PK, FK)
+- Veri_code
+- Is_active
+
+#### Request_form - ASSIGNED: user management & auth
+- Form_uuid (PK)
+- First_name
+- Last_name
+- Email
+- Institution
+- verification_code
+
+---
+
+### Unknowns
+- Storage of qr codes / user profile photo
+- Participants, course_enrollment, user profile page should be per course?
+
+### Additional Notes
+- Put meeting on student dashboard to offer faster class attendance
+- Dashboard with attendance analytics
+  - Students shows for their course
+  - professor/TAs show class attendance
+
+---
+
+### Action Items
+- Tables assigned to feature subteams above, due on 11/15/2025
+- Braxton to send out how-to Lucid Chart end of 11/14/2025
+- Yuri, Will to make database and join tables, end of 11/16/2025
+- Collaborate with dependent teams on schema
+- Find migration tool
+
+### Git Workflow Reminders
+- Save your changes locally, pull into, push to your branch, then PR to merge back into main
+
+### Sprint Planning Notes
+- Mid Sprint meeting - check in with feature teams
+- Subteam meetings throughout the sprint
+
+
