@@ -9,13 +9,15 @@ Future enhancements include automated unit and end-to-end testing to increase co
 
 ## 2. Pipeline Rundown
 
-The pipeline currently includes the following stages:
+Ideally, we want our pipeline to include the following stages:
 
 | Stage | Tool | Description | Status |
 |-------|------|-------------|:--------:|
 | **Linting** | ESLint | Checks JavaScript/TypeScript code for syntax errors, unused imports, and style violations. Part of status checks. | ✅ |
 | **Documentation** | JSDoc | Generates developer-friendly API documentation from annotated code. The documentation is automatically deployed to GitHub Pages via a GitHub Actions workflow when changes are pushed to `main`. | ✅ |
 | **PR Review** | GitHub Pull Request Checks | Requires code review approval and status checks passing before merging into main branch. | ✅ |
+| **Unit Tests** | Vitest | Automated tests for individual modules and components to detect regressions. | ❌
+| **E2E Tests** | Puppeteer | Automated browser-based tests to validate full application workflows. | ❌
 
 ## 3. Functional Stages
 ### Linting and Code Quality — ESLint
@@ -57,6 +59,7 @@ We use [JSDoc](https://jsdoc.app/) to automatically generate HTML documentation 
 Branch protection rules are enabled on the main branch to enforce:
 - Required PR reviews before merging
 - Passing CI checks (e.g., linting)
+- Branch must be up to date (e.g. new tests, linter rules)
 
 ### Why PR Review
 - Prevents direct pushes to main
@@ -68,18 +71,14 @@ Branch protection rules are enabled on the main branch to enforce:
 We are actively planning the following improvements:
 
 - **Unit Testing (Vitest)**: Automated tests for individual modules and components to detect regressions.  
-- **End-to-End Testing (Puppeteer)**: Automated browser-based tests to validate full application workflows.  
-
-These enhancements will integrate into the existing pipeline to provide faster feedback and stronger assurance of code correctness.
-
----
+- **End-to-End Testing (Puppeteer)**: Automated browser-based tests to validate full application workflows. However, there may be issues testing with Google OAuth.
 
 ## 4. Pipeline Diagram
 
 ![CI/CD Pipeline](cicd.png)
 
-**Diagram Description:**  
-- The pipeline starts with code commits or pull requests.  
-- Current functional stages include linting, JSDoc generation and deployment, and PR review.  
-- Planned stages such as unit testing, end-to-end testing, and deployment are marked for future integration.  
+**Diagram Details:**  
+- The pipeline starts with code commits that are pushed to the feature branch.  
+- On push, GitHub Actions runs ESLint (perhaps Vitest and Puppeteer in the future). If devs create a PR, these Actoins will run as checks.
+- PRs must have checks pass to merge. In addition, a reviewer must approve of the PR and the feature branch must be up to date with main.
 - Arrows indicate the flow of operations from code submission to merge.
