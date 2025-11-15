@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standup Tool Demo - Conductor</title>
+    <!-- NO CSS - Zero styling as requested -->
+    <!-- NOTE: This standalone version has basic GitHub features but may not include all -->
+    <!-- recent GitHub integration updates. See index.html + modular JS files for full features. -->
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // Mock data - inline to avoid module issues
+        const mockUsers = [
+          {
+            user_uuid: 'user-001',
+            name: 'Alice Chen',
+            email: 'alice@ucsd.edu',
+            role: 'student'
+          },
+          {
+            user_uuid: 'user-002',
+            name: 'Bob Martinez',
+            email: 'bob@ucsd.edu',
+            role: 'student'
+          },
+          {
+            user_uuid: 'user-003',
+            name: 'Carol Davis',
+            email: 'carol@ucsd.edu',
+            role: 'student'
+          },
+          {
+            user_uuid: 'user-004',
+            name: 'David Kim',
+            email: 'david@ucsd.edu',
+            role: 'student'
+          },
+          {
+            user_uuid: 'user-005',
+            name: 'Eva Rodriguez',
+            email: 'eva@ucsd.edu',
+            role: 'ta'
+          }
+        ];
+
+        const mockTeams = [
+          {
+            team_uuid: 'team-001',
+            name: 'Team Alpha',
+            course_uuid: 'course-001'
+          },
+          {
+            team_uuid: 'team-002',
+            name: 'Team Beta',
+            course_uuid: 'course-001'
+          }
+        ];
+
+        const mockStandups = [
+          {
+            standup_uuid: 'standup-001',
+            user_uuid: 'user-001',
+            team_uuid: 'team-001',
+            course_uuid: 'course-001',
+            date_submitted: '2025-11-09T10:30:00Z',
+            what_done: 'Implemented user authentication module. Fixed 3 bugs in the login flow. Reviewed 2 PRs from teammates.',
+            what_next: 'Work on password reset functionality. Write unit tests for auth module.',
+            blockers: '',
+            reflection: 'Feeling good about the progress. Team collaboration is smooth.',
+            sentiment_score: 0.8,
+            sentiment_emoji: '😊',
+            visibility: 'Team',
+            created_at: '2025-11-09T10:30:00Z',
+            updated_at: '2025-11-09T10:30:00Z'
+          },
+          {
+            standup_uuid: 'standup-002',
+            user_uuid: 'user-002',
+            team_uuid: 'team-001',
+            course_uuid: 'course-001',
+            date_submitted: '2025-11-09T09:15:00Z',
+            what_done: 'Set up database schema for user profiles. Created initial migration scripts.',
+            what_next: 'Implement database connection pooling. Test migration on staging.',
+            blockers: 'Having trouble with PostgreSQL connection timeout issues. Need help debugging.',
+            reflection: 'A bit frustrated with the database issues but making progress.',
+            sentiment_score: -0.2,
+            sentiment_emoji: '😐',
+            visibility: 'Team',
+            created_at: '2025-11-09T09:15:00Z',
+            updated_at: '2025-11-09T09:15:00Z'
+          },
+          {
+            standup_uuid: 'standup-003',
+            user_uuid: 'user-003',
+            team_uuid: 'team-001',
+            course_uuid: 'course-001',
+            date_submitted: '2025-11-09T11:00:00Z',
+            what_done: 'Designed UI wireframes for dashboard. Got feedback from team. Started HTML structure.',
+            what_next: 'Continue building dashboard components. Set up routing.',
+            blockers: '',
+            reflection: 'Good progress. Looking forward to seeing the dashboard come together.',
+            sentiment_score: 0.6,
+            sentiment_emoji: '🙂',
+            visibility: 'Team',
+            created_at: '2025-11-09T11:00:00Z',
+            updated_at: '2025-11-09T11:00:00Z'
+          },
+          {
+            standup_uuid: 'standup-004',
+            user_uuid: 'user-004',
+            team_uuid: 'team-001',
+            course_uuid: 'course-001',
+            date_submitted: '2025-11-08T14:20:00Z',
+            what_done: 'Researched API integration patterns. Wrote documentation for REST endpoints.',
+            what_next: 'Implement API endpoints for user CRUD operations.',
+            blockers: '',
+            reflection: 'Productive day. Documentation is helping clarify the architecture.',
+            sentiment_score: 0.7,
+            sentiment_emoji: '😊',
+            visibility: 'Team',
+            created_at: '2025-11-08T14:20:00Z',
+            updated_at: '2025-11-08T14:20:00Z'
+          }
+        ];
+
+        const mockComments = [
+          {
+            comment_uuid: 'comment-001',
+            standup_uuid: 'standup-002',
+            commenter_uuid: 'user-001',
+            comment_text: 'I can help with the PostgreSQL timeout issue! I dealt with this last week. Let\'s pair up after class.',
+            created_at: '2025-11-09T09:30:00Z',
+            updated_at: '2025-11-09T09:30:00Z'
+          },
+          {
+            comment_uuid: 'comment-002',
+            standup_uuid: 'standup-002',
+            commenter_uuid: 'user-003',
+            comment_text: 'Check the connection pool settings in your config. That usually helps.',
+            created_at: '2025-11-09T10:00:00Z',
+            updated_at: '2025-11-09T10:00:00Z'
+          }
+        ];
+
+        const currentUser = mockUsers[0];
+
+        // Helper functions
+        function getUserById(userId) {
+          return mockUsers.find(u => u.user_uuid === userId);
+        }
+
+        function getTeamById(teamId) {
+          return mockTeams.find(t => t.team_uuid === teamId);
+        }
+
+        function getStandupsByTeam(teamId) {
+          return mockStandups.filter(s => s.team_uuid === teamId);
+        }
+
+        function getStandupsByUser(userId) {
+          return mockStandups.filter(s => s.user_uuid === userId);
+        }
+
+        function getCommentsByStandup(standupId) {
+          return mockComments.filter(c => c.standup_uuid === standupId);
+        }
+
+        // Initialize demo
+        function initDemo() {
+          const appContainer = document.getElementById('app');
+          appContainer.innerHTML = '';
+
+          const mainTitle = document.createElement('h1');
+          mainTitle.textContent = 'Conductor - Standup Tool Demo';
+          appContainer.appendChild(mainTitle);
+
+          const notice = document.createElement('p');
+          notice.textContent = '⚠️ DEMO MODE - All data is mocked, no backend, zero styling';
+          appContainer.appendChild(notice);
+
+          appContainer.appendChild(document.createElement('hr'));
+
+          // Navigation
+          const nav = document.createElement('nav');
+          const navTitle = document.createElement('h2');
+          navTitle.textContent = 'Navigation';
+          nav.appendChild(navTitle);
+
+          const navInfo = document.createElement('p');
+          navInfo.textContent = `Current User: ${currentUser.name}`;
+          nav.appendChild(navInfo);
+
+          const navButtons = [
+            { label: 'Submit Standup', fn: renderStandupForm },
+            { label: 'Team Dashboard', fn: renderTeamDashboard },
+            { label: 'My History', fn: renderIndividualHistory },
+            { label: 'TA Dashboard', fn: renderTADashboard }
+          ];
+
+          navButtons.forEach(btn => {
+            const button = document.createElement('button');
+            button.textContent = btn.label;
+            button.onclick = () => {
+              const content = document.getElementById('content');
+              content.innerHTML = '';
+              btn.fn(content);
+            };
+            nav.appendChild(button);
+            nav.appendChild(document.createTextNode(' '));
+          });
+
+          appContainer.appendChild(nav);
+          appContainer.appendChild(document.createElement('hr'));
+
+          const contentContainer = document.createElement('div');
+          contentContainer.id = 'content';
+          appContainer.appendChild(contentContainer);
+
+          // Default view
+          renderStandupForm(contentContainer);
+        }
+
+        // Render functions
+        function renderStandupForm(container) {
+          container.innerHTML = '';
+
+          const header = document.createElement('h1');
+          header.textContent = 'Daily Standup';
+          container.appendChild(header);
+
+          const userInfo = document.createElement('p');
+          userInfo.textContent = `Logged in as: ${currentUser.name}`;
+          container.appendChild(userInfo);
+
+          const dateInfo = document.createElement('p');
+          dateInfo.textContent = `Date: ${new Date().toLocaleDateString()}`;
+          container.appendChild(dateInfo);
+
+          const form = document.createElement('form');
+
+          // Question 1
+          const q1Label = document.createElement('label');
+          q1Label.textContent = '1. What did you accomplish yesterday?';
+          form.appendChild(q1Label);
+          form.appendChild(document.createElement('br'));
+
+          const q1Textarea = document.createElement('textarea');
+          q1Textarea.rows = 5;
+          q1Textarea.cols = 80;
+          form.appendChild(q1Textarea);
+          form.appendChild(document.createElement('br'));
+          form.appendChild(document.createElement('br'));
+
+          const githubBtn = document.createElement('button');
+          githubBtn.type = 'button';
+          githubBtn.textContent = 'Auto-populate from GitHub';
+          githubBtn.onclick = () => {
+            q1Textarea.value = 'MOCK: Commit #123, PR #45, Code review #67';
+          };
+          form.appendChild(githubBtn);
+          form.appendChild(document.createElement('br'));
+          form.appendChild(document.createElement('br'));
+
+          // Question 2
+          const q2Label = document.createElement('label');
+          q2Label.textContent = '2. What will you work on today?';
+          form.appendChild(q2Label);
+          form.appendChild(document.createElement('br'));
+
+          const q2Textarea = document.createElement('textarea');
+          q2Textarea.rows = 5;
+          q2Textarea.cols = 80;
+          form.appendChild(q2Textarea);
+          form.appendChild(document.createElement('br'));
+          form.appendChild(document.createElement('br'));
+
+          // Question 3
+          const q3Label = document.createElement('label');
+          q3Label.textContent = '3. Any blockers?';
+          form.appendChild(q3Label);
+          form.appendChild(document.createElement('br'));
+
+          const q3Textarea = document.createElement('textarea');
+          q3Textarea.rows = 3;
+          q3Textarea.cols = 80;
+          form.appendChild(q3Textarea);
+          form.appendChild(document.createElement('br'));
+          form.appendChild(document.createElement('br'));
+
+          // Sentiment
+          const sentimentLabel = document.createElement('label');
+          sentimentLabel.textContent = 'How are you feeling?';
+          form.appendChild(sentimentLabel);
+          form.appendChild(document.createElement('br'));
+
+          ['😄 Very Happy', '😊 Happy', '🙂 Good', '😐 Neutral', '😕 Concerned'].forEach((sentiment, idx) => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'sentiment';
+            radio.value = sentiment;
+            radio.id = `sent-${idx}`;
+            const label = document.createElement('label');
+            label.htmlFor = `sent-${idx}`;
+            label.textContent = sentiment;
+            form.appendChild(radio);
+            form.appendChild(label);
+            form.appendChild(document.createElement('br'));
+          });
+
+          form.appendChild(document.createElement('br'));
+
+          // Submit
+          const submitBtn = document.createElement('button');
+          submitBtn.type = 'submit';
+          submitBtn.textContent = 'Submit Standup';
+          form.appendChild(submitBtn);
+
+          form.onsubmit = (e) => {
+            e.preventDefault();
+            alert('Standup submitted successfully!');
+            form.reset();
+          };
+
+          container.appendChild(form);
+        }
+
+        function renderTeamDashboard(container) {
+          container.innerHTML = '';
+
+          const header = document.createElement('h1');
+          header.textContent = 'Team Dashboard';
+          container.appendChild(header);
+
+          const teamHeader = document.createElement('h2');
+          teamHeader.textContent = 'Team Alpha - Recent Standups';
+          container.appendChild(teamHeader);
+
+          const sentiment = document.createElement('p');
+          sentiment.textContent = 'Average team sentiment: 0.48 (Neutral)';
+          container.appendChild(sentiment);
+
+          container.appendChild(document.createElement('hr'));
+
+          const blockersHeader = document.createElement('h3');
+          blockersHeader.textContent = 'Active Blockers';
+          container.appendChild(blockersHeader);
+
+          const blocker = mockStandups.find(s => s.blockers);
+          if (blocker) {
+            const user = getUserById(blocker.user_uuid);
+            const blockerDiv = document.createElement('div');
+            blockerDiv.innerHTML = `<strong>BLOCKER from ${user.name}:</strong><br>${blocker.blockers}<br>`;
+
+            const helpBtn = document.createElement('button');
+            helpBtn.textContent = 'I can help!';
+            helpBtn.onclick = () => alert('Help offered to ' + user.name);
+            blockerDiv.appendChild(helpBtn);
+
+            const escalateBtn = document.createElement('button');
+            escalateBtn.textContent = 'Escalate to TA';
+            escalateBtn.onclick = () => alert('Blocker escalated to TA');
+            blockerDiv.appendChild(escalateBtn);
+
+            container.appendChild(blockerDiv);
+          }
+
+          container.appendChild(document.createElement('hr'));
+
+          const standupsHeader = document.createElement('h3');
+          standupsHeader.textContent = 'All Team Standups';
+          container.appendChild(standupsHeader);
+
+          getStandupsByTeam('team-001').forEach(standup => {
+            const user = getUserById(standup.user_uuid);
+            const card = document.createElement('div');
+            card.innerHTML = `
+              <h4>${user.name} - ${new Date(standup.date_submitted).toLocaleDateString()}</h4>
+              <p>Sentiment: ${standup.sentiment_emoji} (${standup.sentiment_score})</p>
+              <strong>Accomplished:</strong><p>${standup.what_done}</p>
+              <strong>Next:</strong><p>${standup.what_next}</p>
+              ${standup.blockers ? `<strong>Blockers:</strong><p>${standup.blockers}</p>` : ''}
+            `;
+
+            const comments = getCommentsByStandup(standup.standup_uuid);
+            if (comments.length > 0) {
+              card.innerHTML += '<strong>Comments:</strong><br>';
+              comments.forEach(comment => {
+                const commenter = getUserById(comment.commenter_uuid);
+                card.innerHTML += `<em>${commenter.name}:</em> ${comment.comment_text}<br>`;
+              });
+            }
+
+            const commentInput = document.createElement('textarea');
+            commentInput.rows = 2;
+            commentInput.cols = 60;
+            commentInput.placeholder = 'Add a comment...';
+            card.appendChild(commentInput);
+
+            const commentBtn = document.createElement('button');
+            commentBtn.textContent = 'Add Comment';
+            commentBtn.onclick = () => {
+              if (commentInput.value) {
+                alert('Comment added!');
+                commentInput.value = '';
+              }
+            };
+            card.appendChild(commentBtn);
+
+            container.appendChild(card);
+            container.appendChild(document.createElement('hr'));
+          });
+        }
+
+        function renderIndividualHistory(container) {
+          container.innerHTML = '';
+
+          const header = document.createElement('h1');
+          header.textContent = 'My Standup History';
+          container.appendChild(header);
+
+          const stats = document.createElement('h3');
+          stats.textContent = 'My Statistics';
+          container.appendChild(stats);
+
+          const standups = getStandupsByUser(currentUser.user_uuid);
+          const total = document.createElement('p');
+          total.textContent = `Total submissions: ${standups.length}`;
+          container.appendChild(total);
+
+          const avg = standups.reduce((sum, s) => sum + s.sentiment_score, 0) / standups.length;
+          const avgP = document.createElement('p');
+          avgP.textContent = `Average sentiment: ${avg.toFixed(2)}`;
+          container.appendChild(avgP);
+
+          container.appendChild(document.createElement('hr'));
+
+          const historyHeader = document.createElement('h3');
+          historyHeader.textContent = 'My Standups';
+          container.appendChild(historyHeader);
+
+          standups.forEach(standup => {
+            const card = document.createElement('div');
+            card.innerHTML = `
+              <h4>${new Date(standup.date_submitted).toLocaleString()}</h4>
+              <p>Sentiment: ${standup.sentiment_emoji}</p>
+              <strong>Accomplished:</strong><p>${standup.what_done}</p>
+              <strong>Next:</strong><p>${standup.what_next}</p>
+            `;
+            container.appendChild(card);
+            container.appendChild(document.createElement('hr'));
+          });
+        }
+
+        function renderTADashboard(container) {
+          container.innerHTML = '';
+
+          const header = document.createElement('h1');
+          header.textContent = 'TA Dashboard - Multi-Team Overview';
+          container.appendChild(header);
+
+          const taInfo = document.createElement('p');
+          taInfo.textContent = 'Logged in as: Eva Rodriguez (TA)';
+          container.appendChild(taInfo);
+
+          container.appendChild(document.createElement('hr'));
+
+          const alertsHeader = document.createElement('h2');
+          alertsHeader.textContent = '🚨 Priority Alerts';
+          container.appendChild(alertsHeader);
+
+          const blockers = mockStandups.filter(s => s.blockers);
+          const blockersHeader = document.createElement('h3');
+          blockersHeader.textContent = `Active Blockers (${blockers.length})`;
+          container.appendChild(blockersHeader);
+
+          const blockersList = document.createElement('ul');
+          blockers.forEach(standup => {
+            const user = getUserById(standup.user_uuid);
+            const team = getTeamById(standup.team_uuid);
+            const li = document.createElement('li');
+            li.textContent = `${user.name} (${team.name}): ${standup.blockers}`;
+            blockersList.appendChild(li);
+          });
+          container.appendChild(blockersList);
+
+          container.appendChild(document.createElement('hr'));
+
+          const teamOverview = document.createElement('h2');
+          teamOverview.textContent = 'Team Health Overview';
+          container.appendChild(teamOverview);
+
+          const table = document.createElement('table');
+          table.border = '1';
+          table.innerHTML = `
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Avg Sentiment</th>
+                <th>Blockers</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Team Alpha</td>
+                <td>0.48</td>
+                <td>1</td>
+                <td>⚠️ Needs Attention</td>
+              </tr>
+              <tr>
+                <td>Team Beta</td>
+                <td>0.70</td>
+                <td>0</td>
+                <td>✅ Healthy</td>
+              </tr>
+            </tbody>
+          `;
+          container.appendChild(table);
+        }
+
+        // Start the demo
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initDemo);
+        } else {
+          initDemo();
+        }
+    </script>
+</body>
+</html>
