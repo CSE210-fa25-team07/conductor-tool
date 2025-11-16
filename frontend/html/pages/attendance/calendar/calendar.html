@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="../../../../css/components/meeting.css" />
+  <link rel="stylesheet" href="../../../../css/components/calendar.css" />
+  <meta name="robots" content="noindex" />
+  </head>
+<body class="calendar-view">
+  <main class="calendar-container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h1>Calendar</h1>
+      <div>
+        <a class="btn" href="../meeting_list/meeting_list.html">Back to list</a>
+      </div>
+    </div>
+
+    <div class="calendar-header">
+      <button id="prev-month">&lt;</button>
+      <h2 id="month-year"></h2>
+      <button id="next-month">&gt;</button>
+    </div>
+
+    <div class="meeting-filter">
+      <label><input type="checkbox" class="filter-checkbox" data-type="lecture" checked> Lecture</label>
+      <label><input type="checkbox" class="filter-checkbox" data-type="office" checked> Office Hours</label>
+      <label><input type="checkbox" class="filter-checkbox" data-type="ta" checked> TA Check-in</label>
+      <label><input type="checkbox" class="filter-checkbox" data-type="group" checked> Group Meeting</label>
+    </div>
+
+    <div class="calendar-grid" id="calendar"></div>
+  </main>
+
+  <!-- embed modal is created dynamically by the embedModal module -->
+
+  <!-- Delete Event Modal -->
+  <div id="delete-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Delete Event?</h3>
+      <p id="delete-event-title"></p>
+      <div class="modal-buttons">
+        <button id="confirm-delete">Delete</button>
+        <button id="cancel-delete">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../../../../js/pages/attendance/calendar/calendar.js"></script>
+</body>
+</html>

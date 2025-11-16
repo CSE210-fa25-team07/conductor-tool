@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upcoming Meetings</title>
+  <link rel="stylesheet" href="../../../../css/components/meeting.css" />
+  <link rel="stylesheet" href="../../../../css/components/calendar.css" />
+  <meta name="robots" content="noindex" />
+  </head>
+<body>
+  <main class="meeting-page">
+    <h1>Upcoming Meetings</h1>
+
+    <section class="meeting-list">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h2>Upcoming</h2>
+        <div>
+          <a class="btn" href="../meeting/meeting.html">New Meeting</a>
+          <a class="btn" href="../calendar/calendar.html" style="margin-left:8px;">Calendar</a>
+        </div>
+      </div>
+      <ul id="upcomingMeetings"></ul>
+    </section>
+
+    <section>
+      <h3>All meetings</h3>
+      <ul id="allMeetings"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="../../../../js/pages/attendance/meeting_list/meeting_list.js"></script>
+  <!-- embed modal is created dynamically by the embedModal module -->
+</body>
+</html>
