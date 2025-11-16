@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Analytics - Demo Page</title>
+  <link rel="stylesheet" href="../css/components/chart.css">
+  <link rel="stylesheet" href="../css/pages/AnalyticsCard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 36px 20px;
+      min-height: 100vh;
+    }
+
+    .demo-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .demo-header {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 18px 45px rgba(15, 45, 76, 0.1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #1e88e5 0%, #26c6da 50%, #43a047 100%);
+    }
+
+    .demo-header h1 {
+      margin: 0 0 12px 0;
+      color: #333;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .demo-header p {
+      margin: 0;
+      color: #666;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .demo-section {
+      margin-bottom: 50px;
+    }
+
+    .demo-section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e88e5;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: linear-gradient(90deg, rgba(30, 136, 229, 0.08) 0%, rgba(38, 166, 154, 0.08) 100%);
+      border-radius: 12px;
+      border-left: 6px solid #1e88e5;
+      box-shadow: 0 4px 16px rgba(30, 136, 229, 0.12);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+      gap: 30px;
+    }
+
+    .demo-full-width {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .demo-header {
+        padding: 28px;
+        box-shadow: 0 12px 30px rgba(15, 45, 76, 0.12);
+      }
+
+      .demo-header h1 {
+        font-size: 26px;
+      }
+
+      .demo-header p {
+        font-size: 15px;
+      }
+
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-section-title {
+        font-size: 19px;
+        padding: 12px 16px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .demo-section {
+      animation: fadeIn 0.6s ease backwards;
+    }
+
+    .demo-section:nth-child(1) { animation-delay: 0.1s; }
+    .demo-section:nth-child(2) { animation-delay: 0.2s; }
+    .demo-section:nth-child(3) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Demo Header -->
+    <div class="demo-header">
+      <h1>📊 Attendance Analytics Dashboard</h1>
+      <p>Demo page showing all three analytics views and meeting list component</p>
+    </div>
+
+    <!-- Class Analytics Section -->
+    <div class="demo-section">
+      <h2 class="demo-section-title">Class Level View (Professor/TA)</h2>
+      <div id="classAnalyticsContainer"></div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="demo-grid">
+      <!-- Group Analytics Section -->
+      <div class="demo-section">
+        <h2 class="demo-section-title">Group Profile View</h2>
+        <div id="groupAnalyticsContainer"></div>
+      </div>
+
+      <!-- User Analytics Section -->
+      <div class="demo-section">
+        <h2 class="demo-section-title">User Profile View</h2>
+        <div id="userAnalyticsContainer"></div>
+      </div>
+    </div>
+
+
+  <!-- Include all JavaScript modules -->
+  <script src="../js/api/analyticsapi.js"></script>
+  <script src="../js/components/Chart.js"></script>
+  <script src="../js/pages/attendance/classindex.js"></script>
+  <script src="../js/pages/attendance/groupindex.js"></script>
+  <script src="../js/pages/attendance/userindex.js"></script>
+  <!-- <script src="js/pages/listindex.js"></script> -->
+
+  <script>
+    // Initialize all components when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load Class Analytics
+      fetch('../html/attendance/classanalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('classAnalyticsContainer');
+          container.innerHTML = html;
+          // Reinitialize the chart after loading
+          if (typeof initClassAnalytics === 'function') {
+            initClassAnalytics();
+          }
+        });
+
+      // Load Group Analytics
+      fetch('../html/attendance/groupanalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('groupAnalyticsContainer');
+          container.innerHTML = html;
+          if (typeof initGroupAnalytics === 'function') {
+            initGroupAnalytics();
+          }
+        });
+
+      // Load User Analytics
+      fetch('../html/attendance/useranalytics.html')
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById('userAnalyticsContainer');
+          container.innerHTML = html;
+          if (typeof initUserAnalytics === 'function') {
+            initUserAnalytics();
+          }
+        });
+
+      // Load Meeting List
+      // fetch('html/meetinglist.html')
+      //   .then(response => response.text())
+      //   .then(html => {
+      //     const container = document.getElementById('meetingListContainer');
+      //     container.innerHTML = html;
+      //     if (typeof initMeetingList === 'function') {
+      //       initMeetingList();
+      //     }
+      //   });
+    });
+  </script>
+</body>
+</html>
