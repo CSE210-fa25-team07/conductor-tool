@@ -78,3 +78,38 @@ However, the sprint also revealed challenges with **feature integration**, **cod
 | 7 | Implement mid-sprint feature team check-ins | Sprint leads | Ongoing |
 
 **Resource Experts:** Frontend (Wayne, Gaurav) • Backend (Sree, Braxton) • Database (Yuri, Will)
+
+
+## Retrospective Results
+11/14/2025 - Nov 14th Team 7
+### Mad
+* Charming Coyote: I was a bit worried about coding cohesiveness in the project
+* Proud Koala: It's hard to know what's going on in other teams + integrating features
+* Delightful Narwhal: nothing really
+* Wonderful Xerus: The integration between features seems chaotic.
+* Charming Hedgehog: Features and integration make have conflicts
+* Glamorous Elephant: Features integration might be challenging
+* Xtreme Koala: Need better communication and to properly fill out issues and PR's
+
+### Sad
+* Optimistic Dolphin: codebase structure is a bit confusing
+* Optimistic Dolphin: the way the features will interact is not very obvious
+* Delightful Narwhal: styling alignment is probably going to be an issue.
+* Xtreme Koala: We need to clear up how it will all come together.
+* Sophisticated Ferret: we should unify the way we structure the codebase
+* Charming Coyote: I felt like I could have helped my team more!
+* Jumpy Ferret: The integration between teams might be hard
+* Proud Koala: Hard to reach some people this sprint
+* Glamorous Elephant: Not well documented
+
+### Glad
+* Charming Coyote: I think the result we all produced looks very nice!
+* Xtreme Koala: Got good remarks from the professor about what we have so far.
+* Proud Koala: We made a lot of progress this week!
+* Wonderful Xerus: Got a lot of features done!!!
+* Glamorous Elephant: We are doing great job last week!
+* Charming Hedgehog: All teams made substantial progress
+* Sophisticated Ferret: we still have plenty of time
+* Delightful Narwhal: I am happy split in to feature teams instead of backend and frontend, which gives us chances to truly reflect on the features. 
+* Wonderful Xerus: Great team! Zero slackers.
+* Jumpy Ferret: github setup helped
