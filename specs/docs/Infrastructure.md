@@ -122,6 +122,7 @@ Pull Requests are the primary way to merge code into protected branches.
 Branch protection rules are enabled on the main branch to enforce:
 - Required PR reviews before merging
 - Passing CI checks (e.g., linting)
+- Branch must be up to date (e.g. new tests, linter rules)
 
 ### Why Branch Protection
 - Prevents direct pushes to main
