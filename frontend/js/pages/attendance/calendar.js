@@ -4,20 +4,20 @@
  * @module pages/attendance/calendar
  */
 
-import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from '../../components/navigation.js';
+import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from "../../components/navigation.js";
 
 /**
  * Mock user data
  */
 const mockUser = {
-  name: 'John Doe',
-  avatar: 'JD'
+  name: "John Doe",
+  avatar: "JD"
 };
 
 /**
  * Current active page
  */
-let currentPage = 'calendar';
+let currentPage = "calendar";
 
 /**
  * Initializes the calendar page
@@ -27,18 +27,18 @@ function initCalendarPage() {
   const courseId = getCourseIdFromUrl();
 
   if (!courseId) {
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
     return;
   }
 
   // Create and inject top navigation
-  const topNavContainer = document.getElementById('top-navigation');
-  const topNav = createTopNav({ activeFeature: 'calendar', courseId, user: mockUser });
+  const topNavContainer = document.getElementById("top-navigation");
+  const topNav = createTopNav({ activeFeature: "calendar", courseId, user: mockUser });
   topNavContainer.appendChild(topNav);
 
   // Create and inject secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  const secondaryNav = createSecondaryNav({ feature: 'calendar', courseId, activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  const secondaryNav = createSecondaryNav({ feature: "calendar", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Setup navigation event listener
@@ -46,7 +46,7 @@ function initCalendarPage() {
 
   // Load initial page from URL hash or default to calendar
   const hash = window.location.hash.slice(1);
-  currentPage = hash || 'calendar';
+  currentPage = hash || "calendar";
   loadPage(currentPage);
 }
 
@@ -58,8 +58,8 @@ function handleNavigation(path) {
   console.log(`Calendar page handling navigation to: ${path}`);
 
   // Extract page from path (e.g., "calendar/analysis" -> "analysis")
-  if (path.startsWith('calendar/')) {
-    const page = path.split('/')[1].split('?')[0];
+  if (path.startsWith("calendar/")) {
+    const page = path.split("/")[1].split("?")[0];
     loadPage(page);
   }
 }
@@ -75,23 +75,23 @@ function loadPage(page) {
   const courseId = getCourseIdFromUrl();
 
   // Update secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  secondaryNavContainer.innerHTML = '';
-  const secondaryNav = createSecondaryNav({ feature: 'calendar', courseId, activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  secondaryNavContainer.innerHTML = "";
+  const secondaryNav = createSecondaryNav({ feature: "calendar", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Render page content
-  const contentContainer = document.getElementById('page-content');
+  const contentContainer = document.getElementById("page-content");
 
   switch (page) {
-    case 'calendar':
-      renderCalendar(contentContainer);
-      break;
-    case 'analysis':
-      renderAnalysis(contentContainer);
-      break;
-    default:
-      renderCalendar(contentContainer);
+  case "calendar":
+    renderCalendar(contentContainer);
+    break;
+  case "analysis":
+    renderAnalysis(contentContainer);
+    break;
+  default:
+    renderCalendar(contentContainer);
   }
 }
 
@@ -132,8 +132,8 @@ function renderAnalysis(container) {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCalendarPage);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initCalendarPage);
 } else {
   initCalendarPage();
 }

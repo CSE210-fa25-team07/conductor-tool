@@ -1,8 +1,9 @@
 /** @type {import("eslint").FlatConfig[]} */
 module.exports = [
   {
-    ignores: ["node_modules/"],
-
+    ignores: ["node_modules/", "docs/**", "**/docs/**"]
+  },
+  {
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
@@ -17,7 +18,7 @@ module.exports = [
       "semi": ["error", "always"],          		// enforce semicolons
       "quotes": ["error", "double"],        		// enforce double quotes
       "indent": ["error", 2],               		// 2-space indentation
-	    "no-duplicate-imports": ["error"],			// import all modules in one line
+      "no-duplicate-imports": ["error"],			// import all modules in one line
       "eqeqeq": ["error", "always"],        		// prefer === over ==
       "no-unused-vars": ["warn"],           		// warn for unused variables
       "no-trailing-spaces": ["error"],      		// no trailing spaces
@@ -27,17 +28,34 @@ module.exports = [
       "prefer-const": ["error"],            		// prefer const over let when possible
       "space-before-blocks": ["error", "always"], 	// e.g. if (cond) { <--- if (cond){
       "space-in-parens": ["error", "never"], 		// e.g. func(a, b) <--- func( a, b )
-	    "no-console" : ["error"],						// no console.log(), etc. in repo
-	    "camelcase": [
+      "no-console" : ["warn"],						// warn for console.log(), etc.
+      "camelcase": [
         "error",
         {
           properties: "always",
-          ignoreDestructuring: false,
+          ignoreDestructuring: true,
           ignoreImports: false,
           ignoreGlobals: false
         }
-      ]												// enforce camelCase
+      ]												// enforce camelCase, allow destructuring
+    }
+  },
+  {
+    files: ["**/__tests__/**/*.js", "**/tests/**/*.js", "**/*.test.js"],
+    rules: {
+      "camelcase": "off"							// allow snake_case in tests for DB fields
+    }
+  },
+  {
+    files: ["**/routes/**/*.js"],
+    rules: {
+      "camelcase": [
+        "error",
+        {
+          properties: "never",						// allow snake_case properties in routes
+          ignoreDestructuring: true
+        }
+      ]
     }
   }
 ];
-

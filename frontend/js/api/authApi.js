@@ -5,7 +5,7 @@
  * Provides functions to get current user info, enrollments, and roles.
  */
 
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 /**
  * Get current authenticated user with enrollments
@@ -19,7 +19,7 @@ export async function getCurrentUser(userId = null) {
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error('Not authenticated');
+        throw new Error("Not authenticated");
       }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -27,12 +27,12 @@ export async function getCurrentUser(userId = null) {
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to get current user');
+      throw new Error(data.error || "Failed to get current user");
     }
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching current user:', error);
+    console.error("Error fetching current user:", error);
     throw error;
   }
 }
@@ -53,12 +53,12 @@ export async function getUserEnrollments(userId) {
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to get user enrollments');
+      throw new Error(data.error || "Failed to get user enrollments");
     }
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching user enrollments:', error);
+    console.error("Error fetching user enrollments:", error);
     throw error;
   }
 }
@@ -89,7 +89,7 @@ export async function getUserRoleInCourse(userId, courseId) {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching user role in course:', error);
+    console.error("Error fetching user role in course:", error);
     return null;
   }
 }
@@ -109,12 +109,12 @@ export async function getAllRoles() {
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to get roles');
+      throw new Error(data.error || "Failed to get roles");
     }
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching roles:', error);
+    console.error("Error fetching roles:", error);
     throw error;
   }
 }
@@ -123,5 +123,5 @@ export default {
   getCurrentUser,
   getUserEnrollments,
   getUserRoleInCourse,
-  getAllRoles,
+  getAllRoles
 };

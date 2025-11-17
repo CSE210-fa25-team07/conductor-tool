@@ -4,20 +4,20 @@
  * @module pages/directory/class
  */
 
-import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from '../../components/navigation.js';
+import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from "../../components/navigation.js";
 
 /**
  * Mock user data
  */
 const mockUser = {
-  name: 'John Doe',
-  avatar: 'JD'
+  name: "John Doe",
+  avatar: "JD"
 };
 
 /**
  * Current active page
  */
-let currentPage = 'dashboard';
+let currentPage = "dashboard";
 
 /**
  * Initializes the class page
@@ -28,18 +28,18 @@ function initClassPage() {
 
   if (!courseId) {
     // No course selected, redirect to dashboard
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
     return;
   }
 
   // Create and inject top navigation
-  const topNavContainer = document.getElementById('top-navigation');
-  const topNav = createTopNav({ activeFeature: 'class', courseId, user: mockUser });
+  const topNavContainer = document.getElementById("top-navigation");
+  const topNav = createTopNav({ activeFeature: "class", courseId, user: mockUser });
   topNavContainer.appendChild(topNav);
 
   // Create and inject secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  const secondaryNav = createSecondaryNav({ feature: 'class', courseId, activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  const secondaryNav = createSecondaryNav({ feature: "class", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Setup navigation event listener
@@ -47,7 +47,7 @@ function initClassPage() {
 
   // Load initial page from URL hash or default to dashboard
   const hash = window.location.hash.slice(1);
-  currentPage = hash || 'dashboard';
+  currentPage = hash || "dashboard";
   loadPage(currentPage);
 }
 
@@ -59,8 +59,8 @@ function handleNavigation(path) {
   console.log(`Class page handling navigation to: ${path}`);
 
   // Extract page from path (e.g., "class/people" -> "people")
-  if (path.startsWith('class/')) {
-    const page = path.split('/')[1].split('?')[0];
+  if (path.startsWith("class/")) {
+    const page = path.split("/")[1].split("?")[0];
     loadPage(page);
   }
 }
@@ -74,29 +74,29 @@ function loadPage(page) {
   window.location.hash = page;
 
   // Update secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  secondaryNavContainer.innerHTML = '';
-  const secondaryNav = createSecondaryNav({ feature: 'class', activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  secondaryNavContainer.innerHTML = "";
+  const secondaryNav = createSecondaryNav({ feature: "class", activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Render page content
-  const contentContainer = document.getElementById('page-content');
+  const contentContainer = document.getElementById("page-content");
 
   switch (page) {
-    case 'dashboard':
-      renderDashboard(contentContainer);
-      break;
-    case 'people':
-      renderPeople(contentContainer);
-      break;
-    case 'group':
-      renderGroup(contentContainer);
-      break;
-    case 'my':
-      renderMy(contentContainer);
-      break;
-    default:
-      renderDashboard(contentContainer);
+  case "dashboard":
+    renderDashboard(contentContainer);
+    break;
+  case "people":
+    renderPeople(contentContainer);
+    break;
+  case "group":
+    renderGroup(contentContainer);
+    break;
+  case "my":
+    renderMy(contentContainer);
+    break;
+  default:
+    renderDashboard(contentContainer);
   }
 }
 
@@ -173,8 +173,8 @@ function renderMy(container) {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initClassPage);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initClassPage);
 } else {
   initClassPage();
 }

@@ -4,7 +4,7 @@
  * @module routes/coursesRoutes
  */
 
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
@@ -18,16 +18,16 @@ const router = express.Router();
  */
 const mockCourses = [
   {
-    id: 'test-routing',
-    code: 'TEST 000',
-    name: 'For Testing Routing',
-    description: 'Mock course for testing routing logic - will be moved to PostgreSQL later',
-    instructor: 'Test Instructor',
-    instructor_email: 'test@example.com',
+    id: "test-routing",
+    code: "TEST 000",
+    name: "For Testing Routing",
+    description: "Mock course for testing routing logic - will be moved to PostgreSQL later",
+    instructor: "Test Instructor",
+    instructor_email: "test@example.com",
     students: 0,
     assignments: 0,
     attendance: 0,
-    term: 'Testing'
+    term: "Testing"
   }
 ];
 
@@ -63,7 +63,7 @@ const mockCourses = [
  *   ]
  * }
  */
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   res.json({
     success: true,
     data: mockCourses
@@ -106,7 +106,7 @@ router.get('/', (req, res) => {
  *   "error": "Course not found"
  * }
  */
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   const courseId = req.params.id;
   // Try to parse as integer, otherwise use as string
   const parsedId = isNaN(courseId) ? courseId : parseInt(courseId);
@@ -115,7 +115,7 @@ router.get('/:id', (req, res) => {
   if (!course) {
     return res.status(404).json({
       success: false,
-      error: 'Course not found'
+      error: "Course not found"
     });
   }
 

@@ -4,7 +4,7 @@
  * @module routes/directoryRoutes
  */
 
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
@@ -16,20 +16,20 @@ const router = express.Router();
  * Mock people/students data
  */
 const mockPeople = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Student', status: 'Active' },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Student', status: 'Active' },
-  { id: 3, name: 'Carol Williams', email: 'carol@example.com', role: 'TA', status: 'Active' },
-  { id: 4, name: 'David Brown', email: 'david@example.com', role: 'Student', status: 'Active' },
-  { id: 5, name: 'Eve Davis', email: 'eve@example.com', role: 'Student', status: 'Active' }
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Student", status: "Active" },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", role: "Student", status: "Active" },
+  { id: 3, name: "Carol Williams", email: "carol@example.com", role: "TA", status: "Active" },
+  { id: 4, name: "David Brown", email: "david@example.com", role: "Student", status: "Active" },
+  { id: 5, name: "Eve Davis", email: "eve@example.com", role: "Student", status: "Active" }
 ];
 
 /**
  * Mock groups data
  */
 const mockGroups = [
-  { id: 1, name: 'Team Alpha', members: ['Alice', 'Bob', 'Carol'], projects: 3, status: 'Active' },
-  { id: 2, name: 'Team Beta', members: ['David', 'Eve', 'Frank'], projects: 2, status: 'Active' },
-  { id: 3, name: 'Team Gamma', members: ['Grace', 'Henry', 'Iris'], projects: 4, status: 'Active' }
+  { id: 1, name: "Team Alpha", members: ["Alice", "Bob", "Carol"], projects: 3, status: "Active" },
+  { id: 2, name: "Team Beta", members: ["David", "Eve", "Frank"], projects: 2, status: "Active" },
+  { id: 3, name: "Team Gamma", members: ["Grace", "Henry", "Iris"], projects: 4, status: "Active" }
 ];
 
 // ============================================
@@ -59,7 +59,7 @@ const mockGroups = [
  *   ]
  * }
  */
-router.get('/people', (req, res) => {
+router.get("/people", (req, res) => {
   res.json({
     success: true,
     data: mockPeople
@@ -89,7 +89,7 @@ router.get('/people', (req, res) => {
  *   ]
  * }
  */
-router.get('/groups', (req, res) => {
+router.get("/groups", (req, res) => {
   res.json({
     success: true,
     data: mockGroups
@@ -120,7 +120,7 @@ router.get('/groups', (req, res) => {
  *   }
  * }
  */
-router.get('/stats', (req, res) => {
+router.get("/stats", (req, res) => {
   res.json({
     success: true,
     data: {

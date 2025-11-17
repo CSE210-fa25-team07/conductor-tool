@@ -4,7 +4,7 @@
  * @module pages/dashboard/main
  */
 
-import { createTopNav, setupNavigation } from '../../components/navigation.js';
+import { createTopNav, setupNavigation } from "../../components/navigation.js";
 
 /**
  * Courses data - fetched from API
@@ -15,8 +15,8 @@ let courses = [];
  * Mock user data
  */
 const mockUser = {
-  name: 'John Doe',
-  avatar: 'JD'
+  name: "John Doe",
+  avatar: "JD"
 };
 
 /**
@@ -24,8 +24,8 @@ const mockUser = {
  */
 async function initDashboard() {
   // Create and inject top navigation
-  const topNavContainer = document.getElementById('top-navigation');
-  const topNav = createTopNav({ activeFeature: '', user: mockUser });
+  const topNavContainer = document.getElementById("top-navigation");
+  const topNav = createTopNav({ activeFeature: "", user: mockUser });
   topNavContainer.appendChild(topNav);
 
   // Setup navigation event listener
@@ -40,18 +40,18 @@ async function initDashboard() {
  */
 async function loadCourses() {
   try {
-    const response = await fetch('/api/courses');
+    const response = await fetch("/api/courses");
     const result = await response.json();
 
     if (result.success) {
       courses = result.data;
       renderCourses();
     } else {
-      console.error('Failed to load courses:', result.error);
+      console.error("Failed to load courses:", result.error);
       renderCourses();
     }
   } catch (error) {
-    console.error('Error fetching courses:', error);
+    console.error("Error fetching courses:", error);
     renderCourses();
   }
 }
@@ -60,7 +60,7 @@ async function loadCourses() {
  * Renders course cards to the grid
  */
 function renderCourses() {
-  const grid = document.getElementById('course-grid');
+  const grid = document.getElementById("course-grid");
 
   if (!courses || courses.length === 0) {
     grid.innerHTML = `
@@ -72,7 +72,7 @@ function renderCourses() {
     return;
   }
 
-  grid.innerHTML = '';
+  grid.innerHTML = "";
 
   courses.forEach(course => {
     const card = createCourseCard(course);
@@ -86,12 +86,12 @@ function renderCourses() {
  * @returns {HTMLElement} Course card element
  */
 function createCourseCard(course) {
-  const card = document.createElement('div');
-  card.className = 'course-card';
+  const card = document.createElement("div");
+  card.className = "course-card";
   card.onclick = () => navigateToCourse(course.id);
 
   // Get initials from course code
-  const initials = course.code.split(' ')[0].slice(0, 3).toUpperCase();
+  const initials = course.code.split(" ")[0].slice(0, 3).toUpperCase();
 
   card.innerHTML = `
     <div class="course-card-header">
@@ -142,13 +142,13 @@ function handleNavigation(path) {
 
   // Map paths to actual URLs
   const routeMap = {
-    'class': '../directory/class.html',
-    'calendar': '../attendance/calendar.html',
-    'journal': '../standup/journal.html',
-    'dashboard': 'dashboard.html'
+    "class": "../directory/class.html",
+    "calendar": "../attendance/calendar.html",
+    "journal": "../standup/journal.html",
+    "dashboard": "dashboard.html"
   };
 
-  const basePath = path.split('/')[0].split('?')[0];
+  const basePath = path.split("/")[0].split("?")[0];
 
   if (routeMap[basePath]) {
     // In a real app, you might use a router library
@@ -160,8 +160,8 @@ function handleNavigation(path) {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDashboard);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDashboard);
 } else {
   initDashboard();
 }

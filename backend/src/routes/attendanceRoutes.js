@@ -4,7 +4,7 @@
  * @module routes/attendanceRoutes
  */
 
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
@@ -17,13 +17,13 @@ const router = express.Router();
  */
 const mockAttendance = {
   records: [
-    { date: '2024-11-15', status: 'present', checkInTime: '09:02:15' },
-    { date: '2024-11-13', status: 'present', checkInTime: '09:00:42' },
-    { date: '2024-11-11', status: 'late', checkInTime: '09:15:30' },
-    { date: '2024-11-08', status: 'present', checkInTime: '08:58:12' },
-    { date: '2024-11-06', status: 'absent', checkInTime: null },
-    { date: '2024-11-04', status: 'present', checkInTime: '09:01:05' },
-    { date: '2024-11-01', status: 'present', checkInTime: '09:03:22' }
+    { date: "2024-11-15", status: "present", checkInTime: "09:02:15" },
+    { date: "2024-11-13", status: "present", checkInTime: "09:00:42" },
+    { date: "2024-11-11", status: "late", checkInTime: "09:15:30" },
+    { date: "2024-11-08", status: "present", checkInTime: "08:58:12" },
+    { date: "2024-11-06", status: "absent", checkInTime: null },
+    { date: "2024-11-04", status: "present", checkInTime: "09:01:05" },
+    { date: "2024-11-01", status: "present", checkInTime: "09:03:22" }
   ],
   stats: {
     totalClasses: 20,
@@ -70,7 +70,7 @@ const mockAttendance = {
  *   }
  * }
  */
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   res.json({
     success: true,
     data: mockAttendance
@@ -107,17 +107,17 @@ router.get('/', (req, res) => {
  *   }
  * }
  */
-router.post('/checkin', (req, res) => {
+router.post("/checkin", (req, res) => {
   const { qrCode } = req.body;
 
   // Mock check-in logic
   res.json({
     success: true,
-    message: 'Successfully checked in!',
+    message: "Successfully checked in!",
     data: {
-      date: new Date().toISOString().split('T')[0],
-      checkInTime: new Date().toTimeString().split(' ')[0],
-      status: 'present'
+      date: new Date().toISOString().split("T")[0],
+      checkInTime: new Date().toTimeString().split(" ")[0],
+      status: "present"
     }
   });
 });
@@ -144,14 +144,14 @@ router.post('/checkin', (req, res) => {
  *   }
  * }
  */
-router.get('/qr', (req, res) => {
+router.get("/qr", (req, res) => {
   // In production, generate actual QR code
   res.json({
     success: true,
     data: {
-      qrCode: 'MOCK_QR_CODE_' + Date.now(),
+      qrCode: "MOCK_QR_CODE_" + Date.now(),
       expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes
-      sessionId: 'session_' + Date.now()
+      sessionId: "session_" + Date.now()
     }
   });
 });

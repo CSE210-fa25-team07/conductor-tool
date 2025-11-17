@@ -20,7 +20,7 @@ const PORT = 8000;
 app.use(express.json());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'conductor-dev-secret-key',    // signs the session ID cookie
+  secret: process.env.SESSION_SECRET || "conductor-dev-secret-key",    // signs the session ID cookie
   resave: false,             // don't save session if nothing changed
   saveUninitialized: false,  // don't create session until something is stored
   cookie: { secure: false }  // true if HTTPS/production
@@ -102,22 +102,22 @@ app.get("/journal", (req, res) => res.redirect("/dashboard"));
 // ============================================
 
 app.listen(PORT, async () => {
-  console.log(`\nConductor Server Running`);
-  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  console.log("\nConductor Server Running");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log(`Server URL: http://localhost:${PORT}`);
 
   // Test database connection
-  console.log(`\n Database:`);
+  console.log("\n Database:");
   const dbConnected = await testConnection();
-  console.log(`   Status:     ${dbConnected ? '✓ Connected' : '✗ Failed'}`);
+  console.log(`   Status:     ${dbConnected ? "✓ Connected" : "✗ Failed"}`);
 
-  console.log(`\n Frontend Pages:`);
+  console.log("\n Frontend Pages:");
   console.log(`   Dashboard:  http://localhost:${PORT}/dashboard`);
   console.log(`   Profile:    http://localhost:${PORT}/profile`);
   console.log(`   Course:     http://localhost:${PORT}/course/:id/class`);
   console.log(`   Course:     http://localhost:${PORT}/course/:id/calendar`);
   console.log(`   Course:     http://localhost:${PORT}/course/:id/journal`);
-  console.log(`\n API Endpoints:`);
+  console.log("\n API Endpoints:");
   console.log(`   Roles:      http://localhost:${PORT}/api/roles`);
   console.log(`   Auth:       http://localhost:${PORT}/api/auth/me`);
   console.log(`   Courses:    http://localhost:${PORT}/api/courses`);
@@ -126,5 +126,5 @@ app.listen(PORT, async () => {
   console.log(`   Team:       http://localhost:${PORT}/api/journal/team`);
   console.log(`   People:     http://localhost:${PORT}/api/class/people`);
   console.log(`   Groups:     http://localhost:${PORT}/api/class/groups`);
-  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 });

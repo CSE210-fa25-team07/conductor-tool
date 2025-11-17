@@ -23,11 +23,11 @@
  * Use these constants instead of hardcoding strings
  */
 export const ROLE_TYPES = {
-  STUDENT: 'student',
-  TA: 'ta',
-  PROFESSOR: 'professor',
-  ADMIN: 'admin',
-  LEAD: 'lead',
+  STUDENT: "student",
+  TA: "ta",
+  PROFESSOR: "professor",
+  ADMIN: "admin",
+  LEAD: "lead"
 };
 
 // ============================================
@@ -44,7 +44,7 @@ let state = {
   activeCourseId: null, // Currently selected course ID
   activeRoleId: null, // Primary role for active course
   activeRoleName: null, // Primary role name for active course
-  isInitialized: false, // Whether store has been initialized
+  isInitialized: false // Whether store has been initialized
 };
 
 /**
@@ -66,17 +66,17 @@ const listeners = new Set();
 export async function initRoleState(userId = null) {
   try {
     // Import API client
-    const { getCurrentUser } = await import('../api/authApi.js');
+    const { getCurrentUser } = await import("../api/authApi.js");
 
     // Fetch current user with enrollments
     const userData = await getCurrentUser(userId);
 
     if (!userData) {
-      console.warn('No user data returned, using empty state');
+      console.warn("No user data returned, using empty state");
       setState({
         user: null,
         rolesByCourse: {},
-        isInitialized: true,
+        isInitialized: true
       });
       return;
     }
@@ -93,13 +93,13 @@ export async function initRoleState(userId = null) {
             courseUuid: courseId,
             courseCode: enrollment.course_code,
             courseName: enrollment.course_name,
-            roles: [],
+            roles: []
           };
         }
 
         rolesByCourse[courseId].roles.push({
           roleId: enrollment.role_uuid,
-          roleName: enrollment.role_name,
+          roleName: enrollment.role_name
         });
       }
     }
@@ -112,20 +112,20 @@ export async function initRoleState(userId = null) {
         firstName: userData.first_name,
         lastName: userData.last_name,
         photoUrl: userData.photo_url,
-        githubUsername: userData.github_username,
+        githubUsername: userData.github_username
       },
       rolesByCourse,
-      isInitialized: true,
+      isInitialized: true
     });
 
-    console.log('Role state initialized:', state);
+    console.log("Role state initialized:", state);
   } catch (error) {
-    console.error('Error initializing role state:', error);
+    console.error("Error initializing role state:", error);
     // Set initialized flag even on error so app doesn't hang
     setState({
       user: null,
       rolesByCourse: {},
-      isInitialized: true,
+      isInitialized: true
     });
   }
 }
@@ -140,7 +140,7 @@ export function setActiveCourse(courseId) {
     setState({
       activeCourseId: null,
       activeRoleId: null,
-      activeRoleName: null,
+      activeRoleName: null
     });
     return;
   }
@@ -152,7 +152,7 @@ export function setActiveCourse(courseId) {
     setState({
       activeCourseId: courseId,
       activeRoleId: null,
-      activeRoleName: ROLE_TYPES.STUDENT,
+      activeRoleName: ROLE_TYPES.STUDENT
     });
     return;
   }
@@ -163,14 +163,14 @@ export function setActiveCourse(courseId) {
   setState({
     activeCourseId: courseId,
     activeRoleId: primaryRole.roleId,
-    activeRoleName: primaryRole.roleName,
+    activeRoleName: primaryRole.roleName
   });
 
   // Persist to sessionStorage
   try {
-    sessionStorage.setItem('activeCourseId', courseId);
+    sessionStorage.setItem("activeCourseId", courseId);
   } catch (e) {
-    console.warn('Could not save to sessionStorage:', e);
+    console.warn("Could not save to sessionStorage:", e);
   }
 }
 
@@ -182,7 +182,7 @@ export function setActiveCourse(courseId) {
 export function setActiveRole(roleId, roleName) {
   setState({
     activeRoleId: roleId,
-    activeRoleName: roleName,
+    activeRoleName: roleName
   });
 }
 
@@ -280,7 +280,7 @@ function notifyListeners() {
     try {
       listener();
     } catch (error) {
-      console.error('Error in state listener:', error);
+      console.error("Error in state listener:", error);
     }
   });
 }
@@ -298,7 +298,7 @@ function getPrimaryRole(roles) {
     ta: 2,
     lead: 3,
     student: 4,
-    admin: 5,
+    admin: 5
   };
 
   return roles.reduce((highest, current) => {
@@ -325,7 +325,7 @@ export function getCourseIdFromUrl() {
 export function getActiveCourseId() {
   // Try sessionStorage first
   try {
-    const stored = sessionStorage.getItem('activeCourseId');
+    const stored = sessionStorage.getItem("activeCourseId");
     if (stored) return stored;
   } catch (e) {
     // Ignore
@@ -352,7 +352,7 @@ export function createMockRoleStore(mockState = {}) {
     activeRoleId: null,
     activeRoleName: null,
     isInitialized: true,
-    ...mockState,
+    ...mockState
   };
 
   listeners.clear();
@@ -367,10 +367,10 @@ export function createMockRoleStore(mockState = {}) {
         activeCourseId: null,
         activeRoleId: null,
         activeRoleName: null,
-        isInitialized: false,
+        isInitialized: false
       };
       listeners.clear();
-    },
+    }
   };
 }
 
@@ -391,5 +391,5 @@ export default {
   isInstructor,
   getCourseIdFromUrl,
   getActiveCourseId,
-  createMockRoleStore,
+  createMockRoleStore
 };

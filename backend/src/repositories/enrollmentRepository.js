@@ -5,7 +5,7 @@
  * Manages the relationship between users, courses, and roles.
  */
 
-import { query } from '../utils/db.js';
+import { query } from "../utils/db.js";
 
 /**
  * Get all enrollments for a user
@@ -101,7 +101,7 @@ export async function getEnrollment(userUuid, courseUuid, roleUuid) {
  * @returns {Promise<Object>} Created enrollment object
  */
 export async function createEnrollment(enrollmentData) {
-  const { userUuid, courseUuid, roleUuid, enrollmentStatus = 'active' } = enrollmentData;
+  const { userUuid, courseUuid, roleUuid, enrollmentStatus = "active" } = enrollmentData;
 
   const result = await query(
     `INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status)
@@ -121,7 +121,7 @@ export async function createEnrollment(enrollmentData) {
  * @returns {Promise<Object>} Updated enrollment object
  */
 export async function updateEnrollmentStatus(userUuid, courseUuid, roleUuid, status) {
-  const droppedAt = status === 'dropped' ? 'CURRENT_TIMESTAMP' : 'NULL';
+  const droppedAt = status === "dropped" ? "CURRENT_TIMESTAMP" : "NULL";
 
   const result = await query(
     `UPDATE course_enrollment
@@ -201,5 +201,5 @@ export default {
   createEnrollment,
   updateEnrollmentStatus,
   getUserRoleInCourse,
-  getUserRolesInCourse,
+  getUserRolesInCourse
 };

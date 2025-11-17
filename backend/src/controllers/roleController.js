@@ -5,9 +5,9 @@
  * Handles requests for getting roles and enrollment data.
  */
 
-import * as roleService from '../services/roleService.js';
-import * as enrollmentService from '../services/enrollmentService.js';
-import * as userRepository from '../repositories/userRepositoryPg.js';
+import * as roleService from "../services/roleService.js";
+import * as enrollmentService from "../services/enrollmentService.js";
+import * as userRepository from "../repositories/userRepositoryPg.js";
 
 /**
  * Get all available roles
@@ -18,7 +18,7 @@ export async function getAllRoles(req, res) {
     const roles = await roleService.getAllRoles();
     res.json({ success: true, data: roles });
   } catch (error) {
-    console.error('Error in getAllRoles:', error);
+    console.error("Error in getAllRoles:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 }
@@ -33,8 +33,8 @@ export async function getUserEnrollments(req, res) {
     const enrollments = await enrollmentService.getUserEnrollments(userId);
     res.json({ success: true, data: enrollments });
   } catch (error) {
-    console.error('Error in getUserEnrollments:', error);
-    const status = error.message.includes('not found') ? 404 : 500;
+    console.error("Error in getUserEnrollments:", error);
+    const status = error.message.includes("not found") ? 404 : 500;
     res.status(status).json({ success: false, error: error.message });
   }
 }
@@ -51,13 +51,13 @@ export async function getUserRoleInCourse(req, res) {
     if (!role) {
       return res.status(404).json({
         success: false,
-        error: 'User is not enrolled in this course',
+        error: "User is not enrolled in this course"
       });
     }
 
     res.json({ success: true, data: role });
   } catch (error) {
-    console.error('Error in getUserRoleInCourse:', error);
+    console.error("Error in getUserRoleInCourse:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 }
@@ -75,23 +75,23 @@ export async function getCourseEnrollments(req, res) {
     if (role) {
       // Filter by specific role
       switch (role.toLowerCase()) {
-        case 'student':
-          enrollments = await enrollmentService.getCourseStudents(courseId);
-          break;
-        case 'ta':
-          enrollments = await enrollmentService.getCourseTAs(courseId);
-          break;
-        case 'professor':
-          enrollments = await enrollmentService.getCourseProfessors(courseId);
-          break;
-        case 'lead':
-          enrollments = await enrollmentService.getCourseLeads(courseId);
-          break;
-        default:
-          return res.status(400).json({
-            success: false,
-            error: 'Invalid role. Must be one of: student, ta, professor, lead',
-          });
+      case "student":
+        enrollments = await enrollmentService.getCourseStudents(courseId);
+        break;
+      case "ta":
+        enrollments = await enrollmentService.getCourseTAs(courseId);
+        break;
+      case "professor":
+        enrollments = await enrollmentService.getCourseProfessors(courseId);
+        break;
+      case "lead":
+        enrollments = await enrollmentService.getCourseLeads(courseId);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          error: "Invalid role. Must be one of: student, ta, professor, lead"
+        });
       }
     } else {
       // Get all enrollments
@@ -100,7 +100,7 @@ export async function getCourseEnrollments(req, res) {
 
     res.json({ success: true, data: enrollments });
   } catch (error) {
-    console.error('Error in getCourseEnrollments:', error);
+    console.error("Error in getCourseEnrollments:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 }
@@ -118,7 +118,7 @@ export async function getCurrentUser(req, res) {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        error: 'Not authenticated',
+        error: "Not authenticated"
       });
     }
 
@@ -127,13 +127,13 @@ export async function getCurrentUser(req, res) {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found',
+        error: "User not found"
       });
     }
 
     res.json({ success: true, data: user });
   } catch (error) {
-    console.error('Error in getCurrentUser:', error);
+    console.error("Error in getCurrentUser:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 }
@@ -143,5 +143,5 @@ export default {
   getUserEnrollments,
   getUserRoleInCourse,
   getCourseEnrollments,
-  getCurrentUser,
+  getCurrentUser
 };

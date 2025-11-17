@@ -5,7 +5,7 @@
  * Use these helpers to show/hide UI elements based on user's role.
  */
 
-import { hasRole, isInstructor } from '../../utils/roleStore.js';
+import { hasRole, isInstructor } from "../../utils/roleStore.js";
 
 /**
  * Render content only if user has specified role(s)
@@ -48,7 +48,7 @@ export function renderIfInstructor(renderFn) {
  * renderIfStudent(() => '<div class="student-view">...</div>')
  */
 export function renderIfStudent(renderFn) {
-  if (hasRole('student')) {
+  if (hasRole("student")) {
     return renderFn();
   }
   return null;
@@ -67,11 +67,11 @@ export function showIfRole(element, allowedRoles) {
   if (!element) return;
 
   if (hasRole(allowedRoles)) {
-    element.style.display = '';
-    element.removeAttribute('hidden');
+    element.style.display = "";
+    element.removeAttribute("hidden");
   } else {
-    element.style.display = 'none';
-    element.setAttribute('hidden', '');
+    element.style.display = "none";
+    element.setAttribute("hidden", "");
   }
 }
 
@@ -105,7 +105,7 @@ export function addRoleClass(element, roleClassName, roleName) {
  * container.appendChild(badge);
  */
 export function createRoleBadge(roleName) {
-  const badge = document.createElement('span');
+  const badge = document.createElement("span");
   badge.className = `role-badge role-badge-${roleName}`;
   badge.textContent = capitalizeFirst(roleName);
   return badge;
@@ -125,5 +125,5 @@ export default {
   renderIfStudent,
   showIfRole,
   addRoleClass,
-  createRoleBadge,
+  createRoleBadge
 };

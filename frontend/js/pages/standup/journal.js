@@ -4,20 +4,20 @@
  * @module pages/standup/journal
  */
 
-import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from '../../components/navigation.js';
+import { createTopNav, createSecondaryNav, setupNavigation, getCourseIdFromUrl } from "../../components/navigation.js";
 
 /**
  * Mock user data
  */
 const mockUser = {
-  name: 'John Doe',
-  avatar: 'JD'
+  name: "John Doe",
+  avatar: "JD"
 };
 
 /**
  * Current active page
  */
-let currentPage = 'dashboard';
+let currentPage = "dashboard";
 
 /**
  * Initializes the journal page
@@ -28,18 +28,18 @@ function initJournalPage() {
 
   if (!courseId) {
     // No course selected, redirect to dashboard
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
     return;
   }
 
   // Create and inject top navigation
-  const topNavContainer = document.getElementById('top-navigation');
-  const topNav = createTopNav({ activeFeature: 'journal', courseId, user: mockUser });
+  const topNavContainer = document.getElementById("top-navigation");
+  const topNav = createTopNav({ activeFeature: "journal", courseId, user: mockUser });
   topNavContainer.appendChild(topNav);
 
   // Create and inject secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  const secondaryNav = createSecondaryNav({ feature: 'journal', courseId, activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  const secondaryNav = createSecondaryNav({ feature: "journal", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Setup navigation event listener
@@ -47,7 +47,7 @@ function initJournalPage() {
 
   // Load initial page from URL hash or default to dashboard
   const hash = window.location.hash.slice(1);
-  currentPage = hash || 'dashboard';
+  currentPage = hash || "dashboard";
   loadPage(currentPage);
 }
 
@@ -59,8 +59,8 @@ function handleNavigation(path) {
   console.log(`Journal page handling navigation to: ${path}`);
 
   // Extract page from path (e.g., "journal/team" -> "team")
-  if (path.startsWith('journal/')) {
-    const page = path.split('/')[1].split('?')[0];
+  if (path.startsWith("journal/")) {
+    const page = path.split("/")[1].split("?")[0];
     loadPage(page);
   }
 }
@@ -76,23 +76,23 @@ function loadPage(page) {
   const courseId = getCourseIdFromUrl();
 
   // Update secondary navigation
-  const secondaryNavContainer = document.getElementById('secondary-navigation');
-  secondaryNavContainer.innerHTML = '';
-  const secondaryNav = createSecondaryNav({ feature: 'journal', courseId, activePage: currentPage });
+  const secondaryNavContainer = document.getElementById("secondary-navigation");
+  secondaryNavContainer.innerHTML = "";
+  const secondaryNav = createSecondaryNav({ feature: "journal", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
   // Render page content
-  const contentContainer = document.getElementById('page-content');
+  const contentContainer = document.getElementById("page-content");
 
   switch (page) {
-    case 'dashboard':
-      renderDashboard(contentContainer);
-      break;
-    case 'team':
-      renderTeam(contentContainer);
-      break;
-    default:
-      renderDashboard(contentContainer);
+  case "dashboard":
+    renderDashboard(contentContainer);
+    break;
+  case "team":
+    renderTeam(contentContainer);
+    break;
+  default:
+    renderDashboard(contentContainer);
   }
 }
 
@@ -133,8 +133,8 @@ function renderTeam(container) {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initJournalPage);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initJournalPage);
 } else {
   initJournalPage();
 }

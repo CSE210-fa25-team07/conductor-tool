@@ -4,14 +4,14 @@
  * @module pages/profile/main
  */
 
-import { createTopNav, setupNavigation } from '../../components/navigation.js';
+import { createTopNav, setupNavigation } from "../../components/navigation.js";
 
 /**
  * Mock user data
  */
 const mockUser = {
-  name: 'John Doe',
-  avatar: 'JD'
+  name: "John Doe",
+  avatar: "JD"
 };
 
 /**
@@ -19,8 +19,8 @@ const mockUser = {
  */
 function initProfilePage() {
   // Create and inject top navigation
-  const topNavContainer = document.getElementById('top-navigation');
-  const topNav = createTopNav({ activeFeature: '', user: mockUser });
+  const topNavContainer = document.getElementById("top-navigation");
+  const topNav = createTopNav({ activeFeature: "", user: mockUser });
   topNavContainer.appendChild(topNav);
 
   // Setup navigation event listener
@@ -42,7 +42,7 @@ function handleNavigation(path) {
  * Renders the profile content - PLACEHOLDER
  */
 function renderProfile() {
-  const container = document.getElementById('page-content');
+  const container = document.getElementById("page-content");
 
   container.innerHTML = `
     <div class="page-header">
@@ -65,8 +65,8 @@ function renderProfile() {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initProfilePage);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initProfilePage);
 } else {
   initProfilePage();
 }

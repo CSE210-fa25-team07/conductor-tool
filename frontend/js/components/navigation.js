@@ -12,35 +12,35 @@
  * @param {Object} options.user - User object with name and avatar info
  * @returns {HTMLElement} Top navigation element
  */
-export function createTopNav({ activeFeature = '', courseId = null, user = null } = {}) {
-  const nav = document.createElement('nav');
-  nav.className = 'top-nav';
+export function createTopNav({ activeFeature = "", courseId = null, user = null } = {}) {
+  const nav = document.createElement("nav");
+  nav.className = "top-nav";
 
-  const container = document.createElement('div');
-  container.className = 'top-nav-container';
+  const container = document.createElement("div");
+  container.className = "top-nav-container";
 
   // Logo
-  const logo = document.createElement('div');
-  logo.className = 'top-nav-logo';
-  logo.textContent = 'Conductor';
-  logo.onclick = () => window.location.href = '/dashboard';
+  const logo = document.createElement("div");
+  logo.className = "top-nav-logo";
+  logo.textContent = "Conductor";
+  logo.onclick = () => window.location.href = "/dashboard";
 
   // Navigation Links (only show if we have a courseId)
-  const links = document.createElement('div');
-  links.className = 'top-nav-links';
+  const links = document.createElement("div");
+  links.className = "top-nav-links";
 
   if (courseId) {
     const features = [
-      { id: 'class', label: 'Class' },
-      { id: 'calendar', label: 'Calendar' },
-      { id: 'journal', label: 'Journal' }
+      { id: "class", label: "Class" },
+      { id: "calendar", label: "Calendar" },
+      { id: "journal", label: "Journal" }
     ];
 
     features.forEach(feature => {
-      const link = document.createElement('div');
-      link.className = 'top-nav-link';
+      const link = document.createElement("div");
+      link.className = "top-nav-link";
       if (activeFeature === feature.id) {
-        link.classList.add('active');
+        link.classList.add("active");
       }
       link.textContent = feature.label;
       link.onclick = () => window.location.href = `/course/${courseId}/${feature.id}`;
@@ -67,23 +67,23 @@ export function createTopNav({ activeFeature = '', courseId = null, user = null 
  * @returns {HTMLElement} User profile element
  */
 function createUserProfile(user = null) {
-  const profile = document.createElement('div');
-  profile.className = 'user-profile';
-  profile.style.cursor = 'pointer';
-  profile.onclick = () => window.location.href = '/profile';
+  const profile = document.createElement("div");
+  profile.className = "user-profile";
+  profile.style.cursor = "pointer";
+  profile.onclick = () => window.location.href = "/profile";
 
-  const avatar = document.createElement('div');
-  avatar.className = 'user-avatar';
+  const avatar = document.createElement("div");
+  avatar.className = "user-avatar";
 
   if (user) {
     avatar.textContent = user.avatar || getInitials(user.name);
   } else {
-    avatar.textContent = 'U';
+    avatar.textContent = "U";
   }
 
-  const name = document.createElement('div');
-  name.className = 'user-name';
-  name.textContent = user ? user.name : 'User';
+  const name = document.createElement("div");
+  name.className = "user-name";
+  name.textContent = user ? user.name : "User";
 
   profile.appendChild(avatar);
   profile.appendChild(name);
@@ -98,9 +98,9 @@ function createUserProfile(user = null) {
  */
 function getInitials(name) {
   return name
-    .split(' ')
+    .split(" ")
     .map(part => part[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 }
@@ -113,44 +113,44 @@ function getInitials(name) {
  * @param {string} options.activePage - Currently active page in the feature
  * @returns {HTMLElement} Secondary navigation element
  */
-export function createSecondaryNav({ feature, courseId, activePage = '' } = {}) {
-  const nav = document.createElement('nav');
-  nav.className = 'secondary-nav';
+export function createSecondaryNav({ feature, courseId, activePage = "" } = {}) {
+  const nav = document.createElement("nav");
+  nav.className = "secondary-nav";
 
-  const linksContainer = document.createElement('div');
-  linksContainer.className = 'secondary-nav-links';
+  const linksContainer = document.createElement("div");
+  linksContainer.className = "secondary-nav-links";
 
   const navigationMap = {
     class: [
-      { id: 'dashboard', label: 'Dashboard' },
-      { id: 'people', label: 'People' },
-      { id: 'group', label: 'Group' },
-      { id: 'my', label: 'My' }
+      { id: "dashboard", label: "Dashboard" },
+      { id: "people", label: "People" },
+      { id: "group", label: "Group" },
+      { id: "my", label: "My" }
     ],
     calendar: [
-      { id: 'calendar', label: 'Calendar' },
-      { id: 'analysis', label: 'Analysis' }
+      { id: "calendar", label: "Calendar" },
+      { id: "analysis", label: "Analysis" }
     ],
     journal: [
-      { id: 'dashboard', label: 'Dashboard' },
-      { id: 'team', label: 'Team' }
+      { id: "dashboard", label: "Dashboard" },
+      { id: "team", label: "Team" }
     ]
   };
 
   const pages = navigationMap[feature] || [];
 
   pages.forEach(page => {
-    const link = document.createElement('div');
-    link.className = 'secondary-nav-link';
+    const link = document.createElement("div");
+    link.className = "secondary-nav-link";
     if (activePage === page.id) {
-      link.classList.add('active');
+      link.classList.add("active");
     }
     link.textContent = page.label;
     // Use hash-based navigation within the same page
     link.onclick = () => {
       window.location.hash = page.id;
       // Dispatch event for page switching
-      const event = new CustomEvent('navigate', {
+      const event = new CustomEvent("navigate", {
         detail: { path: `${feature}/${page.id}` }
       });
       window.dispatchEvent(event);
@@ -168,8 +168,8 @@ export function createSecondaryNav({ feature, courseId, activePage = '' } = {}) 
  * @returns {string|null} Course ID or null
  */
 export function getCourseIdFromUrl() {
-  const pathParts = window.location.pathname.split('/');
-  const courseIndex = pathParts.indexOf('course');
+  const pathParts = window.location.pathname.split("/");
+  const courseIndex = pathParts.indexOf("course");
   if (courseIndex !== -1 && pathParts[courseIndex + 1]) {
     return pathParts[courseIndex + 1];
   }
@@ -181,9 +181,9 @@ export function getCourseIdFromUrl() {
  * @returns {string|null} Feature name or null
  */
 export function getFeatureFromUrl() {
-  const pathParts = window.location.pathname.split('/');
+  const pathParts = window.location.pathname.split("/");
   const lastPart = pathParts[pathParts.length - 1];
-  if (['class', 'calendar', 'journal'].includes(lastPart)) {
+  if (["class", "calendar", "journal"].includes(lastPart)) {
     return lastPart;
   }
   return null;
@@ -194,8 +194,8 @@ export function getFeatureFromUrl() {
  * @param {Function} onNavigate - Callback function for navigation events
  */
 export function setupNavigation(onNavigate) {
-  window.addEventListener('navigate', (event) => {
-    if (onNavigate && typeof onNavigate === 'function') {
+  window.addEventListener("navigate", (event) => {
+    if (onNavigate && typeof onNavigate === "function") {
       onNavigate(event.detail.path);
     }
   });

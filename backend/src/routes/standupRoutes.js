@@ -4,7 +4,7 @@
  * @module routes/standupRoutes
  */
 
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
@@ -18,42 +18,42 @@ const router = express.Router();
 const mockJournalEntries = [
   {
     id: 1,
-    date: '2024-11-15',
+    date: "2024-11-15",
     user_id: 1,
-    user_name: 'John Doe',
-    user_avatar: 'JD',
-    yesterday: 'Completed the authentication module and wrote unit tests',
-    today: 'Working on the user dashboard UI components',
-    blockers: 'None',
-    mood: '😄',
-    status: 'completed',
-    created_at: '2024-11-15T09:00:00Z'
+    user_name: "John Doe",
+    user_avatar: "JD",
+    yesterday: "Completed the authentication module and wrote unit tests",
+    today: "Working on the user dashboard UI components",
+    blockers: "None",
+    mood: "😄",
+    status: "completed",
+    created_at: "2024-11-15T09:00:00Z"
   },
   {
     id: 2,
-    date: '2024-11-14',
+    date: "2024-11-14",
     user_id: 1,
-    user_name: 'John Doe',
-    user_avatar: 'JD',
-    yesterday: 'Started work on authentication module',
-    today: 'Finish authentication and begin testing',
-    blockers: 'Waiting for API documentation',
-    mood: '😊',
-    status: 'in-progress',
-    created_at: '2024-11-14T09:00:00Z'
+    user_name: "John Doe",
+    user_avatar: "JD",
+    yesterday: "Started work on authentication module",
+    today: "Finish authentication and begin testing",
+    blockers: "Waiting for API documentation",
+    mood: "😊",
+    status: "in-progress",
+    created_at: "2024-11-14T09:00:00Z"
   },
   {
     id: 3,
-    date: '2024-11-13',
+    date: "2024-11-13",
     user_id: 1,
-    user_name: 'John Doe',
-    user_avatar: 'JD',
-    yesterday: 'Set up project structure and dependencies',
-    today: 'Begin authentication module implementation',
-    blockers: 'None',
-    mood: '😄',
-    status: 'completed',
-    created_at: '2024-11-13T09:00:00Z'
+    user_name: "John Doe",
+    user_avatar: "JD",
+    yesterday: "Set up project structure and dependencies",
+    today: "Begin authentication module implementation",
+    blockers: "None",
+    mood: "😄",
+    status: "completed",
+    created_at: "2024-11-13T09:00:00Z"
   }
 ];
 
@@ -61,10 +61,10 @@ const mockJournalEntries = [
  * Mock team members
  */
 const mockTeamMembers = [
-  { id: 1, name: 'Alice Johnson', avatar: 'AJ', role: 'Frontend Dev', entries: 15, streak: 7, lastUpdate: '2 hours ago' },
-  { id: 2, name: 'Bob Smith', avatar: 'BS', role: 'Backend Dev', entries: 12, streak: 5, lastUpdate: '1 hour ago' },
-  { id: 3, name: 'Carol Williams', avatar: 'CW', role: 'Designer', entries: 14, streak: 6, lastUpdate: '3 hours ago' },
-  { id: 4, name: 'David Brown', avatar: 'DB', role: 'QA Engineer', entries: 11, streak: 4, lastUpdate: '30 minutes ago' }
+  { id: 1, name: "Alice Johnson", avatar: "AJ", role: "Frontend Dev", entries: 15, streak: 7, lastUpdate: "2 hours ago" },
+  { id: 2, name: "Bob Smith", avatar: "BS", role: "Backend Dev", entries: 12, streak: 5, lastUpdate: "1 hour ago" },
+  { id: 3, name: "Carol Williams", avatar: "CW", role: "Designer", entries: 14, streak: 6, lastUpdate: "3 hours ago" },
+  { id: 4, name: "David Brown", avatar: "DB", role: "QA Engineer", entries: 11, streak: 4, lastUpdate: "30 minutes ago" }
 ];
 
 // ============================================
@@ -107,7 +107,7 @@ const mockTeamMembers = [
  *   }
  * }
  */
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   res.json({
     success: true,
     data: {
@@ -159,20 +159,20 @@ router.get('/', (req, res) => {
  *   }
  * }
  */
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   const { yesterday, today, blockers, mood } = req.body;
 
   const newEntry = {
     id: mockJournalEntries.length + 1,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split("T")[0],
     user_id: 1, // Mock user
-    user_name: 'John Doe',
-    user_avatar: 'JD',
+    user_name: "John Doe",
+    user_avatar: "JD",
     yesterday,
     today,
     blockers,
     mood,
-    status: 'completed',
+    status: "completed",
     created_at: new Date().toISOString()
   };
 
@@ -180,7 +180,7 @@ router.post('/', (req, res) => {
 
   res.json({
     success: true,
-    message: 'Journal entry submitted successfully!',
+    message: "Journal entry submitted successfully!",
     data: newEntry
   });
 });
@@ -224,7 +224,7 @@ router.post('/', (req, res) => {
  *   }
  * }
  */
-router.get('/team', (req, res) => {
+router.get("/team", (req, res) => {
   res.json({
     success: true,
     data: {

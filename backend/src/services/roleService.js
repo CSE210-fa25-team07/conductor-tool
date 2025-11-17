@@ -5,7 +5,7 @@
  * Coordinates with roleRepository to provide role operations.
  */
 
-import * as roleRepository from '../repositories/roleRepository.js';
+import * as roleRepository from "../repositories/roleRepository.js";
 
 /**
  * Get all available roles
@@ -22,8 +22,8 @@ export async function getAllRoles() {
  * @throws {Error} If role not found
  */
 export async function getRoleById(roleId) {
-  if (!roleId || typeof roleId !== 'string') {
-    throw new Error('Role ID is required and must be a string');
+  if (!roleId || typeof roleId !== "string") {
+    throw new Error("Role ID is required and must be a string");
   }
 
   const role = await roleRepository.getRoleById(roleId);
@@ -41,15 +41,15 @@ export async function getRoleById(roleId) {
  * @throws {Error} If role not found or invalid name
  */
 export async function getRoleByName(roleName) {
-  if (!roleName || typeof roleName !== 'string') {
-    throw new Error('Role name is required and must be a string');
+  if (!roleName || typeof roleName !== "string") {
+    throw new Error("Role name is required and must be a string");
   }
 
-  const validRoles = ['student', 'ta', 'professor', 'admin', 'lead'];
+  const validRoles = ["student", "ta", "professor", "admin", "lead"];
   const normalizedRole = roleName.toLowerCase().trim();
 
   if (!validRoles.includes(normalizedRole)) {
-    throw new Error(`Invalid role name. Must be one of: ${validRoles.join(', ')}`);
+    throw new Error(`Invalid role name. Must be one of: ${validRoles.join(", ")}`);
   }
 
   const role = await roleRepository.getRoleByName(normalizedRole);
@@ -66,7 +66,7 @@ export async function getRoleByName(roleName) {
  * @returns {boolean} True if valid
  */
 export function isValidRoleName(roleName) {
-  const validRoles = ['student', 'ta', 'professor', 'admin', 'lead'];
+  const validRoles = ["student", "ta", "professor", "admin", "lead"];
   return validRoles.includes(roleName?.toLowerCase()?.trim());
 }
 
@@ -82,7 +82,7 @@ export function getRolePriority(roleName) {
     ta: 2,
     lead: 3,
     student: 4,
-    admin: 5,
+    admin: 5
   };
   return priorities[roleName?.toLowerCase()] || 999;
 }
@@ -92,5 +92,5 @@ export default {
   getRoleById,
   getRoleByName,
   isValidRoleName,
-  getRolePriority,
+  getRolePriority
 };

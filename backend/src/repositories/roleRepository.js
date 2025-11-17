@@ -5,7 +5,7 @@
  * Provides CRUD operations for role management.
  */
 
-import { query } from '../utils/db.js';
+import { query } from "../utils/db.js";
 
 /**
  * Get all roles
@@ -13,7 +13,7 @@ import { query } from '../utils/db.js';
  */
 export async function getAllRoles() {
   const result = await query(
-    'SELECT role_uuid, role, created_at FROM role ORDER BY role'
+    "SELECT role_uuid, role, created_at FROM role ORDER BY role"
   );
   return result.rows;
 }
@@ -25,7 +25,7 @@ export async function getAllRoles() {
  */
 export async function getRoleById(roleUuid) {
   const result = await query(
-    'SELECT role_uuid, role, created_at FROM role WHERE role_uuid = $1',
+    "SELECT role_uuid, role, created_at FROM role WHERE role_uuid = $1",
     [roleUuid]
   );
   return result.rows[0] || null;
@@ -38,7 +38,7 @@ export async function getRoleById(roleUuid) {
  */
 export async function getRoleByName(roleName) {
   const result = await query(
-    'SELECT role_uuid, role, created_at FROM role WHERE role = $1',
+    "SELECT role_uuid, role, created_at FROM role WHERE role = $1",
     [roleName]
   );
   return result.rows[0] || null;
@@ -51,7 +51,7 @@ export async function getRoleByName(roleName) {
  */
 export async function createRole(roleName) {
   const result = await query(
-    'INSERT INTO role (role) VALUES ($1) RETURNING role_uuid, role, created_at',
+    "INSERT INTO role (role) VALUES ($1) RETURNING role_uuid, role, created_at",
     [roleName]
   );
   return result.rows[0];
@@ -61,5 +61,5 @@ export default {
   getAllRoles,
   getRoleById,
   getRoleByName,
-  createRole,
+  createRole
 };

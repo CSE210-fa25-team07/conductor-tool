@@ -5,7 +5,7 @@
  * Provides CRUD operations for user management.
  */
 
-import { query } from '../utils/db.js';
+import { query } from "../utils/db.js";
 
 /**
  * Get all users
@@ -108,7 +108,7 @@ export async function createUser(userData) {
     pronouns,
     bio,
     phoneNumber,
-    githubUsername,
+    githubUsername
   } = userData;
 
   const result = await query(
@@ -147,7 +147,7 @@ export async function updateUser(userUuid, userData) {
     pronouns,
     bio,
     phoneNumber,
-    githubUsername,
+    githubUsername
   } = userData;
 
   const result = await query(
@@ -202,7 +202,7 @@ export async function updateLastLogin(userUuid) {
  */
 export async function deleteUser(userUuid) {
   const result = await query(
-    'DELETE FROM users WHERE user_uuid = $1',
+    "DELETE FROM users WHERE user_uuid = $1",
     [userUuid]
   );
   return result.rowCount > 0;
@@ -238,7 +238,7 @@ export async function getUserWithEnrollments(userUuid) {
 
   return {
     ...user,
-    enrollments: enrollmentsResult.rows,
+    enrollments: enrollmentsResult.rows
   };
 }
 
@@ -250,5 +250,5 @@ export default {
   updateUser,
   updateLastLogin,
   deleteUser,
-  getUserWithEnrollments,
+  getUserWithEnrollments
 };

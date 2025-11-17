@@ -5,8 +5,8 @@
  * Loads connection configuration from environment variables.
  */
 
-import pg from 'pg';
-import dotenv from 'dotenv';
+import pg from "pg";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -19,20 +19,20 @@ const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   // Individual connection params (fallback)
-  host: process.env.POSTGRES_HOST || 'localhost',
+  host: process.env.POSTGRES_HOST || "localhost",
   port: process.env.POSTGRES_PORT || 5432,
-  database: process.env.POSTGRES_DB || 'conductor',
-  user: process.env.POSTGRES_USER || 'conductor_user',
-  password: process.env.POSTGRES_PASSWORD || 'conductor_pass',
+  database: process.env.POSTGRES_DB || "conductor",
+  user: process.env.POSTGRES_USER || "conductor_user",
+  password: process.env.POSTGRES_PASSWORD || "conductor_pass",
   // Connection pool settings
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // how long a client can be idle before being closed
-  connectionTimeoutMillis: 2000, // how long to wait for a connection
+  connectionTimeoutMillis: 2000 // how long to wait for a connection
 });
 
 // Handle pool errors
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle client", err);
   process.exit(-1);
 });
 
@@ -47,10 +47,10 @@ export async function query(text, params) {
   try {
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: res.rowCount });
+    console.log("Executed query", { text, duration, rows: res.rowCount });
     return res;
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error("Database query error:", error);
     throw error;
   }
 }
@@ -71,11 +71,11 @@ export async function getClient() {
  */
 export async function testConnection() {
   try {
-    const result = await query('SELECT NOW()');
-    console.log('Database connection successful:', result.rows[0]);
+    const result = await query("SELECT NOW()");
+    console.log("Database connection successful:", result.rows[0]);
     return true;
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error("Database connection failed:", error);
     return false;
   }
 }
@@ -86,12 +86,12 @@ export async function testConnection() {
  */
 export async function closePool() {
   await pool.end();
-  console.log('Database pool closed');
+  console.log("Database pool closed");
 }
 
 export default {
   query,
   getClient,
   testConnection,
-  closePool,
+  closePool
 };

@@ -5,9 +5,9 @@
  * Manages user enrollments, roles, and permissions.
  */
 
-import * as enrollmentRepository from '../repositories/enrollmentRepository.js';
-import * as userRepository from '../repositories/userRepositoryPg.js';
-import * as roleRepository from '../repositories/roleRepository.js';
+import * as enrollmentRepository from "../repositories/enrollmentRepository.js";
+import * as userRepository from "../repositories/userRepositoryPg.js";
+import * as roleRepository from "../repositories/roleRepository.js";
 
 /**
  * Get all enrollments for a user with their roles
@@ -15,8 +15,8 @@ import * as roleRepository from '../repositories/roleRepository.js';
  * @returns {Promise<Object>} User with enrollments organized by course
  */
 export async function getUserEnrollments(userUuid) {
-  if (!userUuid || typeof userUuid !== 'string') {
-    throw new Error('User ID is required and must be a string');
+  if (!userUuid || typeof userUuid !== "string") {
+    throw new Error("User ID is required and must be a string");
   }
 
   const enrollments = await enrollmentRepository.getEnrollmentsByUser(userUuid);
@@ -34,7 +34,7 @@ export async function getUserEnrollments(userUuid) {
         termYear: enrollment.term_year,
         termSeason: enrollment.term_season,
         isActiveTerm: enrollment.term_is_active,
-        roles: [],
+        roles: []
       };
     }
 
@@ -42,13 +42,13 @@ export async function getUserEnrollments(userUuid) {
       roleUuid: enrollment.role_uuid,
       roleName: enrollment.role_name,
       enrollmentStatus: enrollment.enrollment_status,
-      enrolledAt: enrollment.enrolled_at,
+      enrolledAt: enrollment.enrolled_at
     });
   }
 
   return {
     userUuid,
-    rolesByCourse,
+    rolesByCourse
   };
 }
 
@@ -61,7 +61,7 @@ export async function getUserEnrollments(userUuid) {
  */
 export async function getUserRoleInCourse(userUuid, courseUuid) {
   if (!userUuid || !courseUuid) {
-    throw new Error('User ID and Course ID are required');
+    throw new Error("User ID and Course ID are required");
   }
 
   return await enrollmentRepository.getUserRoleInCourse(userUuid, courseUuid);
@@ -75,7 +75,7 @@ export async function getUserRoleInCourse(userUuid, courseUuid) {
  */
 export async function getUserRolesInCourse(userUuid, courseUuid) {
   if (!userUuid || !courseUuid) {
-    throw new Error('User ID and Course ID are required');
+    throw new Error("User ID and Course ID are required");
   }
 
   return await enrollmentRepository.getUserRolesInCourse(userUuid, courseUuid);
@@ -88,11 +88,11 @@ export async function getUserRolesInCourse(userUuid, courseUuid) {
  */
 export async function getCourseStudents(courseUuid) {
   if (!courseUuid) {
-    throw new Error('Course ID is required');
+    throw new Error("Course ID is required");
   }
 
   const enrollments = await enrollmentRepository.getEnrollmentsByCourse(courseUuid);
-  return enrollments.filter(e => e.role_name === 'student');
+  return enrollments.filter(e => e.role_name === "student");
 }
 
 /**
@@ -102,11 +102,11 @@ export async function getCourseStudents(courseUuid) {
  */
 export async function getCourseTAs(courseUuid) {
   if (!courseUuid) {
-    throw new Error('Course ID is required');
+    throw new Error("Course ID is required");
   }
 
   const enrollments = await enrollmentRepository.getEnrollmentsByCourse(courseUuid);
-  return enrollments.filter(e => e.role_name === 'ta');
+  return enrollments.filter(e => e.role_name === "ta");
 }
 
 /**
@@ -116,11 +116,11 @@ export async function getCourseTAs(courseUuid) {
  */
 export async function getCourseProfessors(courseUuid) {
   if (!courseUuid) {
-    throw new Error('Course ID is required');
+    throw new Error("Course ID is required");
   }
 
   const enrollments = await enrollmentRepository.getEnrollmentsByCourse(courseUuid);
-  return enrollments.filter(e => e.role_name === 'professor');
+  return enrollments.filter(e => e.role_name === "professor");
 }
 
 /**
@@ -130,11 +130,11 @@ export async function getCourseProfessors(courseUuid) {
  */
 export async function getCourseLeads(courseUuid) {
   if (!courseUuid) {
-    throw new Error('Course ID is required');
+    throw new Error("Course ID is required");
   }
 
   const enrollments = await enrollmentRepository.getEnrollmentsByCourse(courseUuid);
-  return enrollments.filter(e => e.role_name === 'lead');
+  return enrollments.filter(e => e.role_name === "lead");
 }
 
 /**
@@ -149,7 +149,7 @@ export async function enrollUser(enrollmentData) {
   const { userUuid, courseUuid, roleName } = enrollmentData;
 
   if (!userUuid || !courseUuid || !roleName) {
-    throw new Error('User ID, Course ID, and Role Name are required');
+    throw new Error("User ID, Course ID, and Role Name are required");
   }
 
   // Verify user exists
@@ -167,14 +167,14 @@ export async function enrollUser(enrollmentData) {
   // Check if enrollment already exists
   const existing = await enrollmentRepository.getEnrollment(userUuid, courseUuid, role.role_uuid);
   if (existing) {
-    throw new Error('User is already enrolled in this course with this role');
+    throw new Error("User is already enrolled in this course with this role");
   }
 
   // Create enrollment
   return await enrollmentRepository.createEnrollment({
     userUuid,
     courseUuid,
-    roleUuid: role.role_uuid,
+    roleUuid: role.role_uuid
   });
 }
 
@@ -203,7 +203,7 @@ export async function userHasRole(userUuid, courseUuid, requiredRole) {
  * @returns {Promise<boolean>} True if user is professor or TA
  */
 export async function userIsInstructor(userUuid, courseUuid) {
-  return await userHasRole(userUuid, courseUuid, ['professor', 'ta']);
+  return await userHasRole(userUuid, courseUuid, ["professor", "ta"]);
 }
 
 export default {
@@ -216,5 +216,5 @@ export default {
   getCourseLeads,
   enrollUser,
   userHasRole,
-  userIsInstructor,
+  userIsInstructor
 };
