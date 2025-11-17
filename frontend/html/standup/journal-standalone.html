@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conductor - Journal</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/journal.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation (Hardcoded) -->
+  <nav class="top-nav">
+    <div class="top-nav-container">
+      <div class="top-nav-logo" onclick="window.location.href='../dashboard.html'">Conductor</div>
+
+      <div class="top-nav-links">
+        <div class="top-nav-link" onclick="window.location.href='../directory/class-standalone.html'">Class</div>
+        <div class="top-nav-link" onclick="window.location.href='../attendance/calendar-standalone.html'">Calendar</div>
+        <div class="top-nav-link active">Journal</div>
+      </div>
+
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-name">John Doe</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Secondary Navigation (Hardcoded) -->
+  <nav class="secondary-nav">
+    <div class="secondary-nav-title">Journal Navigation</div>
+    <div class="secondary-nav-links">
+      <div class="secondary-nav-link active" onclick="showPage('dashboard')">Dashboard</div>
+      <div class="secondary-nav-link" onclick="showPage('team')">Team</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content with-sidebar">
+    <div id="page-content" class="container">
+
+      <!-- Dashboard View (Default) -->
+      <div id="dashboard-page" class="page-view">
+        <div class="page-header">
+          <h1 class="page-title">My Journal</h1>
+          <p class="page-description">Track your daily work progress and reflections</p>
+        </div>
+
+        <div class="streak-badge mb-lg">
+          <span>🔥</span>
+          <span class="streak-number">7</span>
+          <span>Day Streak!</span>
+        </div>
+
+        <div class="journal-form">
+          <h3 class="mb-md">Submit Today's Standup</h3>
+
+          <div class="form-group">
+            <label class="form-label">What did you accomplish yesterday?</label>
+            <textarea class="form-textarea" placeholder="Describe your completed tasks..."></textarea>
+            <div class="form-hint">Be specific about what you completed</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">What will you work on today?</label>
+            <textarea class="form-textarea" placeholder="Outline your plan for today..."></textarea>
+            <div class="form-hint">List your planned tasks and goals</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Any blockers or challenges?</label>
+            <textarea class="form-textarea" placeholder="Mention any obstacles or help needed..."></textarea>
+            <div class="form-hint">Identify anything blocking your progress</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mood</label>
+            <div style="display: flex; gap: var(--space-sm);">
+              <button class="btn btn-secondary">😄 Great</button>
+              <button class="btn btn-secondary">😊 Good</button>
+              <button class="btn btn-secondary">😐 Okay</button>
+              <button class="btn btn-secondary">😟 Stressed</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary">Submit Standup</button>
+        </div>
+
+        <div class="page-header mt-xl">
+          <h2 class="page-title">Recent Entries</h2>
+        </div>
+
+        <div class="journal-entries">
+          <!-- Entry 1 -->
+          <div class="journal-entry">
+            <div class="journal-entry-header">
+              <div class="journal-author">
+                <div class="journal-avatar">JD</div>
+                <div class="journal-author-info">
+                  <div class="journal-author-name">John Doe</div>
+                  <div class="journal-date">Friday, November 15, 2024</div>
+                </div>
+              </div>
+              <div class="journal-status completed">completed</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">✅ Yesterday</div>
+              <div class="journal-section-content">Completed the authentication module and wrote unit tests</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">🎯 Today</div>
+              <div class="journal-section-content">Working on the user dashboard UI components</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">🚧 Blockers</div>
+              <div class="journal-section-content">None</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">Mood</div>
+              <div class="journal-section-content">😄</div>
+            </div>
+          </div>
+
+          <!-- Entry 2 -->
+          <div class="journal-entry">
+            <div class="journal-entry-header">
+              <div class="journal-author">
+                <div class="journal-avatar">JD</div>
+                <div class="journal-author-info">
+                  <div class="journal-author-name">John Doe</div>
+                  <div class="journal-date">Thursday, November 14, 2024</div>
+                </div>
+              </div>
+              <div class="journal-status in-progress">in progress</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">✅ Yesterday</div>
+              <div class="journal-section-content">Started work on authentication module</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">🎯 Today</div>
+              <div class="journal-section-content">Finish authentication and begin testing</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">🚧 Blockers</div>
+              <div class="journal-section-content">Waiting for API documentation</div>
+            </div>
+
+            <div class="journal-section">
+              <div class="journal-section-title">Mood</div>
+              <div class="journal-section-content">😊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team View -->
+      <div id="team-page" class="page-view" style="display: none;">
+        <div class="page-header">
+          <h1 class="page-title">Team Dashboard</h1>
+          <p class="page-description">View team standups and progress</p>
+        </div>
+
+        <div class="stats-grid mb-xl">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">4</div>
+            <div class="stat-label">Team Members</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">52</div>
+            <div class="stat-label">Total Entries</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">5.5</div>
+            <div class="stat-label">Avg Streak</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">95%</div>
+            <div class="stat-label">Completion Rate</div>
+          </div>
+        </div>
+
+        <div class="page-header">
+          <h2 class="page-title">Team Members</h2>
+        </div>
+
+        <div class="team-grid">
+          <div class="team-member-card">
+            <div class="team-member-header">
+              <div class="team-member-avatar">AJ</div>
+              <div>
+                <div class="team-member-name">Alice Johnson</div>
+                <div class="team-member-role">Frontend Dev</div>
+              </div>
+            </div>
+            <div class="team-member-stats">
+              <div class="team-stat">
+                <div class="team-stat-value">15</div>
+                <div class="team-stat-label">Entries</div>
+              </div>
+              <div class="team-stat">
+                <div class="team-stat-value">🔥 7</div>
+                <div class="team-stat-label">Streak</div>
+              </div>
+            </div>
+            <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-gray); font-size: var(--text-sm);">
+              Last update: 2 hours ago
+            </div>
+          </div>
+
+          <div class="team-member-card">
+            <div class="team-member-header">
+              <div class="team-member-avatar">BS</div>
+              <div>
+                <div class="team-member-name">Bob Smith</div>
+                <div class="team-member-role">Backend Dev</div>
+              </div>
+            </div>
+            <div class="team-member-stats">
+              <div class="team-stat">
+                <div class="team-stat-value">12</div>
+                <div class="team-stat-label">Entries</div>
+              </div>
+              <div class="team-stat">
+                <div class="team-stat-value">🔥 5</div>
+                <div class="team-stat-label">Streak</div>
+              </div>
+            </div>
+            <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-gray); font-size: var(--text-sm);">
+              Last update: 1 hour ago
+            </div>
+          </div>
+
+          <div class="team-member-card">
+            <div class="team-member-header">
+              <div class="team-member-avatar">CW</div>
+              <div>
+                <div class="team-member-name">Carol Williams</div>
+                <div class="team-member-role">Designer</div>
+              </div>
+            </div>
+            <div class="team-member-stats">
+              <div class="team-stat">
+                <div class="team-stat-value">14</div>
+                <div class="team-stat-label">Entries</div>
+              </div>
+              <div class="team-stat">
+                <div class="team-stat-value">🔥 6</div>
+                <div class="team-stat-label">Streak</div>
+              </div>
+            </div>
+            <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-gray); font-size: var(--text-sm);">
+              Last update: 3 hours ago
+            </div>
+          </div>
+
+          <div class="team-member-card">
+            <div class="team-member-header">
+              <div class="team-member-avatar">DB</div>
+              <div>
+                <div class="team-member-name">David Brown</div>
+                <div class="team-member-role">QA Engineer</div>
+              </div>
+            </div>
+            <div class="team-member-stats">
+              <div class="team-stat">
+                <div class="team-stat-value">11</div>
+                <div class="team-stat-label">Entries</div>
+              </div>
+              <div class="team-stat">
+                <div class="team-stat-value">🔥 4</div>
+                <div class="team-stat-label">Streak</div>
+              </div>
+            </div>
+            <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-gray); font-size: var(--text-sm);">
+              Last update: 30 minutes ago
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Inline JavaScript (No modules required) -->
+  <script>
+    // Simple page switching logic
+    function showPage(pageName) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page-view');
+      pages.forEach(page => page.style.display = 'none');
+
+      // Show selected page
+      const selectedPage = document.getElementById(pageName + '-page');
+      if (selectedPage) {
+        selectedPage.style.display = 'block';
+      }
+
+      // Update active nav link
+      const navLinks = document.querySelectorAll('.secondary-nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      event.target.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

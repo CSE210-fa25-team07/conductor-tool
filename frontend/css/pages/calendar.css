@@ -1,0 +1,293 @@
+/**
+ * Calendar/Attendance Feature Page Styles
+ * Calendar and Analysis views
+ */
+
+/* Calendar View */
+.calendar-container {
+  background: var(--color-dark-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  border: 2px solid rgba(0, 217, 142, 0.1);
+  margin-bottom: var(--space-lg);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.calendar-title {
+  font-size: var(--text-2xl);
+  color: var(--color-white);
+}
+
+.calendar-controls {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.calendar-nav-btn {
+  background: var(--color-dark);
+  border: 2px solid var(--color-primary-green);
+  color: var(--color-primary-green);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.calendar-nav-btn:hover {
+  background: rgba(0, 217, 142, 0.1);
+  transform: scale(1.05);
+}
+
+.calendar-month-year {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-white);
+  min-width: 180px;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-xs);
+}
+
+.calendar-day-header {
+  padding: var(--space-md);
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-primary-green);
+  text-transform: uppercase;
+  font-size: var(--text-sm);
+  letter-spacing: 1px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  padding: var(--space-sm);
+  background: var(--color-dark);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.calendar-day:hover {
+  border-color: var(--color-primary-green);
+  background: rgba(0, 217, 142, 0.1);
+  transform: scale(1.05);
+}
+
+.calendar-day.today {
+  border-color: var(--color-secondary-blue);
+  background: rgba(0, 184, 230, 0.1);
+}
+
+.calendar-day.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-coral);
+}
+
+.calendar-day.attended::before {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--color-primary-green);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.calendar-day-number {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+/* QR Code Section */
+.qr-section {
+  background: var(--color-dark-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  border: 2px solid rgba(0, 217, 142, 0.1);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.qr-code-placeholder {
+  width: 250px;
+  height: 250px;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-3xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.qr-code-info {
+  color: var(--color-light-gray);
+}
+
+.qr-timer {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-primary-green);
+  margin-top: var(--space-sm);
+}
+
+/* Analysis View */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card {
+  background: var(--color-dark-secondary);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(0, 217, 142, 0.1);
+}
+
+.chart-title {
+  font-size: var(--text-xl);
+  color: var(--color-white);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.chart-icon {
+  font-size: var(--text-2xl);
+}
+
+.chart-placeholder {
+  height: 250px;
+  background: rgba(0, 217, 142, 0.05);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray);
+  font-size: var(--text-sm);
+}
+
+/* Attendance List */
+.attendance-list {
+  background: var(--color-dark-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid rgba(0, 217, 142, 0.1);
+}
+
+.attendance-item {
+  padding: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.attendance-item:hover {
+  background: rgba(0, 217, 142, 0.05);
+}
+
+.attendance-item:last-child {
+  border-bottom: none;
+}
+
+.attendance-date {
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.attendance-status {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.attendance-status.present {
+  background: rgba(0, 217, 142, 0.2);
+  color: var(--color-primary-green);
+}
+
+.attendance-status.absent {
+  background: rgba(255, 107, 157, 0.2);
+  color: var(--color-accent-coral);
+}
+
+.attendance-status.late {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--color-accent-amber);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .calendar-grid {
+    gap: 2px;
+  }
+
+  .calendar-day {
+    padding: var(--space-xs);
+  }
+
+  .calendar-day-number {
+    font-size: var(--text-base);
+  }
+
+  .calendar-day-header {
+    padding: var(--space-sm);
+    font-size: var(--text-xs);
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-code-placeholder {
+    width: 200px;
+    height: 200px;
+  }
+}

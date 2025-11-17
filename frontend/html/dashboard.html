@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conductor - Dashboard</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../css/components/global.css">
+  <link rel="stylesheet" href="../css/components/navigation.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation will be injected here -->
+  <div id="top-navigation"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Dashboard Header -->
+      <header class="dashboard-header">
+        <h1 class="dashboard-title">My Courses</h1>
+        <p class="dashboard-subtitle">Welcome back! Here are your active courses.</p>
+      </header>
+
+      <!-- Course Cards Grid -->
+      <div id="course-grid" class="course-grid">
+
+        <!-- Placeholder Card 1 -->
+        <div class="course-card">
+          <div class="course-card-header">
+            <div class="course-icon">CSE</div>
+            <div class="course-info">
+              <div class="course-code">CSE 210</div>
+              <div class="course-name">Software Engineering</div>
+            </div>
+          </div>
+
+          <p class="course-description">
+            Principles and practices of software engineering including requirements, design, implementation, testing, and maintenance.
+          </p>
+
+          <div class="course-stats">
+            <div class="course-stat">
+              <div class="course-stat-value">12</div>
+              <div class="course-stat-label">Assignments</div>
+            </div>
+            <div class="course-stat">
+              <div class="course-stat-value">95%</div>
+              <div class="course-stat-label">Attendance</div>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="course-instructor">Dr. Smith</div>
+            <div class="course-students">45 students</div>
+          </div>
+        </div>
+
+        <!-- Placeholder Card 2 -->
+        <div class="course-card">
+          <div class="course-card-header">
+            <div class="course-icon">CSE</div>
+            <div class="course-info">
+              <div class="course-code">CSE 110</div>
+              <div class="course-name">Software Engineering Fundamentals</div>
+            </div>
+          </div>
+
+          <p class="course-description">
+            Introduction to software development with emphasis on teamwork, tools, and techniques for building quality software.
+          </p>
+
+          <div class="course-stats">
+            <div class="course-stat">
+              <div class="course-stat-value">8</div>
+              <div class="course-stat-label">Assignments</div>
+            </div>
+            <div class="course-stat">
+              <div class="course-stat-value">88%</div>
+              <div class="course-stat-label">Attendance</div>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="course-instructor">Prof. Johnson</div>
+            <div class="course-students">60 students</div>
+          </div>
+        </div>
+
+        <!-- Placeholder Card 3 -->
+        <div class="course-card">
+          <div class="course-card-header">
+            <div class="course-icon">CSE</div>
+            <div class="course-info">
+              <div class="course-code">CSE 100</div>
+              <div class="course-name">Advanced Data Structures</div>
+            </div>
+          </div>
+
+          <p class="course-description">
+            Advanced topics in data structures and algorithms including graphs, trees, and optimization techniques.
+          </p>
+
+          <div class="course-stats">
+            <div class="course-stat">
+              <div class="course-stat-value">15</div>
+              <div class="course-stat-label">Assignments</div>
+            </div>
+            <div class="course-stat">
+              <div class="course-stat-value">92%</div>
+              <div class="course-stat-label">Attendance</div>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="course-instructor">Dr. Williams</div>
+            <div class="course-students">38 students</div>
+          </div>
+        </div>
+
+        <!-- Placeholder Card 4 -->
+        <div class="course-card">
+          <div class="course-card-header">
+            <div class="course-icon">CSE</div>
+            <div class="course-info">
+              <div class="course-code">CSE 120</div>
+              <div class="course-name">Computer Architecture</div>
+            </div>
+          </div>
+
+          <p class="course-description">
+            Design and organization of computer systems including processor design, memory hierarchy, and parallel processing.
+          </p>
+
+          <div class="course-stats">
+            <div class="course-stat">
+              <div class="course-stat-value">10</div>
+              <div class="course-stat-label">Assignments</div>
+            </div>
+            <div class="course-stat">
+              <div class="course-stat-value">90%</div>
+              <div class="course-stat-label">Attendance</div>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="course-instructor">Prof. Brown</div>
+            <div class="course-students">52 students</div>
+          </div>
+        </div>
+
+        <!-- Placeholder Card 5 - Add Course Card -->
+        <div class="course-card" style="display: flex; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; border-style: dashed;">
+          <div style="text-align: center; color: var(--color-gray);">
+            <div style="font-size: 3rem; margin-bottom: var(--space-md);">➕</div>
+            <div style="font-size: var(--text-lg); font-weight: 600; color: var(--color-primary-green);">Add New Course</div>
+            <div style="font-size: var(--text-sm); margin-top: var(--space-xs);">Click to enroll in a course</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="../js/pages/dashboard/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conductor - Class</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/class.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation (Hardcoded) -->
+  <nav class="top-nav">
+    <div class="top-nav-container">
+      <div class="top-nav-logo" onclick="window.location.href='../dashboard.html'">Conductor</div>
+
+      <div class="top-nav-links">
+        <div class="top-nav-link active">Class</div>
+        <div class="top-nav-link" onclick="window.location.href='../attendance/calendar.html'">Calendar</div>
+        <div class="top-nav-link" onclick="window.location.href='../standup/journal.html'">Journal</div>
+      </div>
+
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-name">John Doe</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Secondary Navigation (Hardcoded) -->
+  <nav class="secondary-nav">
+    <div class="secondary-nav-title">Class Navigation</div>
+    <div class="secondary-nav-links">
+      <div class="secondary-nav-link active" onclick="showPage('dashboard')">Dashboard</div>
+      <div class="secondary-nav-link" onclick="showPage('people')">People</div>
+      <div class="secondary-nav-link" onclick="showPage('group')">Group</div>
+      <div class="secondary-nav-link" onclick="showPage('my')">My</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content with-sidebar">
+    <div id="page-content" class="container">
+
+      <!-- Dashboard View (Default) -->
+      <div id="dashboard-page" class="page-view">
+        <div class="page-header">
+          <h1 class="page-title">Class Dashboard</h1>
+          <p class="page-description">Overview of class activities and statistics</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">85%</div>
+            <div class="stat-label">Average Grade</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">12</div>
+            <div class="stat-label">Assignments</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">45</div>
+            <div class="stat-label">Students</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">95%</div>
+            <div class="stat-label">Attendance</div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary">Create Assignment</button>
+          <button class="btn btn-secondary">View Analytics</button>
+        </div>
+      </div>
+
+      <!-- People View -->
+      <div id="people-page" class="page-view" style="display: none;">
+        <div class="page-header">
+          <h1 class="page-title">People</h1>
+          <p class="page-description">Manage class members and roles</p>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary">Add Person</button>
+          <button class="btn btn-secondary">Import List</button>
+        </div>
+
+        <div class="people-list">
+          <table class="people-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="person-info">
+                    <div class="person-avatar">AJ</div>
+                    <div class="person-details">
+                      <div class="person-name">Alice Johnson</div>
+                      <div class="person-email">alice@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>alice@example.com</td>
+                <td>Student</td>
+                <td>Active</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="person-info">
+                    <div class="person-avatar">BS</div>
+                    <div class="person-details">
+                      <div class="person-name">Bob Smith</div>
+                      <div class="person-email">bob@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>bob@example.com</td>
+                <td>Student</td>
+                <td>Active</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="person-info">
+                    <div class="person-avatar">CW</div>
+                    <div class="person-details">
+                      <div class="person-name">Carol Williams</div>
+                      <div class="person-email">carol@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>carol@example.com</td>
+                <td>TA</td>
+                <td>Active</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Group View -->
+      <div id="group-page" class="page-view" style="display: none;">
+        <div class="page-header">
+          <h1 class="page-title">Groups</h1>
+          <p class="page-description">Manage class groups and team projects</p>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary">Create Group</button>
+          <button class="btn btn-secondary">Auto-assign</button>
+        </div>
+
+        <div class="groups-grid">
+          <div class="group-card">
+            <div class="group-header">
+              <div class="group-name">Team Alpha</div>
+              <div class="group-badge">Active</div>
+            </div>
+            <div class="group-members">
+              <div class="member-tag">Alice</div>
+              <div class="member-tag">Bob</div>
+              <div class="member-tag">Carol</div>
+            </div>
+            <div class="group-stats">
+              <span>3 members</span>
+              <span>3 projects</span>
+            </div>
+          </div>
+
+          <div class="group-card">
+            <div class="group-header">
+              <div class="group-name">Team Beta</div>
+              <div class="group-badge">Active</div>
+            </div>
+            <div class="group-members">
+              <div class="member-tag">David</div>
+              <div class="member-tag">Eve</div>
+              <div class="member-tag">Frank</div>
+            </div>
+            <div class="group-stats">
+              <span>3 members</span>
+              <span>2 projects</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My View -->
+      <div id="my-page" class="page-view" style="display: none;">
+        <div class="page-header">
+          <h1 class="page-title">My Progress</h1>
+          <p class="page-description">Personal dashboard and performance tracking</p>
+        </div>
+
+        <div class="my-section">
+          <div class="my-section-title">
+            <span class="my-section-icon">📈</span>
+            Overall Progress
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%"></div>
+          </div>
+          <div class="progress-label">
+            <span>75% Complete</span>
+            <span>9/12 Assignments</span>
+          </div>
+        </div>
+
+        <div class="my-section">
+          <div class="my-section-title">
+            <span class="my-section-icon">✅</span>
+            Attendance Rate
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 95%"></div>
+          </div>
+          <div class="progress-label">
+            <span>95% Attendance</span>
+            <span>19/20 Classes</span>
+          </div>
+        </div>
+
+        <div class="my-section">
+          <div class="my-section-title">
+            <span class="my-section-icon">🎯</span>
+            Grade Performance
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 88%"></div>
+          </div>
+          <div class="progress-label">
+            <span>88% Average</span>
+            <span>B+ Grade</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Inline JavaScript (No modules required) -->
+  <script>
+    // Simple page switching logic
+    function showPage(pageName) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page-view');
+      pages.forEach(page => page.style.display = 'none');
+
+      // Show selected page
+      const selectedPage = document.getElementById(pageName + '-page');
+      if (selectedPage) {
+        selectedPage.style.display = 'block';
+      }
+
+      // Update active nav link
+      const navLinks = document.querySelectorAll('.secondary-nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      event.target.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

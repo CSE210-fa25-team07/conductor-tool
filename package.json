@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node backend/src/server.js",
     "lint": "eslint .",
     "docs": "jsdoc -c jsdoc.json"
   },

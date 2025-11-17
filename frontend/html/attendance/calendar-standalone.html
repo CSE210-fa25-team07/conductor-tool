@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conductor - Calendar</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/calendar.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation (Hardcoded) -->
+  <nav class="top-nav">
+    <div class="top-nav-container">
+      <div class="top-nav-logo" onclick="window.location.href='../dashboard.html'">Conductor</div>
+
+      <div class="top-nav-links">
+        <div class="top-nav-link" onclick="window.location.href='../directory/class-standalone.html'">Class</div>
+        <div class="top-nav-link active">Calendar</div>
+        <div class="top-nav-link" onclick="window.location.href='../standup/journal-standalone.html'">Journal</div>
+      </div>
+
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-name">John Doe</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Secondary Navigation (Hardcoded) -->
+  <nav class="secondary-nav">
+    <div class="secondary-nav-title">Calendar Navigation</div>
+    <div class="secondary-nav-links">
+      <div class="secondary-nav-link active" onclick="showPage('calendar')">Calendar</div>
+      <div class="secondary-nav-link" onclick="showPage('analysis')">Analysis</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content with-sidebar">
+    <div id="page-content" class="container">
+
+      <!-- Calendar View (Default) -->
+      <div id="calendar-page" class="page-view">
+        <div class="page-header">
+          <h1 class="page-title">Attendance Calendar</h1>
+          <p class="page-description">Track your attendance and check-in history</p>
+        </div>
+
+        <div class="qr-section">
+          <h3>Quick Check-In</h3>
+          <div class="qr-code-container">
+            <div class="qr-code-placeholder">
+              <div style="font-size: 4rem;">📱</div>
+            </div>
+            <div class="qr-code-info">
+              <p>Scan this code to check in to today's session</p>
+              <div class="qr-timer" id="qr-timer">05:00</div>
+            </div>
+            <button class="btn btn-primary">Generate New Code</button>
+          </div>
+        </div>
+
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <div class="calendar-title">📅 Attendance Calendar</div>
+            <div class="calendar-controls">
+              <button class="calendar-nav-btn">◀ Prev</button>
+              <div class="calendar-month-year">November 2024</div>
+              <button class="calendar-nav-btn">Next ▶</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid">
+            <!-- Day Headers -->
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+
+            <!-- Sample Days -->
+            <div class="calendar-day other-month"><div class="calendar-day-number">29</div></div>
+            <div class="calendar-day other-month"><div class="calendar-day-number">30</div></div>
+            <div class="calendar-day other-month"><div class="calendar-day-number">31</div></div>
+            <div class="calendar-day attended"><div class="calendar-day-number">1</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">2</div></div>
+            <div class="calendar-day attended"><div class="calendar-day-number">3</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">4</div></div>
+
+            <div class="calendar-day attended"><div class="calendar-day-number">5</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">6</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">7</div></div>
+            <div class="calendar-day attended"><div class="calendar-day-number">8</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">9</div></div>
+            <div class="calendar-day attended"><div class="calendar-day-number">10</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">11</div></div>
+
+            <div class="calendar-day attended"><div class="calendar-day-number">12</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">13</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">14</div></div>
+            <div class="calendar-day attended"><div class="calendar-day-number">15</div></div>
+            <div class="calendar-day today"><div class="calendar-day-number">16</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">17</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">18</div></div>
+
+            <div class="calendar-day"><div class="calendar-day-number">19</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">20</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">21</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">22</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">23</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">24</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">25</div></div>
+
+            <div class="calendar-day"><div class="calendar-day-number">26</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">27</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">28</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">29</div></div>
+            <div class="calendar-day"><div class="calendar-day-number">30</div></div>
+            <div class="calendar-day other-month"><div class="calendar-day-number">1</div></div>
+            <div class="calendar-day other-month"><div class="calendar-day-number">2</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis View -->
+      <div id="analysis-page" class="page-view" style="display: none;">
+        <div class="page-header">
+          <h1 class="page-title">Attendance Analysis</h1>
+          <p class="page-description">Detailed attendance statistics and trends</p>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="chart-card">
+            <div class="chart-title">
+              <span class="chart-icon">📊</span>
+              Overall Attendance Rate
+            </div>
+            <div class="chart-placeholder">
+              Chart: 95% attendance rate
+              <br><br>
+              (Chart visualization would go here)
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">
+              <span class="chart-icon">📈</span>
+              Weekly Trend
+            </div>
+            <div class="chart-placeholder">
+              Chart: Weekly attendance trend
+              <br><br>
+              (Line chart would go here)
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">
+              <span class="chart-icon">🕐</span>
+              Check-in Times
+            </div>
+            <div class="chart-placeholder">
+              Chart: Average check-in time
+              <br><br>
+              (Time distribution chart would go here)
+            </div>
+          </div>
+        </div>
+
+        <div class="page-header">
+          <h2 class="page-title">Recent Attendance</h2>
+        </div>
+
+        <div class="attendance-list">
+          <div class="attendance-item">
+            <div class="attendance-date">Friday, November 15, 2024</div>
+            <div class="attendance-status present">present</div>
+          </div>
+          <div class="attendance-item">
+            <div class="attendance-date">Wednesday, November 13, 2024</div>
+            <div class="attendance-status present">present</div>
+          </div>
+          <div class="attendance-item">
+            <div class="attendance-date">Monday, November 11, 2024</div>
+            <div class="attendance-status late">late</div>
+          </div>
+          <div class="attendance-item">
+            <div class="attendance-date">Friday, November 8, 2024</div>
+            <div class="attendance-status present">present</div>
+          </div>
+          <div class="attendance-item">
+            <div class="attendance-date">Wednesday, November 6, 2024</div>
+            <div class="attendance-status absent">absent</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Inline JavaScript (No modules required) -->
+  <script>
+    // Simple page switching logic
+    function showPage(pageName) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page-view');
+      pages.forEach(page => page.style.display = 'none');
+
+      // Show selected page
+      const selectedPage = document.getElementById(pageName + '-page');
+      if (selectedPage) {
+        selectedPage.style.display = 'block';
+      }
+
+      // Update active nav link
+      const navLinks = document.querySelectorAll('.secondary-nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      event.target.classList.add('active');
+    }
+
+    // Simple QR timer
+    let timeLeft = 300;
+    setInterval(() => {
+      timeLeft--;
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      const timerEl = document.getElementById('qr-timer');
+      if (timerEl) {
+        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      if (timeLeft <= 0) timeLeft = 300; // Reset
+    }, 1000);
+  </script>
+
+</body>
+</html>
