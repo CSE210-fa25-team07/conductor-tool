@@ -28,8 +28,19 @@ let selectedDate = null;
 let eventToDelete = null;
 const visibleTypes = { lecture: true, office: true, ta: true, group: true };
 
+/**
+ * Persist the in-memory meetings array into localStorage under LS_KEY.
+ * This is a synchronous helper used by the calendar UI to save state.
+ * @returns {void}
+ */
 function saveMeetings() { localStorage.setItem(LS_KEY, JSON.stringify(meetings)); }
 
+/**
+ * Normalize a meeting type string to one of the canonical types used by the
+ * UI (lecture, office, ta, group). If the input is falsy it is returned as-is.
+ * @param {string} t - The type string to normalize
+ * @returns {string} normalized type or the original falsy value
+ */
 function normalizeType(t) {
   if(!t) return t;
   const low = String(t).toLowerCase();
@@ -40,6 +51,13 @@ function normalizeType(t) {
   return low;
 }
 
+/**
+ * Render the calendar grid for the current month into the DOM element
+ * referenced by `calendarEl`. This reads meetings from localStorage,
+ * normalizes types, builds day cells and attaches event handlers to
+ * open the embedded meeting modal.
+ * @returns {void}
+ */
 function renderCalendar() {
   meetings = JSON.parse(localStorage.getItem(LS_KEY)) || [];
   // normalize meeting types for compatibility between views
@@ -98,6 +116,13 @@ function renderCalendar() {
   }
 }
 
+/**
+ * Open the embedded meeting editor modal in "create" mode and prefill it
+ * with the provided date. The function will create the global modal
+ * instance on `window.ctEmbedModal` if it does not exist yet.
+ * @param {string} dateString - ISO date (YYYY-MM-DD) to prefill
+ * @returns {void}
+ */
 function openAddModal(dateString) {
   // Open embedded meeting editor as a subpage, passing ?date=<date> so it pre-fills the form
   selectedDate = dateString;
@@ -107,6 +132,13 @@ function openAddModal(dateString) {
   window.ctEmbedModal.titleEl.textContent = `Create meeting on ${dateString}`;
   window.ctEmbedModal.show(url.toString());
 }
+/**
+ * Open the embedded meeting editor modal in read-only view mode for the
+ * meeting with the given id. This uses the `?view=` query param in the
+ * embedded URL so the editor renders the 'About the meeting' view.
+ * @param {string} meetingId - id of the meeting to view
+ * @returns {void}
+ */
 function openEditModal(meetingId) {
   const url = new URL(window.location.origin + "/frontend/html/pages/attendance/meeting/meeting.html");
   // use ?view=<id> to open the meeting in read-only "About the meeting" mode
@@ -115,7 +147,20 @@ function openEditModal(meetingId) {
   window.ctEmbedModal.titleEl.textContent = "About the meeting";
   window.ctEmbedModal.show(url.toString());
 }
+/**
+ * Show the small delete confirmation modal for the provided meeting object.
+ * The function stores the reference into `eventToDelete` and updates the
+ * visible title inside the delete modal.
+ * @param {Object} m - Meeting object to delete (should contain `title`)
+ * @returns {void}
+ */
 function openDeleteModal(m) { eventToDelete = m; document.getElementById("delete-event-title").textContent = m.title; deleteModal.classList.remove("hidden"); }
+/**
+ * Hide any visible calendar-level modals (add/delete) if they exist in the
+ * simplified calendar page. This is a safe no-op when the elements are
+ * not present (the calendar sometimes runs as a lightweight view).
+ * @returns {void}
+ */
 function closeModals() {
   if(addModal && addModal.classList) addModal.classList.add("hidden");
   if(deleteModal && deleteModal.classList) deleteModal.classList.add("hidden");

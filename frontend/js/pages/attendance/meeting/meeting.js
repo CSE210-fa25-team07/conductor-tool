@@ -32,10 +32,20 @@ let currentLoadedMeetingId = null;
 // Creates a random ID for a meeting.
 // TODO(bukhradze) change to UUID and generate using pg functions
 // when we move to proper db/backend implementation
+/**
+ * Generate a short random id for a meeting. This is used in the demo storage
+ * layer and is not intended to be globally unique across systems.
+ * @returns {string} new meeting id (prefix 'm_')
+ */
 function uid() { return "m_" + Math.random().toString(36).slice(2,9); }
 
 // Load from local storage (for mock data)
 // TODO(bukhradze) convert to backend -> database
+/**
+ * Load meetings from localStorage into the local `meetings` variable.
+ * If no data exists an empty array is used.
+ * @returns {void}
+ */
 function load() {
   const raw = localStorage.getItem(LS_KEY);
   meetings = raw ? JSON.parse(raw) : [];
@@ -43,6 +53,10 @@ function load() {
 
 // Save all meetings to local storage
 // TODO(bukhradze) convert to backend->database
+/**
+ * Persist the current meetings array into localStorage.
+ * @returns {void}
+ */
 function saveAll() {
   localStorage.setItem(LS_KEY, JSON.stringify(meetings));
 }
@@ -50,10 +64,20 @@ function saveAll() {
 // Fast element getter by id
 // TODO(bukhradze) there is a similar function in `meeting_list`, maybe make it
 // a helper function available everywhere?
+/**
+ * Convenience DOM getter by id. Returns null if not found.
+ * @param {string} id - element id
+ * @returns {HTMLElement|null}
+ */
 function $(id) {return document.getElementById(id);}
 
 
 // Fills the team selector with whatever teams are found in the data
+/**
+ * Populate the team <select> control using the teams discovered in the
+ * `STUDENTS` mock dataset.
+ * @returns {void}
+ */
 function populateTeams() {
   const teams = Array.from(new Set(STUDENTS.map(s=>s.team)));
   const sel = $("teamSelect");
@@ -63,6 +87,13 @@ function populateTeams() {
 
 // Search students
 // TODO(bukhradze) conver to backend -> database
+/**
+ * Render the list of students that match the optional filter and are not
+ * already selected as invitees. When used in the lightweight viewer the
+ * student search UI may be absent and the function becomes a no-op.
+ * @param {string} [filter]
+ * @returns {void}
+ */
 function renderStudentResults(filter="") {
   const ul = $("studentResults");
   if(!ul) return; // page may omit the search UI when used as a lightweight viewer
@@ -71,6 +102,11 @@ function renderStudentResults(filter="") {
   ul.innerHTML = res.map(s => `<li data-id="${s.id}">${s.name} <button data-id="${s.id}" class="add-student">Add</button></li>`).join("") || "<li class=\"muted\">No matches</li>";
 }
 
+/**
+ * Render the currently selected invitees into the `selectedInvitees` list
+ * element. Safe no-op when the element is not present.
+ * @returns {void}
+ */
 function renderSelectedInvitees() {
   const ul = $("selectedInvitees");
   if(!ul) return;
@@ -78,6 +114,11 @@ function renderSelectedInvitees() {
   ul.innerHTML = items.map(s => `<li data-id="${s.id}">${s.name} <button data-id="${s.id}" class="remove-invitee">Remove</button></li>`).join("") || "<li class=\"muted\">No invitees selected</li>";
 }
 
+/**
+ * Render the small meetings list used on the meeting editor page (not the
+ * full meeting_list page). This updates the meetings DOM and the picker.
+ * @returns {void}
+ */
 function renderMeetings() {
   const ul = $("meetings");
   if(!ul) return;
@@ -97,6 +138,11 @@ function renderMeetings() {
   populateMeetingPicker();
 }
 
+/**
+ * Populate the meeting picker <select> with available meetings. Used by the
+ * attendance section so users can choose which meeting to generate codes for.
+ * @returns {void}
+ */
 function populateMeetingPicker() {
   const sel = $("meetingPicker");
   if(!sel) return;
@@ -105,6 +151,12 @@ function populateMeetingPicker() {
 
 
 // ===== MEETING CREATION/EDITING/VIEWING INTERFACE =====
+/**
+ * Initialize the meeting editor page: wire up controls, attach listeners
+ * and handle query-parameter driven modes (date/view/edit).
+ * This should be called once on DOMContentLoaded.
+ * @returns {void}
+ */
 function initForm() {
   populateTeams();
   renderStudentResults();
@@ -218,6 +270,11 @@ function initForm() {
   });
 }
 
+/**
+ * Switch the editor UI into "create" mode where the form is editable and
+ * the about/view controls are hidden.
+ * @returns {void}
+ */
 function enterCreateMode() {
   // Creating a new meeting: form editable, no view-controls, attendance hidden
   isViewing = false; isEditing = true; currentLoadedMeetingId = null;
@@ -230,6 +287,13 @@ function enterCreateMode() {
   setFormEditable(true);
 }
 
+/**
+ * Load a meeting by id and populate both the read-only 'about' section and
+ * keep the underlying form fields synchronized so editing can be enabled
+ * immediately.
+ * @param {string} id - meeting id to load
+ * @returns {void}
+ */
 function loadMeetingForView(id) {
   const m = meetings.find(x=>x.id===id);
   if(!m) return;
@@ -269,6 +333,11 @@ function loadMeetingForView(id) {
   setFormEditable(false);
 }
 
+/**
+ * Enable editing for the currently loaded meeting. This makes the form
+ * visible and editable and hides the read-only about section.
+ * @returns {void}
+ */
 function enableEditing() {
   if(!isViewing) return; // only allow when viewing an existing meeting
   isEditing = true; // editing mode
@@ -278,6 +347,11 @@ function enableEditing() {
   setFormEditable(true);
 }
 
+/**
+ * Enable or disable editing controls for the form and invitee buttons.
+ * @param {boolean} val - true to enable editing, false to make read-only
+ * @returns {void}
+ */
 function setFormEditable(val) {
   // enable/disable inputs and show/hide save button
   const inputs = ["title","type","date","time","description","studentSearch","teamSelect"];
@@ -290,6 +364,11 @@ function setFormEditable(val) {
 }
 
 // This function is for showing recorded attendance for the current meeting
+/**
+ * Reveal the attendance UI pre-configured for the currently viewed meeting.
+ * If no meeting is loaded the function will alert the user.
+ * @returns {void}
+ */
 function revealAttendanceForCurrent() {
   if(!currentLoadedMeetingId) return alert("No meeting loaded");
   if($("attendanceSection")) $("attendanceSection").style.display = "block";
@@ -302,6 +381,12 @@ function revealAttendanceForCurrent() {
   try{ generateCodesForMeeting(currentLoadedMeetingId).catch(()=>{}); }catch(e) {}
 }
 
+/**
+ * Collect form values and persist a meeting record. If the meeting exists
+ * it is updated; otherwise a new meeting is created. The function also
+ * notifies a parent window when embedded so host pages can refresh.
+ * @returns {void}
+ */
 function saveMeeting() {
   const id = $("meetingId").value || uid();
   const meeting = {
@@ -334,11 +419,23 @@ function saveMeeting() {
   try{ showToast("Meeting saved"); }catch(e) {}
 }
 
+/**
+ * Show a short non-blocking message in the page toast element. If the
+ * element is not present this becomes a no-op.
+ * @param {string} msg - Message text
+ * @param {number} [ms=1800] - Duration in milliseconds
+ * @returns {void}
+ */
 function showToast(msg, ms=1800) {
   const t = $("toast"); if(!t) return; t.textContent = msg; t.classList.remove("hidden");
   setTimeout(()=>{ t.classList.add("hidden"); }, ms);
 }
 
+/**
+ * Reset the meeting form to an empty creation state and clear selection
+ * variables. This switches the editor out of view/edit state.
+ * @returns {void}
+ */
 function resetForm() {
   $("meetingId").value=""; $("title").value=""; $("date").value=""; $("time").value=""; $("description").value=""; selectedInvitees.clear(); renderStudentResults(); renderSelectedInvitees();
   isViewing = false; isEditing = false; currentLoadedMeetingId = null;
@@ -352,10 +449,22 @@ function resetForm() {
 // startEdit handled by meeting_list / calendar pages which open the editor in a modal.
 // This function removed to avoid legacy navigation.
 
+/**
+ * Delete a meeting by id after asking for confirmation. Updates storage
+ * and re-renders the small meetings list.
+ * @param {string} id - meeting id to delete
+ * @returns {void}
+ */
 function deleteMeeting(id) {
   if(!confirm("Delete meeting?")) return; meetings = meetings.filter(m=>m.id!==id); saveAll(); renderMeetings();
 }
 
+/**
+ * Show a simple alert with the attendance lines for the specified meeting.
+ * The function is intentionally minimal (demo UX).
+ * @param {string} id - meeting id
+ * @returns {void}
+ */
 function viewAttendance(id) {
   const m = meetings.find(x=>x.id===id); if(!m) return;
   const lines = Object.entries(m.attendance||{}).map(([sid,present]) => {
@@ -366,11 +475,23 @@ function viewAttendance(id) {
 
 // ===== ATTENDANCE FUNCTIONALITY FOR MEETING (GENERATING/RECORDING CODES) =====
 
+/**
+ * Generate a short human-friendly attendance code using an allowed charset.
+ * @param {number} [len=5] - length of the code to generate
+ * @returns {string} generated code
+ */
 function generateRandomCode(len=5) {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   let out=""; for(let i=0;i<len;i++) out += chars[Math.floor(Math.random()*chars.length)]; return out;
 }
 
+/**
+ * Generate a new attendance code for a meeting, persist it on the meeting
+ * object and render a QR code payload into the `qrcode` element. If the
+ * QR library is not available the JSON payload is rendered as text.
+ * @param {string} id - meeting id
+ * @returns {Promise<void>}
+ */
 async function generateCodesForMeeting(id) {
   const m = meetings.find(x=>x.id===id); if(!m) return;
   const code = generateRandomCode(5);
@@ -389,6 +510,12 @@ async function generateCodesForMeeting(id) {
   } catch(err) { try{ showToast("QR generation failed"); }catch(e) {} if(qroot) qroot.textContent = payload; }
 }
 
+/**
+ * Start the QR code scanner using the QrScanner library. On a successful
+ * scan the payload is validated and the corresponding student is marked
+ * present for the meeting encoded in the payload.
+ * @returns {void}
+ */
 function startScanner() {
   const video = $("video");
   if(scanner) { scanner.start(); return; }
@@ -417,8 +544,18 @@ function startScanner() {
   scanner.start();
 }
 
+/**
+ * Stop the active QR scanner if present.
+ * @returns {void}
+ */
 function stopScanner() { if(scanner) scanner.stop(); }
 
+/**
+ * Submit a manually-entered attendance code for the selected meeting and
+ * record the student (prompted by name) as present when the code matches.
+ * @param {string} code - attendance code entered by the user
+ * @returns {void}
+ */
 function submitAttendanceCode(code) {
   const meetingId = ($("meetingPicker") && $("meetingPicker").value) ? $("meetingPicker").value : currentLoadedMeetingId;
   if(!meetingId) return alert("Pick meeting");

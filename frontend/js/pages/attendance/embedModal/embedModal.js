@@ -1,6 +1,18 @@
 /** @module attendance/embedModal */
 
 // This is used for embedding the meeting view in the list and calendar views
+/**
+ * Create (or reuse) a simple iframe-based embed modal component.
+ * The returned object has the shape { el, frame, titleEl, show, hide }.
+ *
+ * @param {Object} [opts]
+ * @param {string} [opts.id] - DOM id to use for the modal root
+ * @param {string} [opts.title] - initial title text
+ * @param {string} [opts.width] - css width for content
+ * @param {string} [opts.maxWidth] - css maxWidth for content
+ * @param {string} [opts.height] - css height for content
+ * @returns {{el:HTMLElement,frame:HTMLIFrameElement,titleEl:HTMLElement,show:function(string,string):void,hide:function():void}}
+ */
 export function createEmbedModal(opts = {}) {
   const id = opts.id || "embed-modal";
   // don't create twice
@@ -25,10 +37,27 @@ export function createEmbedModal(opts = {}) {
 
   content.appendChild(header); content.appendChild(bodyWrap); modal.appendChild(content); document.body.appendChild(modal);
 
+  /**
+   * Show the modal and set the iframe src. If a title is provided it will
+   * update the header title.
+   * @param {string} [url] - url to load in the iframe
+   * @param {string} [t] - optional title text
+   * @returns {void}
+   */
   function show(url, t) { if(t) title.textContent = t; if(url) iframe.src = url; modal.classList.remove("hidden"); }
+  /**
+   * Hide the modal and clear the iframe src to free resources.
+   * @returns {void}
+   */
   function hide() { modal.classList.add("hidden"); iframe.src = ""; }
   closeBtn.addEventListener("click", hide);
 
+  /**
+   * Wrap an existing modal DOM element and return the expected API so callers
+   * can reuse modals created outside this module.
+   * @param {HTMLElement} el - root modal element containing an <iframe>
+   * @returns {{el:HTMLElement,frame:HTMLIFrameElement,show:function(string,string):void,hide:function():void}}
+   */
   function wrap(el) {
     const f = el.querySelector("iframe");
     return { el, frame: f, show: (u,t)=>{ if(t) el.querySelector(".modal-header h3").textContent = t; if(f) f.src = u; el.classList.remove("hidden"); }, hide: ()=>{ el.classList.add("hidden"); if(f) f.src=""; } };
