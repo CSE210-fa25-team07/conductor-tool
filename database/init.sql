@@ -284,7 +284,8 @@ INSERT INTO role (role) VALUES
     ('student'),
     ('ta'),
     ('professor'),
-    ('admin')
+    ('admin'),
+    ('lead')
 ON CONFLICT (role) DO NOTHING;
 
 -- Create a function to update updated_at timestamp

@@ -5,9 +5,11 @@ import coursesRoutes from "./routes/coursesRoutes.js";
 import directoryRoutes from "./routes/directoryRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import standupRoutes from "./routes/standupRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
+import { testConnection } from "./utils/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -40,6 +42,7 @@ app.use(express.static(path.join(__dirname, "../../frontend")));
 // ============================================
 
 // API routes for frontend data (no authentication required for development)
+app.use("/api", roleRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/class", directoryRoutes);
 app.use("/api/attendance", attendanceRoutes);
@@ -98,10 +101,16 @@ app.get("/journal", (req, res) => res.redirect("/dashboard"));
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\nConductor Server Running`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`Server URL: http://localhost:${PORT}`);
+
+  // Test database connection
+  console.log(`\n Database:`);
+  const dbConnected = await testConnection();
+  console.log(`   Status:     ${dbConnected ? '✓ Connected' : '✗ Failed'}`);
+
   console.log(`\n Frontend Pages:`);
   console.log(`   Dashboard:  http://localhost:${PORT}/dashboard`);
   console.log(`   Profile:    http://localhost:${PORT}/profile`);
@@ -109,6 +118,8 @@ app.listen(PORT, () => {
   console.log(`   Course:     http://localhost:${PORT}/course/:id/calendar`);
   console.log(`   Course:     http://localhost:${PORT}/course/:id/journal`);
   console.log(`\n API Endpoints:`);
+  console.log(`   Roles:      http://localhost:${PORT}/api/roles`);
+  console.log(`   Auth:       http://localhost:${PORT}/api/auth/me`);
   console.log(`   Courses:    http://localhost:${PORT}/api/courses`);
   console.log(`   Attendance: http://localhost:${PORT}/api/attendance`);
   console.log(`   Journal:    http://localhost:${PORT}/api/journal`);
