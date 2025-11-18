@@ -1,3 +1,6 @@
+-- Connect to conductor_tool database
+\c conductor_tool
+
 -- Insert default roles
 INSERT INTO role (role) VALUES 
     ('Professor'),

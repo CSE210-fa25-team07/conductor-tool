@@ -1,3 +1,6 @@
+-- Connect to conductor_tool database
+\c conductor_tool
+
 -- Roles table
 CREATE TABLE IF NOT EXISTS role (
     role_uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -66,6 +69,29 @@ CREATE TABLE IF NOT EXISTS verification_codes (
     is_active BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (course_uuid, role_uuid)
 );
+-- Teams
+CREATE TABLE IF NOT EXISTS teams (
+    team_uuid     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    course_uuid   UUID NOT NULL REFERENCES courses(course_uuid)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    team_name     TEXT NOT NULL,
+    team_page_url TEXT,
+    repo_url      TEXT,
+    team_ta_uuid  UUID REFERENCES users(user_uuid)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT uq_team_name_per_course UNIQUE (course_uuid, team_name)
+);
+-- Team members
+CREATE TABLE IF NOT EXISTS team_members (
+    team_uuid  UUID NOT NULL REFERENCES teams(team_uuid)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    user_uuid  UUID NOT NULL REFERENCES users(user_uuid)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    joined_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    left_at    TIMESTAMPTZ,
+    CONSTRAINT pk_team_members PRIMARY KEY (team_uuid, user_uuid),
+    CONSTRAINT chk_left_after_join CHECK (left_at IS NULL OR left_at >= joined_at)
+);
 -- Standup entries
 CREATE TABLE IF NOT EXISTS standup (
     standup_uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -107,29 +133,6 @@ CREATE TABLE IF NOT EXISTS standup_sentiment_logs (
     standup_uuid UUID NOT NULL REFERENCES standup(standup_uuid) ON DELETE CASCADE,
     sentiment_score INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
--- Teams
-CREATE TABLE IF NOT EXISTS teams (
-    team_uuid     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    course_uuid   UUID NOT NULL REFERENCES courses(course_uuid)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    team_name     TEXT NOT NULL,
-    team_page_url TEXT,
-    repo_url      TEXT,
-    team_ta_uuid  UUID REFERENCES users(user_uuid)
-        ON UPDATE CASCADE ON DELETE SET NULL,
-    CONSTRAINT uq_team_name_per_course UNIQUE (course_uuid, team_name)
-);
--- Team members
-CREATE TABLE IF NOT EXISTS team_members (
-    team_uuid  UUID NOT NULL REFERENCES teams(team_uuid)
-        ON UPDATE CASCADE ON DELETE CASCADE,
-    user_uuid  UUID NOT NULL REFERENCES users(user_uuid)
-        ON UPDATE CASCADE ON DELETE CASCADE,
-    joined_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-    left_at    TIMESTAMPTZ,
-    CONSTRAINT pk_team_members PRIMARY KEY (team_uuid, user_uuid),
-    CONSTRAINT chk_left_after_join CHECK (left_at IS NULL OR left_at >= joined_at)
 );
 -- Meetings
 CREATE TABLE IF NOT EXISTS meeting (
