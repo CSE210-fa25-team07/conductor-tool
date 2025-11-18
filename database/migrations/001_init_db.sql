@@ -1,0 +1,2 @@
+CREATE DATABASE conductor_tool;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
