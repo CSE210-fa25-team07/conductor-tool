@@ -4,7 +4,12 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json",
+    "db:start": "docker compose up -d",
+    "db:stop": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "db:logs": "docker compose logs -f postgres",
+    "db:test": "node backend/src/utils/testDb.js"
   },
   "devDependencies": {
     "eslint": "^9.38.0",
