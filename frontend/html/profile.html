@@ -8,14 +8,57 @@
   <!-- Global Styles -->
   <link rel="stylesheet" href="../css/components/global.css">
   <link rel="stylesheet" href="../css/components/navigation.css">
+
+  <!-- Google Fonts - Ecological Brutalism Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="animated-bg">
   <!-- Top Navigation -->
-  <div id="top-navigation"></div>
+  <nav class="top-nav">
+    <div class="top-nav-container">
+      <!-- Logo -->
+      <div class="top-nav-logo">Conductor</div>
+
+      <!-- Navigation Links -->
+      <div class="top-nav-links">
+        <a href="dashboard.html" class="top-nav-link">Dashboard</a>
+        <a href="attendance/calendar.html" class="top-nav-link">Calendar</a>
+        <a href="profile.html" class="top-nav-link active">Profile</a>
+      </div>
+
+      <!-- User Profile with Dropdown -->
+      <div class="user-profile-dropdown">
+        <div class="user-profile" id="user-profile-trigger">
+          <div class="user-avatar">JD</div>
+          <div class="user-name">John Doe</div>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="user-dropdown">
+          <a href="profile.html" class="dropdown-item">Profile</a>
+          <a href="logout.html" class="dropdown-item">Log Out</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 
   <!-- Main Content -->
   <main class="main-content">
-    <div id="page-content"></div>
+    <div class="container">
+      <header class="dashboard-header">
+        <h1 class="dashboard-title">Profile</h1>
+        <p class="dashboard-subtitle">Manage your account settings and preferences.</p>
+      </header>
+
+      <div style="background: var(--color-light-matcha); padding: var(--space-xl); border: var(--border-thin); text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: var(--space-lg); color: var(--color-forest-green);">🚧</div>
+        <p style="font-family: var(--font-mono); color: var(--color-forest-green-medium); font-size: var(--text-lg);">
+          Profile page coming soon!
+        </p>
+      </div>
+    </div>
   </main>
 
   <!-- JavaScript Module -->

@@ -1,25 +1,29 @@
 /**
- * Dashboard Page Styles
+ * Dashboard Page Styles - Ecological Brutalism
  * Main landing page with course cards
  */
 
 .dashboard-header {
   margin-bottom: var(--space-2xl);
-  text-align: center;
-  padding: var(--space-2xl) 0;
+  text-align: left;
+  padding: var(--space-xl) 0;
+  border-bottom: var(--border-thin);
 }
 
 .dashboard-title {
   font-size: var(--text-4xl);
   margin-bottom: var(--space-sm);
-  color: var(--color-dark);
-  animation: fadeInUp 0.6s ease;
+  color: var(--color-forest-green);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .dashboard-subtitle {
-  font-size: var(--text-lg);
-  color: var(--color-gray);
-  animation: fadeInUp 0.6s ease 0.1s backwards;
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+  font-weight: 400;
 }
 
 /* Course Grid */
@@ -30,29 +34,20 @@
   margin-bottom: var(--space-2xl);
 }
 
-/* Course Card - Minimal Design */
+/* Course Card - Brutalist Design */
 .course-card {
-  background: var(--color-white);
-  border-radius: var(--radius-md);
+  background: var(--color-light-matcha);
+  border-radius: 0;
   padding: var(--space-lg);
-  border: 1px solid var(--color-light-gray);
-  transition: all var(--transition-base);
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
   cursor: pointer;
-  animation: fadeInUp 0.6s ease backwards;
 }
 
 .course-card:hover {
-  border-color: var(--color-primary-green);
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
-
-/* Add stagger animation delay */
-.course-card:nth-child(1) { animation-delay: 0s; }
-.course-card:nth-child(2) { animation-delay: 0.1s; }
-.course-card:nth-child(3) { animation-delay: 0.2s; }
-.course-card:nth-child(4) { animation-delay: 0.3s; }
-.course-card:nth-child(5) { animation-delay: 0.4s; }
-.course-card:nth-child(6) { animation-delay: 0.5s; }
 
 .course-card-header {
   display: flex;
@@ -62,17 +57,19 @@
 }
 
 .course-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--radius-md);
-  background: var(--color-primary-green);
+  width: 60px;
+  height: 60px;
+  border-radius: 0;
+  background: var(--color-radioactive-lime);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   flex-shrink: 0;
+  border: var(--border-thin);
 }
 
 .course-info {
@@ -81,22 +78,25 @@
 
 .course-code {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
   font-weight: 600;
+  font-family: var(--font-mono);
 }
 
 .course-name {
   font-size: var(--text-lg);
-  color: var(--color-dark);
+  color: var(--color-forest-green);
   font-weight: 700;
+  font-family: var(--font-mono);
   margin-top: var(--space-xs);
 }
 
 .course-description {
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
   font-size: var(--text-sm);
+  font-family: var(--font-mono);
   line-height: 1.6;
   margin-bottom: var(--space-md);
   display: -webkit-box;
@@ -110,18 +110,20 @@
   justify-content: space-between;
   align-items: center;
   padding-top: var(--space-md);
-  border-top: 1px solid var(--color-light-gray);
+  border-top: var(--border-thin);
 }
 
 .course-instructor {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
 }
 
 .course-students {
   font-size: var(--text-sm);
-  color: var(--color-primary-green);
-  font-weight: 600;
+  color: var(--color-radioactive-lime);
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 .course-stats {
@@ -132,23 +134,26 @@
 
 .course-stat {
   flex: 1;
-  background: var(--color-bg-light);
+  background: transparent;
   padding: var(--space-sm);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   text-align: center;
-  border: 1px solid var(--color-light-gray);
+  border: var(--border-thin);
 }
 
 .course-stat-value {
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-radioactive-lime);
 }
 
 .course-stat-label {
   font-size: var(--text-xs);
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
   text-transform: uppercase;
+  letter-spacing: 0.1em;
   margin-top: var(--space-xs);
 }
 
@@ -156,29 +161,21 @@
 .empty-state {
   text-align: center;
   padding: var(--space-2xl);
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
+  border: var(--border-thin);
+  background: var(--color-light-matcha);
 }
 
 .empty-state-icon {
   font-size: 4rem;
   margin-bottom: var(--space-md);
+  color: var(--color-forest-green);
 }
 
 .empty-state-text {
   font-size: var(--text-lg);
-  color: var(--color-gray);
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
 }
 
 /* Responsive Design */

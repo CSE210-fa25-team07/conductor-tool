@@ -5,10 +5,10 @@
 
 /* Calendar View */
 .calendar-container {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
   margin-bottom: var(--space-lg);
 }
 
@@ -21,7 +21,8 @@
 
 .calendar-title {
   font-size: var(--text-2xl);
-  color: var(--color-white);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
 }
 
 .calendar-controls {
@@ -31,25 +32,27 @@
 }
 
 .calendar-nav-btn {
-  background: var(--color-dark);
-  border: 2px solid var(--color-primary-green);
-  color: var(--color-primary-green);
+  background: transparent;
+  border: var(--border-thin);
+  color: var(--color-forest-green);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
+  font-family: var(--font-mono);
   transition: all var(--transition-fast);
 }
 
 .calendar-nav-btn:hover {
-  background: rgba(0, 217, 142, 0.1);
-  transform: scale(1.05);
+  background: var(--color-radioactive-lime);
+  border-color: var(--color-forest-green);
 }
 
 .calendar-month-year {
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   min-width: 180px;
   text-align: center;
 }
@@ -64,36 +67,37 @@
   padding: var(--space-md);
   text-align: center;
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   text-transform: uppercase;
   font-size: var(--text-sm);
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .calendar-day {
   aspect-ratio: 1;
   padding: var(--space-sm);
-  background: var(--color-dark);
+  background: var(--color-pale-mint);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--border-thin);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast);
   position: relative;
 }
 
 .calendar-day:hover {
-  border-color: var(--color-primary-green);
-  background: rgba(0, 217, 142, 0.1);
-  transform: scale(1.05);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
 
 .calendar-day.today {
-  border-color: var(--color-secondary-blue);
-  background: rgba(0, 184, 230, 0.1);
+  border-color: var(--color-forest-green);
+  background: var(--color-light-matcha);
+  border-width: 2px;
 }
 
 .calendar-day.has-event::after {
@@ -103,7 +107,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-accent-coral);
+  background: var(--color-radioactive-lime);
 }
 
 .calendar-day.attended::before {
@@ -111,7 +115,7 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  color: var(--color-primary-green);
+  color: var(--color-radioactive-lime);
   font-weight: 700;
   font-size: var(--text-sm);
 }
@@ -119,7 +123,8 @@
 .calendar-day-number {
   font-size: var(--text-lg);
   font-weight: 600;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
 }
 
 .calendar-day.other-month {
@@ -128,10 +133,10 @@
 
 /* QR Code Section */
 .qr-section {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
   margin-bottom: var(--space-lg);
   text-align: center;
 }
@@ -144,25 +149,27 @@
 }
 
 .qr-code-placeholder {
-  width: 250px;
-  height: 250px;
+  width: 300px;
+  height: 300px;
   background: var(--color-white);
   border-radius: var(--radius-lg);
+  border: var(--border-thin);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--text-3xl);
-  box-shadow: var(--shadow-lg);
 }
 
 .qr-code-info {
-  color: var(--color-light-gray);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
 }
 
 .qr-timer {
   font-size: var(--text-3xl);
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-radioactive-lime);
   margin-top: var(--space-sm);
 }
 
@@ -175,15 +182,16 @@
 }
 
 .chart-card {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   padding: var(--space-xl);
   border-radius: var(--radius-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
 }
 
 .chart-title {
   font-size: var(--text-xl);
-  color: var(--color-white);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
   margin-bottom: var(--space-lg);
   display: flex;
   align-items: center;
@@ -195,27 +203,29 @@
 }
 
 .chart-placeholder {
-  height: 250px;
-  background: rgba(0, 217, 142, 0.05);
+  height: 300px;
+  background: var(--color-pale-mint);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gray);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
 }
 
 /* Attendance List */
 .attendance-list {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
 }
 
 .attendance-item {
   padding: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: var(--border-thin);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -223,7 +233,7 @@
 }
 
 .attendance-item:hover {
-  background: rgba(0, 217, 142, 0.05);
+  background: var(--color-pale-mint);
 }
 
 .attendance-item:last-child {
@@ -231,31 +241,34 @@
 }
 
 .attendance-date {
-  color: var(--color-white);
+  color: var(--color-forest-green);
+  font-family: var(--font-mono);
   font-weight: 600;
 }
 
 .attendance-status {
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
+  border: var(--border-thin);
   font-size: var(--text-sm);
   font-weight: 600;
+  font-family: var(--font-mono);
   text-transform: uppercase;
 }
 
 .attendance-status.present {
-  background: rgba(0, 217, 142, 0.2);
-  color: var(--color-primary-green);
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
 }
 
 .attendance-status.absent {
-  background: rgba(255, 107, 157, 0.2);
-  color: var(--color-accent-coral);
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green-medium);
 }
 
 .attendance-status.late {
-  background: rgba(251, 191, 36, 0.2);
-  color: var(--color-accent-amber);
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
 }
 
 /* Responsive Design */
@@ -287,7 +300,7 @@
   }
 
   .qr-code-placeholder {
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
   }
 }

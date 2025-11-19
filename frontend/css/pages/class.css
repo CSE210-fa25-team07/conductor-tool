@@ -30,24 +30,24 @@
 }
 
 .stat-card {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
-  transition: all var(--transition-base);
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
 }
 
 .stat-card:hover {
-  border-color: var(--color-primary-green);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
 
 .stat-icon {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--color-primary-green), var(--color-secondary-blue));
+  background: var(--color-radioactive-lime);
+  border: var(--border-thin);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,23 +58,25 @@
 .stat-value {
   font-size: var(--text-3xl);
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-radioactive-lime);
   margin-bottom: var(--space-xs);
 }
 
 .stat-label {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 /* People View - Table */
 .people-list {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
 }
 
 .people-table {
@@ -83,23 +85,26 @@
 }
 
 .people-table thead {
-  background: rgba(0, 217, 142, 0.1);
+  background: var(--color-pale-mint);
+  border-bottom: var(--border-thin);
 }
 
 .people-table th {
   padding: var(--space-md);
   text-align: left;
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   text-transform: uppercase;
   font-size: var(--text-sm);
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .people-table td {
   padding: var(--space-md);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--color-light-gray);
+  border-top: var(--border-thin);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
 }
 
 .people-table tbody tr {
@@ -107,7 +112,7 @@
 }
 
 .people-table tbody tr:hover {
-  background: rgba(0, 217, 142, 0.05);
+  background: var(--color-pale-mint);
 }
 
 .person-info {
@@ -117,15 +122,17 @@
 }
 
 .person-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent-purple), var(--color-accent-coral));
+  background: var(--color-radioactive-lime);
+  border: 1px solid var(--color-forest-green);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   flex-shrink: 0;
 }
 
@@ -135,13 +142,15 @@
 
 .person-name {
   font-weight: 600;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   margin-bottom: 2px;
 }
 
 .person-email {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
 }
 
 /* Group View - Cards */
@@ -152,18 +161,17 @@
 }
 
 .group-card {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
-  transition: all var(--transition-base);
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
   cursor: pointer;
 }
 
 .group-card:hover {
-  border-color: var(--color-primary-green);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
 
 .group-header {
@@ -172,22 +180,25 @@
   align-items: center;
   margin-bottom: var(--space-md);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: var(--border-thin);
 }
 
 .group-name {
   font-size: var(--text-xl);
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
 }
 
 .group-badge {
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(0, 217, 142, 0.2);
-  color: var(--color-primary-green);
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   font-size: var(--text-xs);
   font-weight: 600;
+  font-family: var(--font-mono);
   text-transform: uppercase;
 }
 
@@ -200,31 +211,35 @@
 
 .member-tag {
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(0, 184, 230, 0.1);
-  color: var(--color-secondary-blue);
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
+  font-family: var(--font-mono);
 }
 
 .group-stats {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
 }
 
 /* My View - Personal Dashboard */
 .my-section {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   padding: var(--space-xl);
   border-radius: var(--radius-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
   margin-bottom: var(--space-lg);
 }
 
 .my-section-title {
   font-size: var(--text-xl);
-  color: var(--color-primary-green);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
   margin-bottom: var(--space-md);
   display: flex;
   align-items: center;
@@ -237,8 +252,9 @@
 
 .progress-bar {
   width: 100%;
-  height: 12px;
-  background: rgba(0, 217, 142, 0.1);
+  height: 14px;
+  background: var(--color-pale-mint);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: var(--space-sm);
@@ -246,14 +262,15 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary-green), var(--color-secondary-blue));
+  background: var(--color-radioactive-lime);
   border-radius: var(--radius-md);
   transition: width var(--transition-slow);
 }
 
 .progress-label {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
   display: flex;
   justify-content: space-between;
 }
@@ -266,17 +283,19 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary-green), var(--color-secondary-blue));
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
 }
 
 .btn-secondary {
-  background: var(--color-dark);
-  border: 2px solid var(--color-primary-green);
-  color: var(--color-primary-green);
+  background: transparent;
+  border: var(--border-thin);
+  color: var(--color-forest-green);
 }
 
 .btn-secondary:hover {
-  background: rgba(0, 217, 142, 0.1);
+  background: var(--color-light-matcha);
+  border-color: var(--color-radioactive-lime);
 }
 
 /* Responsive Design */

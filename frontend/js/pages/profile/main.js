@@ -4,8 +4,6 @@
  * @module pages/profile/main
  */
 
-import { createTopNav, setupNavigation } from "../../components/navigation.js";
-
 /**
  * Mock user data
  */
@@ -18,50 +16,38 @@ const mockUser = {
  * Initializes the profile page
  */
 function initProfilePage() {
-  // Create and inject top navigation
-  const topNavContainer = document.getElementById("top-navigation");
-  const topNav = createTopNav({ activeFeature: "", user: mockUser });
-  topNavContainer.appendChild(topNav);
-
-  // Setup navigation event listener
-  setupNavigation(handleNavigation);
-
-  // Render profile content
-  renderProfile();
+  // Setup user profile dropdown
+  setupDropdown();
 }
 
 /**
- * Handles navigation events
- * @param {string} path - Navigation path
+ * Sets up the user profile dropdown menu
  */
-function handleNavigation(path) {
-  console.log(`Profile page handling navigation to: ${path}`);
-}
+function setupDropdown() {
+  const trigger = document.getElementById("user-profile-trigger");
+  const dropdown = document.getElementById("user-dropdown");
 
-/**
- * Renders the profile content - PLACEHOLDER
- */
-function renderProfile() {
-  const container = document.getElementById("page-content");
+  if (!trigger || !dropdown) return;
 
-  container.innerHTML = `
-    <div class="page-header">
-      <h1 class="page-title">My Profile</h1>
-      <p class="page-description">Placeholder for routing testing</p>
-    </div>
+  // Toggle dropdown on click
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("show");
+  });
 
-    <div class="card">
-      <h3>Profile Placeholder</h3>
-      <p>This is a placeholder for the user profile and settings page. Implement your features here when ready.</p>
-      <br>
-      <p><strong>User:</strong> ${mockUser.name}</p>
-      <p><strong>Initials:</strong> ${mockUser.avatar}</p>
-    </div>
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
 
-    <div style="margin-top: var(--space-lg);">
-      <button class="btn btn-secondary" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
-    </div>
-  `;
+  // Close dropdown when pressing Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      dropdown.classList.remove("show");
+    }
+  });
 }
 
 // Initialize when DOM is ready

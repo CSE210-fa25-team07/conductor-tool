@@ -5,10 +5,10 @@
 
 /* Journal Entry Form */
 .journal-form {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  border: 2px solid rgba(0, 217, 142, 0.1);
+  border: var(--border-thin);
   margin-bottom: var(--space-xl);
 }
 
@@ -20,21 +20,22 @@
   display: block;
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   margin-bottom: var(--space-sm);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .form-input,
 .form-textarea {
   width: 100%;
   padding: var(--space-md);
-  background: var(--color-dark);
-  border: 2px solid rgba(0, 217, 142, 0.2);
+  background: var(--color-white);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
-  color: var(--color-white);
-  font-family: var(--font-primary);
+  color: var(--color-forest-green);
+  font-family: var(--font-mono);
   font-size: var(--text-base);
   transition: all var(--transition-fast);
 }
@@ -42,8 +43,8 @@
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--color-primary-green);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
 
 .form-textarea {
@@ -53,7 +54,8 @@
 
 .form-hint {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
   margin-top: var(--space-xs);
 }
 
@@ -65,24 +67,17 @@
 }
 
 .journal-entry {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
-  transition: all var(--transition-base);
-  animation: fadeInUp 0.4s ease backwards;
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
 }
 
 .journal-entry:hover {
-  border-color: var(--color-primary-green);
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
-
-.journal-entry:nth-child(1) { animation-delay: 0s; }
-.journal-entry:nth-child(2) { animation-delay: 0.05s; }
-.journal-entry:nth-child(3) { animation-delay: 0.1s; }
-.journal-entry:nth-child(4) { animation-delay: 0.15s; }
-.journal-entry:nth-child(5) { animation-delay: 0.2s; }
 
 .journal-entry-header {
   display: flex;
@@ -90,7 +85,7 @@
   align-items: center;
   margin-bottom: var(--space-md);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: var(--border-thin);
 }
 
 .journal-author {
@@ -100,15 +95,17 @@
 }
 
 .journal-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent-purple), var(--color-accent-coral));
+  background: var(--color-radioactive-lime);
+  border: 1px solid var(--color-forest-green);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   font-size: var(--text-base);
 }
 
@@ -119,35 +116,39 @@
 
 .journal-author-name {
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
 }
 
 .journal-date {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
 }
 
 .journal-status {
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
+  border: var(--border-thin);
   font-size: var(--text-xs);
   font-weight: 700;
+  font-family: var(--font-mono);
   text-transform: uppercase;
 }
 
 .journal-status.completed {
-  background: rgba(0, 217, 142, 0.2);
-  color: var(--color-primary-green);
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
 }
 
 .journal-status.in-progress {
-  background: rgba(251, 191, 36, 0.2);
-  color: var(--color-accent-amber);
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
 }
 
 .journal-status.blocked {
-  background: rgba(255, 107, 157, 0.2);
-  color: var(--color-accent-coral);
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green-medium);
 }
 
 .journal-section {
@@ -157,14 +158,16 @@
 .journal-section-title {
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-secondary-blue);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   margin-bottom: var(--space-xs);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .journal-section-content {
-  color: var(--color-light-gray);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
   line-height: 1.6;
 }
 
@@ -176,11 +179,13 @@
 
 .journal-tag {
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(0, 184, 230, 0.1);
-  color: var(--color-secondary-blue);
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
   font-size: var(--text-xs);
   font-weight: 600;
+  font-family: var(--font-mono);
 }
 
 /* Team Dashboard */
@@ -192,17 +197,16 @@
 }
 
 .team-member-card {
-  background: var(--color-dark-secondary);
+  background: var(--color-light-matcha);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  border: 2px solid rgba(0, 217, 142, 0.1);
-  transition: all var(--transition-base);
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
 }
 
 .team-member-card:hover {
-  border-color: var(--color-primary-green);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
 }
 
 .team-member-header {
@@ -211,19 +215,21 @@
   gap: var(--space-md);
   margin-bottom: var(--space-md);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: var(--border-thin);
 }
 
 .team-member-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary-green), var(--color-secondary-blue));
+  background: var(--color-radioactive-lime);
+  border: 1px solid var(--color-forest-green);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
   font-size: var(--text-lg);
   flex-shrink: 0;
 }
@@ -231,12 +237,14 @@
 .team-member-name {
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--color-white);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
 }
 
 .team-member-role {
   font-size: var(--text-sm);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
 }
 
 .team-member-stats {
@@ -248,20 +256,24 @@
 .team-stat {
   text-align: center;
   padding: var(--space-sm);
-  background: rgba(0, 217, 142, 0.05);
+  background: var(--color-pale-mint);
+  border: var(--border-thin);
   border-radius: var(--radius-md);
 }
 
 .team-stat-value {
   font-size: var(--text-xl);
   font-weight: 700;
-  color: var(--color-primary-green);
+  font-family: var(--font-mono);
+  color: var(--color-radioactive-lime);
 }
 
 .team-stat-label {
   font-size: var(--text-xs);
-  color: var(--color-gray);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
   text-transform: uppercase;
+  letter-spacing: 0.1em;
   margin-top: var(--space-xs);
 }
 
@@ -278,7 +290,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, var(--color-primary-green), var(--color-secondary-blue));
+  background: var(--color-forest-green);
   border-radius: var(--radius-sm);
 }
 
@@ -295,9 +307,8 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: var(--color-primary-green);
-  border: 3px solid var(--color-dark);
-  box-shadow: var(--shadow-glow);
+  background: var(--color-radioactive-lime);
+  border: 3px solid var(--color-forest-green);
 }
 
 /* Streaks & Achievements */
@@ -306,10 +317,12 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  background: linear-gradient(135deg, var(--color-accent-amber), var(--color-accent-coral));
+  background: var(--color-radioactive-lime);
+  border: var(--border-thin);
   border-radius: var(--radius-lg);
-  color: var(--color-white);
+  color: var(--color-forest-green);
   font-weight: 700;
+  font-family: var(--font-mono);
   font-size: var(--text-lg);
 }
 
@@ -321,12 +334,16 @@
 .empty-journal-state {
   text-align: center;
   padding: var(--space-2xl);
-  color: var(--color-gray);
+  border: var(--border-thin);
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
 }
 
 .empty-journal-icon {
   font-size: 4rem;
   margin-bottom: var(--space-md);
+  color: var(--color-forest-green);
 }
 
 /* Responsive Design */

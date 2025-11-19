@@ -4,8 +4,6 @@
  * @module pages/dashboard/main
  */
 
-import { createTopNav, setupNavigation } from "../../components/navigation.js";
-
 /**
  * Courses data - fetched from API
  */
@@ -23,16 +21,41 @@ const mockUser = {
  * Initializes the dashboard
  */
 async function initDashboard() {
-  // Create and inject top navigation
-  const topNavContainer = document.getElementById("top-navigation");
-  const topNav = createTopNav({ activeFeature: "", user: mockUser });
-  topNavContainer.appendChild(topNav);
-
-  // Setup navigation event listener
-  setupNavigation(handleNavigation);
+  // Setup user profile dropdown
+  setupDropdown();
 
   // Fetch and render courses from API
   await loadCourses();
+}
+
+/**
+ * Sets up the user profile dropdown menu
+ */
+function setupDropdown() {
+  const trigger = document.getElementById("user-profile-trigger");
+  const dropdown = document.getElementById("user-dropdown");
+
+  if (!trigger || !dropdown) return;
+
+  // Toggle dropdown on click
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("show");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+
+  // Close dropdown when pressing Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      dropdown.classList.remove("show");
+    }
+  });
 }
 
 /**
@@ -131,32 +154,6 @@ function createCourseCard(course) {
 function navigateToCourse(courseId) {
   // Navigate to the course's class dashboard
   window.location.href = `/course/${courseId}/class`;
-}
-
-/**
- * Handles navigation events
- * @param {string} path - Navigation path
- */
-function handleNavigation(path) {
-  console.log(`Dashboard handling navigation to: ${path}`);
-
-  // Map paths to actual URLs
-  const routeMap = {
-    "class": "../directory/class.html",
-    "calendar": "../attendance/calendar.html",
-    "journal": "../standup/journal.html",
-    "dashboard": "dashboard.html"
-  };
-
-  const basePath = path.split("/")[0].split("?")[0];
-
-  if (routeMap[basePath]) {
-    // In a real app, you might use a router library
-    // For now, we'll just log the navigation
-    console.log(`Would navigate to: ${routeMap[basePath]}`);
-    // Uncomment to enable actual navigation:
-    // window.location.href = routeMap[basePath];
-  }
 }
 
 // Initialize when DOM is ready
