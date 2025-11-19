@@ -46,7 +46,7 @@ BEGIN
     SELECT user_uuid INTO jones_uuid FROM users WHERE email = 'jones@ucsd.edu';
 
     -- Create staff profiles
-    INSERT INTO staff_profiles (user_uuid, is_prof, is_system_admin, office_location, research_interests, personal_website)
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
     VALUES
         (powell_uuid, true, true, 'CSE Building 3110', 'Software Engineering, Agile Development, Team Collaboration', 'https://tpowell.ucsd.edu'),
         (jones_uuid, true, false, 'CSE Building 3120', 'HCI, UX Design, Accessibility', 'https://sjones.ucsd.edu')
@@ -57,7 +57,7 @@ END $$;
 -- TERMS
 -- ============================================
 
-INSERT INTO term (year, season, start_date, end_date, is_active) VALUES
+INSERT INTO class_term (year, season, start_date, end_date, is_active) VALUES
     (2024, 'Fall', '2024-09-23', '2024-12-14', false),
     (2025, 'Winter', '2025-01-06', '2025-03-21', true),
     (2025, 'Spring', '2025-03-31', '2025-06-13', false)
@@ -72,8 +72,8 @@ DECLARE
     fall_2024_uuid UUID;
     winter_2025_uuid UUID;
 BEGIN
-    SELECT term_uuid INTO fall_2024_uuid FROM term WHERE year = 2024 AND season = 'Fall';
-    SELECT term_uuid INTO winter_2025_uuid FROM term WHERE year = 2025 AND season = 'Winter';
+    SELECT term_uuid INTO fall_2024_uuid FROM class_term WHERE year = 2024 AND season = 'Fall';
+    SELECT term_uuid INTO winter_2025_uuid FROM class_term WHERE year = 2025 AND season = 'Winter';
 
     INSERT INTO courses (course_code, course_name, term_uuid, description, syllabus_url, canvas_url)
     VALUES
@@ -117,8 +117,8 @@ DECLARE
     role_student_uuid UUID;
 BEGIN
     -- Get course UUIDs
-    SELECT course_uuid INTO cse210_winter_uuid FROM courses WHERE course_code = 'CSE210' AND term_uuid = (SELECT term_uuid FROM term WHERE year = 2025 AND season = 'Winter');
-    SELECT course_uuid INTO cse112_winter_uuid FROM courses WHERE course_code = 'CSE112' AND term_uuid = (SELECT term_uuid FROM term WHERE year = 2025 AND season = 'Winter');
+    SELECT course_uuid INTO cse210_winter_uuid FROM courses WHERE course_code = 'CSE210' AND term_uuid = (SELECT term_uuid FROM class_term WHERE year = 2025 AND season = 'Winter');
+    SELECT course_uuid INTO cse112_winter_uuid FROM courses WHERE course_code = 'CSE112' AND term_uuid = (SELECT term_uuid FROM class_term WHERE year = 2025 AND season = 'Winter');
 
     -- Get user UUIDs
     SELECT user_uuid INTO powell_uuid FROM users WHERE email = 'powell@ucsd.edu';
@@ -138,9 +138,9 @@ BEGIN
     SELECT user_uuid INTO student10_uuid FROM users WHERE email = 'student10@ucsd.edu';
 
     -- Get role UUIDs
-    SELECT role_uuid INTO role_professor_uuid FROM role WHERE role = 'professor';
-    SELECT role_uuid INTO role_ta_uuid FROM role WHERE role = 'ta';
-    SELECT role_uuid INTO role_student_uuid FROM role WHERE role = 'student';
+    SELECT role_uuid INTO role_professor_uuid FROM role WHERE role = 'Professor';
+    SELECT role_uuid INTO role_ta_uuid FROM role WHERE role = 'TA';
+    SELECT role_uuid INTO role_student_uuid FROM role WHERE role = 'Student';
 
     -- CSE210 Winter 2025 Enrollments
     -- Professor
@@ -202,7 +202,7 @@ DECLARE
     team2_uuid UUID;
     role_lead_uuid UUID;
 BEGIN
-    SELECT course_uuid INTO cse210_winter_uuid FROM courses WHERE course_code = 'CSE210' AND term_uuid = (SELECT term_uuid FROM term WHERE year = 2025 AND season = 'Winter');
+    SELECT course_uuid INTO cse210_winter_uuid FROM courses WHERE course_code = 'CSE210' AND term_uuid = (SELECT term_uuid FROM class_term WHERE year = 2025 AND season = 'Winter');
     SELECT user_uuid INTO ta_alice_uuid FROM users WHERE email = 'ta_alice@ucsd.edu';
     SELECT user_uuid INTO ta_bob_uuid FROM users WHERE email = 'ta_bob@ucsd.edu';
     SELECT user_uuid INTO student1_uuid FROM users WHERE email = 'student1@ucsd.edu';
@@ -211,7 +211,7 @@ BEGIN
     SELECT user_uuid INTO student4_uuid FROM users WHERE email = 'student4@ucsd.edu';
     SELECT user_uuid INTO student5_uuid FROM users WHERE email = 'student5@ucsd.edu';
     SELECT user_uuid INTO student6_uuid FROM users WHERE email = 'student6@ucsd.edu';
-    SELECT role_uuid INTO role_lead_uuid FROM role WHERE role = 'lead';
+    SELECT role_uuid INTO role_lead_uuid FROM role WHERE role = 'Team Leader';
 
     -- Create teams
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid)
