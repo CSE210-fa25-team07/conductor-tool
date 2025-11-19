@@ -60,17 +60,21 @@ export function createTopNav({ activeFeature = "", courseId = null, user = null 
 }
 
 /**
- * Creates the user profile section
+ * Creates the user profile section with dropdown
  * @param {Object} user - User object
  * @param {string} user.name - User's name
  * @param {string} user.avatar - User's avatar URL or initials
- * @returns {HTMLElement} User profile element
+ * @returns {HTMLElement} User profile element with dropdown
  */
 function createUserProfile(user = null) {
+  // Create dropdown container
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.className = "user-profile-dropdown";
+
+  // Create profile trigger
   const profile = document.createElement("div");
   profile.className = "user-profile";
-  profile.style.cursor = "pointer";
-  profile.onclick = () => window.location.href = "/profile";
+  profile.id = "user-profile-trigger";
 
   const avatar = document.createElement("div");
   avatar.className = "user-avatar";
@@ -88,7 +92,28 @@ function createUserProfile(user = null) {
   profile.appendChild(avatar);
   profile.appendChild(name);
 
-  return profile;
+  // Create dropdown menu
+  const dropdownMenu = document.createElement("div");
+  dropdownMenu.className = "dropdown-menu";
+  dropdownMenu.id = "user-dropdown";
+
+  const profileLink = document.createElement("a");
+  profileLink.href = "/profile";
+  profileLink.className = "dropdown-item";
+  profileLink.textContent = "Profile";
+
+  const logoutLink = document.createElement("a");
+  logoutLink.href = "/logout";
+  logoutLink.className = "dropdown-item";
+  logoutLink.textContent = "Log Out";
+
+  dropdownMenu.appendChild(profileLink);
+  dropdownMenu.appendChild(logoutLink);
+
+  dropdownContainer.appendChild(profile);
+  dropdownContainer.appendChild(dropdownMenu);
+
+  return dropdownContainer;
 }
 
 /**

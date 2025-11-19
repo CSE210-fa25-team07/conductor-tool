@@ -23,9 +23,6 @@ let currentPage = "calendar";
  * Initializes the calendar page
  */
 function initCalendarPage() {
-  // Setup user profile dropdown
-  setupDropdown();
-
   // Get course ID from URL
   const courseId = getCourseIdFromUrl();
 
@@ -45,6 +42,9 @@ function initCalendarPage() {
   const secondaryNavContainer = document.getElementById("secondary-navigation");
   const secondaryNav = createSecondaryNav({ feature: "calendar", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
+
+  // Setup user profile dropdown (must be after navigation is injected)
+  setupDropdown();
 
   // Setup navigation event listener
   setupNavigation(handleNavigation);

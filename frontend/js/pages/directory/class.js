@@ -42,6 +42,9 @@ function initClassPage() {
   const secondaryNav = createSecondaryNav({ feature: "class", courseId, activePage: currentPage });
   secondaryNavContainer.appendChild(secondaryNav);
 
+  // Setup user profile dropdown (must be after navigation is injected)
+  setupDropdown();
+
   // Setup navigation event listener
   setupNavigation(handleNavigation);
 
@@ -49,6 +52,36 @@ function initClassPage() {
   const hash = window.location.hash.slice(1);
   currentPage = hash || "dashboard";
   loadPage(currentPage);
+}
+
+/**
+ * Sets up the user profile dropdown menu
+ */
+function setupDropdown() {
+  const trigger = document.getElementById("user-profile-trigger");
+  const dropdown = document.getElementById("user-dropdown");
+
+  if (!trigger || !dropdown) return;
+
+  // Toggle dropdown on click
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("show");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+
+  // Close dropdown when pressing Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      dropdown.classList.remove("show");
+    }
+  });
 }
 
 /**

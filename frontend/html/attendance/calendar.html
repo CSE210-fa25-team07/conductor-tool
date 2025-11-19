@@ -17,50 +17,16 @@
 </head>
 <body class="animated-bg">
 
-  <!-- Top Navigation -->
-  <nav class="top-nav">
-    <div class="top-nav-container">
-      <!-- Logo -->
-      <div class="top-nav-logo">Conductor</div>
+  <!-- Top Navigation Placeholder - JavaScript will inject in-class nav here -->
+  <div id="top-navigation"></div>
 
-      <!-- Navigation Links -->
-      <div class="top-nav-links">
-        <a href="../dashboard.html" class="top-nav-link">Dashboard</a>
-        <a href="calendar.html" class="top-nav-link active">Calendar</a>
-        <a href="../profile.html" class="top-nav-link">Profile</a>
-      </div>
-
-      <!-- User Profile with Dropdown -->
-      <div class="user-profile-dropdown">
-        <div class="user-profile" id="user-profile-trigger">
-          <div class="user-avatar">JD</div>
-          <div class="user-name">John Doe</div>
-        </div>
-
-        <!-- Dropdown Menu -->
-        <div class="dropdown-menu" id="user-dropdown">
-          <a href="../profile.html" class="dropdown-item">Profile</a>
-          <a href="../logout.html" class="dropdown-item">Log Out</a>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <!-- Secondary Navigation Placeholder - JavaScript will inject calendar/analysis tabs here -->
+  <div id="secondary-navigation"></div>
 
   <!-- Main Content -->
-  <main class="main-content">
-    <div class="container">
-      <header class="dashboard-header">
-        <h1 class="dashboard-title">Calendar</h1>
-        <p class="dashboard-subtitle">View all your course schedules and events.</p>
-      </header>
-
-      <div style="background: var(--color-light-matcha); padding: var(--space-xl); border: var(--border-thin); text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: var(--space-lg); color: var(--color-forest-green);">📅</div>
-        <p style="font-family: var(--font-mono); color: var(--color-forest-green-medium); font-size: var(--text-lg);">
-          Calendar view coming soon!
-        </p>
-      </div>
-    </div>
+  <main class="main-content with-sidebar">
+    <!-- Page Content Placeholder - JavaScript will inject calendar/analysis views here -->
+    <div id="page-content" class="container"></div>
   </main>
 
   <!-- JavaScript Modules -->
