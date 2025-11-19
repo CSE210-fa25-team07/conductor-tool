@@ -14,7 +14,7 @@ Node.js + Express API. Port 8081.
 Route → Service → Repository
 
 ## Express Session
-The `express` session keeps track of the logged-in user with information that the database can use to query.
+The `express` session keeps track of the logged-in user with information that the database can use to query. For development purposes, you can fill values of `req.session.user` with dummy data to test your features.
 
 ### Example
  ```js
@@ -28,5 +28,66 @@ The `express` session keeps track of the logged-in user with information that th
   */
 });
 ```
+## Accessing Session Data through Frontend
+**Refer to line 115 in `authRoutes.js` for how you can have your frontend JS fetch session data.**
+### Here is how it is currently implemented:
+#### backend/src/routes/authRoutes.js
+```js
+router.get("/session", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Return user from session
+    res.status(200).json({
+      success: true,
+      user: req.session.user
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+```
+#### frontend/js/pages/auth/auth.js
+```js
+const sessionResponse = await fetch("/auth/session", {
+      credentials: "include"
+    });
+
+    if (!sessionResponse.ok) {
+      alert("Session expired. Please log in again.");
+      window.location.href = "/";
+      return;
+    }
+
+    const sessionData = await sessionResponse.json();
+    const isUCSDEmail = sessionData.user.email.endsWith("@ucsd.edu");
+```
+
+### Hardcoding Session
+For dev testing without proper Google OAuth, you can hardcode a session for dev purposes in `server.js`
+```js
+/**
+ * This is for devs to hardcode a user session without going through Google OAuth.
+ * NOT FOR PRODUCTION USE.
+ */
+app.get("/dev-login", async (req, res) => {
+  // Hardcoded dev user session with what you need for testing
+  req.session.user = {
+    id: "dev-user-123",
+    name: "Dev User",
+    email: "dev@example.com",
+  };
+  res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
+});
+```
+Ensure you first go to `localhost:8081/dev-login` to hardcode your session when testing.
 
 **Check each folder's README for details.**

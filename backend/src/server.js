@@ -53,10 +53,24 @@ app.get("/logout", (req, res) => {
   });
 });
 
+/**
+ * This is for devs to hardcode a user session without going through Google OAuth.
+ * NOT FOR PRODUCTION USE.
+ */
+app.get("/dev-login", async (req, res) => {
+  // Hardcoded dev user session with what you need for testing
+  req.session.user = {
+    id: "dev-user-123",
+    name: "Dev User",
+    email: "dev@example.com"
+  };
+  res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
+});
+
 app.use("/auth", checkSession, authRoutes);
 
 app.use("/google", googleRoutes);
 
-app.use("/courses/:couresId", courseRoutes);
+app.use("/courses/:couresId", checkSession, courseRoutes);
 
 app.listen(PORT);
