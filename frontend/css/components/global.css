@@ -1,0 +1,268 @@
+/**
+ * Global Styles & Design System
+ * Ecological Brutalism - All-Green Aesthetic
+ */
+
+:root {
+  /* Ecological Brutalism Color Palette */
+  --color-pale-mint: #E8FCE8;
+  --color-light-matcha: #D3FBD6;
+  --color-radioactive-lime: #99FF66;
+  --color-forest-green: #052B08;
+  --color-forest-green-medium: #0A4010;
+  --color-forest-green-light: #1A5A20;
+
+  /* Legacy color mappings for compatibility */
+  --color-primary-green: var(--color-radioactive-lime);
+  --color-primary-green-dark: var(--color-forest-green);
+  --color-primary-green-light: var(--color-light-matcha);
+
+  --color-secondary-blue: var(--color-forest-green-light);
+  --color-secondary-blue-dark: var(--color-forest-green-medium);
+  --color-secondary-blue-light: var(--color-light-matcha);
+
+  /* Accent Colors - Green-based */
+  --color-accent-coral: #7ACC6C;
+  --color-accent-purple: #5AB84D;
+  --color-accent-amber: #B8E986;
+
+  /* Neutral Colors - Green-tinted */
+  --color-dark: var(--color-forest-green);
+  --color-dark-secondary: var(--color-forest-green-medium);
+  --color-gray: var(--color-forest-green-light);
+  --color-light-gray: var(--color-light-matcha);
+  --color-white: #FFFFFF;
+  --color-bg-light: var(--color-pale-mint);
+  --color-bg-card: var(--color-light-matcha);
+
+  /* Spacing System */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+
+  /* Typography - Ecological Brutalism (20% larger) */
+  --font-primary: 'Monaco', 'Consolas', 'Courier New', monospace;
+  --font-heading: 'Instrument Serif', 'Georgia', serif;
+  --font-mono: 'Monaco', 'Consolas', 'Courier New', monospace;
+
+  --text-xs: 0.9rem;
+  --text-sm: 1.05rem;
+  --text-base: 1.2rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.8rem;
+  --text-3xl: 2.4rem;
+  --text-4xl: 3rem;
+
+  /* Border Radius - Brutalist minimal approach */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.25rem;
+  --radius-asymmetric: 0;
+  --radius-organic: 0;
+
+  /* Borders - Brutalist hard edges */
+  --border-thin: 1px solid var(--color-forest-green);
+  --border-thick: 3px solid var(--color-forest-green);
+  --border-accent: 2px solid var(--color-radioactive-lime);
+
+  /* Shadows - Minimal, no glow */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-glow: none;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-dark);
+  background: var(--color-bg-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Typography - Ecological Brutalism */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+  color: var(--color-forest-green);
+}
+
+h1 {
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: var(--space-sm);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+}
+
+a {
+  color: var(--color-forest-green);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  border-bottom: 1px solid transparent;
+}
+
+a:hover {
+  color: var(--color-radioactive-lime);
+  border-bottom-color: var(--color-radioactive-lime);
+}
+
+/* Buttons - Brutalist flat design */
+button, .btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-lg);
+  border: var(--border-thin);
+  border-radius: 0;
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+button:hover, .btn:hover {
+  background: var(--color-forest-green);
+  color: var(--color-radioactive-lime);
+  border-color: var(--color-radioactive-lime);
+}
+
+button:active, .btn:active {
+  transform: translate(2px, 2px);
+}
+
+/* Input Fields - Brutalist style */
+input, textarea, select {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  padding: var(--space-sm);
+  border: var(--border-thin);
+  border-radius: 0;
+  background: var(--color-white);
+  color: var(--color-forest-green);
+  transition: all var(--transition-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
+}
+
+/* Cards - Brutalist hard edges */
+.card {
+  background: var(--color-light-matcha);
+  border-radius: 0;
+  padding: var(--space-lg);
+  border: var(--border-thin);
+}
+
+.card h3 {
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-md);
+  font-family: var(--font-heading);
+}
+
+.card p {
+  color: var(--color-forest-green-medium);
+  line-height: 1.6;
+  font-family: var(--font-mono);
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+
+/* Graph paper background - Ecological Brutalism */
+.animated-bg {
+  background-color: var(--color-pale-mint);
+  background-image:
+    linear-gradient(var(--color-light-matcha) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-light-matcha) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
