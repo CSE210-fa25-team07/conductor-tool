@@ -1,24 +1,19 @@
 /**
- * Database connection configuration and pool management
+ * Database connection configuration using Prisma ORM
  * @module database/db
  */
 
-import pg from 'pg';
+import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const { Pool } = pg;
-
 /**
- * PostgreSQL connection pool
- * @type {pg.Pool}
+ * Prisma Client instance
+ * @type {PrismaClient}
  */
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 });
 
 /**
@@ -27,10 +22,9 @@ const pool = new Pool({
  */
 export async function testConnection() {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    console.log('✅ Database connected successfully at:', result.rows[0].now);
-    client.release();
+    await prisma.$connect();
+    const result = await prisma.$queryRaw`SELECT NOW()`;
+    console.log('✅ Database connected successfully at:', result[0].now);
     return true;
   } catch (error) {
     console.error('❌ Database connection error:', error.message);
@@ -39,40 +33,25 @@ export async function testConnection() {
 }
 
 /**
- * Execute a query
- * @param {string} text - SQL query string
- * @param {Array} params - Query parameters
- * @returns {Promise<pg.QueryResult>} Query result
- */
-export async function query(text, params) {
-  const start = Date.now();
-  try {
-    const result = await pool.query(text, params);
-    const duration = Date.now() - start;
-    console.log('Executed query', { text, duration, rows: result.rowCount });
-    return result;
-  } catch (error) {
-    console.error('Query error:', error.message);
-    throw error;
-  }
-}
-
-/**
- * Get a client from the pool for transactions
- * @returns {Promise<pg.PoolClient>} Database client
- */
-export async function getClient() {
-  const client = await pool.connect();
-  return client;
-}
-
-/**
- * Close the database pool
+ * Close the database connection
  * @returns {Promise<void>}
  */
-export async function closePool() {
-  await pool.end();
-  console.log('Database pool closed');
+export async function closeConnection() {
+  await prisma.$disconnect();
+  console.log('Database connection closed');
 }
 
-export default pool;
+/**
+ * Get Prisma Client instance
+ * Use this to access all Prisma models and queries
+ * @example
+ * import { getPrisma } from './db.js';
+ * const prisma = getPrisma();
+ * const users = await prisma.user.findMany();
+ * @returns {PrismaClient} Prisma client instance
+ */
+export function getPrisma() {
+  return prisma;
+}
+
+export default prisma;

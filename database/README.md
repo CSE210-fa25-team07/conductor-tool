@@ -1,108 +1,129 @@
 # Database Setup Guide
 
-PostgreSQL setup and migrations.
+PostgreSQL database with Prisma ORM integration.
+
 ## Prerequisites
 
 - Docker Desktop installed
 - Node.js installed
 - PostgreSQL client (optional): `psql` or pgAdmin for GUI access
 
-## Quick Start
+## First Time Setup
 
-### 1. Setup Environment Variables
+Follow these steps when setting up the project for the first time:
 
-Copy the content in `.env.example` to the end of `.env`.
+### 1. Install Dependencies
 
-Download and install PostgreSQL client (e.g., `psql`, or `pgAdmin` for GUI) if you want to connect to the database from your host machine.
+```bash
+npm install
+```
 
-Download and install Docker Desktop if you haven't already.
+This installs all dependencies including Prisma and the PostgreSQL client.
 
-Run `npm install` in the root directory to install dependencies.
+### 2. Setup Environment Variables
 
-### 2. Start the Database
+Copy the content from `.env.example` and append it to your `.env` file (or create `.env` if it doesn't exist):
+
+```bash
+# The .env file should include:
+DATABASE_URL=postgresql://conductor_admin:conductor_dev_password@localhost:5433/conductor_tool
+```
+
+### 3. Start the Database
 
 Start the PostgreSQL container:
-- `npm run db:start`
-- Or: `docker compose up -d`
 
-The container will automatically:
+```bash
+npm run db:start
+```
+
+This will:
 - Create PostgreSQL 16 instance on port 5433
 - Run all migration scripts in `database/migrations/`
 - Initialize the `conductor_tool` database with tables and default roles
 - Persist data in a Docker volume
 
-### 3. Verify Database is Running
+### 4. Generate Prisma Client
 
-Check status: `npm run db:logs` or `docker compose ps`
+Generate the Prisma Client from the schema:
 
-### 4. Test Connection
-
-Run the test script: `npm run db:test`
-
-This verifies the database connection and queries sample data.
-
-## Database Connection
-
-Connection string (already in `.env`):
-```
-postgresql://conductor_admin:conductor_dev_password@localhost:5433/conductor_tool
+```bash
+npm run db:generate
 ```
 
-Access via `process.env.DATABASE_URL` in your Node.js backend.
+This creates type-safe database access functions based on your schema.
 
-## Usage Examples
+### 5. Test Connection
 
-### Connect from CLI
+Verify everything works:
 
-Using docker exec: `docker compose exec postgres psql -U conductor_admin -d conductor_tool`
+```bash
+npm run db:test
+```
 
-From host machine: `psql -h localhost -p 5433 -U conductor_admin -d conductor_tool`
+This runs Prisma queries and shows example usage patterns.
 
-### Query from Backend
+### 6. (Optional) Open Prisma Studio
 
-Use the provided utilities in `backend/src/utils/db.js`:
-- `query(text, params)` - Execute SQL queries
-- `getClient()` - Get client for transactions
-- `testConnection()` - Verify connection
+Explore your database with a visual interface:
 
-## Useful Commands
+```bash
+npm run db:studio
+```
 
-| Command | Description |
-|---------|-------------|
-| `npm run db:start` | Start database container |
-| `npm run db:stop` | Stop database container |
-| `npm run db:reset` | Delete all data and restart fresh |
-| `npm run db:logs` | View database logs |
-| `npm run db:test` | Test database connection |
+Opens a browser-based GUI at http://localhost:5555 to view and edit data.
 
-- `migrations/` - Numbered SQL files for schema (001, 002, 003...)
-- `seeds/` - Sample dev data
-## Migration Scripts
+---
 
-Located in `database/migrations/`, executed in order on first startup:
+## Daily Development Workflow
 
-1. **001_init_db.sql** - Create database and enable pgcrypto extension
-2. **002_init_tables.sql** - Create all tables with relationships
-3. **003_init_data.sql** - Insert default roles
+For ongoing development after initial setup:
 
-## Pattern
-To add new migrations:
-- Create numbered SQL file (e.g., `004_add_feature.sql`)
-- Run `npm run db:reset` to apply
+### Starting Work
 
-## Troubleshooting
+```bash
+# Start the database (if not already running)
+npm run db:start
 
-**Port conflict**: Change `POSTGRES_PORT` in `.env` to another port (e.g., 5434), then update `DATABASE_URL` accordingly.
+# Check that it's running
+npm run db:logs
+```
 
-**Connection refused**: Ensure Docker is running, check container health with `docker compose ps`, and wait a few seconds after starting.
+### Making Database Changes
 
-**Reset everything**: `npm run db:reset` or `docker compose down -v && docker compose up -d`
+Do not modify the database schema directly. Instead, the entire team
+should come to an agreement.
 
-## Production Notes
+(For DB administrators only) When you modify the database schema:
 
-⚠️ Before deploying:
-- Change all passwords in `.env`
-- Use strong, randomly generated passwords
-- Enable SSL connections
-- Configure backups
-- Restrict network access
+1. Update SQL migration files in `database/migrations/`
+2. Reset the database to apply changes:
+   ```bash
+   npm run db:reset
+   ```
+3. Pull the updated schema into Prisma:
+   ```bash
+   npm run db:pull
+   ```
+4. Regenerate Prisma Client:
+   ```bash
+   npm run db:generate
+   ```
+
+### Viewing Data
+
+```bash
+# Open Prisma Studio (visual database browser)
+npm run db:studio
+
+# Or use psql
+docker compose exec postgres psql -U conductor_admin -d conductor_tool
+```
+
+### Ending Work
+
+```bash
+# Stop the database (optional - you can leave it running)
+npm run db:stop
+```
+
