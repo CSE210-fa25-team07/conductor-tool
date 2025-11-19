@@ -1,99 +1,105 @@
-# Database
+# Database Setup Guide
 
-PostgreSQL setup and migrations for the Conductor Tool.
+## Prerequisites
 
-## Quick Start with Docker
+- Docker Desktop installed
+- Node.js installed
+- PostgreSQL client (optional): `psql` or pgAdmin for GUI access
 
-### Prerequisites
-- Docker and Docker Compose installed
+## Quick Start
 
-### Setup
+### 1. Setup Environment Variables
 
-1. **Copy the environment template:**
-   ```bash
-   cp .env.example .env
-   ```
+Copy the content in `.env.example` to the end of `.env`.
 
-2. **Edit `.env` if needed** (optional - defaults work fine):
-   - Change `POSTGRES_PORT` if you have another PostgreSQL instance running
-   - Update passwords for production use
+Download and install PostgreSQL client (e.g., `psql`, or `pgAdmin` for GUI) if you want to connect to the database from your host machine.
 
-3. **Start the database:**
-   ```bash
-   docker compose up -d
-   ```
+Download and install Docker Desktop if you haven't already.
 
-4. **Verify it's running:**
-   ```bash
-   docker compose ps
-   ```
+Run `npm install` in the root directory to install dependencies.
 
-### Access
+### 2. Start the Database
 
-- **PostgreSQL:** `localhost:5432` (or your custom port)
-  - Database: `conductor`
-  - User: `conductor_user`
-  - Password: `conductor_pass`
+Start the PostgreSQL container:
+- `npm run db:start`
+- Or: `docker compose up -d`
 
-- **PgAdmin (Web UI):** http://localhost:5050
-  - Email: `admin@conductor.local`
-  - Password: `admin`
+The container will automatically:
+- Create PostgreSQL 16 instance on port 5433
+- Run all migration scripts in `database/migrations/`
+- Initialize the `conductor_tool` database with tables and default roles
+- Persist data in a Docker volume
 
-### Connection String
+### 3. Verify Database is Running
+
+Check status: `npm run db:logs` or `docker compose ps`
+
+### 4. Test Connection
+
+Run the test script: `npm run db:test`
+
+This verifies the database connection and queries sample data.
+
+## Database Connection
+
+Connection string (already in `.env`):
 ```
-postgresql://conductor_user:conductor_pass@localhost:5432/conductor
-```
-
-### Useful Commands
-
-```bash
-# Start the database
-docker compose up -d
-
-# Stop the database
-docker compose down
-
-# View logs
-docker compose logs -f postgres
-
-# Connect to database via CLI
-docker exec -it conductor-postgres psql -U conductor_user -d conductor
-
-# Stop and remove all data (fresh start)
-docker compose down -v
+postgresql://conductor_admin:conductor_dev_password@localhost:5433/conductor_tool
 ```
 
-## Database Schema
+Access via `process.env.DATABASE_URL` in your Node.js backend.
 
-The schema is automatically initialized from [init.sql](./init.sql) when the container first starts. It includes:
-- All tables from TABLES.md
-- Foreign key relationships
-- Indexes for performance
-- Default roles (student, ta, professor, admin)
-- Automatic timestamp triggers
+## Usage Examples
 
-## Folders
+### Connect from CLI
 
-- `migrations/` - Numbered SQL files for schema changes (001, 002, 003...)
-- `seeds/` - Sample dev data
-- `init.sql` - Initial schema (auto-runs on first start)
+Using docker exec: `docker compose exec postgres psql -U conductor_admin -d conductor_tool`
 
-## Team Ownership
+From host machine: `psql -h localhost -p 5433 -U conductor_admin -d conductor_tool`
 
-- **Auth:** User/role tables
-- **Directory:** Team/course tables
-- **Attendance:** Meeting/attendance tables
-- **Standup:** Standup tables
+### Query from Backend
 
-## Manual Migration Pattern
+Use the provided utilities in `backend/src/utils/db.js`:
+- `query(text, params)` - Execute SQL queries
+- `getClient()` - Get client for transactions
+- `testConnection()` - Verify connection
 
-One migration file per table. Number them in order (001, 002, etc.).
+## Useful Commands
 
-```sql
-CREATE TABLE your_table (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    field VARCHAR(255) NOT NULL
-);
-```
+| Command | Description |
+|---------|-------------|
+| `npm run db:start` | Start database container |
+| `npm run db:stop` | Stop database container |
+| `npm run db:reset` | Delete all data and restart fresh |
+| `npm run db:logs` | View database logs |
+| `npm run db:test` | Test database connection |
 
-Run manually: `psql -U conductor_user -d conductor < migrations/001_file.sql`
+## Migration Scripts
+
+Located in `database/migrations/`, executed in order on first startup:
+
+1. **001_init_db.sql** - Create database and enable pgcrypto extension
+2. **002_init_tables.sql** - Create all tables with relationships
+3. **003_init_data.sql** - Insert default roles
+
+To add new migrations:
+- Create numbered SQL file (e.g., `004_add_feature.sql`)
+- Run `npm run db:reset` to apply
+
+## Troubleshooting
+
+**Port conflict**: Change `POSTGRES_PORT` in `.env` to another port (e.g., 5434), then update `DATABASE_URL` accordingly.
+
+**Connection refused**: Ensure Docker is running, check container health with `docker compose ps`, and wait a few seconds after starting.
+
+**Reset everything**: `npm run db:reset` or `docker compose down -v && docker compose up -d`
+
+## Production Notes
+
+⚠️ Before deploying:
+- Change all passwords in `.env`
+- Use strong, randomly generated passwords
+- Enable SSL connections
+- Configure backups
+- Restrict network access
+
