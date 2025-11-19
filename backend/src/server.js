@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -55,5 +56,7 @@ app.get("/logout", (req, res) => {
 app.use("/auth", checkSession, authRoutes);
 
 app.use("/google", googleRoutes);
+
+app.use("/courses/:couresId", courseRoutes);
 
 app.listen(PORT);

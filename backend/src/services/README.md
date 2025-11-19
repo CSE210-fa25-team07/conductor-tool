@@ -20,8 +20,6 @@ Business logic. One file per team, plus shared services.
 - Business logic (validation, workflows)
 - Call repositories for data
 - Call external APIs
-- Emit Socket.io events
-- **NO HTTP handling** (that's controllers)
 - **NO SQL queries** (that's repositories)
 
 ## Pattern

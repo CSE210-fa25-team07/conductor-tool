@@ -110,7 +110,7 @@ router.get("/users/all", async (req, res) => {
  * @name GET /auth/session
  * @returns {Object} 200 - Current user from session
  * @returns {Object} 401 - Not authenticated
- * @status IN USE - Frontend fetches current user session data
+ * @status IN USE - Frontend fetches current user session data (refer to line 90 of frontend/js/pages/auth/auth.js)
  */
 router.get("/session", async (req, res) => {
   try {
