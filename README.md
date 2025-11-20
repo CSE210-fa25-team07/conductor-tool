@@ -75,11 +75,50 @@ function functionName(param1, param2) {
 > The `.env` file contains the necessary secrets and information that our web app uses for the Google Auth API.
 > Please ask the authentication team for more info.
 
-1. Run the web server
-    ```bash
-    node backend/src/server.js
-    ```
-2. On your browser, go to `localhost:8081`
+
+### 1. Setup Environment Variables
+
+Copy the content from `.env.example` and append it to your `.env` file (or create `.env` if it doesn't exist)
+
+### 2. Start the Database
+
+Start the PostgreSQL container:
+
+```bash
+npm run db:start
+```
+
+This will:
+- Create PostgreSQL 16 instance on port 5433
+- Run all migration scripts in `database/migrations/`
+- Initialize the `conductor_tool` database with tables and default roles
+- Persist data in a Docker volume
+
+### 3. Generate Prisma Client
+
+Generate the Prisma Client from the schema:
+
+```bash
+npm run db:generate
+```
+
+This creates type-safe database access functions based on your schema.
+
+### 4. (Optional) Open Prisma Studio
+
+Explore your database with a visual interface:
+
+```bash
+npm run db:studio
+```
+
+Opens a browser-based GUI at http://localhost:5555 to view and edit data.
+
+### 5. Run the web server
+```bash
+node backend/src/server.js
+```
+On your browser, go to `localhost:8081`
    
 ## Structure
 
