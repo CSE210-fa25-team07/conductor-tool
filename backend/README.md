@@ -50,6 +50,13 @@ const sessionResponse = await fetch("/v1/api/auth/session", {
 ### Hardcoding Session
 For dev testing without proper Google OAuth, you can hardcode a session for dev purposes in `server.js`
 ```js
+app.use(session({
+  secret: process.env.SESSION_SECRET,  // signs the session ID cookie (for dev: you can change this to any random string to bypass)
+  resave: false,             // don’t save session if nothing changed
+  saveUninitialized: false,  // don’t create session until something is stored
+  cookie: { secure: false }  // true if HTTPS/production
+}));
+
 /**
  * This is for devs to hardcode a user session without going through Google OAuth.
  * NOT FOR PRODUCTION USE.
