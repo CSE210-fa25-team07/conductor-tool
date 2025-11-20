@@ -14,7 +14,7 @@ import { getPrisma } from "../utils/db.js";
  */
 async function getCoursesByUserId(userUuid) {
   const prisma = getPrisma();
-  
+
   const enrollments = await prisma.courseEnrollment.findMany({
     where: {
       userUuid: userUuid,
@@ -24,7 +24,7 @@ async function getCoursesByUserId(userUuid) {
         }
       }
     },
-    distinct: ['courseUuid']
+    distinct: ["courseUuid"]
   });
 
   return enrollments.map(enrollment => enrollment.courseUuid);

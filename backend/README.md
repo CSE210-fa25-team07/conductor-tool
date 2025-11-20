@@ -22,39 +22,13 @@ The `express` session keeps track of the logged-in user with information that th
   const user = req.session.user;
   /**
   These fields can be available and passed into your query:
-  user.name
   user.id
   user.email
   */
 });
 ```
 ## Accessing Session Data through Frontend
-**Refer to line 115 in `authRoutes.js` for how you can have your frontend JS fetch session data.**
-### Here is how it is currently implemented:
-#### backend/src/routes/authRoutes.js
-```js
-router.get("/session", async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        error: "Not authenticated"
-      });
-    }
-
-    // Return user from session
-    res.status(200).json({
-      success: true,
-      user: req.session.user
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-```
+Calling fetch on the endpoint will query a response with the session information. Example below
 #### frontend/js/pages/auth/auth.js
 ```js
 const sessionResponse = await fetch("/auth/session", {

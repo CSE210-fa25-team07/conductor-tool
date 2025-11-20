@@ -81,29 +81,7 @@ async function getUserByEmail(email) {
   return users.find(u => u.email === email) || null;
 }
 
-/**
- * Get all users
- * @returns {Promise<Array>} Array of all user objects
- * @status NOT IN USE
- */
-async function getAllUsers() {
-  return await loadUsers();
-}
-
-/**
- * Get a user by ID
- * @param {string} id - User ID to search for
- * @returns {Promise<Object|null>} User object or null if not found
- * @status NOT IN USE
- */
-async function getUserById(id) {
-  const users = await loadUsers();
-  return users.find(u => u.id === id) || null;
-}
-
 export {
   addUser,
-  getUserByEmail,
-  getAllUsers,
-  getUserById
+  getUserByEmail
 };

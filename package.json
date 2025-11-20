@@ -9,7 +9,6 @@
     "db:stop": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d",
     "db:logs": "docker compose logs -f postgres",
-    "db:test": "node backend/src/utils/testDb.js",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:pull": "prisma db pull"

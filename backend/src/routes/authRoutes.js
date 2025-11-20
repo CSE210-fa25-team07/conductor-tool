@@ -4,7 +4,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import * as userService from "../services/userService.js";
+import * as authService from "../services/authService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -39,93 +39,16 @@ router.get("/request-form", (req, res) => {
 });
 
 /**
- * Get a user by email
- *
- * @name GET /auth/users
- * @param {string} req.query.email - Email address to search for
- * @returns {Object} 200 - User object
- * @returns {Object} 404 - User not found
- * @returns {Object} 400 - Missing email parameter
- * @status NOT IN USE - Debug/testing endpoint for checking if user exists
- */
-router.get("/users", async (req, res) => {
-  try {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        error: "Email query parameter is required"
-      });
-    }
-
-    const user = await userService.getUserByEmail(email);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      user
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-/**
- * Get all users
- *
- * @name GET /auth/users/all
- * @returns {Object} 200 - Array of all users
- * @status NOT IN USE - Debug/testing endpoint (security risk - remove in production)
- */
-router.get("/users/all", async (req, res) => {
-  try {
-    const users = await userService.getAllUsers();
-
-    res.status(200).json({
-      success: true,
-      count: users.length,
-      users
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-/**
  * Get current session user
  *
  * @name GET /auth/session
  * @returns {Object} 200 - Current user from session
  * @returns {Object} 401 - Not authenticated
- * @status IN USE - Frontend fetches current user session data (refer to line 90 of frontend/js/pages/auth/auth.js)
+ * @status IN USE - Frontend fetches current user session data
  */
 router.get("/session", async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        error: "Not authenticated"
-      });
-    }
-
-    // Return user from session
-    res.status(200).json({
-      success: true,
-      user: req.session.user
-    });
+    return await authService.getSession(req, res);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -147,44 +70,7 @@ router.get("/session", async (req, res) => {
  */
 router.post("/verify", express.json(), async (req, res) => {
   try {
-    const { code } = req.body;
-    const profile = req.session.user;
-
-    // TODO: Implement actual verification code validation
-    // For now, accept any non-empty code
-    if (!code || code.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: "Verification code is required"
-      });
-    }
-
-    // Check if user already exists in database
-    const existingUser = await userService.getUserByEmail(profile.email);
-    if (existingUser) {
-      return res.status(200).json({
-        success: true,
-        message: "User already exists",
-        user: existingUser
-      });
-    }
-
-    // Create user in database
-    const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
-    const firstName = profile.given_name || nameParts[0] || "Unknown";
-    const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
-
-    const newUser = await userService.addUser({
-      firstName,
-      lastName,
-      email: profile.email
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "User verified and created successfully",
-      user: newUser
-    });
+    return await authService.verifyCode(req, res);
   } catch (error) {
     res.status(400).json({
       success: false,
