@@ -216,9 +216,9 @@ async function handleAccessRequest() {
  * Show success message after form submission
  */
 function showSuccessMessage() {
-  const container = document.querySelector(".container");
+  const form = document.querySelector(".form");
 
-  container.innerHTML = `
+  form.innerHTML = `
     <figure class="icon" aria-label="Success icon" style="background: #48bb78;">✓</figure>
     <h1 class="page-title">Request Submitted</h1>
     <p class="message">
