@@ -78,4 +78,26 @@ router.delete("/:standupId", checkAuth, async (req, res) => {
   }
 });
 
+router.get("/team/:teamId", checkAuth, async (req, res) => {
+  try {
+    return await standupService.getTeamStandups(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.get("/ta/overview", checkAuth, async (req, res) => {
+  try {
+    return await standupService.getTAOverview(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

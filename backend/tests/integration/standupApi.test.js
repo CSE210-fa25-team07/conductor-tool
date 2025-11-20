@@ -198,4 +198,212 @@ describe("Standup API", () => {
       createdStandupId = null;
     });
   });
+
+  describe("GET /standups/team/:teamId", () => {
+    it("should return 401 without session", async () => {
+      const response = await request(app).get(`/standups/team/${testTeam.teamUuid}`);
+      expect(response.status).toBe(401);
+    });
+
+    it("should return 403 if user is not a team member", async () => {
+      const otherUser = await prisma.user.findFirst({
+        where: { userUuid: { not: testUser.userUuid } }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: otherUser.userUuid,
+          email: otherUser.email,
+          name: `${otherUser.firstName} ${otherUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/team/${testTeam.teamUuid}`);
+      expect(response.status).toBe(403);
+      expect(response.body.error).toBe("Not authorized to view this team's standups");
+    });
+
+    it("should return team standups for team member", async () => {
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: testUser.userUuid,
+          email: testUser.email,
+          name: `${testUser.firstName} ${testUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/team/${testTeam.teamUuid}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+
+    it("should support date filtering", async () => {
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: testUser.userUuid,
+          email: testUser.email,
+          name: `${testUser.firstName} ${testUser.lastName}`
+        }
+      });
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      const endDate = new Date();
+
+      const response = await agent.get(`/standups/team/${testTeam.teamUuid}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+  });
+
+  describe("GET /standups/ta/overview", () => {
+    it("should return 401 without session", async () => {
+      const response = await request(app).get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
+      expect(response.status).toBe(401);
+    });
+
+    it("should return 400 without courseId", async () => {
+      const taUser = await prisma.user.findFirst({
+        where: { email: "ta_alice@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: taUser.userUuid,
+          email: taUser.email,
+          name: `${taUser.firstName} ${taUser.lastName}`
+        }
+      });
+
+      const response = await agent.get("/standups/ta/overview");
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("courseId is required");
+    });
+
+    it("should return 403 if user is not Professor or TA", async () => {
+      const studentUser = await prisma.user.findFirst({
+        where: { email: "david@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: studentUser.userUuid,
+          email: studentUser.email,
+          name: `${studentUser.firstName} ${studentUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
+      expect(response.status).toBe(403);
+      expect(response.body.error).toBe("Not authorized to view course overview");
+    });
+
+    it("should return course overview for TA", async () => {
+      const taUser = await prisma.user.findFirst({
+        where: { email: "ta_alice@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: taUser.userUuid,
+          email: taUser.email,
+          name: `${taUser.firstName} ${taUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty("course");
+      expect(response.body.data).toHaveProperty("teams");
+      expect(Array.isArray(response.body.data.teams)).toBe(true);
+    });
+
+    it("should return course overview for Professor", async () => {
+      const professorUser = await prisma.user.findFirst({
+        where: { email: "powell@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: professorUser.userUuid,
+          email: professorUser.email,
+          name: `${professorUser.firstName} ${professorUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty("course");
+      expect(response.body.data).toHaveProperty("teams");
+      expect(Array.isArray(response.body.data.teams)).toBe(true);
+    });
+
+    it("should include team details with latest standups", async () => {
+      const taUser = await prisma.user.findFirst({
+        where: { email: "ta_alice@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: taUser.userUuid,
+          email: taUser.email,
+          name: `${taUser.firstName} ${taUser.lastName}`
+        }
+      });
+
+      const response = await agent.get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      if (response.body.data.teams.length > 0) {
+        const team = response.body.data.teams[0];
+        expect(team).toHaveProperty("teamUuid");
+        expect(team).toHaveProperty("teamName");
+        expect(team).toHaveProperty("memberCount");
+        expect(team).toHaveProperty("latestStandup");
+      }
+    });
+
+    it("should support date filtering", async () => {
+      const taUser = await prisma.user.findFirst({
+        where: { email: "ta_alice@ucsd.edu" }
+      });
+
+      const agent = request.agent(app);
+      await agent.post("/test/setup-session").send({
+        user: {
+          id: taUser.userUuid,
+          email: taUser.email,
+          name: `${taUser.firstName} ${taUser.lastName}`
+        }
+      });
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      const endDate = new Date();
+
+      const response = await agent.get(`/standups/ta/overview?courseId=${testCourse.courseUuid}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data.teams)).toBe(true);
+    });
+  });
 });

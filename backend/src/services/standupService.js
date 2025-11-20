@@ -150,10 +150,69 @@ async function deleteStandup(req, res) {
   });
 }
 
+async function getTeamStandups(req, res) {
+  const userId = req.session.user.id;
+  const { teamId } = req.params;
+  const { startDate, endDate } = req.query;
+
+  const isTeamMember = await standupRepository.checkTeamMembership(userId, teamId);
+  const isStaff = await standupRepository.checkCourseStaffAccess(userId, teamId);
+
+  if (!isTeamMember && !isStaff) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view this team's standups"
+    });
+  }
+
+  const standups = await standupRepository.getTeamStandups(teamId, {
+    startDate,
+    endDate
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: standupDto.toStandupListDto(standups)
+  });
+}
+
+async function getTAOverview(req, res) {
+  const userId = req.session.user.id;
+  const { courseId, startDate, endDate } = req.query;
+
+  if (!courseId) {
+    return res.status(400).json({
+      success: false,
+      error: "courseId is required"
+    });
+  }
+
+  const isStaff = await standupRepository.checkCourseStaffRole(userId, courseId);
+
+  if (!isStaff) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view course overview"
+    });
+  }
+
+  const overview = await standupRepository.getCourseOverview(courseId, {
+    startDate,
+    endDate
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: standupDto.toCourseOverviewDto(overview)
+  });
+}
+
 export {
   getUserContext,
   createStandup,
   getUserStandups,
   updateStandup,
-  deleteStandup
+  deleteStandup,
+  getTeamStandups,
+  getTAOverview
 };

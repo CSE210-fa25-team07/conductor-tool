@@ -90,6 +90,33 @@ function toStandupListDto(standups) {
   return standups.map(toStandupDto);
 }
 
+function toCourseOverviewDto(overview) {
+  return {
+    course: {
+      courseUuid: overview.course.courseUuid,
+      courseCode: overview.course.courseCode,
+      courseName: overview.course.courseName
+    },
+    teams: overview.teams.map(team => ({
+      teamUuid: team.teamUuid,
+      teamName: team.teamName,
+      memberCount: team.memberCount,
+      latestStandup: team.latestStandup ? {
+        standupUuid: team.latestStandup.standupUuid,
+        dateSubmitted: team.latestStandup.dateSubmitted,
+        whatDone: team.latestStandup.whatDone,
+        whatNext: team.latestStandup.whatNext,
+        blockers: team.latestStandup.blockers,
+        user: team.latestStandup.user ? {
+          userUuid: team.latestStandup.user.userUuid,
+          firstName: team.latestStandup.user.firstName,
+          lastName: team.latestStandup.user.lastName
+        } : undefined
+      } : null
+    }))
+  };
+}
+
 export {
   toUserDto,
   toCourseDto,
@@ -97,5 +124,6 @@ export {
   toTeamDto,
   toUserContextDto,
   toStandupDto,
-  toStandupListDto
+  toStandupListDto,
+  toCourseOverviewDto
 };

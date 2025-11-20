@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
-import { getUserContext } from "../../src/repositories/standupRepository.js";
-import { getPrisma } from "../../src/utils/db.js";
+import { getUserContext } from "../../../src/repositories/standupRepository.js";
+import { getPrisma } from "../../../src/utils/db.js";
 
 const prisma = getPrisma();
 
