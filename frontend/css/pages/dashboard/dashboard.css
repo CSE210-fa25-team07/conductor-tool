@@ -1,0 +1,220 @@
+/**
+ * Dashboard Page Styles - Ecological Brutalism
+ * Main landing page with course cards
+ */
+
+.dashboard-header {
+  margin-bottom: var(--space-2xl);
+  text-align: left;
+  padding: var(--space-xl) 0;
+  border-bottom: var(--border-thin);
+}
+
+.dashboard-title {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-sm);
+  color: var(--color-forest-green);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-subtitle {
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+/* Course Grid */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+/* Course Card - Brutalist Design */
+.course-card {
+  background: var(--color-light-matcha);
+  border-radius: 0;
+  padding: var(--space-lg);
+  border: var(--border-thin);
+  transition: border-color var(--transition-fast);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensures all cards stretch to same height */
+}
+
+.course-card:hover {
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
+}
+
+.course-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.course-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 0;
+  background: var(--color-radioactive-lime);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+  flex-shrink: 0;
+  border: var(--border-thin);
+}
+
+.course-info {
+  flex: 1;
+}
+
+.course-code {
+  font-size: var(--text-sm);
+  color: var(--color-forest-green-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.course-name {
+  font-size: var(--text-lg);
+  color: var(--color-forest-green);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  margin-top: var(--space-xs);
+}
+
+.course-description {
+  color: var(--color-forest-green-medium);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.course-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-md);
+  border-top: var(--border-thin);
+  margin-top: auto;
+}
+
+.course-instructor {
+  font-size: var(--text-sm);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+}
+
+.course-students {
+  font-size: var(--text-sm);
+  color: var(--color-radioactive-lime);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.course-stats {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.course-stat {
+  flex: 1;
+  background: transparent;
+  padding: var(--space-sm);
+  border-radius: 0;
+  text-align: center;
+  border: var(--border-thin);
+}
+
+.course-stat-value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-radioactive-lime);
+}
+
+.course-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: var(--space-xs);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  color: var(--color-forest-green-medium);
+  border: var(--border-thin);
+  background: var(--color-light-matcha);
+  cursor: pointer;
+  border-style: dashed;
+}
+
+.empty-state-section{
+    text-align: center;
+    color: var(--color-gray);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-md);
+  color: var(--color-forest-green);
+}
+
+.empty-state-text {
+  font-size: var(--text-lg);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+}
+
+.empty-state-description {
+  color: var(--color-forest-green-medium);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .dashboard-header {
+    padding: var(--space-lg) 0;
+  }
+
+  .dashboard-title {
+    font-size: var(--text-3xl);
+  }
+}
