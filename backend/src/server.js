@@ -51,13 +51,12 @@ app.get("/logout", (req, res) => {
  * NOT FOR PRODUCTION USE.
  */
 app.get("/dev-login", async (req, res) => {
-  // Hardcode dev user session with what you need for testing
   req.session.user = {
-    id: "18461b29-0e83-4dd6-a309-874d2acdf045",
-    email: "dev@example.com",
-    name: "John Doe"
+    id: "3e26dca6-0be8-4594-b36c-ed4925b6daf6",
+    email: "powell@ucsd.edu",
+    name: "Thomas Powell"
   };
-  res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
+  res.redirect("/dashboard");
 });
 
 app.use("/auth", checkSession, authRoutes);

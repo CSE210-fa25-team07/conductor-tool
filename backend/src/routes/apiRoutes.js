@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.use("/directory", directoryApis);
 
-router.use("/standup", standupApis);
+router.use("/standups", standupApis);
 
 router.use("/attendance", attendanceApis);
 
