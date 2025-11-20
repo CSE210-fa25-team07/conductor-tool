@@ -3,8 +3,8 @@
  * @module database/db
  */
 
-import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv';
+import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ dotenv.config();
  * @type {PrismaClient}
  */
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"]
 });
 
 /**
@@ -24,10 +24,8 @@ export async function testConnection() {
   try {
     await prisma.$connect();
     const result = await prisma.$queryRaw`SELECT NOW()`;
-    console.log('✅ Database connected successfully at:', result[0].now);
     return true;
   } catch (error) {
-    console.error('❌ Database connection error:', error.message);
     return false;
   }
 }
@@ -38,14 +36,13 @@ export async function testConnection() {
  */
 export async function closeConnection() {
   await prisma.$disconnect();
-  console.log('Database connection closed');
 }
 
 /**
  * Get Prisma Client instance
  * Use this to access all Prisma models and queries
  * @example
- * import { getPrisma } from './db.js';
+ * import { getPrisma } from "./db.js";
  * const prisma = getPrisma();
  * const users = await prisma.user.findMany();
  * @returns {PrismaClient} Prisma client instance
