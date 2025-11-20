@@ -81,9 +81,8 @@ For dev testing without proper Google OAuth, you can hardcode a session for dev 
 app.get("/dev-login", async (req, res) => {
   // Hardcoded dev user session with what you need for testing
   req.session.user = {
-    id: "dev-user-123",
-    name: "Dev User",
-    email: "dev@example.com",
+    id: "18461b29-0e83-4dd6-a309-874d2acdf045",
+    email: "dev@example.com"
   };
   res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
 });

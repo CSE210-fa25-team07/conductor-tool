@@ -32,7 +32,7 @@ export default router;
 ### Using Dynamic endpoint
 ```js
 app.get("/directory", (req, res) => {
-  cont courseId = req.params.courseId; // "123" if URL is /courses/123/directory
+  const courseId = req.params.courseId; // "123" if URL is /courses/123/directory
 
   // Render class directory for course with courseId "123"
 });
