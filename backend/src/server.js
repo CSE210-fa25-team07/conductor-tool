@@ -16,7 +16,7 @@ const PORT = 8081;
 app.use(express.json());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET,    // signs the session ID cookie
+  secret: process.env.SESSION_SECRET,  // signs the session ID cookie (for dev: you can change this to any random string to bypass)
   resave: false,             // don’t save session if nothing changed
   saveUninitialized: false,  // don’t create session until something is stored
   cookie: { secure: false }  // true if HTTPS/production
