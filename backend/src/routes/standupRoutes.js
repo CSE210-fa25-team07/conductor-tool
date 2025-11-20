@@ -1,6 +1,6 @@
 import express from "express";
 
-router = express.Router();
+const router = express.Router();
 
 // Define standup-related routes here
 

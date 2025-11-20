@@ -84,28 +84,7 @@ async function handleVerification() {
     return;
   }
 
-
   try {
-    // First, get user session to check email
-    const sessionResponse = await fetch("/auth/session", {
-      credentials: "include"
-    });
-
-    if (!sessionResponse.ok) {
-      alert("Session expired. Please log in again.");
-      window.location.href = "/";
-      return;
-    }
-
-    const sessionData = await sessionResponse.json();
-    const isUCSDEmail = sessionData.user.email.endsWith("@ucsd.edu");
-
-    if (!isUCSDEmail) {
-      // Non-UCSD user -> redirect to request access
-      window.location.href = "/auth/request-access";
-      return;
-    }
-
     // Call backend to verify code and create user
     const response = await fetch("/auth/verify", {
       method: "POST",
@@ -188,25 +167,7 @@ async function handleAccessRequest() {
     verificationCode: document.getElementById("verification-code").value
   };
 
-  // TODO: Send form data to backend API
-  // Example:
-  // try {
-  //   const response = await fetch('/api/access-request', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     credentials: 'include',
-  //     body: JSON.stringify(formData)
-  //   });
-  //
-  //   if (response.ok) {
-  //     showSuccessMessage();
-  //   } else {
-  //     showMessage("Failed to submit access request. Please try again.");
-  //   }
-  // } catch (error) {
-  //   console.error('Error submitting access request:', error);
-  //   showMessage("An error occurred. Please try again.");
-  // }
+  // TODO: POST to backend
 
   // For now, just show success message
   showSuccessMessage();
@@ -216,9 +177,9 @@ async function handleAccessRequest() {
  * Show success message after form submission
  */
 function showSuccessMessage() {
-  const container = document.querySelector(".container");
+  const form = document.querySelector(".form");
 
-  container.innerHTML = `
+  form.innerHTML = `
     <figure class="icon" aria-label="Success icon" style="background: #48bb78;">✓</figure>
     <h1 class="page-title">Request Submitted</h1>
     <p class="message">

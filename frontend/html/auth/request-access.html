@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Access - Conductor</title>
+    <link rel="stylesheet" href="../../css/components/global.css">
     <link rel="stylesheet" href="../../css/pages/auth/auth_stylesheet.css">
+
+    <!-- Google Fonts - Ecological Brutalism Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <header>
         <h1>Conductor Tool</h1>
     </header>
     <main>
-        <section class="container">
+        <section class="form">
             <figure class="icon" aria-label="Lock icon">🔒</figure>
             <h1 class="page-title">Access Restricted</h1>
             <p class="message">
@@ -20,7 +27,7 @@
 
             <article id="user-email-display"></article>
 
-            <aside class="info-box">
+            <aside class="card">
                 <h3>Need Access?</h3>
                 <p>
                     If you believe you should have access to this application, please fill out the access request form to contact your system administrator 
@@ -28,7 +35,7 @@
                 </p>
             </aside>
 
-            <aside class="info-box">
+            <aside class="card">
                 <h3>For UCSD Users</h3>
                 <p>
                     Please sign in again using your @ucsd.edu email address to access the system.
@@ -41,6 +48,9 @@
             </nav>
         </section>
     </main>
+    <footer>
+        <p>&copy; 2025 Conductor Tool. Course Management Platform.</p>
+    </footer>
 
     <script src="../../js/pages/auth/auth.js"></script>
 </body>

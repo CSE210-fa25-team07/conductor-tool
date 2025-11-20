@@ -36,15 +36,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dashboard", checkSession, (req, res) => {
-  const user = req.session.user;
-  const pictureUrl = user.picture;
 
-  res.send(`
-    <h1>Welcome, ${user.name}</h1>
-    <p>Email: ${user.email}</p>
-    <img src='${pictureUrl}' alt="Profile Picture" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';" />
-    <p><a href="/logout">Logout</a></p>
-  `);
+  // TODO: Change Express Session before redirect
+  res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
+
+  // const user = req.session.user;
+  // const pictureUrl = user.picture;
+
+  // res.send(`
+  //   <h1>Welcome, ${user.name}</h1>
+  //   <p>Email: ${user.email}</p>
+  //   <img src='${pictureUrl}' alt="Profile Picture" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';" />
+  //   <p><a href="/logout">Logout</a></p>
+  // `);
 });
 
 app.get("/logout", (req, res) => {
@@ -60,8 +64,7 @@ app.get("/logout", (req, res) => {
 app.get("/dev-login", async (req, res) => {
   // Hardcoded dev user session with what you need for testing
   req.session.user = {
-    id: "dev-user-123",
-    name: "Dev User",
+    id: "18461b29-0e83-4dd6-a309-874d2acdf045",
     email: "dev@example.com"
   };
   res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing

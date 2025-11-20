@@ -1,21 +1,5 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Global styles */
-
+/* General Auth Page Styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  color: #333;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -23,18 +7,6 @@ body {
 header {
     text-align: center;
     padding: 2rem 1rem;
-}
-
-header h1 {
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-header h1 a {
-    color: white;
-    text-decoration: none;
 }
 
 main {
@@ -62,52 +34,6 @@ footer {
     font-size: 0.875rem;
 }
 
-button {
-    width: 100%;
-    padding: 14px 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: white;
-    background: #667eea;
-    border: 2px solid #667eea;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-button:hover {
-    background: #5568d3;
-    border-color: #5568d3;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    transform: translateY(-1px);
-}
-
-button:active {
-    transform: translateY(0);
-}
-
-
-a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-a:hover {
-    color: #764ba2;
-    text-decoration: underline;
-}
-
-/* Login + Verification page styles */
-#login-card h2,
-#verification-card h2 {
-    color: #1a202c;
-    font-size: 1.875rem;
-    margin-bottom: 0.5rem;
-}
-
 #login-card > p:first-of-type,
 #verification-card > p:first-of-type {
     color: #718096;
@@ -127,7 +53,7 @@ a:hover {
     gap: 1rem;
 }
 
-#verification-code {
+/* #verification-code {
     width: 100%;
     padding: 14px 16px;
     font-size: 1rem;
@@ -137,13 +63,13 @@ a:hover {
     transition: all 0.2s ease;
     text-align: center;
     letter-spacing: 2px;
-}
+} */
 
-#verification-code:focus {
+/* #verification-code:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
+} */
 
 #verification-code::placeholder {
     letter-spacing: normal;
@@ -158,7 +84,7 @@ a:hover {
 }
 
 /* Request Access page styles */
-.container {
+.form {
     background: white;
     border-radius: 16px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -197,7 +123,7 @@ a:hover {
     margin-bottom: 24px;
 }
 
-.info-box {
+/* .info-box {
     background: #f7fafc;
     border-left: 4px solid #667eea;
     padding: 16px;
@@ -217,13 +143,13 @@ a:hover {
     color: #718096;
     font-size: 14px;
     line-height: 1.5;
-}
+} */
 
 .email-display {
     background: #edf2f7;
     padding: 12px;
     border-radius: 8px;
-    font-family: 'Courier New', monospace;
+    /* font-family: 'Courier New', monospace; */
     color: #2d3748;
     margin: 16px 0;
     word-break: break-all;
@@ -238,18 +164,24 @@ a:hover {
 
 .btn {
     flex: 1;
-    padding: 14px 24px;
+    /* padding: 14px 24px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; */
+    
     text-decoration: none;
     display: inline-block;
+    /* Center the text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.btn-primary {
+/* .btn-primary {
     background: #667eea;
     color: white;
 }
@@ -258,7 +190,7 @@ a:hover {
     background: #5568d3;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
+} */ 
 
 .btn-secondary {
     background: #e2e8f0;
@@ -304,20 +236,20 @@ a:hover {
 
 #access-request-form input {
     width: 100%;
-    padding: 14px 16px;
+    /* padding: 14px 16px;
     font-size: 1rem;
     font-family: inherit;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     transition: all 0.2s ease;
-    color: #2d3748;
+    color: #2d3748; */
 }
 
-#access-request-form input:focus {
+/* #access-request-form input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
+} */
 
 #access-request-form input::placeholder {
     color: #a0aec0;
