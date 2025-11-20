@@ -46,16 +46,6 @@ async function verifyCode(req, res) {
     });
   }
 
-  // Check if user already exists in database
-  const existingUser = await userService.getUserByEmail(profile.email);
-  if (existingUser) {
-    return res.status(200).json({
-      success: true,
-      message: "User already exists",
-      user: existingUser
-    });
-  }
-
   // Create user in database
   const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
   const firstName = profile.given_name || nameParts[0] || "Unknown";
