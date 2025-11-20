@@ -16,7 +16,7 @@ const router = express.Router();
  * @status IN USE
  */
 router.get("/verification", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/verification.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/auth/verification.html"));
 });
 
 /**
@@ -25,7 +25,7 @@ router.get("/verification", (req, res) => {
  * @status IN USE
  */
 router.get("/request-access", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-access.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/auth/request-access.html"));
 });
 
 /**
@@ -34,7 +34,7 @@ router.get("/request-access", (req, res) => {
  * @status IN USE
  */
 router.get("/request-form", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../frontend/html/auth/request-form.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/auth/request-form.html"));
 });
 
 export default router;
