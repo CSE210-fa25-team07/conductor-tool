@@ -13,15 +13,63 @@ const router = express.Router();
  * @returns {Object} 200 - User context
  * @returns {Object} 401 - Not authenticated
  */
-router.get("/context", async (req, res) => {
+function checkAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({
+      success: false,
+      error: "Not authenticated"
+    });
+  }
+  next();
+}
+
+router.get("/context", checkAuth, async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        error: "Not authenticated"
-      });
-    }
     return await standupService.getUserContext(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.post("/", checkAuth, async (req, res) => {
+  try {
+    return await standupService.createStandup(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.get("/me", checkAuth, async (req, res) => {
+  try {
+    return await standupService.getUserStandups(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.put("/:standupId", checkAuth, async (req, res) => {
+  try {
+    return await standupService.updateStandup(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.delete("/:standupId", checkAuth, async (req, res) => {
+  try {
+    return await standupService.deleteStandup(req, res);
   } catch (error) {
     res.status(500).json({
       success: false,
