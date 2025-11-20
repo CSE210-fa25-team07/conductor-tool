@@ -57,6 +57,7 @@ async function exchangeCodeForTokens(req, res) {
 
       if (existingUser) {
         // Case 1: User already exists -> redirect to dashboard
+        req.session.user = {id: existingUser.userUuid, email: existingUser.email, name: profile.name};
         return res.redirect("/dashboard");
       }
 

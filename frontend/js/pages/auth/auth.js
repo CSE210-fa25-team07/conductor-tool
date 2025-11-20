@@ -70,8 +70,8 @@ function handleGoogleLogin() {
  * Handles verification form submission by validating the user's code
  * and checking if the authenticated email belongs to UCSD.
  *
- * Retrieves the user session from `/auth/session`, confirms the email domain,
- * and sends the entered verification code to `/auth/verify`. Redirects to the
+ * Retrieves the user session from `v1/api/auth/session`, confirms the email domain,
+ * and sends the entered verification code to `v1/api/auth/verify`. Redirects to the
  * dashboard upon success or shows an alert on failure.
  */
 async function handleVerification() {
@@ -86,7 +86,7 @@ async function handleVerification() {
 
   try {
     // Call backend to verify code and create user
-    const response = await fetch("/auth/verify", {
+    const response = await fetch("/v1/api/auth/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -115,7 +115,7 @@ async function handleVerification() {
  */
 async function loadUserEmail() {
   try {
-    const response = await fetch("/auth/session", {
+    const response = await fetch("/v1/api/auth/session", {
       credentials: "include"
     });
 

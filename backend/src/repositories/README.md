@@ -11,28 +11,38 @@ Database queries. One file per table (roughly).
 
 ## Responsibilities
 
-- Execute SQL queries
+- Execute SQL queries (Prisma)
 - Return raw data
 - **NO business logic** (just CRUD)
 
 ## Pattern
 
 ```javascript
-import { db } from '../config/database.js';
+import { getPrisma } from "../utils/db.js";
 
-export const yourRepository = {
-  async insert(data) {
-    const query = 'INSERT INTO table (...) VALUES ($1, $2) RETURNING *;';
-    const result = await db.query(query, [data.field1, data.field2]);
-    return result.rows[0];
-  },
+/**
+ * Get all courses currently enrolled by a user
+ * @param {string} userUuid - The UUID of the user
+ * @returns {Promise<Array>} Array of course objects
+ * @throws {Error} If database query fails
+ */
+async function getCoursesByUserId(userUuid) {
+  const prisma = getPrisma();
 
-  async findById(id) {
-    const query = 'SELECT * FROM table WHERE id = $1;';
-    const result = await db.query(query, [id]);
-    return result.rows[0];
-  }
-};
+  const enrollments = await prisma.courseEnrollment.findMany({
+    where: {
+      userUuid: userUuid,
+      course: {
+        term: {
+          isActive: true
+        }
+      }
+    },
+    distinct: ["courseUuid"]
+  });
+
+  return enrollments.map(enrollment => enrollment.courseUuid);
+}
+
+export { getCoursesByUserId };
 ```
-
-**Always use parameterized queries** ($1, $2) to prevent SQL injection.

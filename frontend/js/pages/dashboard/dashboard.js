@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function updateProfileName() {
 
   try {
-    const response = await fetch("/auth/session", {
+    const response = await fetch("/v1/api/auth/session", {
       credentials: "include"
     });
 

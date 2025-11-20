@@ -109,7 +109,7 @@ conductor-tool/
 
 ## Rules
 
-1. **3-layer pattern:** Route → Controller → Service → Repository
+1. **3-layer pattern:** Route → Service → Repository
 2. **File naming:** Match your feature (`standupRoutes.js`, `standupService.js`)
 3. **Don't mix layers:** Business logic goes in services, SQL goes in repositories
 4. **Check folder READMEs** when unsure where code goes

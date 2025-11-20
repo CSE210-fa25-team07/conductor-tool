@@ -57,6 +57,7 @@ async function verifyCode(req, res) {
     email: profile.email
   });
 
+  req.session.user = {id: newUser.userUuid, email: newUser.email, name: profile.name};
   res.status(200).json({
     success: true,
     message: "User verified and created successfully",

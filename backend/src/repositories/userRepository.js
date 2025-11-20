@@ -5,17 +5,9 @@
  * Provides CRUD operations for user management.
  */
 
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
-import { getPrisma } from '../utils/db.js';
+import { getPrisma } from "../utils/db.js";
 
 const prisma = getPrisma();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const USERS_FILE = path.join(__dirname, "../../../database/users.json");
 
 /**
  * Add a new user to the database
@@ -28,7 +20,7 @@ async function addUser(user) {
   const existingUser = await prisma.user.findUnique({
     where: { email: user.email }
   });
-  
+
   if (existingUser) {
     throw new Error("User with this email already exists");
   }

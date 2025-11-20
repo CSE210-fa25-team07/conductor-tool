@@ -11,7 +11,7 @@ Business logic. One file per team, plus shared services.
 
 ## Shared Services (Used by Multiple Teams)
 
-- `githubService.js` - Standup team (GitHub API integration)
+- `userService.js` - Get user information
 - `qrCodeService.js` - Attendance team (QR code generation)
 - `notificationService.js` - Standup team (Slack/Email/SMS)
 
@@ -21,19 +21,3 @@ Business logic. One file per team, plus shared services.
 - Call repositories for data
 - Call external APIs
 - **NO SQL queries** (that's repositories)
-
-## Pattern
-
-```javascript
-import { yourRepository } from '../repositories/yourRepository.js';
-
-export const yourService = {
-  async doSomething(data) {
-    // Validate
-    if (!data.field) throw new Error('Missing field');
-    
-    // Save to DB
-    return yourRepository.insert(data);
-  }
-};
-```

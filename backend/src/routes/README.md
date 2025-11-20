@@ -1,6 +1,6 @@
 # Routes
 
-HTTP route definitions. One file per team.
+HTTP route definitions. Two types: API endpoints and Web serving endpoints
 
 ## Files
 
@@ -10,8 +10,8 @@ HTTP route definitions. One file per team.
 - `attendanceRoutes.js` - Attendance team
 - `standupRoutes.js` - Standup team
 
-## Pattern
-Refer to `authRoutes.js` for examples of how we can use HTTP endpoints.
+## Web Pattern
+Refer to `web/authRoutes.js` for examples of how we can use HTTP endpoints to serve web pages.
 ```javascript
 import express from "express";
 
@@ -35,5 +35,28 @@ app.get("/directory", (req, res) => {
   const courseId = req.params.courseId; // "123" if URL is /courses/123/directory
 
   // Render class directory for course with courseId "123"
+});
+```
+
+## API Pattern
+We use prefix `/v1/api/` for our current API endpoints. Refer to `/api/authApi.js` for examples of how we can use API endpoints.
+```js
+/**
+ * Get current session user
+ *
+ * @name GET /v1/api/auth/session
+ * @returns {Object} 200 - Current user from session
+ * @returns {Object} 401 - Not authenticated
+ * @status IN USE - Frontend fetches current user session data
+ */
+router.get("/session", async (req, res) => {
+  try {
+    return await authService.getSession(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 ```

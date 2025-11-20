@@ -53,17 +53,7 @@ npm run db:generate
 
 This creates type-safe database access functions based on your schema.
 
-### 5. Test Connection
-
-Verify everything works:
-
-```bash
-npm run db:test
-```
-
-This runs Prisma queries and shows example usage patterns.
-
-### 6. (Optional) Open Prisma Studio
+### 5. (Optional) Open Prisma Studio
 
 Explore your database with a visual interface:
 

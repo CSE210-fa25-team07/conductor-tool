@@ -2,6 +2,6 @@ import express from "express";
 
 const router = express.Router();
 
-// Define directory-related routes here
+// Define directory-related web routes here
 
 export default router;

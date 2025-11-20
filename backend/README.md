@@ -7,6 +7,7 @@ Node.js + Express API. Port 8081.
 - `src/routes/` - HTTP routes (one file per team)
 - `src/services/` - Business logic (one file per team)
 - `src/repositories/` - Database queries (one file per table)
+- `src/validators/` - Validation logic for any types of input
 - `tests/` - Unit and integration tests
 
 ## 3-Layer Pattern
@@ -28,10 +29,10 @@ The `express` session keeps track of the logged-in user with information that th
 });
 ```
 ## Accessing Session Data through Frontend
-Calling fetch on the endpoint will query a response with the session information. Example below
+Calling fetch on the API endpoint will query a response with the session information. Example below
 #### frontend/js/pages/auth/auth.js
 ```js
-const sessionResponse = await fetch("/auth/session", {
+const sessionResponse = await fetch("/v1/api/auth/session", {
       credentials: "include"
     });
 
@@ -53,10 +54,11 @@ For dev testing without proper Google OAuth, you can hardcode a session for dev 
  * NOT FOR PRODUCTION USE.
  */
 app.get("/dev-login", async (req, res) => {
-  // Hardcoded dev user session with what you need for testing
+  // Hardcode dev user session with what you need for testing
   req.session.user = {
     id: "18461b29-0e83-4dd6-a309-874d2acdf045",
-    email: "dev@example.com"
+    email: "dev@example.com",
+    name: "John Doe"
   };
   res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
 });

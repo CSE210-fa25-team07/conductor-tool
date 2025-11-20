@@ -1,7 +1,8 @@
 import express from "express";
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes from "./routes/web/authRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+import apiRoutes from "./routes/apiRoutes.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -36,19 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dashboard", checkSession, (req, res) => {
-
-  // TODO: Change Express Session before redirect
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
-
-  // const user = req.session.user;
-  // const pictureUrl = user.picture;
-
-  // res.send(`
-  //   <h1>Welcome, ${user.name}</h1>
-  //   <p>Email: ${user.email}</p>
-  //   <img src='${pictureUrl}' alt="Profile Picture" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';" />
-  //   <p><a href="/logout">Logout</a></p>
-  // `);
 });
 
 app.get("/logout", (req, res) => {
@@ -62,10 +51,11 @@ app.get("/logout", (req, res) => {
  * NOT FOR PRODUCTION USE.
  */
 app.get("/dev-login", async (req, res) => {
-  // Hardcoded dev user session with what you need for testing
+  // Hardcode dev user session with what you need for testing
   req.session.user = {
     id: "18461b29-0e83-4dd6-a309-874d2acdf045",
-    email: "dev@example.com"
+    email: "dev@example.com",
+    name: "John Doe"
   };
   res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
 });
@@ -75,5 +65,7 @@ app.use("/auth", checkSession, authRoutes);
 app.use("/google", googleRoutes);
 
 app.use("/courses/:couresId", checkSession, courseRoutes);
+
+app.use("/v1/api/", apiRoutes);
 
 app.listen(PORT);
