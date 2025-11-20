@@ -168,7 +168,7 @@ async function handleAccessRequest() {
   };
 
   // TODO: POST to backend
-  
+
   // For now, just show success message
   showSuccessMessage();
 }

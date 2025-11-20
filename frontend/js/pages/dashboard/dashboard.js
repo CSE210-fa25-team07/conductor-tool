@@ -5,17 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==================== CHECK USER ====================
   // TODO: Connect backend to get user
   updateProfileName();
-  createUserDropdown('student');
+  createUserDropdown("student");
 
   const userProfileTrigger = document.getElementById("user-profile-trigger");
   const userDropdown = document.getElementById("user-dropdown");
-  
+
   if (userProfileTrigger && userDropdown) {
     userProfileTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
       userDropdown.classList.toggle("show");
     });
-    
+
     // Close dropdown when clicking outside
     document.addEventListener("click", () => {
       userDropdown.classList.remove("show");
@@ -44,21 +44,21 @@ async function updateProfileName() {
     if (response.ok) {
       const data = await response.json();
       if (data.user && data.user.name) {
-          const userAvatar = document.querySelector('.user-avatar');
-          const userName = document.querySelector('.user-name');
-          const name = data.user.name
+        const userAvatar = document.querySelector(".user-avatar");
+        const userName = document.querySelector(".user-name");
+        const name = data.user.name;
 
-          // Change the avatar initials
-          userAvatar.textContent = name.split(' ').map(word => word[0]).join('').toUpperCase(); 
+        // Change the avatar initials
+        userAvatar.textContent = name.split(" ").map(word => word[0]).join("").toUpperCase();
 
-          // Change the user name
-          userName.textContent = name;
+        // Change the user name
+        userName.textContent = name;
       }
     }
   } catch (error) {
     alert("Error fetching user session:", error);
   }
-  
+
 }
 /**
  * Load courses from backend and render them
@@ -95,12 +95,12 @@ async function loadCourses() {
         attendance: 92,
         instructor: "Dr. Williams",
         students: 38
-      },
+      }
     ];
-    
+
     renderCourses(courses);
-    
-  } catch (error) {
+
+  } catch {
     showErrorState();
   }
 }
@@ -112,35 +112,35 @@ async function loadCourses() {
  * @param usertype - Either professor, admin, or student
  */
 function createUserDropdown(usertype) {
-  const dropdown = document.getElementById('user-dropdown');
-  
+  const dropdown = document.getElementById("user-dropdown");
+
   if (!dropdown) return;
-  
+
   // Clear existing content
-  dropdown.innerHTML = '';
-  
+  dropdown.innerHTML = "";
+
   // Define menu items
   let menuItems;
 
-  if (usertype === 'student') {
+  if (usertype === "student") {
     menuItems = [
-      { text: 'Profile', href: 'html/profile.html' },
-      { text: 'Log Out', href: '/logout' }
+      { text: "Profile", href: "html/profile.html" },
+      { text: "Log Out", href: "/logout" }
     ];
-  } else if (usertype === 'professor') {
+  } else if (usertype === "professor") {
     menuItems = [
-      { text: 'Profile', href: 'html/profile.html' },
-      { text: 'Manage Courses', href: 'html/manage.html' },
-      { text: 'Log Out', href: '/logout' }
+      { text: "Profile", href: "html/profile.html" },
+      { text: "Manage Courses", href: "html/manage.html" },
+      { text: "Log Out", href: "/logout" }
     ];
   }
-  
+
 
   // Create and append each menu item
   menuItems.forEach(item => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = item.href;
-    link.className = 'dropdown-item';
+    link.className = "dropdown-item";
     link.textContent = item.text;
     dropdown.appendChild(link);
   });
@@ -152,7 +152,7 @@ function createUserDropdown(usertype) {
  */
 function renderCourses(courses) {
   const courseGrid = document.getElementById("course-grid");
-  
+
   // Clear existing content
   courseGrid.innerHTML = "";
 
@@ -183,10 +183,10 @@ function createCourseCard(course) {
   // Create main card article
   const article = document.createElement("article");
   article.className = "course-card";
-  
+
   // Extract department code (first part of course code)
   const deptCode = course.code.split(" ")[0];
-  
+
   // Build card HTML
   article.innerHTML = `
     <header class="course-card-header">
@@ -217,12 +217,12 @@ function createCourseCard(course) {
       <span class="course-students">${course.students} students</span>
     </footer>
   `;
-  
-//   // TODO: Add click handler to navigate to course details
-//   article.addEventListener("click", () => {
-//     handleCourseClick(course);
-//   });
-  
+
+  // TODO: Add click handler to navigate to course details
+  // article.addEventListener("click", () => {
+  //   handleCourseClick(course);
+  // });
+
   return article;
 }
 
@@ -233,7 +233,7 @@ function createCourseCard(course) {
 function createEmptyStateCard() {
   const article = document.createElement("article");
   article.className = "course-card empty-state";
-  
+
   article.innerHTML = `
     <section class="empty-state-section">
       <span class="empty-state-icon">➕</span>
@@ -241,11 +241,11 @@ function createEmptyStateCard() {
       <p class="empty-state-description">Click to enroll in a new course</p>
     </section>
   `;
-  
+
   // TODO: Add click handler (Depending on either student or professor)
-//   article.addEventListener("click", () => {
-//     handleAddCourse();
-//   });
-  
+  // article.addEventListener("click", () => {
+  //   handleAddCourse();
+  // });
+
   return article;
 }
