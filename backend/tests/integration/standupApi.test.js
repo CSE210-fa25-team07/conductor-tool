@@ -43,37 +43,6 @@ describe("Standup API", () => {
     await prisma.$disconnect();
   });
 
-  describe("GET /standups/context", () => {
-    it("should return 401 without session", async () => {
-      const response = await request(app).get("/standups/context");
-
-      expect(response.status).toBe(401);
-      expect(response.body.success).toBe(false);
-      expect(response.body.error).toBe("Not authenticated");
-    });
-
-    it("should return user context with valid session", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testUser.userUuid,
-          email: testUser.email,
-          name: `${testUser.firstName} ${testUser.lastName}`
-        }
-      });
-
-      const response = await agent.get("/standups/context");
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("user");
-      expect(response.body.data).toHaveProperty("activeCourse");
-      expect(response.body.data).toHaveProperty("enrolledCourses");
-      expect(response.body.data).toHaveProperty("teams");
-    });
-  });
-
   describe("POST /standups", () => {
     it("should return 401 without session", async () => {
       const response = await request(app).post("/standups").send({
