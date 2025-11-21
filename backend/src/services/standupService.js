@@ -4,33 +4,7 @@
 
 import * as standupRepository from "../repositories/standupRepository.js";
 import * as standupDto from "../dtos/standupDto.js";
-
-/**
- * Get user context with role and course information
- * @param {Object} req
- * @param {Object} res
- * @returns {Promise<void>}
- */
-async function getUserContext(req, res) {
-  const userId = req.session.user.id;
-  const courseId = req.query.courseId;
-
-  const { user, enrollments, teamMemberships } =
-    await standupRepository.getUserContext(userId, courseId);
-
-  const contextData = standupDto.toUserContextDto(
-    user,
-    enrollments,
-    teamMemberships,
-    req.session.user.name,
-    courseId
-  );
-
-  return res.status(200).json({
-    success: true,
-    data: contextData
-  });
-}
+import * as userContextRepository from "../repositories/userContextRepository.js";
 
 async function createStandup(req, res) {
   const userId = req.session.user.id;
@@ -43,7 +17,7 @@ async function createStandup(req, res) {
     });
   }
 
-  const { teamMemberships } = await standupRepository.getUserContext(userId);
+  const { teamMemberships } = await userContextRepository.getUserContext(userId);
   const isTeamMember = teamMemberships.some(tm => tm.team.teamUuid === teamUuid);
 
   if (!isTeamMember) {
@@ -208,7 +182,6 @@ async function getTAOverview(req, res) {
 }
 
 export {
-  getUserContext,
   createStandup,
   getUserStandups,
   updateStandup,

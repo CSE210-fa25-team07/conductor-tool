@@ -16,19 +16,6 @@ async function handleResponse(response) {
   return result.data;
 }
 
-export async function getUserContext(courseId = null) {
-  const url = courseId
-    ? `${API_BASE}/context?courseId=${courseId}`
-    : `${API_BASE}/context`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    credentials: "include"
-  });
-
-  return handleResponse(response);
-}
-
 export async function createStandup(standupData) {
   const response = await fetch(API_BASE, {
     method: "POST",

@@ -8,10 +8,7 @@ import * as standupService from "../../services/standupService.js";
 const router = express.Router();
 
 /**
- * Get user context
- * @name GET /v1/api/standups/context
- * @returns {Object} 200 - User context
- * @returns {Object} 401 - Not authenticated
+ * Middleware to check if user is authenticated
  */
 function checkAuth(req, res, next) {
   if (!req.session.user) {
@@ -22,17 +19,6 @@ function checkAuth(req, res, next) {
   }
   next();
 }
-
-router.get("/context", checkAuth, async (req, res) => {
-  try {
-    return await standupService.getUserContext(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
 
 router.post("/", checkAuth, async (req, res) => {
   try {
