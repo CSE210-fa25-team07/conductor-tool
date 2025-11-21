@@ -1,0 +1,44 @@
+<template id="member-card-template">
+  <div class="member-card">
+    <div class="member-header">
+      <div class="member-name">{{firstName}} {{lastName}}</div>
+      <span class="status-badge {{statusClass}}">
+        {{statusText}}
+      </span>
+    </div>
+
+    <div class="member-latest">
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Latest:</strong> {{latestDate}}
+        {{#moodEmoji}}{{moodEmoji}}{{/moodEmoji}}
+      </div>
+
+      {{#hasLatestStandup}}
+      <div style="font-size: 0.85rem; opacity: 0.8;">
+        <strong>Working on:</strong>
+        <div style="margin-top: 0.25rem;">
+          {{whatNextTruncated}}
+        </div>
+      </div>
+
+      {{#blockers}}
+      <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem; padding: 0.5rem; background-color: #ffebee; border-left: 3px solid #c62828; border-radius: 4px;">
+        <strong>Blocker:</strong> {{blockersTruncated}}
+      </div>
+      {{/blockers}}
+      {{/hasLatestStandup}}
+
+      {{^hasLatestStandup}}
+      <div style="font-size: 0.85rem; opacity: 0.6; font-style: italic;">
+        No recent activity
+      </div>
+      {{/hasLatestStandup}}
+    </div>
+
+    {{#standupCount}}
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--color-light-matcha); font-size: 0.85rem; color: var(--color-forest-green); opacity: 0.7;">
+      {{standupCount}} standup{{standupPlural}} in last 7 days
+    </div>
+    {{/standupCount}}
+  </div>
+</template>

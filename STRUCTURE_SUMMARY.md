@@ -55,12 +55,4 @@ One feature = matching files across layers:
 
 ---
 
-## Where to Learn More
-
-- **[codebase_structure.md](specs/code_guides/codebase_structure.md)** - Quick reference with patterns
-- **[subteam_expectations.md](specs/code_guides/subteam_expectations.md)** - Team ownership + dependencies
-- **Folder READMEs** - Check any folder for specific guidance
-
----
-
 **Build your features however you want. The structure just keeps things organized.**

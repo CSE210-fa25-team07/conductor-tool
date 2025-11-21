@@ -49,7 +49,37 @@ async function getUserByEmail(email) {
   return user;
 }
 
-export {
-  addUser,
-  getUserByEmail
-};
+/**
+ * Get all users from the database
+ * @returns {Promise<Array>} Array of all users
+ * @status DEV ONLY - For development login selection
+ */
+async function getAllUsers() {
+  const users = await prisma.user.findMany({
+    select: {
+      userUuid: true,
+      email: true,
+      firstName: true,
+      lastName: true
+    },
+    orderBy: {
+      email: "asc"
+    }
+  });
+  return users;
+}
+
+/**
+ * Get a user by UUID
+ * @param {string} userUuid - User UUID to search for
+ * @returns {Promise<Object|null>} User object or null if not found
+ * @status DEV ONLY - For development login selection
+ */
+async function getUserByUuid(userUuid) {
+  const user = await prisma.user.findUnique({
+    where: { userUuid: userUuid }
+  });
+  return user;
+}
+
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid };

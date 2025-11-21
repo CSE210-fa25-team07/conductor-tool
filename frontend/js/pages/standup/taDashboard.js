@@ -1,386 +1,281 @@
 /**
- * @fileoverview TA Multi-Team Dashboard - Shows overview of all teams
- * NO STYLING - Pure HTML elements only
- * @module standup/taDashboard
+ * @fileoverview TA Dashboard View
+ * Multi-team overview for instructors and TAs
  */
 
-import {
-  mockTeams,
-  mockStandups,
-  getUserById,
-  getStandupsByTeam,
-  mockUsers,
-  getGithubStatsByTeam
-} from "./mockData.js";
+import { getTAOverview } from "../../api/standupApi.js";
+import { getActiveCourse, getEnrolledCourses, isProfessorOrTA } from "../../utils/userContext.js";
+import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
+
+let selectedCourseId = null;
 
 /**
- * Renders the TA dashboard with multi-team overview and alerts
- * @function renderTADashboard
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the TA dashboard view
+ * @param {HTMLElement} container - Container to render into
  */
-export function renderTADashboard(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "TA Dashboard - Multi-Team Overview";
-  container.appendChild(header);
-
-  // TA info
-  const taInfo = document.createElement("p");
-  taInfo.textContent = "Logged in as: Eva Rodriguez (TA)";
-  container.appendChild(taInfo);
-
-  const dateInfo = document.createElement("p");
-  dateInfo.textContent = `Date: ${new Date().toLocaleDateString()}`;
-  container.appendChild(dateInfo);
-
-  container.appendChild(document.createElement("hr"));
-
-  // Priority alerts section
-  renderPriorityAlerts(container);
-
-  container.appendChild(document.createElement("hr"));
-
-  // Team overview table
-  renderTeamOverview(container);
-
-  container.appendChild(document.createElement("hr"));
-
-  // At-risk students section
-  renderAtRiskStudents(container);
-
-  container.appendChild(document.createElement("hr"));
-
-  // Detailed team drill-down
-  renderTeamDrillDown(container);
-}
-
-function renderPriorityAlerts(container) {
-  const alertsSection = document.createElement("div");
-
-  const alertsHeader = document.createElement("h2");
-  alertsHeader.textContent = "🚨 Priority Alerts";
-  alertsSection.appendChild(alertsHeader);
-
-  // Active blockers
-  const activeBlockers = mockStandups.filter(s => s.blockers && s.blockers.trim() !== "");
-
-  const blockersHeader = document.createElement("h3");
-  blockersHeader.textContent = `Active Blockers (${activeBlockers.length})`;
-  alertsSection.appendChild(blockersHeader);
-
-  if (activeBlockers.length === 0) {
-    const noBlockers = document.createElement("p");
-    noBlockers.textContent = "No active blockers!";
-    alertsSection.appendChild(noBlockers);
-  } else {
-    const blockerList = document.createElement("ul");
-    activeBlockers.forEach(standup => {
-      const user = getUserById(standup.user_uuid);
-      const team = mockTeams.find(t => t.team_uuid === standup.team_uuid);
-
-      const listItem = document.createElement("li");
-
-      const hoursSince = Math.floor((new Date() - new Date(standup.date_submitted)) / (1000 * 60 * 60));
-      const isEscalated = hoursSince >= 4;
-
-      listItem.textContent = `${isEscalated ? "⚠️ ESCALATED" : "🔴"} ${user.name} (${team.name}): ${standup.blockers} - ${hoursSince}h ago`;
-
-      const viewBtn = document.createElement("button");
-      viewBtn.textContent = "View Details";
-      viewBtn.onclick = () => {
-        alert(`Blocker details:\n\nStudent: ${user.name}\nTeam: ${team.name}\nBlocker: ${standup.blockers}\n\nTime: ${hoursSince} hours ago\nStatus: ${isEscalated ? "ESCALATED" : "Active"}`);
-      };
-
-      listItem.appendChild(document.createElement("br"));
-      listItem.appendChild(viewBtn);
-
-      blockerList.appendChild(listItem);
-    });
-    alertsSection.appendChild(blockerList);
+export async function render(container) {
+  // Check if user has TA/Professor role
+  if (!isProfessorOrTA()) {
+    container.innerHTML = await renderUnauthorized();
+    return;
   }
 
-  // Sentiment drops
-  const sentimentHeader = document.createElement("h3");
-  sentimentHeader.textContent = "Recent Sentiment Drops";
-  alertsSection.appendChild(sentimentHeader);
+  const enrolledCourses = getEnrolledCourses();
+  const activeCourse = getActiveCourse();
 
-  const lowSentiment = mockStandups.filter(s => s.sentiment_score < 0);
-
-  if (lowSentiment.length === 0) {
-    const noDrops = document.createElement("p");
-    noDrops.textContent = "No significant sentiment drops detected.";
-    alertsSection.appendChild(noDrops);
-  } else {
-    const sentimentList = document.createElement("ul");
-    lowSentiment.forEach(standup => {
-      const user = getUserById(standup.user_uuid);
-      const team = mockTeams.find(t => t.team_uuid === standup.team_uuid);
-
-      const listItem = document.createElement("li");
-      listItem.textContent = `${user.name} (${team.name}): ${standup.sentiment_emoji} Score: ${standup.sentiment_score}`;
-
-      sentimentList.appendChild(listItem);
-    });
-    alertsSection.appendChild(sentimentList);
-  }
-
-  // Missing submissions
-  const missingHeader = document.createElement("h3");
-  missingHeader.textContent = "Missing Submissions (Today)";
-  alertsSection.appendChild(missingHeader);
-
-  const missingText = document.createElement("p");
-  missingText.textContent = "[MOCK: Would show students who haven't submitted today]";
-  alertsSection.appendChild(missingText);
-
-  container.appendChild(alertsSection);
-}
-
-function renderTeamOverview(container) {
-  const overviewSection = document.createElement("div");
-
-  const overviewHeader = document.createElement("h2");
-  overviewHeader.textContent = "Team Health Overview";
-  overviewSection.appendChild(overviewHeader);
-
-  // Create table
-  const table = document.createElement("table");
-  table.border = "1";
-
-  // Table header
-  const thead = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-
-  ["Team Name", "GitHub Org", "Commits (7d)", "PRs", "Avg Sentiment", "Blockers", "Status", "Actions"].forEach(header => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  // Table body
-  const tbody = document.createElement("tbody");
-
-  mockTeams.forEach(team => {
-    const teamStandups = getStandupsByTeam(team.team_uuid);
-    const avgSentiment = teamStandups.length > 0
-      ? (teamStandups.reduce((sum, s) => sum + s.sentiment_score, 0) / teamStandups.length).toFixed(2)
-      : "N/A";
-
-    const activeBlockers = teamStandups.filter(s => s.blockers && s.blockers.trim() !== "").length;
-
-    // GitHub stats
-    const githubStats = getGithubStatsByTeam(team.team_uuid, 7);
-
-    // Determine status based on both sentiment and GitHub activity
-    let status = "✅ Healthy";
-    if (activeBlockers > 0) {
-      status = "⚠️ Needs Attention";
-    } else if (githubStats.total_commits < 5) {
-      status = "⚠️ Low GitHub Activity";
-    } else if (avgSentiment < 0) {
-      status = "⚠️ Low Morale";
-    }
-
-    const row = document.createElement("tr");
-
-    // Team name
-    const nameCell = document.createElement("td");
-    nameCell.textContent = team.name;
-    row.appendChild(nameCell);
-
-    // GitHub org
-    const orgCell = document.createElement("td");
-    orgCell.textContent = team.github_org || "Not linked";
-    row.appendChild(orgCell);
-
-    // Commits (7 days)
-    const commitsCell = document.createElement("td");
-    commitsCell.textContent = githubStats.total_commits;
-    row.appendChild(commitsCell);
-
-    // PRs
-    const prsCell = document.createElement("td");
-    prsCell.textContent = `${githubStats.prs_open} open, ${githubStats.prs_merged} merged`;
-    row.appendChild(prsCell);
-
-    // Avg sentiment
-    const sentimentCell = document.createElement("td");
-    sentimentCell.textContent = avgSentiment;
-    row.appendChild(sentimentCell);
-
-    // Active blockers
-    const blockersCell = document.createElement("td");
-    blockersCell.textContent = activeBlockers;
-    row.appendChild(blockersCell);
-
-    // Status
-    const statusCell = document.createElement("td");
-    statusCell.textContent = status;
-    row.appendChild(statusCell);
-
-    // Actions
-    const actionsCell = document.createElement("td");
-    const viewDetailsBtn = document.createElement("button");
-    viewDetailsBtn.textContent = "View Team";
-    viewDetailsBtn.onclick = () => {
-      scrollToTeamDetails(team.team_uuid);
-    };
-    actionsCell.appendChild(viewDetailsBtn);
-    row.appendChild(actionsCell);
-
-    tbody.appendChild(row);
-  });
-
-  table.appendChild(tbody);
-  overviewSection.appendChild(table);
-
-  container.appendChild(overviewSection);
-}
-
-function renderAtRiskStudents(container) {
-  const atRiskSection = document.createElement("div");
-
-  const atRiskHeader = document.createElement("h2");
-  atRiskHeader.textContent = "At-Risk Students (Auto-Detected)";
-  atRiskSection.appendChild(atRiskHeader);
-
-  const explanation = document.createElement("p");
-  explanation.textContent = "Students detected as at-risk based on: low sentiment, unresolved blockers, low GitHub activity, or GitHub not connected";
-  atRiskSection.appendChild(explanation);
-
-  // GitHub connection status
-  const githubNotConnected = mockUsers.filter(u => u.role === "student" && !u.github_connected);
-  if (githubNotConnected.length > 0) {
-    const githubHeader = document.createElement("h3");
-    githubHeader.textContent = "⚠️ GitHub Not Connected";
-    atRiskSection.appendChild(githubHeader);
-
-    const githubList = document.createElement("ul");
-    githubNotConnected.forEach(user => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${user.name} - Cannot track GitHub activity`;
-      githubList.appendChild(listItem);
-    });
-    atRiskSection.appendChild(githubList);
-  }
-
-  // Mock at-risk detection
-  const atRiskStudents = mockStandups.filter(s =>
-    s.sentiment_score < 0 || (s.blockers && s.blockers.trim() !== "")
+  // Filter courses where user is TA or Professor
+  const teachingCourses = enrolledCourses.filter(course =>
+    isProfessorOrTA(course.courseUuid)
   );
 
-  if (atRiskStudents.length === 0) {
-    const noRisk = document.createElement("p");
-    noRisk.textContent = "No at-risk students detected!";
-    atRiskSection.appendChild(noRisk);
-  } else {
-    const riskList = document.createElement("ul");
+  if (teachingCourses.length === 0) {
+    container.innerHTML = await renderNoCourses();
+    return;
+  }
 
-    // Get unique users
-    const uniqueUsers = [...new Set(atRiskStudents.map(s => s.user_uuid))];
+  // Select active course or first teaching course
+  if (!selectedCourseId) {
+    selectedCourseId = activeCourse?.courseUuid || teachingCourses[0].courseUuid;
+  }
 
-    uniqueUsers.forEach(userId => {
-      const user = getUserById(userId);
-      const userStandups = atRiskStudents.filter(s => s.user_uuid === userId);
+  const selectedCourse = teachingCourses.find(c => c.courseUuid === selectedCourseId)
+    || teachingCourses[0];
+  selectedCourseId = selectedCourse.courseUuid;
 
-      const listItem = document.createElement("li");
+  // Load page template
+  const pageHTML = await loadTemplate("standup", "taDashboard");
+  container.innerHTML = pageHTML;
 
-      const reasons = [];
-      if (userStandups.some(s => s.sentiment_score < 0)) reasons.push("Low sentiment");
-      if (userStandups.some(s => s.blockers && s.blockers.trim() !== "")) reasons.push("Active blocker");
+  // Insert course selector if multiple courses
+  const courseSelectorPlaceholder = document.getElementById("course-select-placeholder");
+  if (courseSelectorPlaceholder && teachingCourses.length > 1) {
+    courseSelectorPlaceholder.outerHTML = `
+      <div style="margin-bottom: 1rem;">
+        <label for="course-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
+          Select Course:
+        </label>
+        <select id="course-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
+          ${teachingCourses.map(course => `
+            <option value="${course.courseUuid}" ${course.courseUuid === selectedCourseId ? "selected" : ""}>
+              ${course.courseCode} - ${course.courseName}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+    `;
+  }
 
-      listItem.textContent = `${user.name} - Risk factors: ${reasons.join(", ")}`;
+  // Update selected course info
+  const selectedCourseInfo = document.getElementById("selected-course-info");
+  if (selectedCourseInfo) {
+    selectedCourseInfo.textContent = `${selectedCourse.courseCode} - ${selectedCourse.courseName}`;
+  }
 
-      const reachOutBtn = document.createElement("button");
-      reachOutBtn.textContent = "Send Check-in Email";
-      reachOutBtn.onclick = () => {
-        alert(`Check-in email sent to ${user.name}! (mock action)`);
-      };
+  // Attach course selector listener
+  if (teachingCourses.length > 1) {
+    const courseSelect = document.getElementById("course-select");
+    courseSelect?.addEventListener("change", async (e) => {
+      selectedCourseId = e.target.value;
+      await loadCourseOverview();
+    });
+  }
 
-      listItem.appendChild(document.createElement("br"));
-      listItem.appendChild(reachOutBtn);
+  // Load course data
+  await loadCourseOverview();
+}
 
-      riskList.appendChild(listItem);
+/**
+ * Load course overview data
+ */
+async function loadCourseOverview() {
+  const contentDiv = document.getElementById("ta-content");
+
+  try {
+    contentDiv.innerHTML = "<div class=\"loading-message\">Loading course overview...</div>";
+
+    // Get last 7 days of data
+    const endDate = new Date().toISOString().split("T")[0];
+    const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+    const overview = await getTAOverview(selectedCourseId, {
+      startDate,
+      endDate
     });
 
-    atRiskSection.appendChild(riskList);
-  }
+    // Calculate statistics
+    const stats = calculateStatistics(overview);
 
-  container.appendChild(atRiskSection);
-}
+    // Render stat cards
+    const statCardsHTML = await renderComponents("standup/statCard", [
+      { value: stats.totalTeams, label: "Total Teams" },
+      { value: stats.totalStudents, label: "Total Students" },
+      { value: stats.totalStandups, label: "Standups (7 days)" },
+      { value: `${stats.avgSubmissionRate}%`, label: "Avg Submission Rate" }
+    ]);
 
-function renderTeamDrillDown(container) {
-  const drillDownSection = document.createElement("div");
+    if (overview.teams && overview.teams.length > 0) {
+      // Render team cards
+      const teamCardsHTML = await renderComponents(
+        "standup/teamCard",
+        overview.teams.map(team => prepareTeamCardData(team))
+      );
 
-  const drillDownHeader = document.createElement("h2");
-  drillDownHeader.textContent = "Team Details Drill-Down";
-  drillDownSection.appendChild(drillDownHeader);
-
-  mockTeams.forEach(team => {
-    const teamDiv = document.createElement("div");
-    teamDiv.id = `team-details-${team.team_uuid}`;
-
-    const teamHeader = document.createElement("h3");
-    teamHeader.textContent = team.name;
-    teamDiv.appendChild(teamHeader);
-
-    const teamStandups = getStandupsByTeam(team.team_uuid);
-
-    if (teamStandups.length === 0) {
-      const noStandups = document.createElement("p");
-      noStandups.textContent = "No standups submitted for this team yet.";
-      teamDiv.appendChild(noStandups);
+      contentDiv.innerHTML = `
+        <div class="ta-stats">
+          ${statCardsHTML}
+        </div>
+        <div class="team-list">
+          ${teamCardsHTML}
+        </div>
+      `;
     } else {
-      // Recent standups summary
-      const recentHeader = document.createElement("h4");
-      recentHeader.textContent = "Recent Activity:";
-      teamDiv.appendChild(recentHeader);
-
-      const summaryList = document.createElement("ul");
-
-      const sortedStandups = [...teamStandups]
-        .sort((a, b) => new Date(b.date_submitted) - new Date(a.date_submitted))
-        .slice(0, 5); // Show last 5
-
-      sortedStandups.forEach(standup => {
-        const user = getUserById(standup.user_uuid);
-        const listItem = document.createElement("li");
-        listItem.textContent = `${user.name} - ${new Date(standup.date_submitted).toLocaleDateString()} - ${standup.sentiment_emoji}`;
-
-        if (standup.blockers && standup.blockers.trim() !== "") {
-          listItem.textContent += " 🚨 HAS BLOCKER";
-        }
-
-        summaryList.appendChild(listItem);
-      });
-
-      teamDiv.appendChild(summaryList);
-
-      const viewFullBtn = document.createElement("button");
-      viewFullBtn.textContent = "View Full Team Dashboard";
-      viewFullBtn.onclick = () => {
-        alert(`Would navigate to full team dashboard for ${team.name} (mock action)`);
-      };
-      teamDiv.appendChild(viewFullBtn);
+      contentDiv.innerHTML = `
+        <div class="ta-stats">
+          ${statCardsHTML}
+        </div>
+        ${await renderEmptyState()}
+      `;
     }
 
-    teamDiv.appendChild(document.createElement("hr"));
-    drillDownSection.appendChild(teamDiv);
-  });
-
-  container.appendChild(drillDownSection);
+  } catch (error) {
+    contentDiv.innerHTML = `
+      <div class="error-message">
+        Failed to load course overview: ${error.message}
+      </div>
+    `;
+  }
 }
 
-function scrollToTeamDetails(teamId) {
-  const element = document.getElementById(`team-details-${teamId}`);
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" });
+/**
+ * Calculate overview statistics
+ * @param {Object} overview - Course overview data
+ */
+function calculateStatistics(overview) {
+  const teams = overview.teams || [];
+  const totalTeams = teams.length;
+  const totalStudents = teams.reduce((sum, team) => sum + (team.memberCount || 0), 0);
+  const totalStandups = teams.reduce((sum, team) => sum + (team.standupCount || 0), 0);
+
+  // Calculate average submission rate
+  const submissionRates = teams
+    .filter(team => team.memberCount > 0)
+    .map(team => {
+      const expectedStandups = team.memberCount * 7; // 7 days
+      const actualStandups = team.standupCount || 0;
+      return (actualStandups / expectedStandups) * 100;
+    });
+
+  const avgSubmissionRate = submissionRates.length > 0
+    ? Math.round(submissionRates.reduce((sum, rate) => sum + rate, 0) / submissionRates.length)
+    : 0;
+
+  return {
+    totalTeams,
+    totalStudents,
+    totalStandups,
+    avgSubmissionRate
+  };
+}
+
+/**
+ * Prepare team card data for template
+ * @param {Object} team - Team data
+ * @returns {Object} Template data
+ */
+function prepareTeamCardData(team) {
+  const expectedStandups = (team.memberCount || 0) * 7; // 7 days
+  const actualStandups = team.standupCount || 0;
+  const submissionRate = expectedStandups > 0
+    ? Math.round((actualStandups / expectedStandups) * 100)
+    : 0;
+
+  const alertLevel = getAlertLevel(submissionRate, team);
+  const latestStandup = team.latestStandup;
+  const hasBlockers = team.standups?.some(s => s.blockers) || latestStandup?.blockers;
+
+  const alertData = {
+    ok: { class: "ok", text: "✓ On Track" },
+    attention: { class: "attention", text: "⚠️ Needs Attention" }
+  };
+  const alert = alertData[alertLevel] || alertData.ok;
+
+  return {
+    teamName: team.teamName,
+    memberCount: team.memberCount || 0,
+    memberPlural: team.memberCount !== 1 ? "s" : "",
+    standupCount: actualStandups,
+    standupPlural: actualStandups !== 1 ? "s" : "",
+    submissionRate,
+    alertClass: alert.class,
+    alertText: alert.text,
+    hasLatestStandup: !!latestStandup,
+    userFirstName: latestStandup?.user?.firstName || null,
+    userLastName: latestStandup?.user?.lastName || null,
+    dateFormatted: latestStandup
+      ? new Date(latestStandup.dateSubmitted).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+      : null,
+    whatNextTruncated: latestStandup ? truncate(latestStandup.whatNext, 120) : null,
+    blockers: latestStandup?.blockers || null,
+    blockersTruncated: latestStandup?.blockers ? truncate(latestStandup.blockers, 120) : null,
+    hasBlockers: hasBlockers || null
+  };
+}
+
+/**
+ * Get alert level based on submission rate and team data
+ * @param {number} submissionRate - Team submission rate percentage
+ * @param {Object} team - Team data
+ */
+function getAlertLevel(submissionRate, team) {
+  const hasBlockers = team.standups?.some(s => s.blockers) || team.latestStandup?.blockers;
+
+  if (submissionRate < 50 || hasBlockers) {
+    return "attention";
   }
+  return "ok";
+}
+
+/**
+ * Truncate text
+ * @param {string} text - Text to truncate
+ * @param {number} maxLength - Maximum length
+ */
+function truncate(text, maxLength) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+}
+
+/**
+ * Render empty state
+ */
+async function renderEmptyState() {
+  return await renderComponent("standup/emptyState", {
+    icon: "📊",
+    title: "No teams found",
+    text: "This course doesn't have any teams yet."
+  });
+}
+
+/**
+ * Render unauthorized message
+ */
+async function renderUnauthorized() {
+  return await renderComponent("standup/emptyState", {
+    icon: "🔒",
+    title: "Access Denied",
+    text: "This dashboard is only available to TAs and Instructors."
+  });
+}
+
+/**
+ * Render no courses message
+ */
+async function renderNoCourses() {
+  return await renderComponent("standup/emptyState", {
+    icon: "📚",
+    title: "No teaching assignments",
+    text: "You don't have TA or Instructor role in any courses."
+  });
 }

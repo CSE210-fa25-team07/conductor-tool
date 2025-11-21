@@ -1,0 +1,47 @@
+<template id="standup-card-template">
+  <div class="standup-card" data-standup-id="{{standupUuid}}">
+    <div class="standup-card-header">
+      <div class="standup-date">{{dateFormatted}}</div>
+      <div class="standup-meta">
+        Submitted: {{createdAtFormatted}}
+        {{#teamName}}• Team: {{teamName}}{{/teamName}}
+        {{#sentimentScore}}• Mood: {{moodEmoji}}{{/sentimentScore}}
+      </div>
+    </div>
+
+    <div class="standup-card-body">
+      <div class="standup-field">
+        <div class="standup-field-label">What I accomplished:</div>
+        <div class="standup-field-content">{{whatDone}}</div>
+      </div>
+
+      <div class="standup-field">
+        <div class="standup-field-label">What I'm working on next:</div>
+        <div class="standup-field-content">{{whatNext}}</div>
+      </div>
+
+      {{#blockers}}
+      <div class="standup-field">
+        <div class="standup-field-label">Blockers:</div>
+        <div class="standup-field-content">{{blockers}}</div>
+      </div>
+      {{/blockers}}
+
+      {{#reflection}}
+      <div class="standup-field">
+        <div class="standup-field-label">Reflection:</div>
+        <div class="standup-field-content">{{reflection}}</div>
+      </div>
+      {{/reflection}}
+    </div>
+
+    <div class="standup-card-actions">
+      <button class="btn-small btn-edit" data-standup-id="{{standupUuid}}">
+        Edit
+      </button>
+      <button class="btn-small btn-danger btn-delete" data-standup-id="{{standupUuid}}">
+        Delete
+      </button>
+    </div>
+  </div>
+</template>

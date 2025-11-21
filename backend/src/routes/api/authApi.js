@@ -48,4 +48,45 @@ router.post("/verify", async (req, res) => {
   }
 });
 
+/**
+ * Get all users for dev login selection
+ *
+ * @name GET /v1/api/auth/dev-users
+ * @returns {Object} 200 - Array of all users
+ * @returns {Object} 500 - Server error
+ * @status DEV ONLY - For development login user selection
+ */
+router.get("/dev-users", async (req, res) => {
+  try {
+    return await authService.getDevUsers(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Handle dev login for selected user
+ *
+ * @name POST /v1/api/auth/dev-login
+ * @param {string} req.body.userId - User UUID to login as
+ * @returns {Object} 200 - Success with redirect URL
+ * @returns {Object} 400 - Missing userId
+ * @returns {Object} 404 - User not found
+ * @returns {Object} 500 - Server error
+ * @status DEV ONLY - For development login
+ */
+router.post("/dev-login", async (req, res) => {
+  try {
+    return await authService.devLogin(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

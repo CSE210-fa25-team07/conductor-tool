@@ -1,315 +1,245 @@
 /**
- * @fileoverview Standup Form Page - Student submits daily standup
- * NO STYLING - Pure HTML elements only
- * @module standup/standupForm
+ * @fileoverview Standup Form View
+ * Handles creating and editing standup submissions
  */
 
-import { currentUser, getGithubActivityByUser, mockTeams } from "./mockData.js";
+import { createStandup, updateStandup } from "../../api/standupApi.js";
+import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
+import { refreshCurrentView } from "./main.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
+
+let editMode = false;
+let editingStandupId = null;
 
 /**
- * Renders the standup submission form
- * @function renderStandupForm
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the standup form
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} standupData - Optional standup data for editing
  */
-export function renderStandupForm(containerId) {
-  const container = document.getElementById(containerId);
+export async function render(container, standupData = null) {
+  // Set edit mode if standupData provided
+  editMode = !!standupData;
+  editingStandupId = standupData?.standupUuid || null;
 
-  // Clear container
-  container.innerHTML = "";
+  const activeCourse = getActiveCourse();
+  const userTeams = getUserTeams();
 
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "Daily Standup";
-  container.appendChild(header);
+  // Filter teams for the active course
+  const courseTeams = userTeams.filter(t => t.courseUuid === activeCourse?.courseUuid);
 
-  // User info
-  const userInfo = document.createElement("p");
-  userInfo.textContent = `Logged in as: ${currentUser.name} (${currentUser.email})`;
-  container.appendChild(userInfo);
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
 
-  // Date info
-  const dateInfo = document.createElement("p");
-  dateInfo.textContent = `Date: ${new Date().toLocaleDateString()}`;
-  container.appendChild(dateInfo);
+  // Load page template
+  const pageHTML = await loadTemplate("standup", "standupForm");
+  container.innerHTML = pageHTML;
 
-  // Form
-  const form = document.createElement("form");
-  form.id = "standup-form";
-
-  // Question 1: What did you accomplish yesterday?
-  const q1Label = document.createElement("label");
-  q1Label.textContent = "1. What did you accomplish yesterday?";
-  form.appendChild(q1Label);
-
-  form.appendChild(document.createElement("br"));
-
-  const q1Textarea = document.createElement("textarea");
-  q1Textarea.id = "what-done";
-  q1Textarea.name = "what-done";
-  q1Textarea.rows = 5;
-  q1Textarea.cols = 80;
-  q1Textarea.placeholder = "Describe what you accomplished...";
-  form.appendChild(q1Textarea);
-
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
-
-  // GitHub status and auto-populate button
-  if (!currentUser.github_connected) {
-    const githubWarning = document.createElement("p");
-    githubWarning.textContent = "⚠️ GitHub not connected. Connect your GitHub account to auto-populate activity.";
-    form.appendChild(githubWarning);
-
-    const connectBtn = document.createElement("button");
-    connectBtn.type = "button";
-    connectBtn.textContent = "Connect GitHub Account";
-    connectBtn.onclick = () => {
-      alert("Would redirect to GitHub OAuth (mock action)");
-    };
-    form.appendChild(connectBtn);
-  } else {
-    // Show GitHub org info
-    const team = mockTeams.find(t => t.team_uuid === "team-001");
-    const githubInfo = document.createElement("p");
-    githubInfo.textContent = `GitHub connected: @${currentUser.github_username} | Team org: ${team.github_org}`;
-    form.appendChild(githubInfo);
-
-    // GitHub auto-populate button
-    const githubBtn = document.createElement("button");
-    githubBtn.type = "button";
-    githubBtn.textContent = "Auto-populate from GitHub (last 24h)";
-    githubBtn.onclick = () => {
-      const activities = getGithubActivityByUser(currentUser.user_uuid, 24);
-
-      if (activities.length === 0) {
-        q1Textarea.value = "No GitHub activity in the last 24 hours.";
-        return;
-      }
-
-      let content = "GitHub Activity (last 24h):\n\n";
-
-      // Group by type
-      const commits = activities.filter(a => a.activity_type === "commit");
-      const prs = activities.filter(a => a.activity_type === "pull_request");
-      const reviews = activities.filter(a => a.activity_type === "review");
-      const issues = activities.filter(a => a.activity_type === "issue");
-
-      if (commits.length > 0) {
-        content += "Commits:\n";
-        commits.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ ${activity.data.sha}: ${activity.data.message} (${activity.repo_name}) - ${hoursAgo}h ago - +${activity.data.additions}/-${activity.data.deletions} lines\n`;
-        });
-        content += "\n";
-      }
-
-      if (prs.length > 0) {
-        content += "Pull Requests:\n";
-        prs.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ PR #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      if (reviews.length > 0) {
-        content += "Code Reviews:\n";
-        reviews.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Reviewed PR #${activity.data.pr_number}: ${activity.data.pr_title} (${activity.repo_name}) - ${activity.data.review_state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      if (issues.length > 0) {
-        content += "Issues:\n";
-        issues.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Issue #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.action.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      content += "\n[You can edit above or add non-code work below]";
-
-      q1Textarea.value = content;
-    };
-    form.appendChild(githubBtn);
+  // Set form title
+  const formTitle = document.getElementById("form-title");
+  if (formTitle) {
+    formTitle.textContent = editMode ? "Edit Standup" : "Submit Daily Standup";
   }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  // Set date field
+  const dateField = document.getElementById("date-submitted");
+  if (dateField) {
+    dateField.value = standupData?.dateSubmitted?.split("T")[0] || today;
+    dateField.max = today;
+  }
 
-  // Question 2: What will you work on today?
-  const q2Label = document.createElement("label");
-  q2Label.textContent = "2. What will you work on today?";
-  form.appendChild(q2Label);
+  // Insert team select if teams exist
+  const teamSelectPlaceholder = document.getElementById("team-select-placeholder");
+  if (teamSelectPlaceholder && courseTeams.length > 0) {
+    teamSelectPlaceholder.outerHTML = `
+      <div class="form-group">
+        <label for="team">Team</label>
+        <select id="team" name="teamUuid">
+          <option value="">Personal (No team)</option>
+          ${courseTeams.map(team => `
+            <option
+              value="${team.teamUuid}"
+              ${standupData?.teamUuid === team.teamUuid ? "selected" : ""}
+            >
+              ${team.teamName}
+            </option>
+          `).join("")}
+        </select>
+        <span class="form-help-text">Optional: Select a team to share with</span>
+      </div>
+    `;
+  }
 
-  form.appendChild(document.createElement("br"));
+  // Populate form fields with standupData if editing
+  if (standupData) {
+    const whatDone = document.getElementById("what-done");
+    const whatNext = document.getElementById("what-next");
+    const blockers = document.getElementById("blockers");
+    const reflection = document.getElementById("reflection");
+    const sentiment = document.getElementById("sentiment");
+    const visibility = document.getElementById("visibility");
 
-  const q2Textarea = document.createElement("textarea");
-  q2Textarea.id = "what-next";
-  q2Textarea.name = "what-next";
-  q2Textarea.rows = 5;
-  q2Textarea.cols = 80;
-  q2Textarea.placeholder = "Describe your plans for today...";
-  form.appendChild(q2Textarea);
+    if (whatDone) whatDone.value = standupData.whatDone || "";
+    if (whatNext) whatNext.value = standupData.whatNext || "";
+    if (blockers) blockers.value = standupData.blockers || "";
+    if (reflection) reflection.value = standupData.reflection || "";
+    if (sentiment) sentiment.value = standupData.sentimentScore || "3";
+    if (visibility) visibility.value = standupData.visibility || "team";
+  }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  // Insert cancel button if in edit mode
+  const cancelButtonPlaceholder = document.getElementById("cancel-button-placeholder");
+  if (cancelButtonPlaceholder && editMode) {
+    cancelButtonPlaceholder.outerHTML = "<button type=\"button\" class=\"btn-secondary\" id=\"cancel-edit\">Cancel</button>";
+  }
 
-  // Question 3: Any blockers?
-  const q3Label = document.createElement("label");
-  q3Label.textContent = "3. Any blockers?";
-  form.appendChild(q3Label);
+  // Update submit button text
+  const submitButton = document.getElementById("submit-button");
+  if (submitButton) {
+    submitButton.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
 
-  form.appendChild(document.createElement("br"));
+  // Attach event listeners
+  const form = document.getElementById("standup-form");
+  form.addEventListener("submit", handleSubmit);
 
-  const q3Textarea = document.createElement("textarea");
-  q3Textarea.id = "blockers";
-  q3Textarea.name = "blockers";
-  q3Textarea.rows = 3;
-  q3Textarea.cols = 80;
-  q3Textarea.placeholder = "Describe any blockers (leave empty if none)...";
-  form.appendChild(q3Textarea);
+  if (editMode) {
+    const cancelBtn = document.getElementById("cancel-edit");
+    cancelBtn?.addEventListener("click", () => {
+      editMode = false;
+      editingStandupId = null;
+      render(container);
+    });
+  }
+}
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+/**
+ * Handle form submission
+ * @param {Event} event - Form submit event
+ */
+async function handleSubmit(event) {
+  event.preventDefault();
 
-  // Reflection (optional)
-  const reflectionLabel = document.createElement("label");
-  reflectionLabel.textContent = "Personal reflection (optional):";
-  form.appendChild(reflectionLabel);
+  const form = event.target;
+  const formData = new FormData(form);
 
-  form.appendChild(document.createElement("br"));
-
-  const reflectionTextarea = document.createElement("textarea");
-  reflectionTextarea.id = "reflection";
-  reflectionTextarea.name = "reflection";
-  reflectionTextarea.rows = 3;
-  reflectionTextarea.cols = 80;
-  reflectionTextarea.placeholder = "How are you feeling about the project?";
-  form.appendChild(reflectionTextarea);
-
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
-
-  // Sentiment emoji selector
-  const sentimentLabel = document.createElement("label");
-  sentimentLabel.textContent = "How are you feeling today?";
-  form.appendChild(sentimentLabel);
-
-  form.appendChild(document.createElement("br"));
-
-  const sentiments = [
-    { emoji: "😄", score: 1.0, label: "Very Happy" },
-    { emoji: "😊", score: 0.7, label: "Happy" },
-    { emoji: "🙂", score: 0.5, label: "Good" },
-    { emoji: "😐", score: 0.0, label: "Neutral" },
-    { emoji: "😕", score: -0.3, label: "Concerned" },
-    { emoji: "😞", score: -0.7, label: "Sad" }
-  ];
-
-  const sentimentDiv = document.createElement("div");
-  sentimentDiv.id = "sentiment-selector";
-
-  let selectedSentiment = null;
-
-  sentiments.forEach(sentiment => {
-    const radioInput = document.createElement("input");
-    radioInput.type = "radio";
-    radioInput.name = "sentiment";
-    radioInput.value = sentiment.score;
-    radioInput.id = `sentiment-${sentiment.score}`;
-
-    const radioLabel = document.createElement("label");
-    radioLabel.htmlFor = `sentiment-${sentiment.score}`;
-    radioLabel.textContent = `${sentiment.emoji} ${sentiment.label}`;
-
-    radioInput.onchange = () => {
-      selectedSentiment = {
-        score: sentiment.score,
-        emoji: sentiment.emoji
-      };
-    };
-
-    sentimentDiv.appendChild(radioInput);
-    sentimentDiv.appendChild(radioLabel);
-    sentimentDiv.appendChild(document.createElement("br"));
-  });
-
-  form.appendChild(sentimentDiv);
-
-  form.appendChild(document.createElement("br"));
-
-  // Visibility selector
-  const visibilityLabel = document.createElement("label");
-  visibilityLabel.textContent = "Who can see this standup?";
-  form.appendChild(visibilityLabel);
-
-  form.appendChild(document.createElement("br"));
-
-  const visibilitySelect = document.createElement("select");
-  visibilitySelect.id = "visibility";
-  visibilitySelect.name = "visibility";
-
-  ["Team", "Instructor", "Private"].forEach(vis => {
-    const option = document.createElement("option");
-    option.value = vis;
-    option.textContent = vis;
-    if (vis === "Team") option.selected = true;
-    visibilitySelect.appendChild(option);
-  });
-
-  form.appendChild(visibilitySelect);
-
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
-
-  // Buttons
-  const saveDraftBtn = document.createElement("button");
-  saveDraftBtn.type = "button";
-  saveDraftBtn.textContent = "Save Draft";
-  saveDraftBtn.onclick = () => {
-    alert("Draft saved! (mock action)");
-  };
-  form.appendChild(saveDraftBtn);
-
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.textContent = "Submit Standup";
-  form.appendChild(submitBtn);
-
-  // Form submit handler
-  form.onsubmit = (e) => {
-    e.preventDefault();
-
-    /* eslint-disable camelcase */
-    // Using snake_case to match database schema
-    const formData = {
-      what_done: q1Textarea.value,
-      what_next: q2Textarea.value,
-      blockers: q3Textarea.value,
-      reflection: reflectionTextarea.value,
-      sentiment_score: selectedSentiment?.score || 0,
-      sentiment_emoji: selectedSentiment?.emoji || "😐",
-      visibility: visibilitySelect.value,
-      date_submitted: new Date().toISOString()
-    };
-    /* eslint-enable camelcase */
-
-    // Standup submitted (mock - would send to backend)
-    alert(`Standup submitted successfully!\n\nSentiment: ${formData.sentiment_emoji}\nVisibility: ${formData.visibility}`);
-
-    // Clear form
-    form.reset();
+  // Build standup data object
+  const standupData = {
+    dateSubmitted: formData.get("dateSubmitted"),
+    teamUuid: formData.get("teamUuid") || null,
+    whatDone: formData.get("whatDone"),
+    whatNext: formData.get("whatNext"),
+    blockers: formData.get("blockers") || null,
+    reflection: formData.get("reflection") || null,
+    sentimentScore: parseInt(formData.get("sentimentScore"), 10),
+    visibility: formData.get("visibility")
   };
 
-  container.appendChild(form);
+  // Add courseUuid from active course
+  const activeCourse = getActiveCourse();
+  if (activeCourse) {
+    standupData.courseUuid = activeCourse.courseUuid;
+  }
 
-  // Display submission time estimate
-  const timeEstimate = document.createElement("p");
-  timeEstimate.textContent = "Estimated time to complete: < 2 minutes";
-  container.appendChild(timeEstimate);
+  try {
+    // Disable submit button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editMode ? "Updating..." : "Submitting...";
+
+    // Submit to API
+    if (editMode && editingStandupId) {
+      await updateStandup(editingStandupId, standupData);
+    } else {
+      await createStandup(standupData);
+    }
+
+    // Show success message
+    showSuccess(editMode ? "Standup updated successfully!" : "Standup submitted successfully!");
+
+    // Reset form if creating new
+    if (!editMode) {
+      form.reset();
+      // Reset to today's date
+      const today = new Date().toISOString().split("T")[0];
+      form.querySelector("#date-submitted").value = today;
+      form.querySelector("#sentiment").value = "3";
+    }
+
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+
+    // Exit edit mode if editing
+    if (editMode) {
+      setTimeout(() => {
+        editMode = false;
+        editingStandupId = null;
+        refreshCurrentView();
+      }, 1500);
+    }
+
+  } catch (error) {
+    showError(error.message);
+
+    // Re-enable button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    submitBtn.disabled = false;
+    submitBtn.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
+}
+
+/**
+ * Show success message
+ * @param {string} message - Success message
+ */
+function showSuccess(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".success-message");
+  if (existing) existing.remove();
+
+  const successDiv = document.createElement("div");
+  successDiv.className = "success-message";
+  successDiv.style.cssText = `
+    background-color: var(--color-radioactive-lime);
+    border: 3px solid var(--color-forest-green);
+    color: var(--color-forest-green);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-family: var(--font-primary);
+  `;
+  successDiv.textContent = message;
+
+  form.insertBefore(successDiv, form.firstChild);
+
+  // Auto-remove after 3 seconds
+  setTimeout(() => successDiv.remove(), 3000);
+}
+
+/**
+ * Show error message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".error-message");
+  if (existing) existing.remove();
+
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.textContent = message;
+
+  form.insertBefore(errorDiv, form.firstChild);
+
+  // Auto-remove after 5 seconds
+  setTimeout(() => errorDiv.remove(), 5000);
+}
+
+/**
+ * Edit a standup
+ * @param {Object} standupData - Standup data to edit
+ */
+export function editStandup(container, standupData) {
+  render(container, standupData);
 }

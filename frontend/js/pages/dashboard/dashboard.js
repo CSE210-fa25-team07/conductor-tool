@@ -1,26 +1,13 @@
 /** @module dashboard/frontend */
+import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
+
 // Wait for DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   // ==================== CHECK USER ====================
-  // TODO: Connect backend to get user
-  updateProfileName();
+  // Initialize shared profile dropdown component
   createUserDropdown("student");
-
-  const userProfileTrigger = document.getElementById("user-profile-trigger");
-  const userDropdown = document.getElementById("user-dropdown");
-
-  if (userProfileTrigger && userDropdown) {
-    userProfileTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      userDropdown.classList.toggle("show");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", () => {
-      userDropdown.classList.remove("show");
-    });
-  }
+  await initProfileDropdown();
 
   // ==================== DASHBOARD PAGE ====================
   const courseGrid = document.getElementById("course-grid");
@@ -31,72 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
-
-// ==================== UTILITY FUNCTIONS ====================
-async function updateProfileName() {
-
-  try {
-    const response = await fetch("/v1/api/auth/session", {
-      credentials: "include"
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.user && data.user.name) {
-        const userAvatar = document.querySelector(".user-avatar");
-        const userName = document.querySelector(".user-name");
-        const name = data.user.name;
-
-        // Change the avatar initials
-        userAvatar.textContent = name.split(" ").map(word => word[0]).join("").toUpperCase();
-
-        // Change the user name
-        userName.textContent = name;
-      }
-    }
-  } catch (error) {
-    alert("Error fetching user session:", error);
-  }
-
-}
 /**
  * Load courses from backend and render them
  */
 async function loadCourses() {
   try {
-    // TODO: Fetch from backend
+    const response = await fetch("/v1/api/courses");
 
-    // Mock data for now
-    const courses = [
-      {
-        code: "CSE 210",
-        name: "Software Engineering",
-        description: "Principles and practices of software engineering including requirements, design, implementation, testing, and maintenance.",
-        assignments: 12,
-        attendance: 95,
-        instructor: "Dr. Smith",
-        students: 45
-      },
-      {
-        code: "CSE 110",
-        name: "Software Engineering Fundamentals",
-        description: "Introduction to software development with emphasis on teamwork, tools, and techniques for building quality software.",
-        assignments: 8,
-        attendance: 88,
-        instructor: "Prof. Johnson",
-        students: 60
-      },
-      {
-        code: "CSE 100",
-        name: "Advanced Data Structures",
-        description: "Advanced topics in data structures and algorithms including graphs, trees, and optimization techniques.",
-        assignments: 15,
-        attendance: 92,
-        instructor: "Dr. Williams",
-        students: 38
-      }
-    ];
+    if (!response.ok) {
+      throw new Error("Failed to fetch courses");
+    }
+
+    const data = await response.json();
+    const courses = data.courses || [];
 
     renderCourses(courses);
 
@@ -107,45 +41,6 @@ async function loadCourses() {
 
 
 // ==================== HTML RENDERING FUNCTIONS ====================
-/**
- * Create and populate the user dropdown menu
- * @param usertype - Either professor, admin, or student
- */
-function createUserDropdown(usertype) {
-  const dropdown = document.getElementById("user-dropdown");
-
-  if (!dropdown) return;
-
-  // Clear existing content
-  dropdown.innerHTML = "";
-
-  // Define menu items
-  let menuItems;
-
-  if (usertype === "student") {
-    menuItems = [
-      { text: "Profile", href: "html/profile.html" },
-      { text: "Log Out", href: "/logout" }
-    ];
-  } else if (usertype === "professor") {
-    menuItems = [
-      { text: "Profile", href: "html/profile.html" },
-      { text: "Manage Courses", href: "html/manage.html" },
-      { text: "Log Out", href: "/logout" }
-    ];
-  }
-
-
-  // Create and append each menu item
-  menuItems.forEach(item => {
-    const link = document.createElement("a");
-    link.href = item.href;
-    link.className = "dropdown-item";
-    link.textContent = item.text;
-    dropdown.appendChild(link);
-  });
-}
-
 /**
  * Render all courses to the grid
  * @param {Array} courses - Array of course objects
@@ -170,13 +65,12 @@ function renderCourses(courses) {
 /**
  * Create a course card element
  * @param {Object} course - Course data object
+ * @param {string} course.courseUuid - Course UUID (primary key)
  * @param {string} course.code - Course code (e.g., "CSE 210")
  * @param {string} course.name - Course name
- * @param {string} course.description - Course description
- * @param {number} course.assignments - Number of assignments
- * @param {number} course.attendance - Attendance percentage
- * @param {string} course.instructor - Instructor name
- * @param {number} course.students - Number of students
+ * @param {string} [course.description] - Course description
+ * @param {string} [course.term] - Term name
+ * @param {number} course.students - Number of students enrolled
  * @returns {HTMLElement} Course card article element
  */
 function createCourseCard(course) {
@@ -198,32 +92,36 @@ function createCourseCard(course) {
     </header>
 
     <p class="course-description">
-      ${course.description}
+      ${course.description || "No description available"}
     </p>
 
-    <section class="course-stats">
-      <article class="course-stat">
-        <span class="course-stat-value">${course.assignments}</span>
-        <span class="course-stat-label">Assignments</span>
-      </article>
-      <article class="course-stat">
-        <span class="course-stat-value">${course.attendance}%</span>
-        <span class="course-stat-label">Attendance</span>
-      </article>
-    </section>
+    ${course.term ? `<p style="font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);">Term: ${course.term}</p>` : ""}
 
     <footer class="course-footer">
-      <span class="course-instructor">${course.instructor}</span>
       <span class="course-students">${course.students} students</span>
     </footer>
   `;
 
-  // TODO: Add click handler to navigate to course details
-  // article.addEventListener("click", () => {
-  //   handleCourseClick(course);
-  // });
+  // Add click handler to navigate to course features page
+  article.addEventListener("click", () => {
+    handleCourseClick(course);
+  });
+
+  article.style.cursor = "pointer";
 
   return article;
+}
+
+/**
+ * Handle course card click
+ * @param {Object} course - Course data
+ */
+function handleCourseClick(course) {
+  // Store course data in sessionStorage for access on course page
+  sessionStorage.setItem("activeCourse", JSON.stringify(course));
+
+  // Navigate to course directory page using courseUuid
+  window.location.href = `/courses/${course.courseUuid}/directory`;
 }
 
 /**
@@ -248,4 +146,18 @@ function createEmptyStateCard() {
   // });
 
   return article;
+}
+
+/**
+ * Show error state when courses fail to load
+ */
+function showErrorState() {
+  const courseGrid = document.getElementById("course-grid");
+  courseGrid.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-2xl);">
+      <p style="color: var(--color-forest-green-medium); font-size: var(--text-lg);">
+        Failed to load courses. Please refresh the page to try again.
+      </p>
+    </div>
+  `;
 }

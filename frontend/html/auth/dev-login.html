@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Login - Select User</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    .dev-login-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .dev-warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      color: #856404;
+    }
+    .user-list {
+      list-style: none;
+      padding: 0;
+    }
+    .user-item {
+      padding: 15px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .user-item:hover {
+      background: #f8f9fa;
+      border-color: #007bff;
+    }
+    .user-name {
+      font-weight: bold;
+      color: #333;
+    }
+    .user-email {
+      color: #666;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="dev-login-container">
+    <div class="dev-warning">
+      <strong>⚠️ DEVELOPMENT ONLY</strong><br>
+      This page is for local development. Select a user to log in without OAuth.
+    </div>
+
+    <h2>Select a User to Login</h2>
+    <ul class="user-list" id="userList"></ul>
+  </div>
+
+  <script type="module">
+    async function loadUsers() {
+      try {
+        const response = await fetch('/v1/api/dev/users');
+        const data = await response.json();
+
+        const userList = document.getElementById('userList');
+        userList.innerHTML = '';
+
+        data.users.forEach(user => {
+          const li = document.createElement('li');
+          li.className = 'user-item';
+          li.innerHTML = `
+            <div class="user-name">${user.firstName} ${user.lastName}</div>
+            <div class="user-email">${user.email}</div>
+          `;
+          li.onclick = () => loginAsUser(user.email);
+          userList.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Failed to load users:', error);
+        alert('Failed to load users. Make sure the server is running.');
+      }
+    }
+
+    async function loginAsUser(email) {
+      try {
+        const response = await fetch('/v1/api/dev/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: email }),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          window.location.href = '/dashboard';
+        } else {
+          alert('Login failed: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Login failed:', error);
+        alert('Login failed. Please try again.');
+      }
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

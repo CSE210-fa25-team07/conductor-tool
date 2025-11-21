@@ -4,10 +4,12 @@ Node.js + Express API. Port 8081.
 
 ## Folders
 
-- `src/routes/web` - HTTP routes for servicing web pages(one file per team)
+- `src/routes/web` - HTTP routes for servicing web pages(one file per team) (deprecated)
 - `src/routes/api` - HTTP endpoints for APIs
+- `src/utils/` - Utility functions (auth middleware, etc.)
 - `src/services/` - Business logic (one file per team)
 - `src/repositories/` - Database queries (one file per table)
+- `src/dtos/` - Data Transfer Objects for shaping API responses
 - `src/validators/` - Validation logic for any types of input
 - `tests/` - Unit and integration tests
 

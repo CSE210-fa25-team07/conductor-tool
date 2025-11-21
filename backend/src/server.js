@@ -1,8 +1,10 @@
 import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
+import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
+import { checkSession } from "./utils/auth.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -22,15 +24,11 @@ app.use(session({
   cookie: { secure: false }  // true if HTTPS/production
 }));
 
-// Middleware to check if user is authenticated
-function checkSession(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/");
-  }
-  next();
-}
-
-app.use(express.static(path.join(__dirname, "../../frontend")));
+// Serve only assets statically (js, css, images) - HTML is served via protected routes
+app.use("/js", express.static(path.join(__dirname, "../../frontend/js")));
+app.use("/css", express.static(path.join(__dirname, "../../frontend/css")));
+app.use("/images", express.static(path.join(__dirname, "../../frontend/images")));
+// HTML pages/templates served via feature-specific routes (e.g., /standup/pages/:name)
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/auth/login.html"));
@@ -40,6 +38,10 @@ app.get("/dashboard", checkSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
 });
 
+app.get("/dashboard/calendar", checkSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
+});
+
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
@@ -47,24 +49,20 @@ app.get("/logout", (req, res) => {
 });
 
 /**
- * This is for devs to hardcode a user session without going through Google OAuth.
+ * Development login page - allows selecting a user from the database.
  * NOT FOR PRODUCTION USE.
  */
-app.get("/dev-login", async (req, res) => {
-  // Hardcode dev user session with what you need for testing
-  req.session.user = {
-    id: "18461b29-0e83-4dd6-a309-874d2acdf045",
-    email: "dev@example.com",
-    name: "John Doe"
-  };
-  res.redirect("/dashboard"); // Redirect to whatever endpoint you are testing
+app.get("/dev-login", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/html/auth/dev-users.html"));
 });
 
 app.use("/auth", checkSession, authRoutes);
 
+app.use("/profile", checkSession, profileRoutes);
+
 app.use("/google", googleRoutes);
 
-app.use("/courses/:couresId", checkSession, courseRoutes);
+app.use("/courses/:courseId", checkSession, courseRoutes);
 
 app.use("/v1/api/", apiRoutes);
 

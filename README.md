@@ -119,15 +119,32 @@ Opens a browser-based GUI at http://localhost:5555 to view and edit data.
 node backend/src/server.js
 ```
 On your browser, go to `localhost:8081`
+
+### Quick Start/Stop Scripts
+
+For convenience, you can use the helper scripts:
+
+```bash
+# Start all services (database + backend)
+./start.sh
+
+# Stop all services
+./stop.sh
+```
+
+These scripts handle port checking, service startup/shutdown, and display colorful logs.
    
 ## Structure
 
 ```
 conductor-tool/
-├── frontend/      # VanillaJS
-├── backend/       # Node.js + Express (Port 8081)
-├── database/      # PostgreSQL migrations
-└── specs/         # Docs, ADRs
+├── frontend/              # VanillaJS
+│   └── css/components/    # Shared CSS components (global, navigation)
+├── backend/               # Node.js + Express (Port 8081)
+├── database/              # PostgreSQL migrations
+├── specs/                 # Docs, ADRs
+├── start.sh               # Start all services
+└── stop.sh                # Stop all services
 ```
 
 ## Team Ownership
@@ -142,8 +159,6 @@ conductor-tool/
 ## Docs
 
 - **[STRUCTURE_SUMMARY.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/STRUCTURE_SUMMARY.md)** - Quick overview
-- **[codebase_structure.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/codebase_structure.md)** - Patterns & examples
-- **[subteam_expectations.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/subteam_expectations.md)** - Team dependencies
 - **Folder READMEs** - Check any folder for guidance
 
 ## Rules
