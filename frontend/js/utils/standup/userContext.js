@@ -3,7 +3,7 @@
  * @module utils/userContext
  */
 
-import { getUserContext as fetchUserContext } from "../api/userContextApi.js";
+import { getUserContext as fetchUserContext } from "../../api/userContextApi.js";
 
 let userContext = null;
 

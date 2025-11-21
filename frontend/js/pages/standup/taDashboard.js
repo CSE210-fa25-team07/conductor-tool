@@ -107,7 +107,7 @@ async function loadCourseOverview() {
     const stats = calculateStatistics(overview);
 
     // Render stat cards
-    const statCardsHTML = await renderComponents("statCard", [
+    const statCardsHTML = await renderComponents("standup/statCard", [
       { value: stats.totalTeams, label: "Total Teams" },
       { value: stats.totalStudents, label: "Total Students" },
       { value: stats.totalStandups, label: "Standups (7 days)" },
@@ -117,7 +117,7 @@ async function loadCourseOverview() {
     if (overview.teams && overview.teams.length > 0) {
       // Render team cards
       const teamCardsHTML = await renderComponents(
-        "teamCard",
+        "standup/teamCard",
         overview.teams.map(team => prepareTeamCardData(team))
       );
 
@@ -251,7 +251,7 @@ function truncate(text, maxLength) {
  * Render empty state
  */
 async function renderEmptyState() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "📊",
     title: "No teams found",
     text: "This course doesn't have any teams yet."
@@ -262,7 +262,7 @@ async function renderEmptyState() {
  * Render unauthorized message
  */
 async function renderUnauthorized() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "🔒",
     title: "Access Denied",
     text: "This dashboard is only available to TAs and Instructors."
@@ -273,7 +273,7 @@ async function renderUnauthorized() {
  * Render no courses message
  */
 async function renderNoCourses() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "📚",
     title: "No teaching assignments",
     text: "You don't have TA or Instructor role in any courses."

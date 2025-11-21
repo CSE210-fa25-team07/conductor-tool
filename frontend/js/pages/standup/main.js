@@ -33,8 +33,6 @@ async function init() {
 
   } catch (error) {
     showError(`Failed to initialize: ${error.message}`);
-    // eslint-disable-next-line no-console
-    console.error("Initialization error:", error);
   }
 }
 
@@ -99,8 +97,6 @@ async function loadViewModules() {
       ta: taModule
     };
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Failed to load view modules:", error);
     throw new Error("Failed to load required modules");
   }
 }
@@ -132,8 +128,6 @@ async function renderView(viewName) {
 
   } catch (error) {
     showError(`Failed to load view: ${error.message}`);
-    // eslint-disable-next-line no-console
-    console.error("View render error:", error);
   }
 }
 

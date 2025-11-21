@@ -75,8 +75,6 @@ export async function render(container, view = "form") {
         <strong>Error:</strong> ${error.message}
       </div>
     `;
-    // eslint-disable-next-line no-console
-    console.error("Standup render error:", error);
   }
 }
 
@@ -107,8 +105,6 @@ async function loadViewModules() {
       ta: taModule
     };
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Failed to load standup view modules:", error);
     throw new Error("Failed to load required standup modules");
   }
 }

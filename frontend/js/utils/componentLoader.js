@@ -3,12 +3,26 @@
  * Loads and renders HTML templates with Mustache-like syntax
  */
 
-const COMPONENT_BASE_PATH = "/html/standup/components";
 const templateCache = new Map();
 
 /**
+ * Build the component path from the component name
+ * @param {string} componentName - Component name with feature prefix (e.g., "standup/card")
+ * @returns {string} Full path to the component
+ */
+function buildComponentPath(componentName) {
+  if (!componentName.includes("/")) {
+    throw new Error(`Component name must include feature prefix (e.g., "standup/card"), got: "${componentName}"`);
+  }
+  // Feature-specific component: "standup/card" → "/html/standup/components/card.html"
+  const [feature, ...rest] = componentName.split("/");
+  const name = rest.join("/");
+  return `/html/${feature}/components/${name}.html`;
+}
+
+/**
  * Load a component template
- * @param {string} componentName - Name of the component file (without .html)
+ * @param {string} componentName - Name of the component with feature prefix (e.g., "standup/card")
  * @returns {Promise<string>} The template HTML
  */
 export async function loadTemplate(componentName) {
@@ -17,8 +31,10 @@ export async function loadTemplate(componentName) {
     return templateCache.get(componentName);
   }
 
+  const componentPath = buildComponentPath(componentName);
+
   try {
-    const response = await fetch(`${COMPONENT_BASE_PATH}/${componentName}.html`);
+    const response = await fetch(componentPath);
     if (!response.ok) {
       throw new Error(`Failed to load template: ${componentName}`);
     }
@@ -39,8 +55,6 @@ export async function loadTemplate(componentName) {
     return templateHTML;
 
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Error loading template ${componentName}:`, error);
     throw error;
   }
 }

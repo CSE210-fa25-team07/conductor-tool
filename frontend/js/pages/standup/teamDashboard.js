@@ -103,7 +103,7 @@ async function loadTeamData() {
 
     if (Object.keys(userStandups).length > 0) {
       const memberCardsHTML = await renderComponents(
-        "memberCard",
+        "standup/memberCard",
         Object.entries(userStandups).map(([, data]) =>
           prepareMemberCardData(data.user, data.standups)
         )
@@ -229,7 +229,7 @@ function truncate(text, maxLength) {
  * Render empty state
  */
 async function renderEmptyState() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "👥",
     title: "No team activity yet",
     text: "Team members' standups will appear here once they start submitting."
@@ -240,7 +240,7 @@ async function renderEmptyState() {
  * Render no teams message
  */
 async function renderNoTeams() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "👥",
     title: "No team assigned",
     text: "You need to be assigned to a team to view the team dashboard."

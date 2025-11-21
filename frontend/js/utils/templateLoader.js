@@ -43,8 +43,6 @@ export async function loadTemplate(feature, templateName) {
     return templateHTML;
 
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Error loading template ${cacheKey}:`, error);
     throw error;
   }
 }

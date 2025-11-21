@@ -153,7 +153,7 @@ async function loadStandups() {
     if (standups.length === 0) {
       contentDiv.innerHTML = await renderEmptyState();
     } else {
-      const standupCardsHTML = await renderComponents("standupCard", standups.map(prepareStandupData));
+      const standupCardsHTML = await renderComponents("standup/standupCard", standups.map(prepareStandupData));
       contentDiv.innerHTML = `<div class="standup-list">${standupCardsHTML}</div>`;
 
       // Attach event listeners to action buttons
@@ -221,7 +221,7 @@ function renderMood(score) {
  * Render empty state
  */
 async function renderEmptyState() {
-  return await renderComponent("emptyState", {
+  return await renderComponent("standup/emptyState", {
     icon: "📝",
     title: "No standups yet",
     text: "Submit your first standup to start tracking your progress!"

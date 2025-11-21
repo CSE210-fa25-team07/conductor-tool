@@ -29,8 +29,7 @@ export async function updateProfileFromAPI() {
       }
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error fetching user session:", error);
+    // Silently fail - profile will show default state
   }
 }
 

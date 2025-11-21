@@ -81,8 +81,6 @@ async function init() {
 
   } catch (error) {
     showError(`Failed to initialize: ${error.message}`);
-    // eslint-disable-next-line no-console
-    console.error("Initialization error:", error);
   }
 }
 
@@ -153,8 +151,6 @@ async function switchFeature(feature, view = null) {
 
   } catch (error) {
     showError(`Failed to switch feature: ${error.message}`);
-    // eslint-disable-next-line no-console
-    console.error("Feature switch error:", error);
   }
 }
 
@@ -272,8 +268,6 @@ async function loadContent(feature, view) {
 
   } catch (error) {
     showError(`Failed to load content: ${error.message}`);
-    // eslint-disable-next-line no-console
-    console.error("Content loading error:", error);
   }
 }
 
