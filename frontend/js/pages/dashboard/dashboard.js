@@ -1,26 +1,13 @@
 /** @module dashboard/frontend */
+import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
+
 // Wait for DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   // ==================== CHECK USER ====================
-  // TODO: Connect backend to get user
-  updateProfileName();
+  // Initialize shared profile dropdown component
   createUserDropdown("student");
-
-  const userProfileTrigger = document.getElementById("user-profile-trigger");
-  const userDropdown = document.getElementById("user-dropdown");
-
-  if (userProfileTrigger && userDropdown) {
-    userProfileTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      userDropdown.classList.toggle("show");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", () => {
-      userDropdown.classList.remove("show");
-    });
-  }
+  await initProfileDropdown();
 
   // ==================== DASHBOARD PAGE ====================
   const courseGrid = document.getElementById("course-grid");
@@ -31,35 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
-
-// ==================== UTILITY FUNCTIONS ====================
-async function updateProfileName() {
-
-  try {
-    const response = await fetch("/v1/api/auth/session", {
-      credentials: "include"
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.user && data.user.name) {
-        const userAvatar = document.querySelector(".user-avatar");
-        const userName = document.querySelector(".user-name");
-        const name = data.user.name;
-
-        // Change the avatar initials
-        userAvatar.textContent = name.split(" ").map(word => word[0]).join("").toUpperCase();
-
-        // Change the user name
-        userName.textContent = name;
-      }
-    }
-  } catch (error) {
-    alert("Error fetching user session:", error);
-  }
-
-}
 /**
  * Load courses from backend and render them
  */
@@ -107,45 +65,6 @@ async function loadCourses() {
 
 
 // ==================== HTML RENDERING FUNCTIONS ====================
-/**
- * Create and populate the user dropdown menu
- * @param usertype - Either professor, admin, or student
- */
-function createUserDropdown(usertype) {
-  const dropdown = document.getElementById("user-dropdown");
-
-  if (!dropdown) return;
-
-  // Clear existing content
-  dropdown.innerHTML = "";
-
-  // Define menu items
-  let menuItems;
-
-  if (usertype === "student") {
-    menuItems = [
-      { text: "Profile", href: "html/profile.html" },
-      { text: "Log Out", href: "/logout" }
-    ];
-  } else if (usertype === "professor") {
-    menuItems = [
-      { text: "Profile", href: "html/profile.html" },
-      { text: "Manage Courses", href: "html/manage.html" },
-      { text: "Log Out", href: "/logout" }
-    ];
-  }
-
-
-  // Create and append each menu item
-  menuItems.forEach(item => {
-    const link = document.createElement("a");
-    link.href = item.href;
-    link.className = "dropdown-item";
-    link.textContent = item.text;
-    dropdown.appendChild(link);
-  });
-}
-
 /**
  * Render all courses to the grid
  * @param {Array} courses - Array of course objects

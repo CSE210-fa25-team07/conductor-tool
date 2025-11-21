@@ -140,11 +140,16 @@
 
 .course-stat {
   flex: 1;
+  min-width: 0;
   background: transparent;
   padding: var(--space-sm);
   border-radius: 0;
   text-align: center;
   border: var(--border-thin);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .course-stat-value {

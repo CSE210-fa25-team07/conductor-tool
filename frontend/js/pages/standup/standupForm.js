@@ -89,7 +89,7 @@ export async function render(container, standupData = null) {
   // Insert cancel button if in edit mode
   const cancelButtonPlaceholder = document.getElementById("cancel-button-placeholder");
   if (cancelButtonPlaceholder && editMode) {
-    cancelButtonPlaceholder.outerHTML = '<button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>';
+    cancelButtonPlaceholder.outerHTML = "<button type=\"button\" class=\"btn-secondary\" id=\"cancel-edit\">Cancel</button>";
   }
 
   // Update submit button text

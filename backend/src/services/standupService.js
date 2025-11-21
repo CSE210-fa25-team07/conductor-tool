@@ -129,8 +129,8 @@ async function getTeamStandups(req, res) {
   const { teamId } = req.params;
   const { startDate, endDate } = req.query;
 
-  const isTeamMember = await standupRepository.checkTeamMembership(userId, teamId);
-  const isStaff = await standupRepository.checkCourseStaffAccess(userId, teamId);
+  const isTeamMember = await userContextRepository.checkTeamMembership(userId, teamId);
+  const isStaff = await userContextRepository.checkCourseStaffAccess(userId, teamId);
 
   if (!isTeamMember && !isStaff) {
     return res.status(403).json({
@@ -161,7 +161,7 @@ async function getTAOverview(req, res) {
     });
   }
 
-  const isStaff = await standupRepository.checkCourseStaffRole(userId, courseId);
+  const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseId);
 
   if (!isStaff) {
     return res.status(403).json({
@@ -170,7 +170,7 @@ async function getTAOverview(req, res) {
     });
   }
 
-  const overview = await standupRepository.getCourseOverview(courseId, {
+  const overview = await userContextRepository.getCourseOverview(courseId, {
     startDate,
     endDate
   });

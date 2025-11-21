@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Conductor Tool</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <section class="top-nav-container">
+      <!-- Logo -->
+      <header class="top-nav-logo">
+        <a href="/html/dashboard/dashboard.html" style="color: inherit; text-decoration: none; border: none;">Conductor</a>
+      </header>
+
+      <!-- User Profile with Dropdown -->
+      <section class="user-profile-dropdown">
+        <article class="user-profile" id="user-profile-trigger">
+          <figure class="user-avatar">...</figure>
+          <span class="user-name">Loading...</span>
+        </article>
+        <menu class="dropdown-menu" id="user-dropdown"></menu>
+      </section>
+    </section>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="container" style="max-width: 800px; margin: 0 auto; padding: var(--space-2xl);">
+
+      <!-- Profile Header -->
+      <header style="margin-bottom: var(--space-2xl); text-align: center;">
+        <figure class="user-avatar" id="profile-avatar" style="
+          width: 120px;
+          height: 120px;
+          font-size: var(--text-4xl);
+          margin: 0 auto var(--space-lg);
+        ">...</figure>
+        <h1 id="profile-name" style="
+          font-family: var(--font-heading);
+          font-size: var(--text-4xl);
+          color: var(--color-forest-green);
+          margin-bottom: var(--space-sm);
+        ">Loading...</h1>
+        <p id="profile-email" style="
+          font-family: var(--font-mono);
+          font-size: var(--text-base);
+          color: var(--color-forest-green-medium);
+        ">Loading...</p>
+      </header>
+
+      <!-- Profile Content (Mock) -->
+      <section style="
+        background: var(--color-light-matcha);
+        border: var(--border-thick);
+        padding: var(--space-2xl);
+      ">
+        <h2 style="
+          font-family: var(--font-heading);
+          font-size: var(--text-2xl);
+          color: var(--color-forest-green);
+          margin-bottom: var(--space-lg);
+        ">Profile Settings</h2>
+
+        <p style="
+          font-family: var(--font-mono);
+          font-size: var(--text-base);
+          color: var(--color-forest-green-medium);
+          line-height: 1.6;
+          margin-bottom: var(--space-lg);
+        ">
+          This page will allow users to view and edit their profile information,
+          notification preferences, and account settings.
+        </p>
+
+        <a href="/html/dashboard/dashboard.html" style="
+          display: inline-block;
+          padding: var(--space-md) var(--space-lg);
+          background: var(--color-radioactive-lime);
+          color: var(--color-forest-green);
+          border: var(--border-thick);
+          text-decoration: none;
+          font-family: var(--font-mono);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        ">Back to Dashboard</a>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- JavaScript -->
+  <script type="module">
+    import { initProfileDropdown, createUserDropdown } from "../../js/components/profileDropdown.js";
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Initialize dropdown
+      createUserDropdown("student");
+      await initProfileDropdown();
+
+      // Also update the large profile avatar on this page
+      try {
+        const response = await fetch("/v1/api/auth/session", {
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            const name = data.user.name || "User";
+            const email = data.user.email || "";
+            const initials = name.split(" ").map(word => word[0]).join("").toUpperCase();
+
+            document.getElementById("profile-avatar").textContent = initials;
+            document.getElementById("profile-name").textContent = name;
+            document.getElementById("profile-email").textContent = email;
+          }
+        }
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -4,6 +4,7 @@
  */
 
 import { loadUserContext, getActiveCourse, isProfessorOrTA } from "../../utils/userContext.js";
+import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
 
 // State management
 let currentFeature = "directory"; // default feature
@@ -49,6 +50,11 @@ async function init() {
 
     // Load user context
     await loadUserContext();
+
+    // Initialize profile dropdown (shared component)
+    const userType = isProfessorOrTA() ? "professor" : "student";
+    createUserDropdown(userType);
+    await initProfileDropdown();
 
     // Get course data from sessionStorage or context
     const storedCourse = sessionStorage.getItem("activeCourse");
@@ -277,7 +283,7 @@ async function loadContent(feature, view) {
 function showLoading() {
   const contentArea = document.getElementById("content-area");
   if (contentArea) {
-    contentArea.innerHTML = '<div class="loading-message">Loading...</div>';
+    contentArea.innerHTML = "<div class=\"loading-message\">Loading...</div>";
   }
 }
 
