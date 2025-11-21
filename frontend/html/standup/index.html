@@ -1,14 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Standup Tool - Conductor</title>
-    <!-- NO CSS - Zero styling as requested -->
-</head>
-<body>
-    <div id="app"></div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Standup Tool - Conductor</title>
 
-    <script type="module" src="../../js/pages/standup/main.js"></script>
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/dashboard/dashboard.css">
+  <link rel="stylesheet" href="../../css/pages/standup/standup.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <nav class="top-nav">
+    <section class="top-nav-container">
+      <header class="top-nav-logo">Conductor</header>
+
+      <nav class="top-nav-links">
+        <a href="../dashboard/dashboard.html" class="top-nav-link">Dashboard</a>
+        <a href="../standup/index.html" class="top-nav-link active">Standup</a>
+      </nav>
+
+      <section class="user-profile-dropdown">
+        <article class="user-profile" id="user-profile-trigger">
+          <figure class="user-avatar" id="user-avatar">...</figure>
+          <span class="user-name" id="user-name">Loading...</span>
+        </article>
+        <menu class="dropdown-menu" id="user-dropdown"></menu>
+      </section>
+    </section>
+  </nav>
+
+  <main class="main-content">
+    <section class="container">
+
+      <header class="dashboard-header">
+        <h1 class="dashboard-title" id="page-title">Daily Standup</h1>
+        <p class="dashboard-subtitle" id="page-subtitle">Track your progress and collaborate with your team</p>
+      </header>
+
+      <nav class="standup-nav">
+        <button class="standup-nav-btn active" id="nav-form" data-view="form">Submit Standup</button>
+        <button class="standup-nav-btn" id="nav-history" data-view="history">My History</button>
+        <button class="standup-nav-btn" id="nav-team" data-view="team">Team Dashboard</button>
+        <button class="standup-nav-btn" id="nav-ta" data-view="ta" style="display: none;">TA Overview</button>
+      </nav>
+
+      <section id="standup-content" class="standup-content">
+        <div class="loading-message">Loading...</div>
+      </section>
+
+    </section>
+  </main>
+
+  <script type="module" src="../../js/pages/standup/main.js"></script>
+
 </body>
 </html>

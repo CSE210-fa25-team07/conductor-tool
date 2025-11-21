@@ -1,156 +1,192 @@
 /**
- * @fileoverview Main Demo Entry Point for Standup Pages
- * NO STYLING - Pure HTML elements only
- * Navigation between different views
- * @module standup/main
+ * @fileoverview Main entry point for Standup feature
+ * Handles navigation and view switching
  */
 
-import { renderStandupForm } from "./standupForm.js";
-import { renderTeamDashboard } from "./teamDashboard.js";
-import { renderTADashboard } from "./taDashboard.js";
-import { renderIndividualHistory } from "./individualHistory.js";
-import { currentUser, getUnreadNotificationCount } from "./mockData.js";
+import { loadUserContext, isProfessorOrTA } from "../../utils/standup/userContext.js";
+
+// View state
+let currentView = "form";
+let viewModules = {};
 
 /**
- * Initializes the standup demo application
- * Creates the main UI structure with navigation and content container
- * @function initStandupDemo
- * @returns {void}
+ * Initialize the standup page
  */
-export function initStandupDemo() {
-  const appContainer = document.getElementById("app");
-  if (!appContainer) {
-    // App container not found - cannot initialize demo
-    return;
+async function init() {
+  try {
+    // Show loading state
+    showLoading();
+
+    // Load user context
+    await loadUserContext();
+
+    // Set up navigation
+    setupNavigation();
+
+    // Load view modules (lazy loaded)
+    await loadViewModules();
+
+    // Render initial view based on role
+    const initialView = isProfessorOrTA() ? "ta" : "form";
+    currentView = initialView;
+    await renderView(initialView);
+
+  } catch (error) {
+    showError(`Failed to initialize: ${error.message}`);
+    // eslint-disable-next-line no-console
+    console.error("Initialization error:", error);
+  }
+}
+
+/**
+ * Set up navigation event listeners and visibility
+ */
+function setupNavigation() {
+  const navButtons = {
+    "nav-form": "form",
+    "nav-history": "history",
+    "nav-team": "team",
+    "nav-ta": "ta"
+  };
+
+  const isTA = isProfessorOrTA();
+
+  // Show/hide buttons based on role
+  const formButton = document.getElementById("nav-form");
+  const historyButton = document.getElementById("nav-history");
+  const taButton = document.getElementById("nav-ta");
+
+  // TAs and Professors can only see Team Dashboard and TA Overview
+  if (isTA) {
+    formButton.style.display = "none";
+    historyButton.style.display = "none";
+    taButton.style.display = "inline-block";
+  } else {
+    // Students see Submit Standup, My History, and Team Dashboard
+    formButton.style.display = "inline-block";
+    historyButton.style.display = "inline-block";
+    taButton.style.display = "none";
   }
 
-  appContainer.innerHTML = "";
-
-  // Main title
-  const mainTitle = document.createElement("h1");
-  mainTitle.textContent = "Conductor - Standup Tool Demo";
-  appContainer.appendChild(mainTitle);
-
-  // Demo notice
-  const notice = document.createElement("p");
-  notice.textContent = "⚠️ DEMO MODE - All data is mocked, no backend connection, zero styling";
-  appContainer.appendChild(notice);
-
-  appContainer.appendChild(document.createElement("hr"));
-
-  // Navigation
-  const nav = createNavigation();
-  appContainer.appendChild(nav);
-
-  appContainer.appendChild(document.createElement("hr"));
-
-  // Content container
-  const contentContainer = document.createElement("div");
-  contentContainer.id = "content";
-  appContainer.appendChild(contentContainer);
-
-  // Default view: Standup Form
-  renderStandupForm("content");
+  // Add click handlers
+  Object.entries(navButtons).forEach(([buttonId, view]) => {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      button.addEventListener("click", () => {
+        renderView(view);
+      });
+    }
+  });
 }
 
 /**
- * Creates the navigation bar with buttons to switch between different views
- * @function createNavigation
- * @returns {HTMLElement} Navigation element with buttons and descriptions
- * @private
+ * Lazy load view modules
  */
-function createNavigation() {
-  const nav = document.createElement("nav");
+async function loadViewModules() {
+  try {
+    // Import all view modules dynamically
+    const [formModule, historyModule, teamModule, taModule] = await Promise.all([
+      import("./standupForm.js"),
+      import("./individualHistory.js"),
+      import("./teamDashboard.js"),
+      import("./taDashboard.js")
+    ]);
 
-  const navTitle = document.createElement("h2");
-  navTitle.textContent = "Navigation";
-  nav.appendChild(navTitle);
-
-  const navInfo = document.createElement("p");
-  navInfo.textContent = `Current User: ${currentUser.name} | Unread Notifications: ${getUnreadNotificationCount(currentUser.user_uuid)}`;
-  nav.appendChild(navInfo);
-
-  // Navigation buttons
-  const buttonContainer = document.createElement("div");
-
-  const buttons = [
-    {
-      label: "Submit Standup",
-      view: "form",
-      description: "Daily standup submission form (Student view)",
-      renderer: renderStandupForm
-    },
-    {
-      label: "Team Dashboard",
-      view: "team",
-      description: "View team standups and collaborate (Student/Team Lead view)",
-      renderer: renderTeamDashboard
-    },
-    {
-      label: "My History",
-      view: "history",
-      description: "Personal standup history and stats (Student view)",
-      renderer: renderIndividualHistory
-    },
-    {
-      label: "TA Dashboard",
-      view: "ta",
-      description: "Multi-team overview and alerts (TA/Instructor view)",
-      renderer: renderTADashboard
-    }
-  ];
-
-  buttons.forEach(button => {
-    const btn = document.createElement("button");
-    btn.textContent = button.label;
-    btn.onclick = () => {
-      button.renderer("content");
-      highlightActiveButton(button.view);
+    viewModules = {
+      form: formModule,
+      history: historyModule,
+      team: teamModule,
+      ta: taModule
     };
-    btn.id = `nav-${button.view}`;
-
-    buttonContainer.appendChild(btn);
-
-    // Add description
-    const desc = document.createElement("span");
-    desc.textContent = ` - ${button.description}`;
-    buttonContainer.appendChild(desc);
-
-    buttonContainer.appendChild(document.createElement("br"));
-  });
-
-  nav.appendChild(buttonContainer);
-
-  return nav;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to load view modules:", error);
+    throw new Error("Failed to load required modules");
+  }
 }
 
 /**
- * Highlights the currently active navigation button by adding [ACTIVE] text
- * @function highlightActiveButton
- * @param {string} activeView - The view identifier to highlight (form, team, history, or ta)
- * @returns {void}
- * @private
+ * Render a specific view
+ * @param {string} viewName - Name of the view to render
  */
-function highlightActiveButton(activeView) {
-  // Simple highlight by adding text indicator (no CSS!)
-  const views = ["form", "team", "history", "ta"];
+async function renderView(viewName) {
+  try {
+    // Update navigation active state
+    updateNavigation(viewName);
 
-  views.forEach(view => {
-    const btn = document.getElementById(`nav-${view}`);
-    if (btn) {
-      const originalText = btn.textContent.replace(" [ACTIVE]", "");
-      if (view === activeView) {
-        btn.textContent = `${originalText} [ACTIVE]`;
-      } else {
-        btn.textContent = originalText;
-      }
+    // Show loading
+    showLoading();
+
+    // Get the view module
+    const module = viewModules[viewName];
+    if (!module) {
+      throw new Error(`Unknown view: ${viewName}`);
+    }
+
+    // Render the view
+    const contentContainer = document.getElementById("standup-content");
+    await module.render(contentContainer);
+
+    // Update current view
+    currentView = viewName;
+
+  } catch (error) {
+    showError(`Failed to load view: ${error.message}`);
+    // eslint-disable-next-line no-console
+    console.error("View render error:", error);
+  }
+}
+
+/**
+ * Update navigation button active states
+ * @param {string} activeView - The currently active view
+ */
+function updateNavigation(activeView) {
+  const navButtons = document.querySelectorAll(".standup-nav button");
+  navButtons.forEach(button => {
+    const view = button.getAttribute("data-view");
+    if (view === activeView) {
+      button.classList.add("active");
+    } else {
+      button.classList.remove("active");
     }
   });
 }
 
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initStandupDemo);
-} else {
-  initStandupDemo();
+/**
+ * Show loading state
+ */
+function showLoading() {
+  const contentContainer = document.getElementById("standup-content");
+  contentContainer.innerHTML = "<div class=\"loading-message\">Loading...</div>";
 }
+
+/**
+ * Show error message
+ * @param {string} message - Error message to display
+ */
+function showError(message) {
+  const contentContainer = document.getElementById("standup-content");
+  contentContainer.innerHTML = `
+    <div class="error-message">
+      <strong>Error:</strong> ${message}
+    </div>
+  `;
+}
+
+/**
+ * Refresh the current view
+ */
+export async function refreshCurrentView() {
+  await renderView(currentView);
+}
+
+/**
+ * Get the current active view name
+ */
+export function getCurrentView() {
+  return currentView;
+}
+
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", init);

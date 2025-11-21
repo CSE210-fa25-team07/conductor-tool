@@ -1,416 +1,246 @@
 /**
- * @fileoverview Team Dashboard Page - Shows team members' standups
- * NO STYLING - Pure HTML elements only
- * @module standup/teamDashboard
+ * @fileoverview Team Dashboard View
+ * Displays team standup activity and member status
  */
 
-import {
-  currentUser,
-  mockTeams,
-  getStandupsByTeam,
-  getUserById,
-  getCommentsByStandup,
-  mockComments,
-  getGithubActivityByTeam,
-  getGithubActivityByUser,
-  getReposByTeam,
-  mockUsers
-} from "./mockData.js";
+import { getTeamStandups } from "../../api/standupApi.js";
+import { getUserTeams, getActiveCourse } from "../../utils/standup/userContext.js";
+import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
+
+let selectedTeamId = null;
 
 /**
- * Renders the team dashboard with team standups and collaboration features
- * @function renderTeamDashboard
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the team dashboard view
+ * @param {HTMLElement} container - Container to render into
  */
-export function renderTeamDashboard(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
+export async function render(container) {
+  const userTeams = getUserTeams();
+  const activeCourse = getActiveCourse();
 
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "Team Dashboard";
-  container.appendChild(header);
+  // Filter teams for active course
+  const courseTeams = userTeams.filter(t => t.courseUuid === activeCourse?.courseUuid);
 
-  // User info
-  const userInfo = document.createElement("p");
-  userInfo.textContent = `Logged in as: ${currentUser.name}`;
-  container.appendChild(userInfo);
+  if (courseTeams.length === 0) {
+    container.innerHTML = await renderNoTeams();
+    return;
+  }
 
-  // Team selector
-  const teamSelectorLabel = document.createElement("label");
-  teamSelectorLabel.textContent = "Select Team: ";
-  container.appendChild(teamSelectorLabel);
+  // Select first team if none selected
+  if (!selectedTeamId && courseTeams.length > 0) {
+    selectedTeamId = courseTeams[0].teamUuid;
+  }
 
-  const teamSelect = document.createElement("select");
-  teamSelect.id = "team-selector";
+  const selectedTeam = courseTeams.find(t => t.teamUuid === selectedTeamId) || courseTeams[0];
+  selectedTeamId = selectedTeam.teamUuid;
 
-  mockTeams.forEach(team => {
-    const option = document.createElement("option");
-    option.value = team.team_uuid;
-    option.textContent = team.name;
-    teamSelect.appendChild(option);
+  container.innerHTML = `
+    <div class="team-dashboard">
+      <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-forest-green); margin-bottom: 1.5rem;">
+        Team Dashboard
+      </h2>
+
+      ${courseTeams.length > 1 ? `
+        <div class="team-selector" style="margin-bottom: 2rem;">
+          <label for="team-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
+            Select Team:
+          </label>
+          <select id="team-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
+            ${courseTeams.map(team => `
+              <option value="${team.teamUuid}" ${team.teamUuid === selectedTeamId ? "selected" : ""}>
+                ${team.teamName}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      ` : ""}
+
+      <div class="team-header">
+        <div class="team-name">${selectedTeam.teamName}</div>
+        <div class="team-info">${activeCourse?.courseCode} - ${activeCourse?.courseName}</div>
+      </div>
+
+      <div id="team-content">
+        <div class="loading-message">Loading team activity...</div>
+      </div>
+    </div>
+  `;
+
+  // Attach team selector listener
+  if (courseTeams.length > 1) {
+    const teamSelect = document.getElementById("team-select");
+    teamSelect.addEventListener("change", async (e) => {
+      selectedTeamId = e.target.value;
+      await loadTeamData();
+    });
+  }
+
+  // Load team data
+  await loadTeamData();
+}
+
+/**
+ * Load team standup data
+ */
+async function loadTeamData() {
+  const contentDiv = document.getElementById("team-content");
+
+  try {
+    contentDiv.innerHTML = "<div class=\"loading-message\">Loading team activity...</div>";
+
+    // Get last 7 days of standups
+    const endDate = new Date().toISOString().split("T")[0];
+    const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+    const standups = await getTeamStandups(selectedTeamId, {
+      startDate,
+      endDate
+    });
+
+    // Group standups by user
+    const userStandups = groupStandupsByUser(standups);
+
+    if (Object.keys(userStandups).length > 0) {
+      const memberCardsHTML = await renderComponents(
+        "memberCard",
+        Object.entries(userStandups).map(([, data]) =>
+          prepareMemberCardData(data.user, data.standups)
+        )
+      );
+
+      contentDiv.innerHTML = `
+        <div class="team-summary" style="background-color: var(--color-light-matcha); padding: 1rem; border: 3px solid var(--color-forest-green); border-radius: 4px; margin-bottom: 2rem;">
+          <div style="font-family: var(--font-primary); font-size: 1rem; color: var(--color-forest-green);">
+            <strong>Last 7 days:</strong> ${standups.length} standup${standups.length !== 1 ? "s" : ""} submitted
+            by ${Object.keys(userStandups).length} team member${Object.keys(userStandups).length !== 1 ? "s" : ""}
+          </div>
+        </div>
+        <div class="member-grid">
+          ${memberCardsHTML}
+        </div>
+      `;
+    } else {
+      contentDiv.innerHTML = await renderEmptyState();
+    }
+
+  } catch (error) {
+    contentDiv.innerHTML = `
+      <div class="error-message">
+        Failed to load team data: ${error.message}
+      </div>
+    `;
+  }
+}
+
+/**
+ * Group standups by user
+ * @param {Array} standups - Array of standups
+ */
+function groupStandupsByUser(standups) {
+  const grouped = {};
+
+  standups.forEach(standup => {
+    if (!standup.user) return;
+
+    const userId = standup.user.userUuid;
+    if (!grouped[userId]) {
+      grouped[userId] = {
+        user: standup.user,
+        standups: []
+      };
+    }
+    grouped[userId].standups.push(standup);
   });
 
-  teamSelect.onchange = () => {
-    renderTeamStandups(container, teamSelect.value);
-  };
-
-  container.appendChild(teamSelect);
-  container.appendChild(document.createElement("br"));
-  container.appendChild(document.createElement("br"));
-
-  // Dashboard content container
-  const dashboardContent = document.createElement("div");
-  dashboardContent.id = "dashboard-content";
-  container.appendChild(dashboardContent);
-
-  // Initial render
-  renderTeamStandups(container, mockTeams[0].team_uuid);
-}
-
-function renderTeamStandups(container, teamId) {
-  const dashboardContent = document.getElementById("dashboard-content");
-  dashboardContent.innerHTML = "";
-
-  const team = mockTeams.find(t => t.team_uuid === teamId);
-  const standups = getStandupsByTeam(teamId);
-
-  // Team name
-  const teamHeader = document.createElement("h2");
-  teamHeader.textContent = `${team.name} - Recent Standups`;
-  dashboardContent.appendChild(teamHeader);
-
-  // GitHub org info
-  if (team.github_org) {
-    const githubInfo = document.createElement("p");
-    githubInfo.textContent = `GitHub Organization: ${team.github_org}`;
-    dashboardContent.appendChild(githubInfo);
-
-    const repos = getReposByTeam(teamId);
-    const repoInfo = document.createElement("p");
-    repoInfo.textContent = `Repositories: ${repos.map(r => r.repo_name).join(", ")}`;
-    dashboardContent.appendChild(repoInfo);
-  }
-
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // GitHub Activity Section (Today)
-  const githubSection = document.createElement("div");
-  githubSection.innerHTML = "<h3>GitHub Activity (Today)</h3>";
-
-  const teamGithubActivity = getGithubActivityByTeam(teamId, 24);
-
-  if (teamGithubActivity.length === 0) {
-    const noActivity = document.createElement("p");
-    noActivity.textContent = "No GitHub activity in the last 24 hours.";
-    githubSection.appendChild(noActivity);
-  } else {
-    // Team summary stats
-    const commits = teamGithubActivity.filter(a => a.activity_type === "commit");
-    const prs = teamGithubActivity.filter(a => a.activity_type === "pull_request");
-    const reviews = teamGithubActivity.filter(a => a.activity_type === "review");
-
-    const statsSummary = document.createElement("p");
-    statsSummary.textContent = `Team total: ${commits.length} commits, ${prs.length} PRs, ${reviews.length} reviews`;
-    githubSection.appendChild(statsSummary);
-
-    // Per-member GitHub activity
-    githubSection.appendChild(document.createElement("br"));
-    const perMemberHeader = document.createElement("strong");
-    perMemberHeader.textContent = "Per-Member Activity:";
-    githubSection.appendChild(perMemberHeader);
-    githubSection.appendChild(document.createElement("br"));
-    githubSection.appendChild(document.createElement("br"));
-
-    // Get team members (users in this team)
-    const teamMembers = mockUsers.filter(u => u.role === "student");
-
-    teamMembers.forEach(member => {
-      const memberActivity = getGithubActivityByUser(member.user_uuid, 24);
-      const memberDiv = document.createElement("div");
-
-      const memberHeader = document.createElement("strong");
-      memberHeader.textContent = `${member.name}:`;
-      memberDiv.appendChild(memberHeader);
-      memberDiv.appendChild(document.createElement("br"));
-
-      if (!member.github_connected) {
-        const notConnected = document.createElement("span");
-        notConnected.textContent = "  ⚠️ GitHub not connected";
-        memberDiv.appendChild(notConnected);
-      } else if (memberActivity.length === 0) {
-        const noActivity = document.createElement("span");
-        noActivity.textContent = "  No activity today";
-        memberDiv.appendChild(noActivity);
-      } else {
-        const memberCommits = memberActivity.filter(a => a.activity_type === "commit");
-        const memberPRs = memberActivity.filter(a => a.activity_type === "pull_request");
-        const memberReviews = memberActivity.filter(a => a.activity_type === "review");
-        const memberIssues = memberActivity.filter(a => a.activity_type === "issue");
-
-        const totalAdditions = memberCommits.reduce((sum, a) => sum + (a.data.additions || 0), 0);
-        const totalDeletions = memberCommits.reduce((sum, a) => sum + (a.data.deletions || 0), 0);
-
-        const activityText = document.createElement("span");
-        activityText.textContent = `  ${memberCommits.length} commits (+${totalAdditions}/-${totalDeletions} lines)`;
-        if (memberPRs.length > 0) activityText.textContent += `, ${memberPRs.length} PRs`;
-        if (memberReviews.length > 0) activityText.textContent += `, ${memberReviews.length} reviews`;
-        if (memberIssues.length > 0) activityText.textContent += `, ${memberIssues.length} issues`;
-
-        memberDiv.appendChild(activityText);
-        memberDiv.appendChild(document.createElement("br"));
-
-        // Show repos worked on
-        const repos = [...new Set(memberActivity.map(a => a.repo_name))];
-        const reposText = document.createElement("span");
-        reposText.textContent = `  Repos: ${repos.join(", ")}`;
-        memberDiv.appendChild(reposText);
-      }
-
-      memberDiv.appendChild(document.createElement("br"));
-      githubSection.appendChild(memberDiv);
-    });
-  }
-
-  dashboardContent.appendChild(githubSection);
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // Filter by date
-  const filterLabel = document.createElement("label");
-  filterLabel.textContent = "Filter by date: ";
-  dashboardContent.appendChild(filterLabel);
-
-  const dateFilter = document.createElement("input");
-  dateFilter.type = "date";
-  dateFilter.value = new Date().toISOString().split("T")[0];
-  dashboardContent.appendChild(dateFilter);
-
-  const filterBtn = document.createElement("button");
-  filterBtn.textContent = "Filter";
-  filterBtn.onclick = () => {
-    alert(`Filtering by date: ${dateFilter.value} (mock action)`);
-  };
-  dashboardContent.appendChild(filterBtn);
-
-  dashboardContent.appendChild(document.createElement("br"));
-  dashboardContent.appendChild(document.createElement("br"));
-
-  // Sentiment trend summary
-  const sentimentSummary = document.createElement("div");
-  sentimentSummary.innerHTML = "<h3>7-Day Sentiment Trend</h3>";
-
-  const avgSentiment = standups.reduce((sum, s) => sum + s.sentiment_score, 0) / standups.length;
-  const avgText = document.createElement("p");
-  avgText.textContent = `Average team sentiment: ${avgSentiment.toFixed(2)} (${avgSentiment > 0.5 ? "Positive" : avgSentiment > 0 ? "Neutral" : "Negative"})`;
-  sentimentSummary.appendChild(avgText);
-
-  const trendMock = document.createElement("p");
-  trendMock.textContent = "[MOCK CHART: Line graph showing sentiment over 7 days would appear here]";
-  sentimentSummary.appendChild(trendMock);
-
-  dashboardContent.appendChild(sentimentSummary);
-
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // Active blockers section
-  const blockersSection = document.createElement("div");
-  blockersSection.innerHTML = "<h3>Active Blockers</h3>";
-
-  const activeBlockers = standups.filter(s => s.blockers && s.blockers.trim() !== "");
-
-  if (activeBlockers.length === 0) {
-    const noBlockers = document.createElement("p");
-    noBlockers.textContent = "No active blockers!";
-    blockersSection.appendChild(noBlockers);
-  } else {
-    activeBlockers.forEach(standup => {
-      const user = getUserById(standup.user_uuid);
-      const blockerDiv = document.createElement("div");
-      blockerDiv.innerHTML = `<strong>BLOCKER from ${user.name}:</strong>`;
-
-      const blockerText = document.createElement("p");
-      blockerText.textContent = standup.blockers;
-      blockerDiv.appendChild(blockerText);
-
-      const helpBtn = document.createElement("button");
-      helpBtn.textContent = "I can help!";
-      helpBtn.onclick = () => {
-        alert(`You offered to help ${user.name} with their blocker! (mock action - would add comment and notify user)`);
-      };
-      blockerDiv.appendChild(helpBtn);
-
-      const escalateBtn = document.createElement("button");
-      escalateBtn.textContent = "Escalate to TA";
-      escalateBtn.onclick = () => {
-        alert("Blocker escalated to TA! (mock action - would send notification to TA)");
-      };
-      blockerDiv.appendChild(escalateBtn);
-
-      const timeInfo = document.createElement("p");
-      const hoursSince = Math.floor((new Date() - new Date(standup.date_submitted)) / (1000 * 60 * 60));
-      timeInfo.textContent = `Posted ${hoursSince} hours ago ${hoursSince >= 4 ? "⚠️ AUTO-ESCALATION PENDING" : ""}`;
-      blockerDiv.appendChild(timeInfo);
-
-      blockerDiv.appendChild(document.createElement("hr"));
-      blockersSection.appendChild(blockerDiv);
-    });
-  }
-
-  dashboardContent.appendChild(blockersSection);
-
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // All standups
-  const standupsHeader = document.createElement("h3");
-  standupsHeader.textContent = "All Team Standups";
-  dashboardContent.appendChild(standupsHeader);
-
-  if (standups.length === 0) {
-    const noStandups = document.createElement("p");
-    noStandups.textContent = "No standups submitted yet.";
-    dashboardContent.appendChild(noStandups);
-  } else {
-    // Sort by date (most recent first)
-    const sortedStandups = [...standups].sort((a, b) =>
-      new Date(b.date_submitted) - new Date(a.date_submitted)
+  // Sort standups by date (newest first)
+  Object.values(grouped).forEach(data => {
+    data.standups.sort((a, b) =>
+      new Date(b.dateSubmitted) - new Date(a.dateSubmitted)
     );
+  });
 
-    sortedStandups.forEach(standup => {
-      const standupCard = createStandupCard(standup);
-      dashboardContent.appendChild(standupCard);
-      dashboardContent.appendChild(document.createElement("hr"));
-    });
-  }
-
-  // Missing submissions section
-  const missingSection = document.createElement("div");
-  missingSection.innerHTML = "<h3>Missing Submissions</h3>";
-
-  const missingText = document.createElement("p");
-  missingText.textContent = "[MOCK: Would show team members who haven't submitted today]";
-  missingSection.appendChild(missingText);
-
-  dashboardContent.appendChild(missingSection);
+  return grouped;
 }
 
-function createStandupCard(standup) {
-  const user = getUserById(standup.user_uuid);
-  const comments = getCommentsByStandup(standup.standup_uuid);
+/**
+ * Prepare member card data for template
+ * @param {Object} user - User data
+ * @param {Array} standups - User's standups
+ * @returns {Object} Template data
+ */
+function prepareMemberCardData(user, standups) {
+  const latestStandup = standups[0];
+  const today = new Date().toISOString().split("T")[0];
+  const hasSubmittedToday = standups.some(s =>
+    s.dateSubmitted.split("T")[0] === today
+  );
 
-  const card = document.createElement("div");
+  const latestDate = latestStandup
+    ? new Date(latestStandup.dateSubmitted).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric"
+    })
+    : "No submissions";
 
-  // Header
-  const cardHeader = document.createElement("h4");
-  cardHeader.textContent = `${user.name} - ${new Date(standup.date_submitted).toLocaleString()}`;
-  card.appendChild(cardHeader);
-
-  // Sentiment
-  const sentiment = document.createElement("p");
-  sentiment.textContent = `Sentiment: ${standup.sentiment_emoji} (${standup.sentiment_score})`;
-  card.appendChild(sentiment);
-
-  // What done
-  const whatDoneLabel = document.createElement("strong");
-  whatDoneLabel.textContent = "What they accomplished:";
-  card.appendChild(whatDoneLabel);
-  card.appendChild(document.createElement("br"));
-
-  const whatDoneText = document.createElement("p");
-  whatDoneText.textContent = standup.what_done;
-  card.appendChild(whatDoneText);
-
-  // What next
-  const whatNextLabel = document.createElement("strong");
-  whatNextLabel.textContent = "What they're working on next:";
-  card.appendChild(whatNextLabel);
-  card.appendChild(document.createElement("br"));
-
-  const whatNextText = document.createElement("p");
-  whatNextText.textContent = standup.what_next;
-  card.appendChild(whatNextText);
-
-  // Blockers (if any)
-  if (standup.blockers && standup.blockers.trim() !== "") {
-    const blockersLabel = document.createElement("strong");
-    blockersLabel.textContent = "🚨 BLOCKERS:";
-    card.appendChild(blockersLabel);
-    card.appendChild(document.createElement("br"));
-
-    const blockersText = document.createElement("p");
-    blockersText.textContent = standup.blockers;
-    card.appendChild(blockersText);
-  }
-
-  // Reflection (if any)
-  if (standup.reflection && standup.reflection.trim() !== "") {
-    const reflectionLabel = document.createElement("strong");
-    reflectionLabel.textContent = "Reflection:";
-    card.appendChild(reflectionLabel);
-    card.appendChild(document.createElement("br"));
-
-    const reflectionText = document.createElement("p");
-    reflectionText.textContent = standup.reflection;
-    card.appendChild(reflectionText);
-  }
-
-  // Comments section
-  const commentsHeader = document.createElement("strong");
-  commentsHeader.textContent = `Comments (${comments.length}):`;
-  card.appendChild(commentsHeader);
-  card.appendChild(document.createElement("br"));
-
-  if (comments.length > 0) {
-    comments.forEach(comment => {
-      const commenter = getUserById(comment.commenter_uuid);
-      const commentDiv = document.createElement("div");
-
-      const commentAuthor = document.createElement("em");
-      commentAuthor.textContent = `${commenter.name} - ${new Date(comment.created_at).toLocaleString()}:`;
-      commentDiv.appendChild(commentAuthor);
-      commentDiv.appendChild(document.createElement("br"));
-
-      const commentText = document.createElement("p");
-      commentText.textContent = comment.comment_text;
-      commentDiv.appendChild(commentText);
-
-      card.appendChild(commentDiv);
-    });
-  }
-
-  // Add comment form
-  const addCommentLabel = document.createElement("label");
-  addCommentLabel.textContent = "Add a comment:";
-  card.appendChild(addCommentLabel);
-  card.appendChild(document.createElement("br"));
-
-  const commentInput = document.createElement("textarea");
-  commentInput.rows = 2;
-  commentInput.cols = 60;
-  commentInput.placeholder = "Write a comment...";
-  card.appendChild(commentInput);
-  card.appendChild(document.createElement("br"));
-
-  const submitCommentBtn = document.createElement("button");
-  submitCommentBtn.textContent = "Add Comment";
-  submitCommentBtn.onclick = () => {
-    if (commentInput.value.trim()) {
-      /* eslint-disable camelcase */
-      // Mock adding comment - using snake_case to match database schema
-      mockComments.push({
-        comment_uuid: `comment-${Date.now()}`,
-        standup_uuid: standup.standup_uuid,
-        commenter_uuid: currentUser.user_uuid,
-        comment_text: commentInput.value,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      /* eslint-enable camelcase */
-      alert("Comment added! (mock action - page would refresh)");
-      commentInput.value = "";
-    }
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    statusClass: hasSubmittedToday ? "submitted" : "missing",
+    statusText: hasSubmittedToday ? "✓ Today" : "Missing",
+    latestDate,
+    moodEmoji: latestStandup?.sentimentScore ? renderMood(latestStandup.sentimentScore) : null,
+    hasLatestStandup: !!latestStandup,
+    whatNextTruncated: latestStandup ? truncate(latestStandup.whatNext, 100) : null,
+    blockers: latestStandup?.blockers || null,
+    blockersTruncated: latestStandup?.blockers ? truncate(latestStandup.blockers, 80) : null,
+    standupCount: standups.length > 0 ? standups.length : null,
+    standupPlural: standups.length !== 1 ? "s" : ""
   };
-  card.appendChild(submitCommentBtn);
+}
 
-  return card;
+/**
+ * Render mood emoji
+ * @param {number} score - Sentiment score (1-5)
+ */
+function renderMood(score) {
+  const moods = {
+    1: "😞",
+    2: "😕",
+    3: "😐",
+    4: "🙂",
+    5: "😄"
+  };
+  return moods[score] || "😐";
+}
+
+/**
+ * Truncate text
+ * @param {string} text - Text to truncate
+ * @param {number} maxLength - Maximum length
+ */
+function truncate(text, maxLength) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+}
+
+/**
+ * Render empty state
+ */
+async function renderEmptyState() {
+  return await renderComponent("emptyState", {
+    icon: "👥",
+    title: "No team activity yet",
+    text: "Team members' standups will appear here once they start submitting."
+  });
+}
+
+/**
+ * Render no teams message
+ */
+async function renderNoTeams() {
+  return await renderComponent("emptyState", {
+    icon: "👥",
+    title: "No team assigned",
+    text: "You need to be assigned to a team to view the team dashboard."
+  });
 }

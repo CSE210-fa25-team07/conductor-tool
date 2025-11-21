@@ -1,315 +1,305 @@
 /**
- * @fileoverview Standup Form Page - Student submits daily standup
- * NO STYLING - Pure HTML elements only
- * @module standup/standupForm
+ * @fileoverview Standup Form View
+ * Handles creating and editing standup submissions
  */
 
-import { currentUser, getGithubActivityByUser, mockTeams } from "./mockData.js";
+import { createStandup, updateStandup } from "../../api/standupApi.js";
+import { getActiveCourse, getUserTeams } from "../../utils/standup/userContext.js";
+import { refreshCurrentView } from "./main.js";
+
+let editMode = false;
+let editingStandupId = null;
 
 /**
- * Renders the standup submission form
- * @function renderStandupForm
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the standup form
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} standupData - Optional standup data for editing
  */
-export function renderStandupForm(containerId) {
-  const container = document.getElementById(containerId);
+export async function render(container, standupData = null) {
+  // Set edit mode if standupData provided
+  editMode = !!standupData;
+  editingStandupId = standupData?.standupUuid || null;
 
-  // Clear container
-  container.innerHTML = "";
+  const activeCourse = getActiveCourse();
+  const userTeams = getUserTeams();
 
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "Daily Standup";
-  container.appendChild(header);
+  // Filter teams for the active course
+  const courseTeams = userTeams.filter(t => t.courseUuid === activeCourse?.courseUuid);
 
-  // User info
-  const userInfo = document.createElement("p");
-  userInfo.textContent = `Logged in as: ${currentUser.name} (${currentUser.email})`;
-  container.appendChild(userInfo);
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
 
-  // Date info
-  const dateInfo = document.createElement("p");
-  dateInfo.textContent = `Date: ${new Date().toLocaleDateString()}`;
-  container.appendChild(dateInfo);
+  container.innerHTML = `
+    <div class="standup-form">
+      <form id="standup-form">
+        <div class="form-section">
+          <h2>${editMode ? "Edit Standup" : "Submit Daily Standup"}</h2>
 
-  // Form
-  const form = document.createElement("form");
-  form.id = "standup-form";
+          <div class="form-group">
+            <label for="date-submitted">Date *</label>
+            <input
+              type="date"
+              id="date-submitted"
+              name="dateSubmitted"
+              value="${standupData?.dateSubmitted?.split("T")[0] || today}"
+              max="${today}"
+              required
+            >
+            <span class="form-help-text">The date this standup is for</span>
+          </div>
 
-  // Question 1: What did you accomplish yesterday?
-  const q1Label = document.createElement("label");
-  q1Label.textContent = "1. What did you accomplish yesterday?";
-  form.appendChild(q1Label);
+          ${courseTeams.length > 0 ? `
+            <div class="form-group">
+              <label for="team">Team</label>
+              <select id="team" name="teamUuid">
+                <option value="">Personal (No team)</option>
+                ${courseTeams.map(team => `
+                  <option
+                    value="${team.teamUuid}"
+                    ${standupData?.teamUuid === team.teamUuid ? "selected" : ""}
+                  >
+                    ${team.teamName}
+                  </option>
+                `).join("")}
+              </select>
+              <span class="form-help-text">Optional: Select a team to share with</span>
+            </div>
+          ` : ""}
+        </div>
 
-  form.appendChild(document.createElement("br"));
+        <div class="form-section">
+          <h2>Progress Update</h2>
 
-  const q1Textarea = document.createElement("textarea");
-  q1Textarea.id = "what-done";
-  q1Textarea.name = "what-done";
-  q1Textarea.rows = 5;
-  q1Textarea.cols = 80;
-  q1Textarea.placeholder = "Describe what you accomplished...";
-  form.appendChild(q1Textarea);
+          <div class="form-group">
+            <label for="what-done">What did you accomplish? *</label>
+            <textarea
+              id="what-done"
+              name="whatDone"
+              required
+              placeholder="Describe what you completed today..."
+            >${standupData?.whatDone || ""}</textarea>
+            <span class="form-help-text">Share your completed tasks and achievements</span>
+          </div>
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+          <div class="form-group">
+            <label for="what-next">What are you working on next? *</label>
+            <textarea
+              id="what-next"
+              name="whatNext"
+              required
+              placeholder="Describe your plans for the next work session..."
+            >${standupData?.whatNext || ""}</textarea>
+            <span class="form-help-text">Outline your upcoming tasks and goals</span>
+          </div>
 
-  // GitHub status and auto-populate button
-  if (!currentUser.github_connected) {
-    const githubWarning = document.createElement("p");
-    githubWarning.textContent = "⚠️ GitHub not connected. Connect your GitHub account to auto-populate activity.";
-    form.appendChild(githubWarning);
+          <div class="form-group">
+            <label for="blockers">Any blockers or challenges?</label>
+            <textarea
+              id="blockers"
+              name="blockers"
+              placeholder="Describe any obstacles you're facing (optional)..."
+            >${standupData?.blockers || ""}</textarea>
+            <span class="form-help-text">Share any issues that are blocking your progress</span>
+          </div>
+        </div>
 
-    const connectBtn = document.createElement("button");
-    connectBtn.type = "button";
-    connectBtn.textContent = "Connect GitHub Account";
-    connectBtn.onclick = () => {
-      alert("Would redirect to GitHub OAuth (mock action)");
-    };
-    form.appendChild(connectBtn);
-  } else {
-    // Show GitHub org info
-    const team = mockTeams.find(t => t.team_uuid === "team-001");
-    const githubInfo = document.createElement("p");
-    githubInfo.textContent = `GitHub connected: @${currentUser.github_username} | Team org: ${team.github_org}`;
-    form.appendChild(githubInfo);
+        <div class="form-section">
+          <h2>Reflection</h2>
 
-    // GitHub auto-populate button
-    const githubBtn = document.createElement("button");
-    githubBtn.type = "button";
-    githubBtn.textContent = "Auto-populate from GitHub (last 24h)";
-    githubBtn.onclick = () => {
-      const activities = getGithubActivityByUser(currentUser.user_uuid, 24);
+          <div class="form-group">
+            <label for="reflection">Personal Reflection</label>
+            <textarea
+              id="reflection"
+              name="reflection"
+              placeholder="How are you feeling about your progress? Any insights?"
+            >${standupData?.reflection || ""}</textarea>
+            <span class="form-help-text">Optional: Reflect on your learning and progress</span>
+          </div>
 
-      if (activities.length === 0) {
-        q1Textarea.value = "No GitHub activity in the last 24 hours.";
-        return;
-      }
+          <div class="form-group">
+            <label for="sentiment">How are you feeling? (1-5)</label>
+            <input
+              type="number"
+              id="sentiment"
+              name="sentimentScore"
+              min="1"
+              max="5"
+              value="${standupData?.sentimentScore || 3}"
+            >
+            <span class="form-help-text">1 = Struggling, 3 = Okay, 5 = Great</span>
+          </div>
 
-      let content = "GitHub Activity (last 24h):\n\n";
+          <div class="form-group">
+            <label for="visibility">Visibility</label>
+            <select id="visibility" name="visibility">
+              <option value="team" ${!standupData || standupData?.visibility === "team" ? "selected" : ""}>
+                Team (visible to team members and instructors)
+              </option>
+              <option value="private" ${standupData?.visibility === "private" ? "selected" : ""}>
+                Private (only visible to you and instructors)
+              </option>
+              <option value="public" ${standupData?.visibility === "public" ? "selected" : ""}>
+                Public (visible to everyone in the course)
+              </option>
+            </select>
+            <span class="form-help-text">Control who can see your standup</span>
+          </div>
+        </div>
 
-      // Group by type
-      const commits = activities.filter(a => a.activity_type === "commit");
-      const prs = activities.filter(a => a.activity_type === "pull_request");
-      const reviews = activities.filter(a => a.activity_type === "review");
-      const issues = activities.filter(a => a.activity_type === "issue");
+        <div class="form-actions">
+          ${editMode ? `
+            <button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>
+          ` : ""}
+          <button type="submit" class="btn-primary">
+            ${editMode ? "Update Standup" : "Submit Standup"}
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
 
-      if (commits.length > 0) {
-        content += "Commits:\n";
-        commits.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ ${activity.data.sha}: ${activity.data.message} (${activity.repo_name}) - ${hoursAgo}h ago - +${activity.data.additions}/-${activity.data.deletions} lines\n`;
-        });
-        content += "\n";
-      }
+  // Attach event listeners
+  const form = document.getElementById("standup-form");
+  form.addEventListener("submit", handleSubmit);
 
-      if (prs.length > 0) {
-        content += "Pull Requests:\n";
-        prs.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ PR #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
+  if (editMode) {
+    const cancelBtn = document.getElementById("cancel-edit");
+    cancelBtn.addEventListener("click", () => {
+      editMode = false;
+      editingStandupId = null;
+      render(container);
+    });
+  }
+}
 
-      if (reviews.length > 0) {
-        content += "Code Reviews:\n";
-        reviews.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Reviewed PR #${activity.data.pr_number}: ${activity.data.pr_title} (${activity.repo_name}) - ${activity.data.review_state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
+/**
+ * Handle form submission
+ * @param {Event} event - Form submit event
+ */
+async function handleSubmit(event) {
+  event.preventDefault();
 
-      if (issues.length > 0) {
-        content += "Issues:\n";
-        issues.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Issue #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.action.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
+  const form = event.target;
+  const formData = new FormData(form);
 
-      content += "\n[You can edit above or add non-code work below]";
+  // Build standup data object
+  const standupData = {
+    dateSubmitted: formData.get("dateSubmitted"),
+    teamUuid: formData.get("teamUuid") || null,
+    whatDone: formData.get("whatDone"),
+    whatNext: formData.get("whatNext"),
+    blockers: formData.get("blockers") || null,
+    reflection: formData.get("reflection") || null,
+    sentimentScore: parseInt(formData.get("sentimentScore"), 10),
+    visibility: formData.get("visibility")
+  };
 
-      q1Textarea.value = content;
-    };
-    form.appendChild(githubBtn);
+  // Add courseUuid from active course
+  const activeCourse = getActiveCourse();
+  if (activeCourse) {
+    standupData.courseUuid = activeCourse.courseUuid;
   }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  try {
+    // Disable submit button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editMode ? "Updating..." : "Submitting...";
 
-  // Question 2: What will you work on today?
-  const q2Label = document.createElement("label");
-  q2Label.textContent = "2. What will you work on today?";
-  form.appendChild(q2Label);
+    // Submit to API
+    if (editMode && editingStandupId) {
+      await updateStandup(editingStandupId, standupData);
+    } else {
+      await createStandup(standupData);
+    }
 
-  form.appendChild(document.createElement("br"));
+    // Show success message
+    showSuccess(editMode ? "Standup updated successfully!" : "Standup submitted successfully!");
 
-  const q2Textarea = document.createElement("textarea");
-  q2Textarea.id = "what-next";
-  q2Textarea.name = "what-next";
-  q2Textarea.rows = 5;
-  q2Textarea.cols = 80;
-  q2Textarea.placeholder = "Describe your plans for today...";
-  form.appendChild(q2Textarea);
+    // Reset form if creating new
+    if (!editMode) {
+      form.reset();
+      // Reset to today's date
+      const today = new Date().toISOString().split("T")[0];
+      form.querySelector("#date-submitted").value = today;
+      form.querySelector("#sentiment").value = "3";
+    }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
 
-  // Question 3: Any blockers?
-  const q3Label = document.createElement("label");
-  q3Label.textContent = "3. Any blockers?";
-  form.appendChild(q3Label);
+    // Exit edit mode if editing
+    if (editMode) {
+      setTimeout(() => {
+        editMode = false;
+        editingStandupId = null;
+        refreshCurrentView();
+      }, 1500);
+    }
 
-  form.appendChild(document.createElement("br"));
+  } catch (error) {
+    showError(error.message);
 
-  const q3Textarea = document.createElement("textarea");
-  q3Textarea.id = "blockers";
-  q3Textarea.name = "blockers";
-  q3Textarea.rows = 3;
-  q3Textarea.cols = 80;
-  q3Textarea.placeholder = "Describe any blockers (leave empty if none)...";
-  form.appendChild(q3Textarea);
+    // Re-enable button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    submitBtn.disabled = false;
+    submitBtn.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
+}
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+/**
+ * Show success message
+ * @param {string} message - Success message
+ */
+function showSuccess(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".success-message");
+  if (existing) existing.remove();
 
-  // Reflection (optional)
-  const reflectionLabel = document.createElement("label");
-  reflectionLabel.textContent = "Personal reflection (optional):";
-  form.appendChild(reflectionLabel);
+  const successDiv = document.createElement("div");
+  successDiv.className = "success-message";
+  successDiv.style.cssText = `
+    background-color: var(--color-radioactive-lime);
+    border: 3px solid var(--color-forest-green);
+    color: var(--color-forest-green);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-family: var(--font-primary);
+  `;
+  successDiv.textContent = message;
 
-  form.appendChild(document.createElement("br"));
+  form.insertBefore(successDiv, form.firstChild);
 
-  const reflectionTextarea = document.createElement("textarea");
-  reflectionTextarea.id = "reflection";
-  reflectionTextarea.name = "reflection";
-  reflectionTextarea.rows = 3;
-  reflectionTextarea.cols = 80;
-  reflectionTextarea.placeholder = "How are you feeling about the project?";
-  form.appendChild(reflectionTextarea);
+  // Auto-remove after 3 seconds
+  setTimeout(() => successDiv.remove(), 3000);
+}
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+/**
+ * Show error message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".error-message");
+  if (existing) existing.remove();
 
-  // Sentiment emoji selector
-  const sentimentLabel = document.createElement("label");
-  sentimentLabel.textContent = "How are you feeling today?";
-  form.appendChild(sentimentLabel);
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.textContent = message;
 
-  form.appendChild(document.createElement("br"));
+  form.insertBefore(errorDiv, form.firstChild);
 
-  const sentiments = [
-    { emoji: "😄", score: 1.0, label: "Very Happy" },
-    { emoji: "😊", score: 0.7, label: "Happy" },
-    { emoji: "🙂", score: 0.5, label: "Good" },
-    { emoji: "😐", score: 0.0, label: "Neutral" },
-    { emoji: "😕", score: -0.3, label: "Concerned" },
-    { emoji: "😞", score: -0.7, label: "Sad" }
-  ];
+  // Auto-remove after 5 seconds
+  setTimeout(() => errorDiv.remove(), 5000);
+}
 
-  const sentimentDiv = document.createElement("div");
-  sentimentDiv.id = "sentiment-selector";
-
-  let selectedSentiment = null;
-
-  sentiments.forEach(sentiment => {
-    const radioInput = document.createElement("input");
-    radioInput.type = "radio";
-    radioInput.name = "sentiment";
-    radioInput.value = sentiment.score;
-    radioInput.id = `sentiment-${sentiment.score}`;
-
-    const radioLabel = document.createElement("label");
-    radioLabel.htmlFor = `sentiment-${sentiment.score}`;
-    radioLabel.textContent = `${sentiment.emoji} ${sentiment.label}`;
-
-    radioInput.onchange = () => {
-      selectedSentiment = {
-        score: sentiment.score,
-        emoji: sentiment.emoji
-      };
-    };
-
-    sentimentDiv.appendChild(radioInput);
-    sentimentDiv.appendChild(radioLabel);
-    sentimentDiv.appendChild(document.createElement("br"));
-  });
-
-  form.appendChild(sentimentDiv);
-
-  form.appendChild(document.createElement("br"));
-
-  // Visibility selector
-  const visibilityLabel = document.createElement("label");
-  visibilityLabel.textContent = "Who can see this standup?";
-  form.appendChild(visibilityLabel);
-
-  form.appendChild(document.createElement("br"));
-
-  const visibilitySelect = document.createElement("select");
-  visibilitySelect.id = "visibility";
-  visibilitySelect.name = "visibility";
-
-  ["Team", "Instructor", "Private"].forEach(vis => {
-    const option = document.createElement("option");
-    option.value = vis;
-    option.textContent = vis;
-    if (vis === "Team") option.selected = true;
-    visibilitySelect.appendChild(option);
-  });
-
-  form.appendChild(visibilitySelect);
-
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
-
-  // Buttons
-  const saveDraftBtn = document.createElement("button");
-  saveDraftBtn.type = "button";
-  saveDraftBtn.textContent = "Save Draft";
-  saveDraftBtn.onclick = () => {
-    alert("Draft saved! (mock action)");
-  };
-  form.appendChild(saveDraftBtn);
-
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.textContent = "Submit Standup";
-  form.appendChild(submitBtn);
-
-  // Form submit handler
-  form.onsubmit = (e) => {
-    e.preventDefault();
-
-    /* eslint-disable camelcase */
-    // Using snake_case to match database schema
-    const formData = {
-      what_done: q1Textarea.value,
-      what_next: q2Textarea.value,
-      blockers: q3Textarea.value,
-      reflection: reflectionTextarea.value,
-      sentiment_score: selectedSentiment?.score || 0,
-      sentiment_emoji: selectedSentiment?.emoji || "😐",
-      visibility: visibilitySelect.value,
-      date_submitted: new Date().toISOString()
-    };
-    /* eslint-enable camelcase */
-
-    // Standup submitted (mock - would send to backend)
-    alert(`Standup submitted successfully!\n\nSentiment: ${formData.sentiment_emoji}\nVisibility: ${formData.visibility}`);
-
-    // Clear form
-    form.reset();
-  };
-
-  container.appendChild(form);
-
-  // Display submission time estimate
-  const timeEstimate = document.createElement("p");
-  timeEstimate.textContent = "Estimated time to complete: < 2 minutes";
-  container.appendChild(timeEstimate);
+/**
+ * Edit a standup
+ * @param {Object} standupData - Standup data to edit
+ */
+export function editStandup(container, standupData) {
+  render(container, standupData);
 }
