@@ -16,14 +16,6 @@ router.get("/", (req, res) => {
 });
 
 /**
- * Serves the class shell page (attendance/analysis view)
- * @name GET /attendance/analysis
- */
-router.get("/analysis", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
-});
-
-/**
  * Serves attendance page templates
  * @name GET /attendance/pages/:name
  */

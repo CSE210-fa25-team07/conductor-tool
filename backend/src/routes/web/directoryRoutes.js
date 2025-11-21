@@ -16,30 +16,6 @@ router.get("/", (req, res) => {
 });
 
 /**
- * Serves the class shell page (directory/group view)
- * @name GET /directory/group
- */
-router.get("/group", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
-});
-
-/**
- * Serves the class shell page (directory/my view)
- * @name GET /directory/my
- */
-router.get("/my", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
-});
-
-/**
- * Serves the class shell page (directory/people view)
- * @name GET /directory/people
- */
-router.get("/people", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
-});
-
-/**
  * Serves directory page templates
  * @name GET /directory/pages/:name
  */

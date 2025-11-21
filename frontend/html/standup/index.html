@@ -23,10 +23,14 @@
       if (storedCourse) {
         try {
           const course = JSON.parse(storedCourse);
-          const courseCode = encodeURIComponent(course.code || course.courseCode || 'unknown');
+          const courseId = course.courseUuid;
+
+          if (!courseId) {
+            throw new Error('No course UUID found');
+          }
 
           // Redirect to course standup page
-          window.location.replace(`/courses/${courseCode}/standup`);
+          window.location.replace(`/courses/${courseId}/standup`);
           return;
         } catch (error) {
           console.error('Failed to parse course data:', error);
