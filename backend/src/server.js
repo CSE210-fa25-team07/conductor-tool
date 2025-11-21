@@ -8,6 +8,7 @@ import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
+import { checkSession } from "./utils/auth.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -26,14 +27,6 @@ app.use(session({
   saveUninitialized: false,  // don’t create session until something is stored
   cookie: { secure: false }  // true if HTTPS/production
 }));
-
-// Middleware to check if user is authenticated
-function checkSession(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/");
-  }
-  next();
-}
 
 // Serve only assets statically (js, css, images) - HTML is served via protected routes
 app.use("/js", express.static(path.join(__dirname, "../../frontend/js")));

@@ -3,6 +3,7 @@
  * APIs are wired from /v1/api/
  */
 import express from "express";
+import { checkApiSession } from "../utils/auth.js";
 import directoryApis from "./api/directoryApi.js";
 import standupApis from "./api/standupApi.js";
 import attendanceApis from "./api/attendanceApi.js";
@@ -11,14 +12,16 @@ import userContextApis from "./api/userContextApi.js";
 
 const router = express.Router();
 
-router.use("/directory", directoryApis);
-
-router.use("/standups", standupApis);
-
-router.use("/attendance", attendanceApis);
-
+// Auth routes don't require session (checking/verifying session)
 router.use("/auth", authApis);
 
-router.use("/user-context", userContextApis);
+// Protected routes - require authenticated session
+router.use("/directory", checkApiSession, directoryApis);
+
+router.use("/standups", checkApiSession, standupApis);
+
+router.use("/attendance", checkApiSession, attendanceApis);
+
+router.use("/user-context", checkApiSession, userContextApis);
 
 export default router;

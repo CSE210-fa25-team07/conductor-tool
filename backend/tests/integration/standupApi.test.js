@@ -3,6 +3,7 @@ import request from "supertest";
 import express from "express";
 import session from "express-session";
 import standupApi from "../../src/routes/api/standupApi.js";
+import { checkApiSession } from "../../src/utils/auth.js";
 import { getPrisma } from "../../src/utils/db.js";
 
 const app = express();
@@ -20,7 +21,7 @@ app.post("/test/setup-session", (req, res) => {
   res.json({ success: true });
 });
 
-app.use("/standups", standupApi);
+app.use("/standups", checkApiSession, standupApi);
 
 describe("Standup API", () => {
   let testUser;

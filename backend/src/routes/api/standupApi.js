@@ -1,5 +1,6 @@
 /**
  * @module standup/api
+ * Authentication handled by checkSession middleware in apiRoutes.js
  */
 
 import express from "express";
@@ -8,19 +9,10 @@ import * as standupService from "../../services/standupService.js";
 const router = express.Router();
 
 /**
- * Middleware to check if user is authenticated
+ * Create a new standup
+ * @name POST /v1/api/standups
  */
-function checkAuth(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({
-      success: false,
-      error: "Not authenticated"
-    });
-  }
-  next();
-}
-
-router.post("/", checkAuth, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     return await standupService.createStandup(req, res);
   } catch (error) {
@@ -31,7 +23,11 @@ router.post("/", checkAuth, async (req, res) => {
   }
 });
 
-router.get("/me", checkAuth, async (req, res) => {
+/**
+ * Get current user's standups
+ * @name GET /v1/api/standups/me
+ */
+router.get("/me", async (req, res) => {
   try {
     return await standupService.getUserStandups(req, res);
   } catch (error) {
@@ -42,7 +38,11 @@ router.get("/me", checkAuth, async (req, res) => {
   }
 });
 
-router.put("/:standupId", checkAuth, async (req, res) => {
+/**
+ * Update a standup
+ * @name PUT /v1/api/standups/:standupId
+ */
+router.put("/:standupId", async (req, res) => {
   try {
     return await standupService.updateStandup(req, res);
   } catch (error) {
@@ -53,7 +53,11 @@ router.put("/:standupId", checkAuth, async (req, res) => {
   }
 });
 
-router.delete("/:standupId", checkAuth, async (req, res) => {
+/**
+ * Delete a standup
+ * @name DELETE /v1/api/standups/:standupId
+ */
+router.delete("/:standupId", async (req, res) => {
   try {
     return await standupService.deleteStandup(req, res);
   } catch (error) {
@@ -64,7 +68,11 @@ router.delete("/:standupId", checkAuth, async (req, res) => {
   }
 });
 
-router.get("/team/:teamId", checkAuth, async (req, res) => {
+/**
+ * Get standups for a team
+ * @name GET /v1/api/standups/team/:teamId
+ */
+router.get("/team/:teamId", async (req, res) => {
   try {
     return await standupService.getTeamStandups(req, res);
   } catch (error) {
@@ -75,7 +83,11 @@ router.get("/team/:teamId", checkAuth, async (req, res) => {
   }
 });
 
-router.get("/ta/overview", checkAuth, async (req, res) => {
+/**
+ * Get TA overview of standups
+ * @name GET /v1/api/standups/ta/overview
+ */
+router.get("/ta/overview", async (req, res) => {
   try {
     return await standupService.getTAOverview(req, res);
   } catch (error) {
