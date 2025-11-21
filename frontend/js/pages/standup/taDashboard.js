@@ -6,6 +6,7 @@
 import { getTAOverview } from "../../api/standupApi.js";
 import { getActiveCourse, getEnrolledCourses, isProfessorOrTA } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
+import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
 
 let selectedCourseId = null;
 
@@ -42,43 +43,39 @@ export async function render(container) {
     || teachingCourses[0];
   selectedCourseId = selectedCourse.courseUuid;
 
-  container.innerHTML = `
-    <div class="ta-dashboard">
-      <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-forest-green); margin-bottom: 1.5rem;">
-        TA Overview Dashboard
-      </h2>
+  // Load page template
+  const pageHTML = await loadPageTemplate("taDashboard");
+  container.innerHTML = pageHTML;
 
-      <div class="ta-controls">
-        ${teachingCourses.length > 1 ? `
-          <div style="margin-bottom: 1rem;">
-            <label for="course-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
-              Select Course:
-            </label>
-            <select id="course-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
-              ${teachingCourses.map(course => `
-                <option value="${course.courseUuid}" ${course.courseUuid === selectedCourseId ? "selected" : ""}>
-                  ${course.courseCode} - ${course.courseName}
-                </option>
-              `).join("")}
-            </select>
-          </div>
-        ` : ""}
-
-        <div style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--color-forest-green);">
-          ${selectedCourse.courseCode} - ${selectedCourse.courseName}
-        </div>
+  // Insert course selector if multiple courses
+  const courseSelectorPlaceholder = document.getElementById("course-select-placeholder");
+  if (courseSelectorPlaceholder && teachingCourses.length > 1) {
+    courseSelectorPlaceholder.outerHTML = `
+      <div style="margin-bottom: 1rem;">
+        <label for="course-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
+          Select Course:
+        </label>
+        <select id="course-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
+          ${teachingCourses.map(course => `
+            <option value="${course.courseUuid}" ${course.courseUuid === selectedCourseId ? "selected" : ""}>
+              ${course.courseCode} - ${course.courseName}
+            </option>
+          `).join("")}
+        </select>
       </div>
+    `;
+  }
 
-      <div id="ta-content">
-        <div class="loading-message">Loading course overview...</div>
-      </div>
-    </div>
-  `;
+  // Update selected course info
+  const selectedCourseInfo = document.getElementById("selected-course-info");
+  if (selectedCourseInfo) {
+    selectedCourseInfo.textContent = `${selectedCourse.courseCode} - ${selectedCourse.courseName}`;
+  }
 
   // Attach course selector listener
   if (teachingCourses.length > 1) {
     const courseSelect = document.getElementById("course-select");
-    courseSelect.addEventListener("change", async (e) => {
+    courseSelect?.addEventListener("change", async (e) => {
       selectedCourseId = e.target.value;
       await loadCourseOverview();
     });

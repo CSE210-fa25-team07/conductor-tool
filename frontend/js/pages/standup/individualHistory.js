@@ -6,6 +6,7 @@
 import { getUserStandups, deleteStandup } from "../../api/standupApi.js";
 import { getActiveCourse, getUserTeams, getEnrolledCourses } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
+import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
 
 const currentFilters = {};
 
@@ -20,19 +21,15 @@ export async function render(container) {
     currentFilters.courseUuid = activeCourse?.courseUuid;
   }
 
-  container.innerHTML = `
-    <div class="history-view">
-      <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-forest-green); margin-bottom: 1.5rem;">
-        My Standup History
-      </h2>
+  // Load page template
+  const pageHTML = await loadPageTemplate("individualHistory");
+  container.innerHTML = pageHTML;
 
-      ${renderFilters()}
-
-      <div id="history-content">
-        <div class="loading-message">Loading standups...</div>
-      </div>
-    </div>
-  `;
+  // Insert filters
+  const filtersPlaceholder = document.getElementById("history-filters-placeholder");
+  if (filtersPlaceholder) {
+    filtersPlaceholder.outerHTML = renderFilters();
+  }
 
   // Attach filter event listeners
   setupFilterListeners();

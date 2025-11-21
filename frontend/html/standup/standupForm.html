@@ -1,0 +1,104 @@
+<template>
+  <div class="standup-form">
+    <form id="standup-form">
+      <div class="form-section">
+        <h2 id="form-title">Submit Daily Standup</h2>
+
+        <div class="form-group">
+          <label for="date-submitted">Date *</label>
+          <input
+            type="date"
+            id="date-submitted"
+            name="dateSubmitted"
+            required
+          >
+          <span class="form-help-text">The date this standup is for</span>
+        </div>
+
+        <div id="team-select-placeholder">
+          <!-- Team select will be inserted here if teams exist -->
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Progress Update</h2>
+
+        <div class="form-group">
+          <label for="what-done">What did you accomplish? *</label>
+          <textarea
+            id="what-done"
+            name="whatDone"
+            required
+            placeholder="Describe what you completed today..."
+          ></textarea>
+          <span class="form-help-text">Share your completed tasks and achievements</span>
+        </div>
+
+        <div class="form-group">
+          <label for="what-next">What are you working on next? *</label>
+          <textarea
+            id="what-next"
+            name="whatNext"
+            required
+            placeholder="Describe your plans for the next work session..."
+          ></textarea>
+          <span class="form-help-text">Outline your upcoming tasks and goals</span>
+        </div>
+
+        <div class="form-group">
+          <label for="blockers">Any blockers or challenges?</label>
+          <textarea
+            id="blockers"
+            name="blockers"
+            placeholder="Describe any obstacles you're facing (optional)..."
+          ></textarea>
+          <span class="form-help-text">Share any issues that are blocking your progress</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Reflection</h2>
+
+        <div class="form-group">
+          <label for="reflection">Personal Reflection</label>
+          <textarea
+            id="reflection"
+            name="reflection"
+            placeholder="How are you feeling about your progress? Any insights?"
+          ></textarea>
+          <span class="form-help-text">Optional: Reflect on your learning and progress</span>
+        </div>
+
+        <div class="form-group">
+          <label for="sentiment">How are you feeling? (1-5)</label>
+          <input
+            type="number"
+            id="sentiment"
+            name="sentimentScore"
+            min="1"
+            max="5"
+            value="3"
+          >
+          <span class="form-help-text">1 = Struggling, 3 = Okay, 5 = Great</span>
+        </div>
+
+        <div class="form-group">
+          <label for="visibility">Visibility</label>
+          <select id="visibility" name="visibility">
+            <option value="team">Team (visible to team members and instructors)</option>
+            <option value="private">Private (only visible to you and instructors)</option>
+            <option value="public">Public (visible to everyone in the course)</option>
+          </select>
+          <span class="form-help-text">Control who can see your standup</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <div id="cancel-button-placeholder"></div>
+        <button type="submit" class="btn-primary" id="submit-button">
+          Submit Standup
+        </button>
+      </div>
+    </form>
+  </div>
+</template>

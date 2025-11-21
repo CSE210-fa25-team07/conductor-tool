@@ -6,6 +6,7 @@
 import { getTeamStandups } from "../../api/standupApi.js";
 import { getUserTeams, getActiveCourse } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
+import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
 
 let selectedTeamId = null;
 
@@ -33,42 +34,43 @@ export async function render(container) {
   const selectedTeam = courseTeams.find(t => t.teamUuid === selectedTeamId) || courseTeams[0];
   selectedTeamId = selectedTeam.teamUuid;
 
-  container.innerHTML = `
-    <div class="team-dashboard">
-      <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-forest-green); margin-bottom: 1.5rem;">
-        Team Dashboard
-      </h2>
+  // Load page template
+  const pageHTML = await loadPageTemplate("teamDashboard");
+  container.innerHTML = pageHTML;
 
-      ${courseTeams.length > 1 ? `
-        <div class="team-selector" style="margin-bottom: 2rem;">
-          <label for="team-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
-            Select Team:
-          </label>
-          <select id="team-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
-            ${courseTeams.map(team => `
-              <option value="${team.teamUuid}" ${team.teamUuid === selectedTeamId ? "selected" : ""}>
-                ${team.teamName}
-              </option>
-            `).join("")}
-          </select>
-        </div>
-      ` : ""}
-
-      <div class="team-header">
-        <div class="team-name">${selectedTeam.teamName}</div>
-        <div class="team-info">${activeCourse?.courseCode} - ${activeCourse?.courseName}</div>
+  // Insert team selector if multiple teams
+  const teamSelectorPlaceholder = document.getElementById("team-selector-placeholder");
+  if (teamSelectorPlaceholder && courseTeams.length > 1) {
+    teamSelectorPlaceholder.outerHTML = `
+      <div class="team-selector" style="margin-bottom: 2rem;">
+        <label for="team-select" style="font-family: var(--font-primary); font-weight: 600; color: var(--color-forest-green); margin-right: 1rem;">
+          Select Team:
+        </label>
+        <select id="team-select" style="padding: 0.5rem; font-family: var(--font-primary); font-size: 1rem; background-color: white; color: var(--color-forest-green); border: 3px solid var(--color-forest-green); border-radius: 4px;">
+          ${courseTeams.map(team => `
+            <option value="${team.teamUuid}" ${team.teamUuid === selectedTeamId ? "selected" : ""}>
+              ${team.teamName}
+            </option>
+          `).join("")}
+        </select>
       </div>
+    `;
+  }
 
-      <div id="team-content">
-        <div class="loading-message">Loading team activity...</div>
-      </div>
-    </div>
-  `;
+  // Update team header
+  const teamNameDisplay = document.getElementById("team-name-display");
+  const teamCourseInfo = document.getElementById("team-course-info");
+  if (teamNameDisplay) {
+    teamNameDisplay.textContent = selectedTeam.teamName;
+  }
+  if (teamCourseInfo) {
+    teamCourseInfo.textContent = `${activeCourse?.courseCode} - ${activeCourse?.courseName}`;
+  }
 
   // Attach team selector listener
   if (courseTeams.length > 1) {
     const teamSelect = document.getElementById("team-select");
-    teamSelect.addEventListener("change", async (e) => {
+    teamSelect?.addEventListener("change", async (e) => {
       selectedTeamId = e.target.value;
       await loadTeamData();
     });

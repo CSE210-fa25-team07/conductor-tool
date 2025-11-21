@@ -6,6 +6,7 @@
 import { createStandup, updateStandup } from "../../api/standupApi.js";
 import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
 import { refreshCurrentView } from "./main.js";
+import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
 
 let editMode = false;
 let editingStandupId = null;
@@ -29,134 +30,73 @@ export async function render(container, standupData = null) {
   // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
-  container.innerHTML = `
-    <div class="standup-form">
-      <form id="standup-form">
-        <div class="form-section">
-          <h2>${editMode ? "Edit Standup" : "Submit Daily Standup"}</h2>
+  // Load page template
+  const pageHTML = await loadPageTemplate("standupForm");
+  container.innerHTML = pageHTML;
 
-          <div class="form-group">
-            <label for="date-submitted">Date *</label>
-            <input
-              type="date"
-              id="date-submitted"
-              name="dateSubmitted"
-              value="${standupData?.dateSubmitted?.split("T")[0] || today}"
-              max="${today}"
-              required
+  // Set form title
+  const formTitle = document.getElementById("form-title");
+  if (formTitle) {
+    formTitle.textContent = editMode ? "Edit Standup" : "Submit Daily Standup";
+  }
+
+  // Set date field
+  const dateField = document.getElementById("date-submitted");
+  if (dateField) {
+    dateField.value = standupData?.dateSubmitted?.split("T")[0] || today;
+    dateField.max = today;
+  }
+
+  // Insert team select if teams exist
+  const teamSelectPlaceholder = document.getElementById("team-select-placeholder");
+  if (teamSelectPlaceholder && courseTeams.length > 0) {
+    teamSelectPlaceholder.outerHTML = `
+      <div class="form-group">
+        <label for="team">Team</label>
+        <select id="team" name="teamUuid">
+          <option value="">Personal (No team)</option>
+          ${courseTeams.map(team => `
+            <option
+              value="${team.teamUuid}"
+              ${standupData?.teamUuid === team.teamUuid ? "selected" : ""}
             >
-            <span class="form-help-text">The date this standup is for</span>
-          </div>
+              ${team.teamName}
+            </option>
+          `).join("")}
+        </select>
+        <span class="form-help-text">Optional: Select a team to share with</span>
+      </div>
+    `;
+  }
 
-          ${courseTeams.length > 0 ? `
-            <div class="form-group">
-              <label for="team">Team</label>
-              <select id="team" name="teamUuid">
-                <option value="">Personal (No team)</option>
-                ${courseTeams.map(team => `
-                  <option
-                    value="${team.teamUuid}"
-                    ${standupData?.teamUuid === team.teamUuid ? "selected" : ""}
-                  >
-                    ${team.teamName}
-                  </option>
-                `).join("")}
-              </select>
-              <span class="form-help-text">Optional: Select a team to share with</span>
-            </div>
-          ` : ""}
-        </div>
+  // Populate form fields with standupData if editing
+  if (standupData) {
+    const whatDone = document.getElementById("what-done");
+    const whatNext = document.getElementById("what-next");
+    const blockers = document.getElementById("blockers");
+    const reflection = document.getElementById("reflection");
+    const sentiment = document.getElementById("sentiment");
+    const visibility = document.getElementById("visibility");
 
-        <div class="form-section">
-          <h2>Progress Update</h2>
+    if (whatDone) whatDone.value = standupData.whatDone || "";
+    if (whatNext) whatNext.value = standupData.whatNext || "";
+    if (blockers) blockers.value = standupData.blockers || "";
+    if (reflection) reflection.value = standupData.reflection || "";
+    if (sentiment) sentiment.value = standupData.sentimentScore || "3";
+    if (visibility) visibility.value = standupData.visibility || "team";
+  }
 
-          <div class="form-group">
-            <label for="what-done">What did you accomplish? *</label>
-            <textarea
-              id="what-done"
-              name="whatDone"
-              required
-              placeholder="Describe what you completed today..."
-            >${standupData?.whatDone || ""}</textarea>
-            <span class="form-help-text">Share your completed tasks and achievements</span>
-          </div>
+  // Insert cancel button if in edit mode
+  const cancelButtonPlaceholder = document.getElementById("cancel-button-placeholder");
+  if (cancelButtonPlaceholder && editMode) {
+    cancelButtonPlaceholder.outerHTML = '<button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>';
+  }
 
-          <div class="form-group">
-            <label for="what-next">What are you working on next? *</label>
-            <textarea
-              id="what-next"
-              name="whatNext"
-              required
-              placeholder="Describe your plans for the next work session..."
-            >${standupData?.whatNext || ""}</textarea>
-            <span class="form-help-text">Outline your upcoming tasks and goals</span>
-          </div>
-
-          <div class="form-group">
-            <label for="blockers">Any blockers or challenges?</label>
-            <textarea
-              id="blockers"
-              name="blockers"
-              placeholder="Describe any obstacles you're facing (optional)..."
-            >${standupData?.blockers || ""}</textarea>
-            <span class="form-help-text">Share any issues that are blocking your progress</span>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h2>Reflection</h2>
-
-          <div class="form-group">
-            <label for="reflection">Personal Reflection</label>
-            <textarea
-              id="reflection"
-              name="reflection"
-              placeholder="How are you feeling about your progress? Any insights?"
-            >${standupData?.reflection || ""}</textarea>
-            <span class="form-help-text">Optional: Reflect on your learning and progress</span>
-          </div>
-
-          <div class="form-group">
-            <label for="sentiment">How are you feeling? (1-5)</label>
-            <input
-              type="number"
-              id="sentiment"
-              name="sentimentScore"
-              min="1"
-              max="5"
-              value="${standupData?.sentimentScore || 3}"
-            >
-            <span class="form-help-text">1 = Struggling, 3 = Okay, 5 = Great</span>
-          </div>
-
-          <div class="form-group">
-            <label for="visibility">Visibility</label>
-            <select id="visibility" name="visibility">
-              <option value="team" ${!standupData || standupData?.visibility === "team" ? "selected" : ""}>
-                Team (visible to team members and instructors)
-              </option>
-              <option value="private" ${standupData?.visibility === "private" ? "selected" : ""}>
-                Private (only visible to you and instructors)
-              </option>
-              <option value="public" ${standupData?.visibility === "public" ? "selected" : ""}>
-                Public (visible to everyone in the course)
-              </option>
-            </select>
-            <span class="form-help-text">Control who can see your standup</span>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          ${editMode ? `
-            <button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>
-          ` : ""}
-          <button type="submit" class="btn-primary">
-            ${editMode ? "Update Standup" : "Submit Standup"}
-          </button>
-        </div>
-      </form>
-    </div>
-  `;
+  // Update submit button text
+  const submitButton = document.getElementById("submit-button");
+  if (submitButton) {
+    submitButton.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
 
   // Attach event listeners
   const form = document.getElementById("standup-form");
@@ -164,7 +104,7 @@ export async function render(container, standupData = null) {
 
   if (editMode) {
     const cancelBtn = document.getElementById("cancel-edit");
-    cancelBtn.addEventListener("click", () => {
+    cancelBtn?.addEventListener("click", () => {
       editMode = false;
       editingStandupId = null;
       render(container);
