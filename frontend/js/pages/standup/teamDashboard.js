@@ -5,8 +5,8 @@
 
 import { getTeamStandups } from "../../api/standupApi.js";
 import { getUserTeams, getActiveCourse } from "../../utils/userContext.js";
-import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
-import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
+import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
 
 let selectedTeamId = null;
 
@@ -35,7 +35,7 @@ export async function render(container) {
   selectedTeamId = selectedTeam.teamUuid;
 
   // Load page template
-  const pageHTML = await loadPageTemplate("teamDashboard");
+  const pageHTML = await loadTemplate("standup", "teamDashboard");
   container.innerHTML = pageHTML;
 
   // Insert team selector if multiple teams

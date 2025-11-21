@@ -218,12 +218,26 @@ function createCourseCard(course) {
     </footer>
   `;
 
-  // TODO: Add click handler to navigate to course details
-  // article.addEventListener("click", () => {
-  //   handleCourseClick(course);
-  // });
+  // Add click handler to navigate to course features page
+  article.addEventListener("click", () => {
+    handleCourseClick(course);
+  });
+
+  article.style.cursor = "pointer";
 
   return article;
+}
+
+/**
+ * Handle course card click
+ * @param {Object} course - Course data
+ */
+function handleCourseClick(course) {
+  // Store course data in sessionStorage for access on course page
+  sessionStorage.setItem("activeCourse", JSON.stringify(course));
+
+  // Navigate to class features page with directory as default
+  window.location.href = `/html/class/index.html?courseCode=${encodeURIComponent(course.code)}&feature=directory`;
 }
 
 /**

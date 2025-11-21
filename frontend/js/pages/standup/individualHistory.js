@@ -5,8 +5,8 @@
 
 import { getUserStandups, deleteStandup } from "../../api/standupApi.js";
 import { getActiveCourse, getUserTeams, getEnrolledCourses } from "../../utils/userContext.js";
-import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
-import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
+import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
 
 const currentFilters = {};
 
@@ -22,7 +22,7 @@ export async function render(container) {
   }
 
   // Load page template
-  const pageHTML = await loadPageTemplate("individualHistory");
+  const pageHTML = await loadTemplate("standup", "individualHistory");
   container.innerHTML = pageHTML;
 
   // Insert filters

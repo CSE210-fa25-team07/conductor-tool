@@ -1,0 +1,184 @@
+/**
+ * Course Features Page Styles
+ * Layout for Directory, Attendance, and Standup features
+ */
+
+/* Course Title in Top Nav */
+.course-title-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
+}
+
+.course-code {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-forest-green);
+}
+
+.course-name-short {
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--color-forest-green-medium);
+}
+
+/* Feature Navigation (Directory, Attendance, Standup) */
+.feature-nav {
+  position: fixed;
+  top: 84px;
+  left: 0;
+  right: 0;
+  background: var(--color-light-matcha);
+  border-bottom: var(--border-thick);
+  padding: 0;
+  z-index: 999;
+}
+
+.feature-nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+}
+
+.feature-nav-btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 600;
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  color: var(--color-forest-green-medium);
+  border: none;
+  border-right: var(--border-thin);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+}
+
+.feature-nav-btn:last-child {
+  border-right: none;
+}
+
+.feature-nav-btn:hover {
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+}
+
+.feature-nav-btn.active {
+  background: var(--color-forest-green);
+  color: var(--color-radioactive-lime);
+  border-color: var(--color-forest-green);
+}
+
+.feature-nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-radioactive-lime);
+}
+
+/* Main Course Layout (Sidebar + Content) */
+.course-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: calc(100vh - 180px);
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 140px; /* Account for fixed top-nav (84px) + feature-nav (~56px) */
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--color-pale-mint);
+  border-right: var(--border-thick);
+  padding: var(--space-lg) 0;
+  position: sticky;
+  top: 140px;
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-nav-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 500;
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  color: var(--color-forest-green-medium);
+  border: none;
+  border-left: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-radioactive-lime);
+}
+
+.sidebar-nav-item.active {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-forest-green);
+  font-weight: 700;
+}
+
+/* Content Area */
+.content-area {
+  background: var(--color-bg-light);
+  padding: var(--space-xl);
+  overflow-y: auto;
+}
+
+/* Loading Message */
+.loading-message {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  color: var(--color-forest-green-medium);
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .course-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .course-title-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .feature-nav-container {
+    flex-direction: column;
+  }
+
+  .feature-nav-btn {
+    border-right: none;
+    border-bottom: var(--border-thin);
+  }
+}

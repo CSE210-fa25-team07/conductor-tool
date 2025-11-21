@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Features - Conductor Tool</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/class/course.css">
+
+  <!-- Google Fonts - Ecological Brutalism Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <section class="top-nav-container">
+      <!-- Logo -->
+      <header class="top-nav-logo">
+        <a href="/html/dashboard/dashboard.html" style="color: inherit; text-decoration: none; border: none;">Conductor</a>
+      </header>
+
+      <!-- Course Title -->
+      <div class="course-title-nav" id="course-title-nav">
+        <span class="course-code" id="nav-course-code">CSE 210</span>
+        <span class="course-name-short" id="nav-course-name">Software Engineering</span>
+      </div>
+
+      <!-- User Profile with Dropdown -->
+      <section class="user-profile-dropdown">
+        <article class="user-profile" id="user-profile-trigger">
+          <figure class="user-avatar">JD</figure>
+          <span class="user-name">John Doe</span>
+        </article>
+
+        <!-- Dropdown Menu -->
+        <menu class="dropdown-menu" id="user-dropdown"></menu>
+      </section>
+    </section>
+  </nav>
+
+  <!-- Feature Navigation (Directory, Attendance, Standup) -->
+  <nav class="feature-nav">
+    <div class="feature-nav-container">
+      <button class="feature-nav-btn active" data-feature="directory" id="nav-directory">
+        Directory
+      </button>
+      <button class="feature-nav-btn" data-feature="attendance" id="nav-attendance">
+        Attendance
+      </button>
+      <button class="feature-nav-btn" data-feature="standup" id="nav-standup">
+        Standup
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Layout (Sidebar + Content) -->
+  <main class="course-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Secondary navigation will be dynamically loaded here -->
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Placeholder -->
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <section class="content-area" id="content-area">
+      <!-- Content will be dynamically loaded here -->
+      <div class="loading-message">Loading...</div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="../../js/pages/class/main.js"></script>
+
+</body>
+</html>

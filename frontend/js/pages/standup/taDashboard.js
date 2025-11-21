@@ -5,8 +5,8 @@
 
 import { getTAOverview } from "../../api/standupApi.js";
 import { getActiveCourse, getEnrolledCourses, isProfessorOrTA } from "../../utils/userContext.js";
-import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
-import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
+import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
 
 let selectedCourseId = null;
 
@@ -44,7 +44,7 @@ export async function render(container) {
   selectedCourseId = selectedCourse.courseUuid;
 
   // Load page template
-  const pageHTML = await loadPageTemplate("taDashboard");
+  const pageHTML = await loadTemplate("standup", "taDashboard");
   container.innerHTML = pageHTML;
 
   // Insert course selector if multiple courses

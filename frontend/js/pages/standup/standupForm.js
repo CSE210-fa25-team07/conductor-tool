@@ -6,7 +6,7 @@
 import { createStandup, updateStandup } from "../../api/standupApi.js";
 import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
 import { refreshCurrentView } from "./main.js";
-import { loadPageTemplate } from "../../utils/standup/pageLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
 
 let editMode = false;
 let editingStandupId = null;
@@ -31,7 +31,7 @@ export async function render(container, standupData = null) {
   const today = new Date().toISOString().split("T")[0];
 
   // Load page template
-  const pageHTML = await loadPageTemplate("standupForm");
+  const pageHTML = await loadTemplate("standup", "standupForm");
   container.innerHTML = pageHTML;
 
   // Set form title
