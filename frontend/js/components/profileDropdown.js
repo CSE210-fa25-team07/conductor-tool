@@ -87,7 +87,7 @@ export function createUserDropdown(userType = "student") {
   // Define menu items based on user type
   // Same menu items for all user types
   const menuItems = [
-    { text: "Profile", href: "/html/profile/index.html" },
+    { text: "Profile", href: "/profile" },
     { text: "Log Out", href: "/logout" }
   ];
 

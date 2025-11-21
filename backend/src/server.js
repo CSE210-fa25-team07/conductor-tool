@@ -1,5 +1,10 @@
 import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
+import standupRoutes from "./routes/web/standupRoutes.js";
+import attendanceRoutes from "./routes/web/attendanceRoutes.js";
+import directoryRoutes from "./routes/web/directoryRoutes.js";
+import classRoutes from "./routes/web/classRoutes.js";
+import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
@@ -30,7 +35,11 @@ function checkSession(req, res, next) {
   next();
 }
 
-app.use(express.static(path.join(__dirname, "../../frontend")));
+// Serve only assets statically (js, css, images) - HTML is served via protected routes
+app.use("/js", express.static(path.join(__dirname, "../../frontend/js")));
+app.use("/css", express.static(path.join(__dirname, "../../frontend/css")));
+app.use("/images", express.static(path.join(__dirname, "../../frontend/images")));
+// HTML pages/templates served via feature-specific routes (e.g., /standup/pages/:name)
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/auth/login.html"));
@@ -38,6 +47,10 @@ app.get("/", (req, res) => {
 
 app.get("/dashboard", checkSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
+});
+
+app.get("/dashboard/calendar", checkSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
 });
 
 app.get("/logout", (req, res) => {
@@ -60,6 +73,16 @@ app.get("/dev-login", async (req, res) => {
 });
 
 app.use("/auth", checkSession, authRoutes);
+
+app.use("/standup", checkSession, standupRoutes);
+
+app.use("/attendance", checkSession, attendanceRoutes);
+
+app.use("/directory", checkSession, directoryRoutes);
+
+app.use("/class", checkSession, classRoutes);
+
+app.use("/profile", checkSession, profileRoutes);
 
 app.use("/google", googleRoutes);
 

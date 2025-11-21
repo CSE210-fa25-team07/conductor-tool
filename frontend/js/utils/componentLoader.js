@@ -14,10 +14,10 @@ function buildComponentPath(componentName) {
   if (!componentName.includes("/")) {
     throw new Error(`Component name must include feature prefix (e.g., "standup/card"), got: "${componentName}"`);
   }
-  // Feature-specific component: "standup/card" → "/html/standup/components/card.html"
+  // Feature-specific component: "standup/card" → "/standup/pages/components/card"
   const [feature, ...rest] = componentName.split("/");
   const name = rest.join("/");
-  return `/html/${feature}/components/${name}.html`;
+  return `/${feature}/pages/components/${name}`;
 }
 
 /**

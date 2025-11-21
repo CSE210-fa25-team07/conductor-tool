@@ -26,7 +26,7 @@
           const courseCode = encodeURIComponent(course.code || course.courseCode || 'unknown');
 
           // Redirect to class features page with standup feature
-          window.location.replace(`/html/class/index.html?courseCode=${courseCode}&feature=standup`);
+          window.location.replace(`/class?courseCode=${courseCode}&feature=standup`);
           return;
         } catch (error) {
           console.error('Failed to parse course data:', error);
@@ -63,7 +63,7 @@
         <p style="margin-bottom: var(--space-xl); line-height: 1.6;">
           Please select a course from the dashboard to access standup tools.
         </p>
-        <a href="/html/dashboard/dashboard.html" style="
+        <a href="/dashboard" style="
           display: inline-block;
           padding: var(--space-md) var(--space-lg);
           background: var(--color-radioactive-lime);

@@ -20,7 +20,7 @@ export async function loadTemplate(feature, templateName) {
   }
 
   try {
-    const response = await fetch(`/html/${feature}/${templateName}.html`);
+    const response = await fetch(`/${feature}/pages/${templateName}`);
     if (!response.ok) {
       throw new Error(`Failed to load template: ${cacheKey}`);
     }
