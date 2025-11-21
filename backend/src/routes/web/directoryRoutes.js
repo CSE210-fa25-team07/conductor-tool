@@ -5,38 +5,38 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /**
- * Serves the directory dashboard page
+ * Serves the class shell page (directory view)
  * @name GET /directory
  */
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/directory/dashboard.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**
- * Serves the group page
+ * Serves the class shell page (directory/group view)
  * @name GET /directory/group
  */
 router.get("/group", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/directory/group.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**
- * Serves the my page
+ * Serves the class shell page (directory/my view)
  * @name GET /directory/my
  */
 router.get("/my", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/directory/my.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**
- * Serves the people page
+ * Serves the class shell page (directory/people view)
  * @name GET /directory/people
  */
 router.get("/people", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/directory/people.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**

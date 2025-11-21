@@ -7,7 +7,7 @@ import directoryRoutes from "./web/directoryRoutes.js";
 import standupRoutes from "./web/standupRoutes.js";
 import attendanceRoutes from "./web/attendanceRoutes.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.use("/directory", directoryRoutes);
 

@@ -25,8 +25,8 @@
           const course = JSON.parse(storedCourse);
           const courseCode = encodeURIComponent(course.code || course.courseCode || 'unknown');
 
-          // Redirect to class features page with standup feature
-          window.location.replace(`/class?courseCode=${courseCode}&feature=standup`);
+          // Redirect to course standup page
+          window.location.replace(`/courses/${courseCode}/standup`);
           return;
         } catch (error) {
           console.error('Failed to parse course data:', error);

@@ -6,6 +6,16 @@
 const templateCache = new Map();
 
 /**
+ * Get courseId from current URL path
+ * URL pattern: /courses/:courseId/feature
+ * @returns {string|null} courseId or null if not in course context
+ */
+function getCourseIdFromUrl() {
+  const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
+  return match ? match[1] : null;
+}
+
+/**
  * Load an HTML template from a file
  * @param {string} feature - Feature name (directory, attendance, standup, etc.)
  * @param {string} templateName - Name of the template file (without .html extension)
@@ -20,7 +30,9 @@ export async function loadTemplate(feature, templateName) {
   }
 
   try {
-    const response = await fetch(`/${feature}/pages/${templateName}`);
+    const courseId = getCourseIdFromUrl();
+    const basePath = courseId ? `/courses/${courseId}` : "";
+    const response = await fetch(`${basePath}/${feature}/pages/${templateName}`);
     if (!response.ok) {
       throw new Error(`Failed to load template: ${cacheKey}`);
     }

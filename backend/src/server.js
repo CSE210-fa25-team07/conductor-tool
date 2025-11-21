@@ -1,8 +1,5 @@
 import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
-import standupRoutes from "./routes/web/standupRoutes.js";
-import attendanceRoutes from "./routes/web/attendanceRoutes.js";
-import directoryRoutes from "./routes/web/directoryRoutes.js";
 import classRoutes from "./routes/web/classRoutes.js";
 import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
@@ -67,19 +64,13 @@ app.get("/dev-login", async (req, res) => {
 
 app.use("/auth", checkSession, authRoutes);
 
-app.use("/standup", checkSession, standupRoutes);
-
-app.use("/attendance", checkSession, attendanceRoutes);
-
-app.use("/directory", checkSession, directoryRoutes);
-
 app.use("/class", checkSession, classRoutes);
 
 app.use("/profile", checkSession, profileRoutes);
 
 app.use("/google", googleRoutes);
 
-app.use("/courses/:couresId", checkSession, courseRoutes);
+app.use("/courses/:courseId", checkSession, courseRoutes);
 
 app.use("/v1/api/", apiRoutes);
 

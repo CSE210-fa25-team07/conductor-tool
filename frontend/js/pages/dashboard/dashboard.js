@@ -155,8 +155,8 @@ function handleCourseClick(course) {
   // Store course data in sessionStorage for access on course page
   sessionStorage.setItem("activeCourse", JSON.stringify(course));
 
-  // Navigate to class features page with directory as default
-  window.location.href = `/class?courseCode=${encodeURIComponent(course.code)}&feature=directory`;
+  // Navigate to course directory page (original design: /courses/:courseId/feature)
+  window.location.href = `/courses/${encodeURIComponent(course.code)}/directory`;
 }
 
 /**

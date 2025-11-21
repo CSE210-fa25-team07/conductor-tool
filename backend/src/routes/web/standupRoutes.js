@@ -5,14 +5,14 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /**
- * Serves the standup main page
+ * Serves the class shell page (standup view)
  * @name GET /standup
  */
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/standup/index.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**

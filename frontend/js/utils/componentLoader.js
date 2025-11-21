@@ -6,6 +6,16 @@
 const templateCache = new Map();
 
 /**
+ * Get courseId from current URL path
+ * URL pattern: /courses/:courseId/feature
+ * @returns {string|null} courseId or null if not in course context
+ */
+function getCourseIdFromUrl() {
+  const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
+  return match ? match[1] : null;
+}
+
+/**
  * Build the component path from the component name
  * @param {string} componentName - Component name with feature prefix (e.g., "standup/card")
  * @returns {string} Full path to the component
@@ -14,9 +24,13 @@ function buildComponentPath(componentName) {
   if (!componentName.includes("/")) {
     throw new Error(`Component name must include feature prefix (e.g., "standup/card"), got: "${componentName}"`);
   }
-  // Feature-specific component: "standup/card" → "/standup/pages/components/card"
   const [feature, ...rest] = componentName.split("/");
   const name = rest.join("/");
+  const courseId = getCourseIdFromUrl();
+  // Build path: /courses/:courseId/feature/pages/components/name
+  if (courseId) {
+    return `/courses/${courseId}/${feature}/pages/components/${name}`;
+  }
   return `/${feature}/pages/components/${name}`;
 }
 

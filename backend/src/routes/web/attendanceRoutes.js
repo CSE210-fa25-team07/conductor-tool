@@ -5,22 +5,22 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /**
- * Serves the attendance dashboard page
+ * Serves the class shell page (attendance view)
  * @name GET /attendance
  */
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/attendance/dashboard.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**
- * Serves the attendance analysis page
+ * Serves the class shell page (attendance/analysis view)
  * @name GET /attendance/analysis
  */
 router.get("/analysis", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../../../frontend/html/attendance/analysis.html"));
+  res.sendFile(path.join(__dirname, "../../../../frontend/html/class/index.html"));
 });
 
 /**
