@@ -5,6 +5,7 @@
  * Business logic layer for authentication.
  */
 import * as userService from "../services/userService.js";
+import * as userRepository from "../repositories/userRepository.js";
 
 /**
  * Get current user session data
@@ -65,7 +66,70 @@ async function verifyCode(req, res) {
   });
 }
 
-export {
-  getSession,
-  verifyCode
-};
+/**
+ * Get all users for dev login selection
+ * @param {*} req Request object
+ * @param {*} res Response object
+ * @returns Response with list of users
+ * @status DEV ONLY - For development login selection
+ */
+async function getDevUsers(req, res) {
+  try {
+    const users = await userRepository.getAllUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch users"
+    });
+  }
+}
+
+/**
+ * Handle dev login for selected user
+ * @param {*} req Request object with userId in body
+ * @param {*} res Response object
+ * @returns Response with redirect URL
+ * @status DEV ONLY - For development login
+ */
+async function devLogin(req, res) {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: "User ID is required"
+      });
+    }
+
+    // Get user from database
+    const user = await userRepository.getUserByUuid(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found"
+      });
+    }
+
+    // Set session
+    req.session.user = {
+      id: user.userUuid,
+      email: user.email,
+      name: `${user.firstName} ${user.lastName}`
+    };
+
+    res.status(200).json({
+      success: true,
+      redirectUrl: "/dashboard"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Login failed"
+    });
+  }
+}
+
+export { getSession, verifyCode, getDevUsers, devLogin };

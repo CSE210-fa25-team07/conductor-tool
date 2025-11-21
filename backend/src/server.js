@@ -50,16 +50,11 @@ app.get("/logout", (req, res) => {
 });
 
 /**
- * This is for devs to hardcode a user session without going through Google OAuth.
+ * Development login page - allows selecting a user from the database.
  * NOT FOR PRODUCTION USE.
  */
-app.get("/dev-login", async (req, res) => {
-  req.session.user = {
-    id: "3e26dca6-0be8-4594-b36c-ed4925b6daf6",
-    email: "powell@ucsd.edu",
-    name: "Thomas Powell"
-  };
-  res.redirect("/dashboard");
+app.get("/dev-login", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/html/auth/dev-users.html"));
 });
 
 app.use("/auth", checkSession, authRoutes);
