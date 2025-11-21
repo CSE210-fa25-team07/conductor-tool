@@ -4,7 +4,7 @@
  */
 
 import { getTeamStandups } from "../../api/standupApi.js";
-import { getUserTeams, getActiveCourse } from "../../utils/standup/userContext.js";
+import { getUserTeams, getActiveCourse } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
 
 let selectedTeamId = null;

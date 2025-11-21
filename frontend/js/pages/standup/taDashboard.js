@@ -4,7 +4,7 @@
  */
 
 import { getTAOverview } from "../../api/standupApi.js";
-import { getActiveCourse, getEnrolledCourses, isProfessorOrTA } from "../../utils/standup/userContext.js";
+import { getActiveCourse, getEnrolledCourses, isProfessorOrTA } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
 
 let selectedCourseId = null;

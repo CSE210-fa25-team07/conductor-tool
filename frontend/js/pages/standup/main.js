@@ -3,7 +3,7 @@
  * Handles navigation and view switching
  */
 
-import { loadUserContext, isProfessorOrTA } from "../../utils/standup/userContext.js";
+import { loadUserContext, isProfessorOrTA } from "../../utils/userContext.js";
 
 // View state
 let currentView = "form";

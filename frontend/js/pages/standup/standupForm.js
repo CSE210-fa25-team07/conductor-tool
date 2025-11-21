@@ -4,7 +4,7 @@
  */
 
 import { createStandup, updateStandup } from "../../api/standupApi.js";
-import { getActiveCourse, getUserTeams } from "../../utils/standup/userContext.js";
+import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
 import { refreshCurrentView } from "./main.js";
 
 let editMode = false;

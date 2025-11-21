@@ -4,7 +4,7 @@
  */
 
 import { getUserStandups, deleteStandup } from "../../api/standupApi.js";
-import { getActiveCourse, getUserTeams, getEnrolledCourses } from "../../utils/standup/userContext.js";
+import { getActiveCourse, getUserTeams, getEnrolledCourses } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/standup/componentLoader.js";
 
 const currentFilters = {};
