@@ -77,7 +77,7 @@ async function getDevUsers(req, res) {
   try {
     const users = await userRepository.getAllUsers();
     res.status(200).json(users);
-  } catch (error) {
+  } catch {
     res.status(500).json({
       success: false,
       error: "Failed to fetch users"
@@ -124,7 +124,7 @@ async function devLogin(req, res) {
       success: true,
       redirectUrl: "/dashboard"
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({
       success: false,
       error: "Login failed"

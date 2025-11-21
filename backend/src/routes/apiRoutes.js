@@ -9,6 +9,7 @@ import standupApis from "./api/standupApi.js";
 import attendanceApis from "./api/attendanceApi.js";
 import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
+import courseApis from "./api/courseApi.js";
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ const router = express.Router();
 router.use("/auth", authApis);
 
 // Protected routes - require authenticated session
+router.use("/courses", checkApiSession, courseApis);
+
 router.use("/directory", checkApiSession, directoryApis);
 
 router.use("/standups", checkApiSession, standupApis);

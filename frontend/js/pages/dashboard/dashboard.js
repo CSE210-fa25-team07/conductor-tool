@@ -23,38 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
  */
 async function loadCourses() {
   try {
-    // TODO: Fetch from backend
+    const response = await fetch("/v1/api/courses");
 
-    // Mock data for now
-    const courses = [
-      {
-        code: "CSE 210",
-        name: "Software Engineering",
-        description: "Principles and practices of software engineering including requirements, design, implementation, testing, and maintenance.",
-        assignments: 12,
-        attendance: 95,
-        instructor: "Dr. Smith",
-        students: 45
-      },
-      {
-        code: "CSE 110",
-        name: "Software Engineering Fundamentals",
-        description: "Introduction to software development with emphasis on teamwork, tools, and techniques for building quality software.",
-        assignments: 8,
-        attendance: 88,
-        instructor: "Prof. Johnson",
-        students: 60
-      },
-      {
-        code: "CSE 100",
-        name: "Advanced Data Structures",
-        description: "Advanced topics in data structures and algorithms including graphs, trees, and optimization techniques.",
-        assignments: 15,
-        attendance: 92,
-        instructor: "Dr. Williams",
-        students: 38
-      }
-    ];
+    if (!response.ok) {
+      throw new Error("Failed to fetch courses");
+    }
+
+    const data = await response.json();
+    const courses = data.courses || [];
 
     renderCourses(courses);
 
@@ -89,13 +65,12 @@ function renderCourses(courses) {
 /**
  * Create a course card element
  * @param {Object} course - Course data object
+ * @param {string} course.courseUuid - Course UUID (primary key)
  * @param {string} course.code - Course code (e.g., "CSE 210")
  * @param {string} course.name - Course name
- * @param {string} course.description - Course description
- * @param {number} course.assignments - Number of assignments
- * @param {number} course.attendance - Attendance percentage
- * @param {string} course.instructor - Instructor name
- * @param {number} course.students - Number of students
+ * @param {string} [course.description] - Course description
+ * @param {string} [course.term] - Term name
+ * @param {number} course.students - Number of students enrolled
  * @returns {HTMLElement} Course card article element
  */
 function createCourseCard(course) {
@@ -117,22 +92,12 @@ function createCourseCard(course) {
     </header>
 
     <p class="course-description">
-      ${course.description}
+      ${course.description || "No description available"}
     </p>
 
-    <section class="course-stats">
-      <article class="course-stat">
-        <span class="course-stat-value">${course.assignments}</span>
-        <span class="course-stat-label">Assignments</span>
-      </article>
-      <article class="course-stat">
-        <span class="course-stat-value">${course.attendance}%</span>
-        <span class="course-stat-label">Attendance</span>
-      </article>
-    </section>
+    ${course.term ? `<p style="font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);">Term: ${course.term}</p>` : ""}
 
     <footer class="course-footer">
-      <span class="course-instructor">${course.instructor}</span>
       <span class="course-students">${course.students} students</span>
     </footer>
   `;
@@ -155,8 +120,8 @@ function handleCourseClick(course) {
   // Store course data in sessionStorage for access on course page
   sessionStorage.setItem("activeCourse", JSON.stringify(course));
 
-  // Navigate to course directory page (original design: /courses/:courseId/feature)
-  window.location.href = `/courses/${encodeURIComponent(course.code)}/directory`;
+  // Navigate to course directory page using courseUuid
+  window.location.href = `/courses/${course.courseUuid}/directory`;
 }
 
 /**
@@ -181,4 +146,18 @@ function createEmptyStateCard() {
   // });
 
   return article;
+}
+
+/**
+ * Show error state when courses fail to load
+ */
+function showErrorState() {
+  const courseGrid = document.getElementById("course-grid");
+  courseGrid.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-2xl);">
+      <p style="color: var(--color-forest-green-medium); font-size: var(--text-lg);">
+        Failed to load courses. Please refresh the page to try again.
+      </p>
+    </div>
+  `;
 }
