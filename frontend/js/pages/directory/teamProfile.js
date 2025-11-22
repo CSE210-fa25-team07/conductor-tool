@@ -4,6 +4,7 @@
  */
 
 import * as directoryApi from "../../api/directoryApi.js";
+import * as userContextApi from "../../api/userContextApi.js";
 import { navigateToGroup, navigateToUser } from "./main.js";
 
 /**
@@ -11,21 +12,7 @@ import { navigateToGroup, navigateToUser } from "./main.js";
  * @param {string} teamUuid - Team UUID
  */
 export async function init(teamUuid) {
-  setupEventListeners();
   await loadTeamProfile(teamUuid);
-}
-
-/**
- * Setup event listeners
- */
-function setupEventListeners() {
-  const backBtn = document.getElementById("back-to-teams");
-  if (backBtn) {
-    backBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateToGroup();
-    });
-  }
 }
 
 /**
@@ -36,10 +23,47 @@ async function loadTeamProfile(teamUuid) {
   try {
     showLoading();
     const team = await directoryApi.getTeamProfile(teamUuid);
+
+    // Setup back button visibility based on user role
+    await setupBackButton(team.course.courseUuid);
+
+    // Render the team profile
     renderTeamProfile(team);
   } catch (error) {
     // Error loading team profile
     showError("Failed to load team profile. Please try again.");
+  }
+}
+
+/**
+ * Setup back button visibility based on user role
+ * @param {string} courseUuid - Course UUID
+ */
+async function setupBackButton(courseUuid) {
+  const backBtn = document.getElementById("back-to-teams");
+  if (backBtn) {
+    try {
+      // Get user context to check role
+      const userContext = await userContextApi.getUserContext(courseUuid);
+      const userRole = userContext.activeCourse?.role;
+
+      // Hide back button for students
+      if (userRole === "Student") {
+        backBtn.style.display = "none";
+      } else {
+        // Show back button for instructors/TAs
+        backBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          navigateToGroup();
+        });
+      }
+    } catch (error) {
+      // If error, show the button by default
+      backBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        navigateToGroup();
+      });
+    }
   }
 }
 

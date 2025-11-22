@@ -39,13 +39,14 @@ let containerRef = null;
  */
 export async function render(container, view = "dashboard", params = {}) {
   try {
-    container.innerHTML = "";
+    // Scroll to top immediately (before showing loading)
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    // Show loading state immediately
+    container.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center; min-height: 400px; display: flex; align-items: center; justify-content: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium); font-size: var(--text-lg);\">Loading...</p></div>";
 
     // Store container reference for navigation
     containerRef = container;
-
-    // Scroll to top of content area
-    container.scrollIntoView({ behavior: "smooth", block: "start" });
 
     // Get course UUID from session storage
     const courseUuid = getCourseUuid();
@@ -56,25 +57,33 @@ export async function render(container, view = "dashboard", params = {}) {
       templateView = "teamProfile";
     }
 
+    // Load template
     const templateHTML = await loadTemplate("directory", templateView);
-    container.innerHTML = templateHTML;
 
-    // Initialize page-specific logic
+    // Create a temporary container to hold the new content
+    const tempContainer = document.createElement("div");
+    tempContainer.innerHTML = templateHTML;
+
+    // Initialize page-specific logic in the temporary container
+    // This prevents the flash by loading everything before displaying
     switch (view) {
     case "dashboard":
       if (courseUuid) {
+        container.innerHTML = templateHTML;
         await dashboardPage.init(courseUuid);
       }
       break;
 
     case "people":
       if (courseUuid) {
+        container.innerHTML = templateHTML;
         await peoplePage.init(courseUuid);
       }
       break;
 
     case "group":
       if (courseUuid) {
+        container.innerHTML = templateHTML;
         await groupPage.init(courseUuid);
       }
       break;
@@ -82,6 +91,7 @@ export async function render(container, view = "dashboard", params = {}) {
     case "team":
     case "teamProfile":
       if (params.teamUuid) {
+        container.innerHTML = templateHTML;
         await teamProfilePage.init(params.teamUuid);
       }
       break;
@@ -89,6 +99,7 @@ export async function render(container, view = "dashboard", params = {}) {
     case "my":
       // If userUuid provided in params, use it (for viewing other users)
       // Otherwise get current user
+      container.innerHTML = templateHTML;
       if (params.userUuid) {
         await myPage.init(params.userUuid);
       } else {
@@ -100,6 +111,7 @@ export async function render(container, view = "dashboard", params = {}) {
       break;
 
     default:
+      container.innerHTML = templateHTML;
       break;
     }
 

@@ -137,8 +137,24 @@ function renderUserProfile(user) {
 
   if (coursesList) {
     if (user.courses && user.courses.length > 0) {
-      coursesList.innerHTML = user.courses.map(course => {
-        return "<div style=\"padding: var(--space-md); background: var(--color-light-matcha); border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + course.courseCode + ": " + course.courseName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs); text-transform: capitalize;\">" + course.role + "</div></div>";
+      // Group courses by courseUuid to combine multiple roles
+      const courseMap = {};
+      user.courses.forEach(course => {
+        const key = course.courseUuid;
+        if (!courseMap[key]) {
+          courseMap[key] = {
+            courseCode: course.courseCode,
+            courseName: course.courseName,
+            roles: []
+          };
+        }
+        courseMap[key].roles.push(course.role);
+      });
+
+      // Render grouped courses with combined roles
+      coursesList.innerHTML = Object.values(courseMap).map(course => {
+        const rolesText = course.roles.join(", ");
+        return "<div style=\"padding: var(--space-md); background: var(--color-light-matcha); border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + course.courseCode + ": " + course.courseName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs); text-transform: capitalize;\">" + rolesText + "</div></div>";
       }).join("");
     } else {
       coursesList.innerHTML = "<p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No enrolled courses</p>";

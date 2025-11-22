@@ -4,6 +4,7 @@
  */
 
 import * as directoryApi from "../../api/directoryApi.js";
+import * as userContextApi from "../../api/userContextApi.js";
 import { navigateToTeam } from "./main.js";
 
 let currentCourseUuid = null;
@@ -17,7 +18,45 @@ export async function init(courseUuid) {
   currentCourseUuid = courseUuid;
   currentPage = 1;
 
-  await loadTeams();
+  // Check if user is a student and should be redirected to their team profile
+  await checkAndRedirectStudent();
+}
+
+/**
+ * Check if user is a student and redirect to their team profile if applicable
+ */
+async function checkAndRedirectStudent() {
+  try {
+    showLoading();
+
+    // Get user context to check role
+    const userContext = await userContextApi.getUserContext(currentCourseUuid);
+    const userRole = userContext.activeCourse?.role;
+
+    // If user is a student (not Professor or TA), redirect to their team profile
+    if (userRole === "Student") {
+      // Fetch teams (backend will return only their team for students)
+      const teamsData = await directoryApi.getCourseTeams(currentCourseUuid, {
+        page: 1,
+        limit: 1
+      });
+
+      // If student has exactly one team, redirect to team profile
+      if (teamsData.teams && teamsData.teams.length === 1) {
+        navigateToTeam(teamsData.teams[0].teamUuid);
+        return;
+      }
+
+      // If student has no team or multiple teams, show the teams list
+      await loadTeams();
+    } else {
+      // For instructors/TAs, show all teams
+      await loadTeams();
+    }
+  } catch (error) {
+    // If there's an error checking role, fall back to showing teams list
+    await loadTeams();
+  }
 }
 
 /**
