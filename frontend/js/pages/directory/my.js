@@ -175,10 +175,12 @@ function renderUserProfile(user) {
 
         // Show "View Team" button if:
         // 1. Viewing own profile, OR
-        // 2. Current user is in the same team (teammate)
+        // 2. Current user is in the same team (teammate), OR
+        // 3. Current user is staff (can view all teams)
         const isOwnProfile = currentUser && currentUser.userUuid === user.userUuid;
         const isTeammate = currentUserTeamUuids.has(team.teamUuid);
-        const canViewTeam = isOwnProfile || isTeammate;
+        const isStaff = currentUser && currentUser.isStaff;
+        const canViewTeam = isOwnProfile || isTeammate || isStaff;
 
         const viewTeamButton = canViewTeam
           ? "<div style=\"margin-top: var(--space-sm);\"><button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-link\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); text-decoration: underline; background: none; border: none; cursor: pointer;\">View Team →</button></div>"
