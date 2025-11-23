@@ -1,45 +1,35 @@
 /* ===== Calendar Layout ===== */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background: #f4f4f4;
-}
-
 .calendar-container {
     width: 90%;
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-family: Arial, sans-serif;
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
-.calendar-header button {
+.calendar-header button,
+#today-btn {
     background: #007bff;
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border-radius: 5px;
     cursor: pointer;
 }
 
-#today-button {
+.calendar-controls {
+    text-align: right;
     margin-bottom: 10px;
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 .calendar-grid {
@@ -49,21 +39,26 @@ body {
 }
 
 .calendar-day {
+    min-height: 80px;
     background: #fafafa;
     border: 1px solid #ddd;
-    padding: 10px;
-    min-height: 80px;
     border-radius: 5px;
+    padding: 5px;
     position: relative;
 }
 
-.calendar-day.current {
+.calendar-day.today {
     border: 2px solid #ff9800;
     background: #fff8e1;
 }
 
+.date-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
 /* ===== Meeting Tags ===== */
-.meeting {
+.meeting-tag {
     display: block;
     padding: 3px 5px;
     margin-top: 5px;
@@ -71,26 +66,13 @@ body {
     font-size: 12px;
     cursor: pointer;
     color: white;
+    text-align: center;
 }
 
-.meeting.Lecture { background: #007bff; }
-.meeting.OH { background: #6f42c1; }
-.meeting[meeting-type="TA Check-In"] { background: #e83e8c; }
-.meeting[meeting-type="Team Meeting"] { background: #17a2b8; }
-
-/* ===== Floating Create Button ===== */
-.floating-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 15px 20px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-}
+.type-lecture { background: #007bff; }
+.type-oh { background: #6f42c1; }
+.type-tacheck-in { background: #e83e8c; }
+.type-teammeeting { background: #17a2b8; }
 
 /* ===== Modals ===== */
 .modal {
@@ -105,7 +87,7 @@ body {
     align-items: center;
 }
 
-.hidden { display: none; }
+.modal.hidden { display: none; }
 
 .modal-content {
     background: white;
@@ -129,10 +111,4 @@ body {
     border: 1px solid #ccc;
 }
 
-.recurring-days label {
-    margin-right: 10px;
-}
-
-button {
-    margin-top: 10px;
-}
+button { margin-top: 10px; }
