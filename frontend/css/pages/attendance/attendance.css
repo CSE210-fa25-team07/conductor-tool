@@ -32,7 +32,19 @@
     margin-bottom: 10px;
 }
 
-.calendar-grid {
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 0;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+    color: #333;
+    font-size: 14px;
+}
+
+.calendar-dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
@@ -77,14 +89,17 @@
 /* ===== Modals ===== */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 84px;          /* always below nav */
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    max-width: 800px;   /* wider */
+    height: auto;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding: 20px 0;
+    z-index: 2000;
 }
 
 .modal.hidden { display: none; }
@@ -92,9 +107,11 @@
 .modal-content {
     background: white;
     padding: 20px;
+    border: 2px solid black;
     border-radius: 10px;
-    width: 300px;
-    max-width: 90%;
+    width: 100%;
+    max-height: 350px;    /* shorter height */
+    overflow-y: auto;
 }
 
 .modal-content label {
