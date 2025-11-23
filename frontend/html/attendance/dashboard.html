@@ -1,45 +1,61 @@
 <template>
-  <div style="max-width: 1200px;">
-    <header style="margin-bottom: var(--space-xl);">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-sm);
-      ">Attendance Dashboard</h1>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-      ">Overview of class attendance and quick actions</p>
-    </header>
 
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      text-align: center;
-    ">
-      <h2 style="
-        font-size: var(--text-3xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">📝</h2>
-      <h3 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-md);
-      ">Attendance Records</h3>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-        line-height: 1.6;
-      ">
-        This view will display attendance records for all class sessions,<br>
-        with the ability to mark and edit attendance.
-      </p>
-    </section>
+<!-- Calendar Container -->
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button id="prev-month">◀</button>
+    <h2 id="current-month"></h2>
+    <button id="next-month">▶</button>
   </div>
+
+  <div class="calendar-controls">
+    <button id="today-btn">Today</button>
+  </div>
+
+  <div class="calendar-grid" id="calendar-grid"></div>
+</div>
+
+<!-- Meeting Creation Modal -->
+<div id="meeting-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-modal" class="close">&times;</span>
+    <h2>Create Meeting</h2>
+    <form id="meeting-form">
+
+      <label>Meeting Title</label>
+      <input type="text" id="meeting-title" required />
+
+      <label>Date</label>
+      <input type="date" id="meeting-date" required />
+
+      <label>Time</label>
+      <input type="time" id="meeting-time" required />
+
+      <label>Meeting Type</label>
+      <select id="meeting-type" required>
+        <option>Lecture</option>
+        <option>OH</option>
+        <option>TA Check-In</option>
+        <option>Team Meeting</option>
+      </select>
+
+      <label>Description</label>
+      <textarea id="meeting-description"></textarea>
+
+      <label class="recurring-box">
+        <input type="checkbox" id="recurring" /> Recurring Weekly
+      </label>
+
+      <button type="submit">Create Meeting</button>
+    </form>
+  </div>
+</div>
+
+<!-- Meeting Details Modal -->
+<div id="meeting-content-modal-wrapper" class="modal">
+  <div id="meeting-content-modal" class="modal-content">
+    <span id="close-meeting-content" class="close">&times;</span>
+  </div>
+</div>
+
 </template>
