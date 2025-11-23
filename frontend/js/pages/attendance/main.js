@@ -25,6 +25,22 @@ export async function render(container, view = 'calendar') {
 
         function renderCalendar() {
             calendarGrid.innerHTML = '';
+
+            // Day headers
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const headersDiv = document.createElement('div');
+            headersDiv.classList.add('calendar-days');
+            daysOfWeek.forEach(day => {
+                const dayDiv = document.createElement('div');
+                dayDiv.textContent = day;
+                headersDiv.appendChild(dayDiv);
+            });
+            calendarGrid.appendChild(headersDiv);
+
+            // Dates container
+            const datesContainer = document.createElement('div');
+            datesContainer.classList.add('calendar-dates');
+
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
@@ -32,10 +48,11 @@ export async function render(container, view = 'calendar') {
 
             currentMonthEl.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
+            // empty divs for offset
             for (let i = 0; i < firstDay; i++) {
                 const empty = document.createElement('div');
                 empty.classList.add('calendar-day');
-                calendarGrid.appendChild(empty);
+                datesContainer.appendChild(empty);
             }
 
             for (let day = 1; day <= daysInMonth; day++) {
@@ -71,8 +88,10 @@ export async function render(container, view = 'calendar') {
                     meetingModal.classList.remove('hidden');
                 });
 
-                calendarGrid.appendChild(dateDiv);
+                datesContainer.appendChild(dateDiv);
             }
+
+            calendarGrid.appendChild(datesContainer);
         }
 
         function openMeetingContent(date, index) {

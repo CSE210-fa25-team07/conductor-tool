@@ -1,59 +1,58 @@
 <template>
-<!-- Calendar Container -->
-<div class="calendar-container">
-  <div class="calendar-header">
-    <button id="prev-month">◀</button>
-    <h2 id="current-month"></h2>
-    <button id="next-month">▶</button>
+  <!-- Calendar Container -->
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button id="prev-month">◀</button>
+      <h2 id="current-month"></h2>
+      <button id="next-month">▶</button>
+    </div>
+
+    <div class="calendar-controls">
+      <button id="today-btn">Today</button>
+    </div>
+
+    <div class="calendar-grid" id="calendar-grid"></div>
   </div>
 
-  <div class="calendar-controls">
-    <button id="today-btn">Today</button>
+  <!-- Meeting Creation Modal -->
+  <div id="meeting-modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2>Create Meeting</h2>
+      <form id="meeting-form">
+        <label>Meeting Title</label>
+        <input type="text" id="meeting-title" required />
+
+        <label>Date</label>
+        <input type="date" id="meeting-date" required />
+
+        <label>Time</label>
+        <input type="time" id="meeting-time" required />
+
+        <label>Meeting Type</label>
+        <select id="meeting-type" required>
+          <option>Lecture</option>
+          <option>OH</option>
+          <option>TA Check-In</option>
+          <option>Team Meeting</option>
+        </select>
+
+        <label>Description</label>
+        <textarea id="meeting-description"></textarea>
+
+        <label class="recurring-box">
+          <input type="checkbox" id="recurring" /> Recurring Weekly
+        </label>
+
+        <button type="submit">Create Meeting</button>
+      </form>
+    </div>
   </div>
 
-  <div class="calendar-grid" id="calendar-grid"></div>
-</div>
-
-<!-- Meeting Creation Modal -->
-<div id="meeting-modal" class="modal hidden">
-  <div class="modal-content">
-    <span id="close-modal" class="close">&times;</span>
-    <h2>Create Meeting</h2>
-    <form id="meeting-form">
-
-      <label>Meeting Title</label>
-      <input type="text" id="meeting-title" required />
-
-      <label>Date</label>
-      <input type="date" id="meeting-date" required />
-
-      <label>Time</label>
-      <input type="time" id="meeting-time" required />
-
-      <label>Meeting Type</label>
-      <select id="meeting-type" required>
-        <option>Lecture</option>
-        <option>OH</option>
-        <option>TA Check-In</option>
-        <option>Team Meeting</option>
-      </select>
-
-      <label>Description</label>
-      <textarea id="meeting-description"></textarea>
-
-      <label class="recurring-box">
-        <input type="checkbox" id="recurring" /> Recurring Weekly
-      </label>
-
-      <button type="submit">Create Meeting</button>
-    </form>
+  <!-- Meeting Details Modal -->
+  <div id="meeting-content-modal-wrapper" class="modal hidden">
+    <div id="meeting-content-modal" class="modal-content">
+      <span id="close-meeting-content" class="close">&times;</span>
+    </div>
   </div>
-</div>
-
-<!-- Meeting Details Modal -->
-<div id="meeting-content-modal-wrapper" class="modal hidden">
-  <div id="meeting-content-modal" class="modal-content">
-    <span id="close-meeting-content" class="close">&times;</span>
-  </div>
-</div>
 </template>
