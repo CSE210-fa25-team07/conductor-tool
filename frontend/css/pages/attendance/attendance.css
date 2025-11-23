@@ -1,0 +1,138 @@
+/* ===== Calendar Layout ===== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f4f4;
+}
+
+.calendar-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.calendar-header button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#today-button {
+    margin-bottom: 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 10px;
+    min-height: 80px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.calendar-day.current {
+    border: 2px solid #ff9800;
+    background: #fff8e1;
+}
+
+/* ===== Meeting Tags ===== */
+.meeting {
+    display: block;
+    padding: 3px 5px;
+    margin-top: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: white;
+}
+
+.meeting.Lecture { background: #007bff; }
+.meeting.OH { background: #6f42c1; }
+.meeting[meeting-type="TA Check-In"] { background: #e83e8c; }
+.meeting[meeting-type="Team Meeting"] { background: #17a2b8; }
+
+/* ===== Floating Create Button ===== */
+.floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ===== Modals ===== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden { display: none; }
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    max-width: 90%;
+}
+
+.modal-content label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.recurring-days label {
+    margin-right: 10px;
+}
+
+button {
+    margin-top: 10px;
+}
