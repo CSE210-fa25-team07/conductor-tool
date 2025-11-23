@@ -3,11 +3,6 @@ import { loadTemplate } from "../../utils/templateLoader.js";
 const meetings = {};
 let currentDate = new Date();
 
-/**
- * Render function for course content area
- * @param {HTMLElement} container - The content area to render into
- * @param {string} view - Optional view (not used here, default to calendar)
- */
 export async function render(container, view = 'calendar') {
     try {
         const templateHTML = await loadTemplate('attendance', 'dashboard');
@@ -63,7 +58,7 @@ export async function render(container, view = 'calendar') {
                         const meetDiv = document.createElement('div');
                         meetDiv.classList.add('meeting-tag', `type-${m.type.toLowerCase().replace(/\s+/g,'')}`);
                         meetDiv.textContent = m.title;
-                        meetDiv.addEventListener('click', (e) => {
+                        meetDiv.addEventListener('click', e => {
                             e.stopPropagation();
                             openMeetingContent(fullDate, idx);
                         });
@@ -73,7 +68,7 @@ export async function render(container, view = 'calendar') {
 
                 dateDiv.addEventListener('click', () => {
                     wrapper.querySelector('#meeting-date').value = fullDate;
-                    meetingModal.style.display = 'flex';
+                    meetingModal.classList.remove('hidden');
                 });
 
                 calendarGrid.appendChild(dateDiv);
@@ -90,17 +85,17 @@ export async function render(container, view = 'calendar') {
                 <p><strong>Description:</strong> ${meeting.desc}</p>
                 <button id='delete-meeting'>Delete Meeting</button>
             `;
-            meetingContentModalWrapper.style.display = 'flex';
+            meetingContentModalWrapper.classList.remove('hidden');
 
             meetingContentModal.querySelector('#delete-meeting').onclick = () => {
                 meetings[date].splice(index,1);
                 if (meetings[date].length===0) delete meetings[date];
-                meetingContentModalWrapper.style.display='none';
+                meetingContentModalWrapper.classList.add('hidden');
                 renderCalendar();
             };
         }
 
-        meetingForm.addEventListener('submit', (e)=>{
+        meetingForm.addEventListener('submit', e=>{
             e.preventDefault();
             const title = wrapper.querySelector('#meeting-title').value;
             const date = wrapper.querySelector('#meeting-date').value;
@@ -123,13 +118,13 @@ export async function render(container, view = 'calendar') {
                 }
             }
 
-            meetingModal.style.display='none';
+            meetingModal.classList.add('hidden');
             meetingForm.reset();
             renderCalendar();
         });
 
-        closeModalBtn.onclick = ()=>meetingModal.style.display='none';
-        closeMeetingContentBtn.onclick = ()=>meetingContentModalWrapper.style.display='none';
+        closeModalBtn.onclick = ()=>meetingModal.classList.add('hidden');
+        closeMeetingContentBtn.onclick = ()=>meetingContentModalWrapper.classList.add('hidden');
 
         prevBtn.onclick = ()=>{ currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
         nextBtn.onclick = ()=>{ currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };

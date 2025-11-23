@@ -1,5 +1,4 @@
 <template>
-
 <!-- Calendar Container -->
 <div class="calendar-container">
   <div class="calendar-header">
@@ -16,7 +15,7 @@
 </div>
 
 <!-- Meeting Creation Modal -->
-<div id="meeting-modal" class="modal">
+<div id="meeting-modal" class="modal hidden">
   <div class="modal-content">
     <span id="close-modal" class="close">&times;</span>
     <h2>Create Meeting</h2>
@@ -52,10 +51,9 @@
 </div>
 
 <!-- Meeting Details Modal -->
-<div id="meeting-content-modal-wrapper" class="modal">
+<div id="meeting-content-modal-wrapper" class="modal hidden">
   <div id="meeting-content-modal" class="modal-content">
     <span id="close-meeting-content" class="close">&times;</span>
   </div>
 </div>
-
 </template>
