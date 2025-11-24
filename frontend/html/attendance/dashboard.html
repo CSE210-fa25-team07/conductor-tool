@@ -41,11 +41,14 @@
         <label>Description</label>
         <textarea id="meeting-description"></textarea>
 
-        <label class="recurring-box">
-          <input type="checkbox" id="recurring" /> Recurring Weekly
-        </label>
+        <div class="recurring-row">
+          <label class="recurring-box" for="recurring">Recurring Weekly</label>
+          <input type="checkbox" id="recurring" class="recurring-checkbox" />
+        </div>
 
-        <button type="submit">Create Meeting</button>
+        <div class="modal-actions">
+          <button type="submit">Create Meeting</button>
+        </div>
       </form>
     </div>
   </div>
