@@ -55,8 +55,32 @@
 
   <!-- Meeting Details Modal -->
   <div id="meeting-content-modal-wrapper" class="modal hidden">
-    <div id="meeting-content-modal" class="modal-content">
+    <div id="meeting-content-modal" class="modal-content attendance-modal">
       <span id="close-meeting-content" class="close">&times;</span>
+
+      <div class="attendance-container">
+        <!-- Left: Meeting metadata -->
+        <div class="meeting-metadata">
+          <h2 id="attendance-meeting-title">Meeting Title</h2>
+          <p><strong>Date:</strong> <span id="attendance-meeting-date"></span></p>
+          <p><strong>Time:</strong> <span id="attendance-meeting-time"></span></p>
+          <p><strong>Type:</strong> <span id="attendance-meeting-type"></span></p>
+          <p><strong>Description:</strong></p>
+          <p id="attendance-meeting-desc"></p>
+        </div>
+
+        <!-- Right: Attendance options -->
+        <div class="attendance-options">
+          <h3>Submit Attendance</h3>
+          <div class="qr-code-placeholder">
+            <!-- Placeholder for QR code -->
+            <p>[QR CODE]</p>
+          </div>
+          <p>Or enter passcode:</p>
+          <input type="text" id="attendance-passcode" placeholder="Enter passcode" />
+          <button id="submit-attendance">Submit</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

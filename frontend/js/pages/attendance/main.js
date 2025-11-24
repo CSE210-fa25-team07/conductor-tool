@@ -76,6 +76,7 @@ export async function render(container, view = 'calendar') {
                 num.textContent = day;
                 dateDiv.appendChild(num);
 
+                // Render meeting tags for this date
                 if (meetings[fullDate]) {
                     meetings[fullDate].forEach((m, idx) => {
                         const meetDiv = document.createElement('div');
@@ -83,14 +84,33 @@ export async function render(container, view = 'calendar') {
                         meetDiv.textContent = m.title;
                         meetDiv.addEventListener('click', e => {
                             e.stopPropagation();
-                            openMeetingContent(fullDate, idx);
+                            openMeetingAttendance(fullDate, idx);
                         });
                         dateDiv.appendChild(meetDiv);
                     });
                 }
 
+                // Click on empty date opens create meeting modal
                 dateDiv.addEventListener('click', () => {
-                    wrapper.querySelector('#meeting-date').value = fullDate;
+                    const meetingDateInput = wrapper.querySelector('#meeting-date');
+                    const meetingTitleInput = wrapper.querySelector('#meeting-title');
+                    const meetingTimeInput = wrapper.querySelector('#meeting-time');
+                    const meetingTypeSelect = wrapper.querySelector('#meeting-type');
+                    const meetingDescTextarea = wrapper.querySelector('#meeting-description');
+                    const recurringCheckbox = wrapper.querySelector('#recurring');
+
+                    // Reset all fields when opening modal
+                    meetingTitleInput.value = '';
+                    meetingDateInput.value = '';
+                    meetingTimeInput.value = '';
+                    meetingTypeSelect.value = 'Lecture';
+                    meetingDescTextarea.value = '';
+                    recurringCheckbox.checked = false;
+
+                    // Set the date input to the clicked date
+                    meetingDateInput.value = fullDate;
+
+                    // Show the modal
                     meetingModal.classList.remove('hidden');
                 });
 
@@ -100,29 +120,31 @@ export async function render(container, view = 'calendar') {
             calendarGrid.appendChild(datesContainer);
         }
 
-        function openMeetingContent(date, index) {
+        function openMeetingAttendance(date, index) {
             const meeting = meetings[date][index];
-            meetingContentModal.innerHTML = `
-                <h2>${meeting.title}</h2>
-                <p><strong>Date:</strong> ${date}</p>
-                <p><strong>Time:</strong> ${meeting.time}</p>
-                <p><strong>Type:</strong> ${meeting.type}</p>
-                <p><strong>Description:</strong> ${meeting.desc}</p>
-                <button id='delete-meeting'>Delete Meeting</button>
-            `;
-            meetingContentModalWrapper.classList.remove('hidden');
 
-            meetingContentModal.querySelector('#delete-meeting').onclick = () => {
-                meetings[date].splice(index,1);
-                if (meetings[date].length===0) delete meetings[date];
-                meetingContentModalWrapper.classList.add('hidden');
-                renderCalendar();
-            };
+            // Fill metadata
+            wrapper.querySelector('#attendance-meeting-title').textContent = meeting.title;
+            wrapper.querySelector('#attendance-meeting-date').textContent = date;
+            wrapper.querySelector('#attendance-meeting-time').textContent = meeting.time;
+            wrapper.querySelector('#attendance-meeting-type').textContent = meeting.type;
+            wrapper.querySelector('#attendance-meeting-desc').textContent = meeting.desc;
+
+            // Clear passcode input
+            wrapper.querySelector('#attendance-passcode').value = '';
+
+            // Show modal
+            meetingContentModalWrapper.classList.remove('hidden');
         }
 
-        // ============================
-        // PREVENT PAST MEETING CREATION
-        // ============================
+        // Placeholder attendance submit handler
+        wrapper.querySelector('#submit-attendance').onclick = () => {
+            const code = wrapper.querySelector('#attendance-passcode').value;
+            alert(`Attendance submitted with passcode: ${code}\n(Backend integration needed)`);
+            meetingContentModalWrapper.classList.add('hidden');
+        };
+
+        // Prevent meeting creation in the past
         meetingForm.addEventListener('submit', e => {
             e.preventDefault();
 
@@ -133,14 +155,12 @@ export async function render(container, view = 'calendar') {
             const desc = wrapper.querySelector('#meeting-description').value;
             const recurring = wrapper.querySelector('#recurring').checked;
 
-            // Build datetime from user inputs
             const meetingDateTime = new Date(`${date}T${time}`);
             const now = new Date();
 
-            // Block past meetings
             if (meetingDateTime < now) {
                 alert("You cannot create a meeting in the past.");
-                return; // stop submission
+                return;
             }
 
             if (!meetings[date]) meetings[date] = [];
