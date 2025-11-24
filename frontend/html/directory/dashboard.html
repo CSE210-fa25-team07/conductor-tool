@@ -1,5 +1,6 @@
 <template>
   <div style="max-width: 1200px;">
+    <!-- Header -->
     <header style="margin-bottom: var(--space-xl);">
       <h1 style="
         font-family: var(--font-heading);
@@ -11,35 +12,90 @@
         font-family: var(--font-mono);
         font-size: var(--text-base);
         color: var(--color-forest-green-medium);
-      ">Overview of course directory and organization</p>
+      ">Course overview and quick access to directory features</p>
     </header>
 
-    <section style="
-      background: var(--color-light-matcha);
+    <!-- Course Overview Section -->
+    <section id="course-overview" style="
+      background: white;
       border: var(--border-thick);
-      padding: var(--space-2xl);
-      text-align: center;
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
     ">
       <h2 style="
-        font-size: var(--text-3xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">📋</h2>
-      <h3 style="
         font-family: var(--font-heading);
         font-size: var(--text-2xl);
         color: var(--color-forest-green);
         margin-bottom: var(--space-md);
-      ">Directory Dashboard</h3>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-        line-height: 1.6;
+      ">Course Information</h2>
+      <div id="course-info-content">
+        <p style="font-family: var(--font-mono); color: var(--color-forest-green-medium);">Loading course information...</p>
+      </div>
+    </section>
+
+    <!-- Stats Grid -->
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    ">
+      <!-- Total Enrollments -->
+      <article style="
+        background: var(--color-light-matcha);
+        border: var(--border-thick);
+        padding: var(--space-xl);
+        text-align: center;
       ">
-        This view will display an overview of the course directory,<br>
-        including quick stats and recent updates.
-      </p>
+        <div style="
+          font-family: var(--font-heading);
+          font-size: var(--text-4xl);
+          color: var(--color-forest-green);
+          margin-bottom: var(--space-sm);
+        " id="total-enrollments">0</div>
+        <div style="
+          font-family: var(--font-mono);
+          font-size: var(--text-sm);
+          color: var(--color-forest-green-medium);
+        ">Total Enrollments</div>
+      </article>
+
+      <!-- Total Teams -->
+      <article style="
+        background: var(--color-light-matcha);
+        border: var(--border-thick);
+        padding: var(--space-xl);
+        text-align: center;
+      ">
+        <div style="
+          font-family: var(--font-heading);
+          font-size: var(--text-4xl);
+          color: var(--color-forest-green);
+          margin-bottom: var(--space-sm);
+        " id="total-teams">0</div>
+        <div style="
+          font-family: var(--font-mono);
+          font-size: var(--text-sm);
+          color: var(--color-forest-green-medium);
+        ">Total Teams</div>
+      </article>
+    </div>
+
+    <!-- Course Staff Section -->
+    <section style="
+      background: white;
+      border: var(--border-thick);
+      padding: var(--space-xl);
+    ">
+      <h2 style="
+        font-family: var(--font-heading);
+        font-size: var(--text-2xl);
+        color: var(--color-forest-green);
+        margin-bottom: var(--space-md);
+      ">Course Staff</h2>
+      <div id="staff-list">
+        <p style="font-family: var(--font-mono); color: var(--color-forest-green-medium);">Loading staff...</p>
+      </div>
     </section>
   </div>
 </template>
