@@ -3,9 +3,9 @@ import { loadTemplate } from "../../utils/templateLoader.js";
 const meetings = {};
 let currentDate = new Date();
 
-export async function render(container, view = 'calendar') {
+export async function render(container, view = 'dashboard') {
     try {
-        const templateHTML = await loadTemplate('attendance', 'dashboard');
+        const templateHTML = await loadTemplate('attendance', view);
         container.innerHTML = templateHTML;
 
         const wrapper = container;
