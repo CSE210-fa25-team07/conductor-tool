@@ -67,9 +67,24 @@
         <label>Description</label>
         <textarea id="meeting-description"></textarea>
 
-        <div class="recurring-row">
-          <label class="recurring-box" for="recurring">Recurring Weekly</label>
-          <input type="checkbox" id="recurring" class="recurring-checkbox" />
+        <div class="recurring-card">
+          <div class="recurring-header">
+            <div class="recurring-copy">
+              <p class="recurring-title">Recurring weekly</p>
+              <p class="recurring-summary" id="recurring-summary">
+                Select a date to preview the repeating schedule.
+              </p>
+            </div>
+            <label class="recurring-toggle" for="recurring" aria-label="Toggle recurring weekly meetings">
+              <input type="checkbox" id="recurring" class="recurring-checkbox" />
+              <span class="recurring-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="recurring-end">
+            <label for="recurring-end-date">Repeat until</label>
+            <input type="date" id="recurring-end-date" />
+            <p class="recurring-hint">Meetings recur weekly up to and including this date.</p>
+          </div>
         </div>
 
         <div class="modal-actions">
