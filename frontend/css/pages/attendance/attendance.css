@@ -89,11 +89,11 @@
 /* ===== Modals ===== */
 .modal {
     position: fixed;
-    top: 200px;          /* always below nav */
+    top: 200px;          /* always below navigation bar */
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 800px;   /* wider */
+    max-width: 800px;   /* wide modal */
     height: auto;
     display: flex;
     justify-content: center;
@@ -148,5 +148,49 @@ button { margin-top: 10px; }
   height: 16px;
   margin: 0;
   padding: 0;
+  cursor: pointer;
+}
+
+.attendance-container {
+  display: flex;
+  gap: 20px;
+}
+
+.meeting-metadata {
+  flex: 1;
+}
+
+.attendance-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qr-code-placeholder {
+  width: 150px;
+  height: 150px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#attendance-passcode {
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+#submit-attendance {
+  align-self: flex-end;
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  background: #007bff;
+  color: white;
   cursor: pointer;
 }
