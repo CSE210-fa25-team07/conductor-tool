@@ -1,5 +1,6 @@
 <template>
   <link rel="stylesheet" href="../../css/pages/attendance/attendance.css">
+
   <!-- Calendar Container -->
   <div class="calendar-container">
     <div class="calendar-header">
@@ -21,7 +22,7 @@
       <span id="close-modal" class="close">&times;</span>
       <h2>Create Meeting</h2>
       <form id="meeting-form">
-        
+
         <label>Meeting Title</label>
         <input type="text" id="meeting-title" required />
 
@@ -38,6 +39,30 @@
           <option>TA Check-In</option>
           <option>Team Meeting</option>
         </select>
+
+        <label>Participants</label>
+        <div id="meeting-participants" class="participants-container">
+          <label class="participant">
+            <input type="checkbox" value="Alice">
+            <span class="participant-name">Alice</span>
+          </label>
+          <label class="participant">
+            <input type="checkbox" value="Bob">
+            <span class="participant-name">Bob</span>
+          </label>
+          <label class="participant">
+            <input type="checkbox" value="Charlie">
+            <span class="participant-name">Charlie</span>
+          </label>
+          <label class="participant">
+            <input type="checkbox" value="Diana">
+            <span class="participant-name">Diana</span>
+          </label>
+          <label class="participant">
+            <input type="checkbox" value="Eve">
+            <span class="participant-name">Eve</span>
+          </label>
+        </div>
 
         <label>Description</label>
         <textarea id="meeting-description"></textarea>
@@ -68,13 +93,13 @@
           <p><strong>Type:</strong> <span id="attendance-meeting-type"></span></p>
           <p><strong>Description:</strong></p>
           <p id="attendance-meeting-desc"></p>
+          <p><strong>Participants:</strong> <span id="attendance-meeting-participants"></span></p>
         </div>
 
         <!-- Right: Attendance options -->
         <div class="attendance-options">
           <h3>Submit Attendance</h3>
           <div class="qr-code-placeholder">
-            <!-- Placeholder for QR code -->
             <p>[QR CODE]</p>
           </div>
           <p>Or enter passcode:</p>

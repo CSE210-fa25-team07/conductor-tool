@@ -23,10 +23,11 @@ export async function render(container, view = 'dashboard') {
         const meetingContentModal = wrapper.querySelector('#meeting-content-modal');
         const closeMeetingContentBtn = wrapper.querySelector('#close-meeting-content');
 
+        const participantsContainer = wrapper.querySelector('#meeting-participants');
+
         function renderCalendar() {
             calendarGrid.innerHTML = '';
 
-            // Day headers
             const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const headersDiv = document.createElement('div');
             headersDiv.classList.add('calendar-days');
@@ -37,7 +38,6 @@ export async function render(container, view = 'dashboard') {
             });
             calendarGrid.appendChild(headersDiv);
 
-            // Dates container
             const datesContainer = document.createElement('div');
             datesContainer.classList.add('calendar-dates');
 
@@ -48,7 +48,6 @@ export async function render(container, view = 'dashboard') {
 
             currentMonthEl.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-            // empty offset divs
             for (let i = 0; i < firstDay; i++) {
                 const empty = document.createElement('div');
                 empty.classList.add('calendar-day');
@@ -56,18 +55,23 @@ export async function render(container, view = 'dashboard') {
             }
 
             const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateDiv = document.createElement('div');
                 dateDiv.classList.add('calendar-day');
 
                 const fullDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const currentDateObj = new Date(year, month, day);
 
-                if (
-                    day === today.getDate() &&
-                    month === today.getMonth() &&
-                    year === today.getFullYear()
-                ) {
+                // Check if this date is in the past
+                const isPastDate = currentDateObj < today;
+
+                if (isPastDate) {
+                    dateDiv.classList.add('past-date');
+                }
+
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                     dateDiv.classList.add('today');
                 }
 
@@ -76,7 +80,6 @@ export async function render(container, view = 'dashboard') {
                 num.textContent = day;
                 dateDiv.appendChild(num);
 
-                // Render meeting tags for this date
                 if (meetings[fullDate]) {
                     meetings[fullDate].forEach((m, idx) => {
                         const meetDiv = document.createElement('div');
@@ -90,29 +93,28 @@ export async function render(container, view = 'dashboard') {
                     });
                 }
 
-                // Click on empty date opens create meeting modal
-                dateDiv.addEventListener('click', () => {
-                    const meetingDateInput = wrapper.querySelector('#meeting-date');
-                    const meetingTitleInput = wrapper.querySelector('#meeting-title');
-                    const meetingTimeInput = wrapper.querySelector('#meeting-time');
-                    const meetingTypeSelect = wrapper.querySelector('#meeting-type');
-                    const meetingDescTextarea = wrapper.querySelector('#meeting-description');
-                    const recurringCheckbox = wrapper.querySelector('#recurring');
+                // Only allow clicking on future dates or today
+                if (!isPastDate) {
+                    dateDiv.addEventListener('click', () => {
+                        const meetingDateInput = wrapper.querySelector('#meeting-date');
+                        const meetingTitleInput = wrapper.querySelector('#meeting-title');
+                        const meetingTimeInput = wrapper.querySelector('#meeting-time');
+                        const meetingTypeSelect = wrapper.querySelector('#meeting-type');
+                        const meetingDescTextarea = wrapper.querySelector('#meeting-description');
+                        const recurringCheckbox = wrapper.querySelector('#recurring');
 
-                    // Reset all fields when opening modal
-                    meetingTitleInput.value = '';
-                    meetingDateInput.value = '';
-                    meetingTimeInput.value = '';
-                    meetingTypeSelect.value = 'Lecture';
-                    meetingDescTextarea.value = '';
-                    recurringCheckbox.checked = false;
+                        // Reset all fields
+                        meetingTitleInput.value = '';
+                        meetingDateInput.value = fullDate;
+                        meetingTimeInput.value = '';
+                        meetingTypeSelect.value = 'Lecture';
+                        meetingDescTextarea.value = '';
+                        recurringCheckbox.checked = false;
+                        participantsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-                    // Set the date input to the clicked date
-                    meetingDateInput.value = fullDate;
-
-                    // Show the modal
-                    meetingModal.classList.remove('hidden');
-                });
+                        meetingModal.classList.remove('hidden');
+                    });
+                }
 
                 datesContainer.appendChild(dateDiv);
             }
@@ -123,28 +125,23 @@ export async function render(container, view = 'dashboard') {
         function openMeetingAttendance(date, index) {
             const meeting = meetings[date][index];
 
-            // Fill metadata
             wrapper.querySelector('#attendance-meeting-title').textContent = meeting.title;
             wrapper.querySelector('#attendance-meeting-date').textContent = date;
             wrapper.querySelector('#attendance-meeting-time').textContent = meeting.time;
             wrapper.querySelector('#attendance-meeting-type').textContent = meeting.type;
             wrapper.querySelector('#attendance-meeting-desc').textContent = meeting.desc;
+            wrapper.querySelector('#attendance-meeting-participants').textContent = meeting.participants.join(', ');
 
-            // Clear passcode input
             wrapper.querySelector('#attendance-passcode').value = '';
-
-            // Show modal
             meetingContentModalWrapper.classList.remove('hidden');
         }
 
-        // Placeholder attendance submit handler
         wrapper.querySelector('#submit-attendance').onclick = () => {
             const code = wrapper.querySelector('#attendance-passcode').value;
             alert(`Attendance submitted with passcode: ${code}\n(Backend integration needed)`);
             meetingContentModalWrapper.classList.add('hidden');
         };
 
-        // Prevent meeting creation in the past
         meetingForm.addEventListener('submit', e => {
             e.preventDefault();
 
@@ -155,6 +152,9 @@ export async function render(container, view = 'dashboard') {
             const desc = wrapper.querySelector('#meeting-description').value;
             const recurring = wrapper.querySelector('#recurring').checked;
 
+            const participants = Array.from(participantsContainer.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
             const meetingDateTime = new Date(`${date}T${time}`);
             const now = new Date();
 
@@ -164,7 +164,7 @@ export async function render(container, view = 'dashboard') {
             }
 
             if (!meetings[date]) meetings[date] = [];
-            meetings[date].push({title, time, type, desc});
+            meetings[date].push({title, time, type, desc, participants});
 
             if (recurring) {
                 let start = new Date(date);
@@ -173,7 +173,7 @@ export async function render(container, view = 'dashboard') {
                     next.setDate(start.getDate() + 7 * i);
                     const nextDateStr = `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}`;
                     if (!meetings[nextDateStr]) meetings[nextDateStr] = [];
-                    meetings[nextDateStr].push({title,time,type,desc});
+                    meetings[nextDateStr].push({title, time, type, desc, participants});
                 }
             }
 
