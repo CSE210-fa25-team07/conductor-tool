@@ -129,3 +129,24 @@
 }
 
 button { margin-top: 10px; }
+
+.recurring-row {
+  display: inline-flex;       /* inline with other form content */
+  align-items: center;        /* vertically center checkbox with text */
+  gap: 4px;                   /* reduce space between label and checkbox */
+  margin-top: 8px;            /* match spacing with other form elements */
+}
+
+.recurring-row .recurring-box {
+  white-space: nowrap;        /* prevent text from breaking into two lines */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recurring-checkbox {
+  width: 16px;                /* slightly smaller and closer */
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
