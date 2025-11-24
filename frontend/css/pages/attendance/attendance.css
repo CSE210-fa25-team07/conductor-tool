@@ -89,7 +89,7 @@
 /* ===== Modals ===== */
 .modal {
     position: fixed;
-    top: 84px;          /* always below nav */
+    top: 200px;          /* always below nav */
     left: 50%;
     transform: translateX(-50%);
     width: 100%;

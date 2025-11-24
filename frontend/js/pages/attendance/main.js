@@ -48,20 +48,26 @@ export async function render(container, view = 'calendar') {
 
             currentMonthEl.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-            // empty divs for offset
+            // empty offset divs
             for (let i = 0; i < firstDay; i++) {
                 const empty = document.createElement('div');
                 empty.classList.add('calendar-day');
                 datesContainer.appendChild(empty);
             }
 
+            const today = new Date();
+
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateDiv = document.createElement('div');
                 dateDiv.classList.add('calendar-day');
+
                 const fullDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 
-                const today = new Date();
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                if (
+                    day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear()
+                ) {
                     dateDiv.classList.add('today');
                 }
 
@@ -114,8 +120,12 @@ export async function render(container, view = 'calendar') {
             };
         }
 
-        meetingForm.addEventListener('submit', e=>{
+        // ============================
+        // PREVENT PAST MEETING CREATION
+        // ============================
+        meetingForm.addEventListener('submit', e => {
             e.preventDefault();
+
             const title = wrapper.querySelector('#meeting-title').value;
             const date = wrapper.querySelector('#meeting-date').value;
             const time = wrapper.querySelector('#meeting-time').value;
@@ -123,14 +133,24 @@ export async function render(container, view = 'calendar') {
             const desc = wrapper.querySelector('#meeting-description').value;
             const recurring = wrapper.querySelector('#recurring').checked;
 
+            // Build datetime from user inputs
+            const meetingDateTime = new Date(`${date}T${time}`);
+            const now = new Date();
+
+            // Block past meetings
+            if (meetingDateTime < now) {
+                alert("You cannot create a meeting in the past.");
+                return; // stop submission
+            }
+
             if (!meetings[date]) meetings[date] = [];
-            meetings[date].push({title,time,type,desc});
+            meetings[date].push({title, time, type, desc});
 
             if (recurring) {
                 let start = new Date(date);
-                for (let i=1;i<=8;i++){
+                for (let i = 1; i <= 8; i++) {
                     let next = new Date(start);
-                    next.setDate(start.getDate() + 7*i);
+                    next.setDate(start.getDate() + 7 * i);
                     const nextDateStr = `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}`;
                     if (!meetings[nextDateStr]) meetings[nextDateStr] = [];
                     meetings[nextDateStr].push({title,time,type,desc});
@@ -142,14 +162,15 @@ export async function render(container, view = 'calendar') {
             renderCalendar();
         });
 
-        closeModalBtn.onclick = ()=>meetingModal.classList.add('hidden');
-        closeMeetingContentBtn.onclick = ()=>meetingContentModalWrapper.classList.add('hidden');
+        closeModalBtn.onclick = () => meetingModal.classList.add('hidden');
+        closeMeetingContentBtn.onclick = () => meetingContentModalWrapper.classList.add('hidden');
 
-        prevBtn.onclick = ()=>{ currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
-        nextBtn.onclick = ()=>{ currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
-        todayBtn.onclick = ()=>{ currentDate = new Date(); renderCalendar(); };
+        prevBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
+        nextBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
+        todayBtn.onclick = () => { currentDate = new Date(); renderCalendar(); };
 
         renderCalendar();
+
     } catch (error) {
         container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
     }
