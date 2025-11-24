@@ -334,6 +334,38 @@
   flex: 1;
 }
 
+.meeting-metadata-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.meeting-metadata-actions button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.meeting-metadata-actions .danger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.meeting-metadata-actions .danger.secondary {
+  opacity: 0.85;
+}
+
+.meeting-metadata-actions .danger.secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.meeting-metadata-actions .danger:hover {
+  background: #c82333;
+}
+
 .attendance-options {
   flex: 1;
   display: flex;

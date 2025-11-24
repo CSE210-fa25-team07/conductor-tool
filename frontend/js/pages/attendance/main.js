@@ -33,6 +33,7 @@ export async function render(container, view = 'dashboard') {
         const recurringEndInput = wrapper.querySelector('#recurring-end-date');
         const recurringSummaryEl = wrapper.querySelector('#recurring-summary');
         let selectedCalendarDate = '';
+        let chainCounter = 0;
 
         function parseLocalDate(dateStr) {
             if (!dateStr) return null;
@@ -207,6 +208,10 @@ export async function render(container, view = 'dashboard') {
             calendarGrid.appendChild(datesContainer);
         }
 
+        const deleteMeetingBtn = wrapper.querySelector('#delete-meeting');
+        const deleteAllFutureBtn = wrapper.querySelector('#delete-future-meetings');
+        let activeMeetingContext = { date: null, index: null, chainId: null };
+
         function openMeetingAttendance(date, index) {
             const meeting = meetings[date][index];
 
@@ -218,8 +223,54 @@ export async function render(container, view = 'dashboard') {
             wrapper.querySelector('#attendance-meeting-participants').textContent = meeting.participants.join(', ');
 
             wrapper.querySelector('#attendance-passcode').value = '';
+            activeMeetingContext = { date, index, chainId: meeting.chainId || null };
+            if (deleteAllFutureBtn) {
+                deleteAllFutureBtn.disabled = !meeting.chainId;
+            }
             meetingContentModalWrapper.classList.remove('hidden');
         }
+
+        deleteMeetingBtn?.addEventListener('click', () => {
+            const { date, index } = activeMeetingContext;
+            if (!date || typeof index !== 'number') return;
+
+            const confirmDelete = confirm('Delete this meeting from the calendar?');
+            if (!confirmDelete) return;
+
+            meetings[date].splice(index, 1);
+            if (meetings[date].length === 0) {
+                delete meetings[date];
+            }
+
+            activeMeetingContext = { date: null, index: null, chainId: null };
+            if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
+            meetingContentModalWrapper.classList.add('hidden');
+            renderCalendar();
+        });
+
+        deleteAllFutureBtn?.addEventListener('click', () => {
+            const { chainId, date } = activeMeetingContext;
+            if (!chainId || !date) return;
+
+            const confirmDelete = confirm('Delete this and all future recurring meetings?');
+            if (!confirmDelete) return;
+
+            const cutoff = parseLocalDate(date);
+            if (!cutoff) return;
+
+            Object.keys(meetings).forEach(meetingDate => {
+                const parsed = parseLocalDate(meetingDate);
+                if (!parsed || parsed < cutoff) return;
+
+                meetings[meetingDate] = meetings[meetingDate].filter(entry => entry.chainId !== chainId);
+                if (meetings[meetingDate].length === 0) delete meetings[meetingDate];
+            });
+
+            activeMeetingContext = { date: null, index: null, chainId: null };
+            if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
+            meetingContentModalWrapper.classList.add('hidden');
+            renderCalendar();
+        });
 
         wrapper.querySelector('#submit-attendance').onclick = () => {
             const code = wrapper.querySelector('#attendance-passcode').value;
@@ -249,7 +300,9 @@ export async function render(container, view = 'dashboard') {
             }
 
             if (!meetings[date]) meetings[date] = [];
-            meetings[date].push({title, time, type, desc, participants});
+            const chainId = recurring ? `chain-${Date.now()}-${chainCounter++}` : null;
+
+            meetings[date].push({title, time, type, desc, participants, chainId});
 
             if (recurring) {
                 if (!recurringEndInput || !recurringEndInput.value) {
@@ -283,7 +336,7 @@ export async function render(container, view = 'dashboard') {
                     const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
 
                     if (!meetings[nextDateStr]) meetings[nextDateStr] = [];
-                    meetings[nextDateStr].push({title, time, type, desc, participants});
+                    meetings[nextDateStr].push({title, time, type, desc, participants, chainId});
 
                     nextDate.setDate(nextDate.getDate() + 7);
                 }
@@ -297,7 +350,11 @@ export async function render(container, view = 'dashboard') {
         });
 
         closeModalBtn.onclick = () => meetingModal.classList.add('hidden');
-        closeMeetingContentBtn.onclick = () => meetingContentModalWrapper.classList.add('hidden');
+        closeMeetingContentBtn.onclick = () => {
+            activeMeetingContext = { date: null, index: null, chainId: null };
+            if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
+            meetingContentModalWrapper.classList.add('hidden');
+        };
 
         prevBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
         nextBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
