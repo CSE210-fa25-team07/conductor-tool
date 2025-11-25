@@ -23,6 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
       handleVerification();
     });
   }
+  const codeInput = document.getElementById("verification-code");
+  codeInput.addEventListener("input", () => {
+    codeInput.setCustomValidity("");
+  });
   // ==================== REQUEST ACCESS PAGE ====================
   // USER EMAIL DISPLAY
   // Load user email on any page that needs it
@@ -100,7 +104,8 @@ async function handleVerification() {
       window.location.href = "/dashboard";
     } else {
       // Verification failed
-      alert(data.error || "Invalid verification code");
+      codeInput.setCustomValidity("Invalid verification code. Please try again.");
+      return;
     }
 
   } catch {
