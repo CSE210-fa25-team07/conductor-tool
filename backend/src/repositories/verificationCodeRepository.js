@@ -15,7 +15,7 @@ const prisma = getPrisma();
  */
 async function findCourseByVerificationCode(code) {
   return await prisma.verificationCode.findUnique({
-    where: { veriCode: code },
+    where: { veriCode: code }
   });
 }
 

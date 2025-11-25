@@ -72,13 +72,25 @@ async function getCoursesWithDetailsByUserId(userUuid) {
 }
 
 /**
- * Enroll a user to a course with a specific role
- * @param {string} userUuid 
- * @param {string} courseUuid 
- * @param {string} roleUuid 
+ * Enroll a user to a course with a specific role if not already enrolled
+ * @param {string} userUuid
+ * @param {string} courseUuid
+ * @param {string} roleUuid
+ * @returns {Promise<Object|null>} The created enrollment or null if already enrolled
  */
 async function enrollUserToCourse(userUuid, courseUuid, roleUuid) {
-  const enrollment = await prisma.courseEnrollment.create({
+  const exists = await prisma.courseEnrollment.findFirst({
+    where: {
+      userUuid: userUuid,
+      courseUuid: courseUuid
+    }
+  });
+
+  if (exists) {
+    return null;
+  }
+
+  return await prisma.courseEnrollment.create({
     data: {
       userUuid: userUuid,
       roleUuid: roleUuid,
