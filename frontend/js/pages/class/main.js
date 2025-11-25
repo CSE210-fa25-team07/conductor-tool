@@ -190,8 +190,8 @@ function updateSidebar(feature) {
   if (feature === "standup") {
     const isTA = isProfessorOrTA();
     if (isTA) {
-      // TAs and Professors only see Team Dashboard and TA Overview
-      views = views.filter(v => v.id === "team" || v.id === "ta");
+      // TAs and Professors only see TA Overview (navigate to teams from there)
+      views = views.filter(v => v.id === "ta");
     } else {
       // Students see Submit Standup, My History, and Team Dashboard
       views = views.filter(v => v.id !== "ta");
