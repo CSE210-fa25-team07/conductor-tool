@@ -1,0 +1,23 @@
+<template>
+    <div class="at-risk-container"
+        style="margin-bottom: 2rem; background: #fff5f5; border: 1px solid #feb2b2; border-radius: 12px; padding: 1.5rem;">
+        <h3
+            style="color: #c53030; font-family: var(--font-heading); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            ⚠️ At Risk Students ({{count}})
+        </h3>
+        <div class="at-risk-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            {{#students}}
+            <div class="at-risk-card"
+                style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #feb2b2;">
+                <div style="font-weight: 600; color: #c53030;">{{name}}</div>
+                <div style="font-size: 0.9rem; color: #718096;">{{teamName}}</div>
+                <div
+                    style="font-size: 0.85rem; margin-top: 0.5rem; background: #fff5f5; display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; color: #c53030;">
+                    Only {{count}} submission{{#plural}}s{{/plural}} (last 7d)
+                </div>
+            </div>
+            {{/students}}
+        </div>
+    </div>
+</template>

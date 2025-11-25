@@ -1,311 +1,268 @@
 /**
  * @fileoverview Individual History View
- * Displays user's standup history with filtering
+ * Displays a user's standup history (own history or another user's for TAs)
  */
 
-import { getUserStandups, deleteStandup } from "../../api/standupApi.js";
-import { getActiveCourse, getUserTeams, getEnrolledCourses } from "../../utils/userContext.js";
+import { getUserStandups, getStandupsByUser, deleteStandup } from "../../api/standupApi.js";
+import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
+import { navigateToView, navigateBack } from "./courseIntegration.js";
 
-const currentFilters = {};
+
+// Store current view context
+let viewContext = {
+  userUuid: null,
+  userName: null,
+  isViewingOther: false
+};
+
+// Store loaded standups for edit access
+let loadedStandups = [];
 
 /**
- * Render the individual history view
- * @param {HTMLElement} container - Container to render into
+ * Show a custom confirmation modal
+ * @param {Object} options - Modal options
+ * @param {string} options.title - Modal title
+ * @param {string} options.message - Modal message
+ * @param {string} options.confirmText - Confirm button text
+ * @param {string} options.cancelText - Cancel button text
+ * @param {boolean} options.danger - Use danger styling for confirm button
+ * @returns {Promise<boolean>} - Resolves true if confirmed, false if cancelled
  */
-export async function render(container) {
-  // Initialize filters if not set
-  if (!currentFilters.courseUuid) {
-    const activeCourse = getActiveCourse();
-    currentFilters.courseUuid = activeCourse?.courseUuid;
-  }
+function showConfirm({ title = "Confirm", message, confirmText = "Confirm", cancelText = "Cancel", danger = false }) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "confirm-modal-overlay";
+    overlay.innerHTML = `
+      <div class="confirm-modal">
+        <div class="confirm-modal-header">
+          <h3 class="confirm-modal-title">${title}</h3>
+        </div>
+        <div class="confirm-modal-body">
+          <p class="confirm-modal-message">${message}</p>
+        </div>
+        <div class="confirm-modal-actions">
+          <button class="confirm-modal-btn cancel">${cancelText}</button>
+          <button class="confirm-modal-btn ${danger ? "danger" : "confirm"}">${confirmText}</button>
+        </div>
+      </div>
+    `;
+
+    const closeModal = (result) => {
+      overlay.remove();
+      resolve(result);
+    };
+
+    overlay.querySelector(".confirm-modal-btn.cancel").addEventListener("click", () => closeModal(false));
+    overlay.querySelector(".confirm-modal-btn:not(.cancel)").addEventListener("click", () => closeModal(true));
+
+    // Close on overlay click (outside modal)
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal(false);
+    });
+
+    // Close on Escape key
+    const handleKeydown = (e) => {
+      if (e.key === "Escape") {
+        document.removeEventListener("keydown", handleKeydown);
+        closeModal(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeydown);
+
+    document.body.appendChild(overlay);
+  });
+}
+
+/**
+ * Render the history view
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} params - Optional params (userUuid, userName for TA viewing student)
+ */
+export async function render(container, params = {}) {
+  const userTeams = getUserTeams();
+
+  // Store context for viewing another user's history
+  viewContext = {
+    userUuid: params.userUuid || null,
+    userName: params.userName || null,
+    isViewingOther: !!params.userUuid
+  };
 
   // Load page template
   const pageHTML = await loadTemplate("standup", "individualHistory");
   container.innerHTML = pageHTML;
 
-  // Insert filters
-  const filtersPlaceholder = document.getElementById("history-filters-placeholder");
-  if (filtersPlaceholder) {
-    filtersPlaceholder.outerHTML = renderFilters();
+  // Add header for viewing another user (TA view)
+  const headerPlaceholder = document.getElementById("history-header-placeholder");
+  if (headerPlaceholder && viewContext.isViewingOther) {
+    headerPlaceholder.outerHTML = await renderComponent("standup/studentHistoryHeader", {
+      userName: viewContext.userName
+    });
+    // Attach back button listener
+    document.getElementById("back-to-dashboard")?.addEventListener("click", () => {
+      navigateBack();
+    });
   }
 
-  // Attach filter event listeners
-  setupFilterListeners();
+  // Render filter bar (simplified for TA view, full for own history)
+  const filterBarPlaceholder = document.getElementById("filter-bar-placeholder");
+  if (filterBarPlaceholder) {
+    if (viewContext.isViewingOther) {
+      // Simpler filter for TA viewing student
+      filterBarPlaceholder.outerHTML = await renderComponent("standup/historyFilterTA", {});
+    } else {
+      filterBarPlaceholder.outerHTML = await renderComponent("standup/historyFilterUser", {
+        teams: userTeams
+      });
+    }
+  }
 
-  // Load standups
-  await loadStandups();
+  // Attach event listeners
+  attachFilterListeners();
+
+  // Load initial data
+  await loadHistory();
 }
 
 /**
- * Render filter controls
+ * Attach filter event listeners
  */
-function renderFilters() {
-  const enrolledCourses = getEnrolledCourses();
-  const userTeams = getUserTeams();
+function attachFilterListeners() {
+  const inputs = [
+    "filter-team",
+    "filter-start-date",
+    "filter-end-date"
+  ];
 
-  // Filter teams for selected course
-  const courseTeams = currentFilters.courseUuid
-    ? userTeams.filter(t => t.courseUuid === currentFilters.courseUuid)
-    : [];
-
-  return `
-    <div class="history-filters">
-      <div class="filter-row">
-        <div class="filter-group">
-          <label for="filter-course">Course</label>
-          <select id="filter-course">
-            <option value="">All Courses</option>
-            ${enrolledCourses.map(course => `
-              <option
-                value="${course.courseUuid}"
-                ${currentFilters.courseUuid === course.courseUuid ? "selected" : ""}
-              >
-                ${course.courseCode} - ${course.courseName}
-              </option>
-            `).join("")}
-          </select>
-        </div>
-
-        ${courseTeams.length > 0 ? `
-          <div class="filter-group">
-            <label for="filter-team">Team</label>
-            <select id="filter-team">
-              <option value="">All Teams</option>
-              ${courseTeams.map(team => `
-                <option
-                  value="${team.teamUuid}"
-                  ${currentFilters.teamUuid === team.teamUuid ? "selected" : ""}
-                >
-                  ${team.teamName}
-                </option>
-              `).join("")}
-            </select>
-          </div>
-        ` : ""}
-
-        <div class="filter-group">
-          <label for="filter-start-date">Start Date</label>
-          <input
-            type="date"
-            id="filter-start-date"
-            value="${currentFilters.startDate || ""}"
-          >
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-end-date">End Date</label>
-          <input
-            type="date"
-            id="filter-end-date"
-            value="${currentFilters.endDate || ""}"
-          >
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/**
- * Setup filter event listeners
- */
-function setupFilterListeners() {
-  const courseSelect = document.getElementById("filter-course");
-  const teamSelect = document.getElementById("filter-team");
-  const startDateInput = document.getElementById("filter-start-date");
-  const endDateInput = document.getElementById("filter-end-date");
-
-  courseSelect?.addEventListener("change", async (e) => {
-    currentFilters.courseUuid = e.target.value || null;
-    currentFilters.teamUuid = null; // Reset team when course changes
-    const container = document.querySelector(".history-view").parentElement;
-    await render(container);
-  });
-
-  teamSelect?.addEventListener("change", async (e) => {
-    currentFilters.teamUuid = e.target.value || null;
-    await loadStandups();
-  });
-
-  startDateInput?.addEventListener("change", async (e) => {
-    currentFilters.startDate = e.target.value || null;
-    await loadStandups();
-  });
-
-  endDateInput?.addEventListener("change", async (e) => {
-    currentFilters.endDate = e.target.value || null;
-    await loadStandups();
+  inputs.forEach(id => {
+    document.getElementById(id)?.addEventListener("change", loadHistory);
   });
 }
 
 /**
- * Load standups from API
+ * Load history data based on filters
  */
-async function loadStandups() {
+async function loadHistory() {
   const contentDiv = document.getElementById("history-content");
+  const activeCourse = getActiveCourse();
 
   try {
-    contentDiv.innerHTML = "<div class=\"loading-message\">Loading standups...</div>";
+    contentDiv.innerHTML = "<div class=\"loading-message\">Loading history...</div>";
 
-    const standups = await getUserStandups(currentFilters);
+    const filters = {
+      teamUuid: document.getElementById("filter-team")?.value,
+      startDate: document.getElementById("filter-start-date")?.value,
+      endDate: document.getElementById("filter-end-date")?.value
+    };
 
-    if (standups.length === 0) {
-      contentDiv.innerHTML = await renderEmptyState();
+    let standups;
+    if (viewContext.isViewingOther) {
+      // TA viewing another user's history
+      standups = await getStandupsByUser(viewContext.userUuid, activeCourse.courseUuid, filters);
     } else {
-      const standupCardsHTML = await renderComponents("standup/standupCard", standups.map(prepareStandupData));
-      contentDiv.innerHTML = `<div class="standup-list">${standupCardsHTML}</div>`;
-
-      // Attach event listeners to action buttons
-      attachCardListeners();
+      // User viewing their own history
+      standups = await getUserStandups(filters);
     }
+
+    // Store standups for edit access
+    loadedStandups = standups;
+
+    if (standups.length > 0) {
+      const cardData = standups.map(standup => prepareHistoryCardData(standup, viewContext.isViewingOther));
+      const standupsHTML = await renderComponents("standup/historyCard", cardData);
+      contentDiv.innerHTML = `<div class="standup-list">${standupsHTML}</div>`;
+
+      // Attach action listeners (only for own history)
+      if (!viewContext.isViewingOther) {
+        attachActionListeners(contentDiv);
+      }
+    } else {
+      const emptyText = viewContext.isViewingOther
+        ? "This student has no standups in the selected date range."
+        : "Try adjusting your filters or submit a new standup.";
+      contentDiv.innerHTML = await renderComponent("standup/emptyState", {
+        icon: "📝",
+        title: "No standups found",
+        text: emptyText
+      });
+    }
+
   } catch (error) {
     contentDiv.innerHTML = `
       <div class="error-message">
-        Failed to load standups: ${error.message}
+        Failed to load history: ${error.message}
       </div>
     `;
   }
 }
 
 /**
- * Prepare standup data for template
+ * Prepare data for history card template
  * @param {Object} standup - Standup data
- * @returns {Object} Template data
+ * @param {boolean} readOnly - Hide edit/delete buttons (for TA view)
  */
-function prepareStandupData(standup) {
-  const dateFormatted = new Date(standup.dateSubmitted).toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  });
-
-  const createdAtFormatted = new Date(standup.createdAt).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+function prepareHistoryCardData(standup, readOnly = false) {
+  const dateObj = new Date(standup.dateSubmitted);
+  const hasBlocker = !!standup.blockers;
 
   return {
     standupUuid: standup.standupUuid,
-    dateFormatted,
-    createdAtFormatted,
-    teamName: standup.team?.teamName || null,
-    sentimentScore: standup.sentimentScore,
-    moodEmoji: standup.sentimentScore ? renderMood(standup.sentimentScore) : null,
-    whatDone: standup.whatDone,
-    whatNext: standup.whatNext,
-    blockers: standup.blockers || null,
-    reflection: standup.reflection || null
+    date: dateObj.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric"
+    }),
+    time: dateObj.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit"
+    }),
+    moodScore: standup.sentimentScore || 3,
+    teamName: standup.team?.teamName || "Unknown Team",
+    hasBlocker,
+    blockerClass: hasBlocker ? "has-blocker" : "",
+    showActions: !readOnly,
+    whatDone: standup.whatDone || "",
+    whatNext: standup.whatNext || "",
+    blockers: standup.blockers || ""
   };
 }
 
 /**
- * Render mood emoji
- * @param {number} score - Sentiment score (1-5)
+ * Attach listeners for edit/delete buttons
+ * @param {HTMLElement} container - Container element
  */
-function renderMood(score) {
-  const moods = {
-    1: "😞",
-    2: "😕",
-    3: "😐",
-    4: "🙂",
-    5: "😄"
-  };
-  return moods[score] || "😐";
-}
-
-/**
- * Render empty state
- */
-async function renderEmptyState() {
-  return await renderComponent("standup/emptyState", {
-    icon: "📝",
-    title: "No standups yet",
-    text: "Submit your first standup to start tracking your progress!"
-  });
-}
-
-/**
- * Attach event listeners to card action buttons
- */
-function attachCardListeners() {
-  const editButtons = document.querySelectorAll(".btn-edit");
-  const deleteButtons = document.querySelectorAll(".btn-delete");
-
-  editButtons.forEach(btn => {
-    btn.addEventListener("click", handleEdit);
-  });
-
-  deleteButtons.forEach(btn => {
-    btn.addEventListener("click", handleDelete);
-  });
-}
-
-/**
- * Handle edit button click
- * @param {Event} event - Click event
- */
-async function handleEdit(event) {
-  const standupId = event.target.getAttribute("data-standup-id");
-
-  try {
-    // Get full standup data
-    const standups = await getUserStandups(currentFilters);
-    const standup = standups.find(s => s.standupUuid === standupId);
-
-    if (!standup) {
-      throw new Error("Standup not found");
-    }
-
-    // Switch to form view with edit mode
-    const container = document.querySelector(".history-view").parentElement;
-    const formModule = await import("./standupForm.js");
-    await formModule.render(container, standup);
-
-    // Update navigation
-    document.querySelectorAll(".standup-nav button").forEach(btn => {
-      btn.classList.remove("active");
+function attachActionListeners(container) {
+  container.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const id = e.target.dataset.id;
+      const standup = loadedStandups.find(s => s.standupUuid === id);
+      if (standup) {
+        navigateToView("form", { standupData: standup });
+      }
     });
-    document.getElementById("nav-form")?.classList.add("active");
+  });
 
-  } catch (error) {
-    alert(`Failed to load standup: ${error.message}`);
-  }
-}
+  container.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.dataset.id;
+      const confirmed = await showConfirm({
+        title: "Delete Standup",
+        message: "Are you sure you want to delete this standup? This action cannot be undone.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        danger: true
+      });
 
-/**
- * Handle delete button click
- * @param {Event} event - Click event
- */
-async function handleDelete(event) {
-  const standupId = event.target.getAttribute("data-standup-id");
-
-  if (!confirm("Are you sure you want to delete this standup? This action cannot be undone.")) {
-    return;
-  }
-
-  try {
-    event.target.disabled = true;
-    event.target.textContent = "Deleting...";
-
-    await deleteStandup(standupId);
-
-    // Remove card from DOM
-    const card = document.querySelector(`[data-standup-id="${standupId}"]`);
-    card.remove();
-
-    // Check if list is now empty
-    const remainingCards = document.querySelectorAll(".standup-card");
-    if (remainingCards.length === 0) {
-      document.getElementById("history-content").innerHTML = renderEmptyState();
-    }
-
-  } catch (error) {
-    alert(`Failed to delete standup: ${error.message}`);
-    event.target.disabled = false;
-    event.target.textContent = "Delete";
-  }
+      if (confirmed) {
+        try {
+          await deleteStandup(id);
+          await loadHistory();
+        } catch (error) {
+          alert(`Failed to delete: ${error.message}`);
+        }
+      }
+    });
+  });
 }

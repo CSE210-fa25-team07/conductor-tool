@@ -1,0 +1,12 @@
+<template>
+  <div class="team-selector-container">
+    <label for="team-select" class="selector-label">Select Team:</label>
+    <select id="team-select" class="selector-input">
+      {{#teams}}
+        <option value="{{teamUuid}}" {{#selected}}selected{{/selected}}>
+          {{teamName}}
+        </option>
+      {{/teams}}
+    </select>
+  </div>
+</template>

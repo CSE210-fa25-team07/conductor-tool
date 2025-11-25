@@ -17,8 +17,102 @@
 
 import { loadUserContext, isProfessorOrTA } from "../../utils/userContext.js";
 
+// All available standup views
+const ALL_VIEWS = [
+  { id: "form", label: "Submit Standup" },
+  { id: "history", label: "My History" },
+  { id: "team", label: "Team Dashboard" },
+  { id: "ta", label: "TA Overview" }
+];
+
+/**
+ * Get available views based on user role
+ * TAs/Professors: Team Dashboard and TA Overview
+ * Students: Submit Standup, My History, Team Dashboard
+ * @returns {Array} Array of view objects { id, label }
+ */
+export function getAvailableViews() {
+  const isTA = isProfessorOrTA();
+  if (isTA) {
+    return ALL_VIEWS.filter(v => v.id === "team" || v.id === "ta");
+  }
+  return ALL_VIEWS.filter(v => v.id !== "ta");
+}
+
+/**
+ * Get default view based on user role
+ * TAs/Professors default to TA Overview
+ * Students default to Submit Standup form
+ * @returns {string} Default view ID
+ */
+export function getDefaultView() {
+  return isProfessorOrTA() ? "ta" : "form";
+}
+
 // View modules cache - lazy loaded on first use
 let viewModules = {};
+
+// CSS loaded flag
+let cssLoaded = false;
+
+// Current container reference for navigation
+let currentContainer = null;
+
+// Current view state for back navigation
+let viewHistory = [];
+
+/**
+ * Dynamically load standup CSS
+ * @private
+ */
+function loadStandupCSS() {
+  if (cssLoaded) return;
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "../../css/pages/standup/standup.css";
+  link.id = "standup-css";
+  document.head.appendChild(link);
+  cssLoaded = true;
+}
+
+/**
+ * Navigate to a standup view (used by child views for drill-down)
+ * @param {string} view - View name
+ * @param {Object} params - View parameters
+ */
+export async function navigateToView(view, params = {}) {
+  if (!currentContainer) return;
+
+  // Track view history for back navigation
+  viewHistory.push({ view, params });
+
+  await renderView(currentContainer, view, params);
+}
+
+/**
+ * Navigate back to previous view
+ */
+export async function navigateBack() {
+  if (!currentContainer || viewHistory.length < 2) return;
+
+  // Remove current view
+  viewHistory.pop();
+
+  // Get previous view
+  const previous = viewHistory[viewHistory.length - 1];
+  await renderView(currentContainer, previous.view, previous.params);
+}
+
+/**
+ * Refresh the current view
+ */
+export async function refreshCurrentView() {
+  if (!currentContainer || viewHistory.length === 0) return;
+
+  const current = viewHistory[viewHistory.length - 1];
+  await renderView(currentContainer, current.view, current.params);
+}
 
 /**
  * Adapter render method - bridges standup views into course page framework
@@ -27,9 +121,26 @@ let viewModules = {};
  *
  * @param {HTMLElement} container - Container element from course page to render into
  * @param {string} view - View name (form, history, team, ta)
+ * @param {Object} params - Optional parameters for the view
  * @returns {Promise<void>}
  */
-export async function render(container, view = "form") {
+export async function render(container, view = "form", params = {}) {
+  // Load standup CSS if not already loaded
+  loadStandupCSS();
+
+  // Store container reference for drill-down navigation
+  currentContainer = container;
+
+  // Reset view history when entering standup feature
+  viewHistory = [{ view, params }];
+
+  await renderView(container, view, params);
+}
+
+/**
+ * Internal render function
+ */
+async function renderView(container, view, params = {}) {
   try {
     // Clear container
     container.innerHTML = "";
@@ -45,11 +156,9 @@ export async function render(container, view = "form") {
     // Validate view based on user role
     const isTA = isProfessorOrTA();
 
-    // Default view based on role
+    // Only restrict TA view for non-TAs
     let targetView = view;
-    if (isTA && (view === "form" || view === "history")) {
-      targetView = "ta";
-    } else if (!isTA && view === "ta") {
+    if (!isTA && view === "ta") {
       targetView = "form";
     }
 
@@ -59,8 +168,8 @@ export async function render(container, view = "form") {
       throw new Error(`Unknown standup view: ${targetView}`);
     }
 
-    // Render the view
-    await module.render(container);
+    // Render the view with params
+    await module.render(container, params);
 
   } catch (error) {
     container.innerHTML = `

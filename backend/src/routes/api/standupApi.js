@@ -98,4 +98,19 @@ router.get("/ta/overview", async (req, res) => {
   }
 });
 
+/**
+ * Get standups for a specific user (TA/Professor only)
+ * @name GET /v1/api/standups/user/:userUuid
+ */
+router.get("/user/:userUuid", async (req, res) => {
+  try {
+    return await standupService.getStandupsByUser(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

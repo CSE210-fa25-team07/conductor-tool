@@ -1,0 +1,105 @@
+<template>
+  <!-- Key Metrics Section -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h3 class="section-title">Team Metrics</h3>
+      <div class="section-divider"></div>
+    </div>
+    <div class="metrics-row" id="metrics-row">
+      <!-- Metric cards inserted here -->
+    </div>
+    <div class="metrics-expansion" id="metrics-expansion">
+      <!-- Expanded metric charts will be inserted here -->
+    </div>
+  </section>
+
+  <!-- Team Trends Section -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h3 class="section-title">Team Trends</h3>
+      <div class="section-divider"></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-container">
+        <div class="chart-header">
+          <h4 class="chart-title">Submission Activity</h4>
+          <label class="chart-toggle">
+            <input type="checkbox" id="submissionToggle" />
+            <span class="toggle-label">By Member</span>
+          </label>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="submissionChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header">
+          <h4 class="chart-title">Sentiment Trend</h4>
+          <label class="chart-toggle">
+            <input type="checkbox" id="sentimentToggle" />
+            <span class="toggle-label">By Member</span>
+          </label>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="sentimentChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Member Performance Section -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h3 class="section-title">Member Performance</h3>
+      <div class="section-divider"></div>
+    </div>
+    <div class="member-charts-row">
+      <div class="chart-container chart-tall">
+        <h4 class="chart-title">Submissions by Member</h4>
+        <div class="chart-wrapper-tall">
+          <canvas id="memberSubmissionsChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-container chart-tall">
+        <h4 class="chart-title">Average Sentiment by Member</h4>
+        <div class="chart-wrapper-tall">
+          <canvas id="memberSentimentChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Members Section -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h3 class="section-title">Team Members</h3>
+      <div class="section-divider"></div>
+    </div>
+    <p class="list-hint">{{memberHint}}</p>
+    <div class="member-grid" id="member-grid">
+      <!-- Member cards inserted here -->
+    </div>
+  </section>
+
+  <!-- Recent Feeds Section -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h3 class="section-title">Recent Standups</h3>
+      <div class="section-divider"></div>
+    </div>
+    <div class="feeds-container">
+      <div class="feeds-header">
+        <div class="feeds-filter" id="team-feeds-filter">
+          <button class="feeds-filter-btn" data-days="1">Today</button>
+          <button class="feeds-filter-btn" data-days="3">3 Days</button>
+          <button class="feeds-filter-btn active" data-days="7">7 Days</button>
+          <button class="feeds-filter-btn" data-days="14">14 Days</button>
+        </div>
+        <span class="feeds-count" id="team-feeds-count">{{feedsCount}}</span>
+      </div>
+      <div class="feeds-list" id="team-feeds-list">
+        <!-- Feeds inserted here -->
+      </div>
+    </div>
+  </section>
+</template>
