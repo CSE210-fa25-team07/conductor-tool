@@ -50,32 +50,32 @@ DECLARE
 BEGIN
     -- Professor Powell
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'powell@ucsd.edu';
-    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
-    VALUES (v_user_uuid, true, true, 'CSE 3110', 'Agile Development, Team Collaboration, Software Quality', 'https://tpowell.ucsd.edu')
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, true, 'CSE 3110', 'Agile Development, Team Collaboration, Software Quality', 'https://tpowell.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- Professor Jones
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'jones@ucsd.edu';
-    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
-    VALUES (v_user_uuid, true, false, 'CSE 3120', 'HCI, UX Design, Accessibility Research', 'https://sjones.ucsd.edu')
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, false, false, 'CSE 3120', 'HCI, UX Design, Accessibility Research', 'https://sjones.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Alice
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu';
-    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
-    VALUES (v_user_uuid, false, false, 'CSE 2140', 'Automated Testing, CI/CD', NULL)
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, false, false, false, 'CSE 2140', 'Automated Testing, CI/CD', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Bob
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu';
-    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
-    VALUES (v_user_uuid, false, false, 'CSE 2145', 'Software Architecture, Design Patterns', NULL)
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, false, false, false, 'CSE 2145', 'Software Architecture, Design Patterns', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Carol
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_carol@ucsd.edu';
-    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, office_location, research_interest, personal_website)
-    VALUES (v_user_uuid, false, false, 'CSE 2150', 'User Experience, Interaction Design', 'https://cchen.me')
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, false, false, false, 'CSE 2150', 'User Experience, Interaction Design', 'https://cchen.me')
     ON CONFLICT (user_uuid) DO NOTHING;
 END $$;
 
@@ -439,6 +439,16 @@ BEGIN
 END $$;
 
 -- ============================================
+-- 15. FORM REQUESTS
+-- ============================================
+INSERT INTO form_request (first_name, last_name, email, related_institution, verification_code, created_at) VALUES
+    ('Nathan', 'Newman', 'nathan.newman@stanford.edu', 'Stanford University', 'STAN-REQ-2025-001', NOW() - INTERVAL '2 days'),
+    ('Olivia', 'Owens', 'olivia.owens@berkeley.edu', 'UC Berkeley', 'BERK-REQ-2025-002', NOW() - INTERVAL '1 day'),
+    ('Peter', 'Parker', 'peter.parker@mit.edu', 'MIT', 'MIT-REQ-2025-003', NOW() - INTERVAL '5 days'),
+    ('Quinn', 'Quinn', 'quinn@caltech.edu', 'Caltech', 'CALT-REQ-2025-004', NOW() - INTERVAL '7 days'),
+    ('Rachel', 'Roberts', 'rachel.roberts@ucsd.edu', 'UC San Diego', 'UCSD-REQ-2025-005', NOW() - INTERVAL '3 hours');
+
+-- ============================================
 -- SUCCESS MESSAGE
 -- ============================================
 DO $$
@@ -463,5 +473,6 @@ BEGIN
     RAISE NOTICE '  ✓ 4 Meetings';
     RAISE NOTICE '  ✓ 4 Meeting Codes';
     RAISE NOTICE '  ✓ 6 Participants (attendance records)';
+    RAISE NOTICE '  ✓ 5 Form Requests';
     RAISE NOTICE '========================================';
 END $$;
