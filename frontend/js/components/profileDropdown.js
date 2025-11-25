@@ -154,7 +154,7 @@ export function setupDropdownBehavior() {
  * Create and populate the user dropdown menu
  * @param {string} userType - Either "professor", "admin", or "student"
  */
-export function createUserDropdown(_userType = "student") { // eslint-disable-line no-unused-vars
+export function createUserDropdown(userType = "student") {
   const dropdown = document.getElementById("user-dropdown");
 
   if (!dropdown) return;
