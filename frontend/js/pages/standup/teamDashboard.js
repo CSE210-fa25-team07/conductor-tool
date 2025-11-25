@@ -228,8 +228,6 @@ async function loadTeamData(teamUuid) {
     attachFeedClickListeners(document.getElementById("team-feeds-list")); // Click feeds to see detail
 
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Team dashboard load error:", error);
     contentDiv.innerHTML = `<div class="error-message">Failed to load team data: ${error.message}</div>`;
   }
 }

@@ -190,8 +190,6 @@ async function loadCourseOverview(courseUuid) {
     attachFeedClickListeners(contentDiv);
 
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Dashboard load error:", error);
     contentDiv.innerHTML = `<div class="error-message">Failed to load course overview: ${error.message}</div>`;
   }
 }
