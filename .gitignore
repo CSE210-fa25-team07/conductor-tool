@@ -6,3 +6,4 @@ node_modules/
 .vscode/
 users.json
 *.drawio
+jsconfig.json
