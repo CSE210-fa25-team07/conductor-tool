@@ -44,7 +44,7 @@ export async function updateProfileFromAPI() {
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Silently fail - profile will show default state
   }
 }
@@ -114,7 +114,7 @@ async function fetchUserPhoto(userAvatar, name) {
       // Fallback to initials
       displayInitials(userAvatar, name);
     }
-  } catch (error) {
+  } catch {
     // Fallback to initials on error
     displayInitials(userAvatar, name);
   }
@@ -165,7 +165,7 @@ export function createUserDropdown(userType = "student") {
   // Define menu items based on user type
   // Add Profie for all user types
   const menuItems = [
-      { text: "Profile", href: "/profile" }
+    { text: "Profile", href: "/profile" }
   ];
 
   // Add Requests option for admin users
