@@ -176,13 +176,13 @@ async function handleSubmit(event) {
       const today = new Date().toISOString().split("T")[0];
       form.querySelector("#date-submitted").value = today;
       // Reset mood selector to default (3)
-      const defaultMoodRadio = form.querySelector('input[name="sentimentScore"][value="3"]');
+      const defaultMoodRadio = form.querySelector("input[name=\"sentimentScore\"][value=\"3\"]");
       if (defaultMoodRadio) defaultMoodRadio.checked = true;
       // Reset visibility to default (team)
-      const defaultVisibilityRadio = form.querySelector('input[name="visibility"][value="team"]');
+      const defaultVisibilityRadio = form.querySelector("input[name=\"visibility\"][value=\"team\"]");
       if (defaultVisibilityRadio) defaultVisibilityRadio.checked = true;
       // Reset team to none
-      const defaultTeamRadio = form.querySelector('input[name="teamUuid"][value=""]');
+      const defaultTeamRadio = form.querySelector("input[name=\"teamUuid\"][value=\"\"]");
       if (defaultTeamRadio) defaultTeamRadio.checked = true;
     }
 

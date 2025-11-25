@@ -7,7 +7,7 @@ import { loadUserContext, getActiveCourse, isProfessorOrTA } from "../../utils/u
 import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
 
 // State management
-let currentFeature = "directory"; // default feature
+const _currentFeature = "directory"; // eslint-disable-line no-unused-vars
 let currentView = "dashboard"; // default view within feature
 let courseData = null;
 

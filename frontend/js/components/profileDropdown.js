@@ -28,7 +28,7 @@ export async function updateProfileFromAPI() {
         updateProfileDisplay(data.user.name);
       }
     }
-  } catch (error) {
+  } catch (_error) { // eslint-disable-line no-unused-vars
     // Silently fail - profile will show default state
   }
 }
@@ -76,7 +76,7 @@ export function setupDropdownBehavior() {
  * Create and populate the user dropdown menu
  * @param {string} userType - Either "professor", "admin", or "student"
  */
-export function createUserDropdown(userType = "student") {
+export function createUserDropdown(_userType = "student") { // eslint-disable-line no-unused-vars
   const dropdown = document.getElementById("user-dropdown");
 
   if (!dropdown) return;

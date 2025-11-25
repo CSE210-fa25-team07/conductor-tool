@@ -6,7 +6,7 @@
 import { getTAOverview } from "../../api/standupApi.js";
 import { getActiveCourse } from "../../utils/userContext.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
-import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { renderComponents } from "../../utils/componentLoader.js";
 import { navigateToView } from "./courseIntegration.js";
 
 // Store chart instances to destroy them before re-rendering
@@ -27,7 +27,7 @@ export async function render(container) {
   const activeCourse = getActiveCourse();
 
   if (!activeCourse) {
-    container.innerHTML = `<div class="error-message">No active course selected.</div>`;
+    container.innerHTML = "<div class=\"error-message\">No active course selected.</div>";
     return;
   }
 
@@ -49,8 +49,8 @@ function loadChartJs() {
   return new Promise((resolve, reject) => {
     if (window.Chart) return resolve();
 
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/chart.js";
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);
@@ -190,6 +190,7 @@ async function loadCourseOverview(courseUuid) {
     attachFeedClickListeners(contentDiv);
 
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Dashboard load error:", error);
     contentDiv.innerHTML = `<div class="error-message">Failed to load course overview: ${error.message}</div>`;
   }
@@ -272,16 +273,16 @@ function attachMetricListeners(container, teamGroups) {
 
 // Color palette for team charts - ecological theme with variety
 const TEAM_COLORS = [
-  '#99FF66', // radioactive-lime
-  '#4ECDC4', // teal
-  '#66CC99', // mint green
-  '#FFD93D', // golden yellow
-  '#FF8C42', // orange
-  '#95E1D3', // soft aqua
-  '#C9B1FF', // lavender
-  '#FF6B6B', // coral
-  '#66D9EF', // sky blue
-  '#A8E6CF', // pale green
+  "#99FF66", // radioactive-lime
+  "#4ECDC4", // teal
+  "#66CC99", // mint green
+  "#FFD93D", // golden yellow
+  "#FF8C42", // orange
+  "#95E1D3", // soft aqua
+  "#C9B1FF", // lavender
+  "#FF6B6B", // coral
+  "#66D9EF", // sky blue
+  "#A8E6CF" // pale green
 ];
 
 /**
@@ -302,14 +303,14 @@ function renderMetricChart(metricKey, teamGroups) {
   const backgroundColors = data.labels.map((_, i) => TEAM_COLORS[i % TEAM_COLORS.length]);
 
   chartInstances[metricKey] = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels: data.labels,
       datasets: [{
         label: metricKey,
         data: data.values,
         backgroundColor: backgroundColors,
-        borderColor: '#052B08', // forest-green
+        borderColor: "#052B08", // forest-green
         borderWidth: 1
       }]
     },
@@ -320,20 +321,20 @@ function renderMetricChart(metricKey, teamGroups) {
         legend: { display: false },
         title: {
           display: true,
-          text: `Breakdown by Team`,
-          color: '#052B08',
-          font: { family: 'Monaco', size: 14 }
+          text: "Breakdown by Team",
+          color: "#052B08",
+          font: { family: "Monaco", size: 14 }
         }
       },
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: '#D3FBD6' },
-          ticks: { font: { family: 'Monaco' } }
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
         },
         x: {
           grid: { display: false },
-          ticks: { font: { family: 'Monaco' } }
+          ticks: { font: { family: "Monaco" } }
         }
       }
     }
@@ -351,28 +352,28 @@ function getMetricDataPerTeam(metricKey, teamGroups) {
     labels.push(group.team.teamName);
 
     switch (metricKey) {
-      case 'activeStudents':
-        values.push(group.users.size);
-        break;
-      case 'submissionRate':
-        // Approx: submissions / (members * 5) * 100
-        // Using 5 as expected submissions per week per member
-        // This is a rough estimate for the demo
-        const expected = group.users.size * 5 || 1;
-        const rate = Math.min(100, Math.round((group.standups.length / expected) * 100));
-        values.push(rate);
-        break;
-      case 'avgSentiment':
-        const sentiments = group.standups.filter(s => s.sentimentScore).map(s => s.sentimentScore);
-        const avg = sentiments.length > 0
-          ? (sentiments.reduce((a, b) => a + b, 0) / sentiments.length).toFixed(1)
-          : 0;
-        values.push(avg);
-        break;
-      case 'blockers':
-        const blockerCount = group.standups.filter(s => s.blockers).length;
-        values.push(blockerCount);
-        break;
+    case "activeStudents":
+      values.push(group.users.size);
+      break;
+    case "submissionRate":
+      // Approx: submissions / (members * 5) * 100
+      // Using 5 as expected submissions per week per member
+      // This is a rough estimate for the demo
+      const expected = group.users.size * 5 || 1;
+      const rate = Math.min(100, Math.round((group.standups.length / expected) * 100));
+      values.push(rate);
+      break;
+    case "avgSentiment":
+      const sentiments = group.standups.filter(s => s.sentimentScore).map(s => s.sentimentScore);
+      const avg = sentiments.length > 0
+        ? (sentiments.reduce((a, b) => a + b, 0) / sentiments.length).toFixed(1)
+        : 0;
+      values.push(avg);
+      break;
+    case "blockers":
+      const blockerCount = group.standups.filter(s => s.blockers).length;
+      values.push(blockerCount);
+      break;
     }
   });
 
@@ -398,7 +399,7 @@ function renderTeamCard(group) {
         <div class="stat-item">
           <strong>${standups.length}</strong> subs
         </div>
-        ${blockers > 0 ? `<div class="stat-item blocker">⚠ ${blockers} blockers</div>` : '<div class="stat-item">✓ No blockers</div>'}
+        ${blockers > 0 ? `<div class="stat-item blocker">⚠ ${blockers} blockers</div>` : "<div class=\"stat-item\">✓ No blockers</div>"}
       </div>
       <div class="team-last-active">
         Last active: ${lastActive}
@@ -413,7 +414,7 @@ function renderTeamCard(group) {
 function renderAtRiskList(standups) {
   const atRisk = identifyAtRiskStudents(standups);
   if (atRisk.length === 0) {
-    return `<li class="at-risk-empty">✓ No students at risk</li>`;
+    return "<li class=\"at-risk-empty\">✓ No students at risk</li>";
   }
   return atRisk.map(student => `
     <li class="at-risk-item" data-user-id="${student.userUuid}" data-user-name="${student.name}">
@@ -428,7 +429,7 @@ function renderAtRiskList(standups) {
  */
 function initializeCharts(standups, teamGroups) {
   // Store data for toggle functionality
-  const dates = [...new Set(standups.map(s => s.dateSubmitted.split('T')[0]))].sort().slice(-7);
+  const dates = [...new Set(standups.map(s => s.dateSubmitted.split("T")[0]))].sort().slice(-7);
   chartData = { standups, teamGroups, dates };
 
   // Render charts in class-level mode (default)
@@ -440,17 +441,17 @@ function initializeCharts(standups, teamGroups) {
  * Attach toggle listeners for chart view switching
  */
 function attachChartToggleListeners() {
-  const subToggle = document.getElementById('submissionToggle');
-  const sentToggle = document.getElementById('sentimentToggle');
+  const subToggle = document.getElementById("submissionToggle");
+  const sentToggle = document.getElementById("sentimentToggle");
 
   if (subToggle) {
-    subToggle.addEventListener('change', (e) => {
+    subToggle.addEventListener("change", (e) => {
       renderSubmissionChart(e.target.checked);
     });
   }
 
   if (sentToggle) {
-    sentToggle.addEventListener('change', (e) => {
+    sentToggle.addEventListener("change", (e) => {
       renderSentimentChart(e.target.checked);
     });
   }
@@ -466,23 +467,23 @@ function getCommonChartOptions(showLegend = false) {
     plugins: {
       legend: {
         display: showLegend,
-        position: 'bottom',
+        position: "bottom",
         labels: {
           boxWidth: 12,
           padding: 8,
-          font: { family: 'Monaco', size: 10 }
+          font: { family: "Monaco", size: 10 }
         }
       }
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { font: { family: 'Monaco' } }
+        ticks: { font: { family: "Monaco" } }
       },
       y: {
         beginAtZero: true,
-        grid: { color: '#D3FBD6' },
-        ticks: { font: { family: 'Monaco' } }
+        grid: { color: "#D3FBD6" },
+        ticks: { font: { family: "Monaco" } }
       }
     }
   };
@@ -492,7 +493,7 @@ function getCommonChartOptions(showLegend = false) {
  * Render Submission Chart (class-level or per-team)
  */
 function renderSubmissionChart(byTeam = false) {
-  const ctx = document.getElementById('submissionChart');
+  const ctx = document.getElementById("submissionChart");
   if (!ctx) return;
 
   // Destroy existing chart
@@ -515,7 +516,7 @@ function renderSubmissionChart(byTeam = false) {
         label: group.team.teamName,
         data,
         borderColor: color,
-        backgroundColor: color + '33', // 20% opacity
+        backgroundColor: color + "33", // 20% opacity
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 3,
@@ -528,20 +529,20 @@ function renderSubmissionChart(byTeam = false) {
       standups.filter(s => s.dateSubmitted.startsWith(date)).length
     );
     datasets = [{
-      label: 'Submissions',
+      label: "Submissions",
       data: submissionData,
-      borderColor: '#052B08',
-      backgroundColor: 'rgba(153, 255, 102, 0.2)',
+      borderColor: "#052B08",
+      backgroundColor: "rgba(153, 255, 102, 0.2)",
       borderWidth: 2,
       tension: 0.3,
       fill: true,
-      pointBackgroundColor: '#FFFFFF',
-      pointBorderColor: '#052B08'
+      pointBackgroundColor: "#FFFFFF",
+      pointBorderColor: "#052B08"
     }];
   }
 
   chartInstances.submission = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: { labels, datasets },
     options: getCommonChartOptions(byTeam)
   });
@@ -551,7 +552,7 @@ function renderSubmissionChart(byTeam = false) {
  * Render Sentiment Chart (class-level or per-team)
  */
 function renderSentimentChart(byTeam = false) {
-  const ctx = document.getElementById('sentimentChart');
+  const ctx = document.getElementById("sentimentChart");
   if (!ctx) return;
 
   // Destroy existing chart
@@ -596,19 +597,19 @@ function renderSentimentChart(byTeam = false) {
       return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
     });
     datasets = [{
-      label: 'Avg Sentiment',
+      label: "Avg Sentiment",
       data: sentimentData,
-      borderColor: '#052B08',
+      borderColor: "#052B08",
       borderWidth: 2,
       borderDash: [5, 5],
       tension: 0.1,
       pointRadius: 4,
-      pointBackgroundColor: '#99FF66'
+      pointBackgroundColor: "#99FF66"
     }];
   }
 
   chartInstances.sentiment = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: { labels, datasets },
     options: {
       ...baseOptions,
@@ -641,7 +642,7 @@ function groupStandupsByTeam(standups) {
  * Helper: Calculate stats
  */
 function calculateStats(standups, teamGroups) {
-  const totalStandups = standups.length;
+  const _totalStandups = standups.length; // eslint-disable-line no-unused-vars
   const standupsWithSentiment = standups.filter(s => s.sentimentScore);
   const avgSentiment = standupsWithSentiment.length > 0
     ? (standupsWithSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / standupsWithSentiment.length).toFixed(1)
@@ -733,7 +734,7 @@ async function renderCompactFeeds(standups, days = 7) {
     .sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
 
   if (filtered.length === 0) {
-    return '<div class="feeds-empty">No standups in this period</div>';
+    return "<div class=\"feeds-empty\">No standups in this period</div>";
   }
 
   const feedData = filtered.map(standup => {
@@ -790,7 +791,7 @@ function attachFeedFilterListener(standups) {
 function renderFeedsCount(standups, days) {
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const count = standups.filter(s => new Date(s.dateSubmitted) >= cutoff).length;
-  return `${count} standup${count !== 1 ? 's' : ''}`;
+  return `${count} standup${count !== 1 ? "s" : ""}`;
 }
 
 /**
@@ -821,7 +822,7 @@ function truncateText(text, maxLength) {
 /**
  * Helper: Escape HTML
  */
-function escapeHtml(text) {
+function escapeHtml(text) { // eslint-disable-line no-unused-vars
   if (!text) return "";
   const div = document.createElement("div");
   div.textContent = text;

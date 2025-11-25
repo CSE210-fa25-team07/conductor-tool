@@ -22,26 +22,26 @@ let teamData = {
 
 // Color palette for member charts (20 distinct colors)
 const MEMBER_COLORS = [
-  '#99FF66', // radioactive-lime
-  '#4ECDC4', // teal
-  '#66CC99', // mint green
-  '#FFD93D', // golden yellow
-  '#FF8C42', // orange
-  '#95E1D3', // soft aqua
-  '#C9B1FF', // lavender
-  '#FF6B6B', // coral
-  '#66D9EF', // sky blue
-  '#A8E6CF', // pale green
-  '#F7B267', // peach
-  '#7FDBFF', // bright cyan
-  '#B4F8C8', // mint
-  '#FFADAD', // salmon pink
-  '#9BF6FF', // ice blue
-  '#DDA0DD', // plum
-  '#E2F0CB', // light lime
-  '#FEC89A', // apricot
-  '#87CEEB', // sky
-  '#98D8C8', // seafoam
+  "#99FF66", // radioactive-lime
+  "#4ECDC4", // teal
+  "#66CC99", // mint green
+  "#FFD93D", // golden yellow
+  "#FF8C42", // orange
+  "#95E1D3", // soft aqua
+  "#C9B1FF", // lavender
+  "#FF6B6B", // coral
+  "#66D9EF", // sky blue
+  "#A8E6CF", // pale green
+  "#F7B267", // peach
+  "#7FDBFF", // bright cyan
+  "#B4F8C8", // mint
+  "#FFADAD", // salmon pink
+  "#9BF6FF", // ice blue
+  "#DDA0DD", // plum
+  "#E2F0CB", // light lime
+  "#FEC89A", // apricot
+  "#87CEEB", // sky
+  "#98D8C8" // seafoam
 ];
 
 /**
@@ -137,8 +137,8 @@ function loadChartJs() {
   return new Promise((resolve, reject) => {
     if (window.Chart) return resolve();
 
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/chart.js";
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);
@@ -154,7 +154,7 @@ async function loadTeamData(teamUuid) {
   const teamNameDisplay = document.getElementById("team-name-display");
 
   try {
-    contentDiv.innerHTML = `<div class="loading-message">Loading team analytics...</div>`;
+    contentDiv.innerHTML = "<div class=\"loading-message\">Loading team analytics...</div>";
 
     // Get last 14 days for better trend data
     const endDate = new Date().toISOString().split("T")[0];
@@ -170,7 +170,7 @@ async function loadTeamData(teamUuid) {
     // Process data
     const members = groupStandupsByMember(standups);
     const stats = calculateTeamStats(standups, members);
-    const dates = [...new Set(standups.map(s => s.dateSubmitted.split('T')[0]))].sort().slice(-7);
+    const dates = [...new Set(standups.map(s => s.dateSubmitted.split("T")[0]))].sort().slice(-7);
 
     // Build standup lookup map for modal display
     const standupMap = {};
@@ -207,7 +207,7 @@ async function loadTeamData(teamUuid) {
         const memberData = Object.values(members).map((m, i) => prepareMemberCardData(m, i));
         memberGrid.innerHTML = await renderComponents("standup/memberCard", memberData);
       } else {
-        memberGrid.innerHTML = '<div class="empty-state-inline">No member activity in this period</div>';
+        memberGrid.innerHTML = "<div class=\"empty-state-inline\">No member activity in this period</div>";
       }
     }
 
@@ -228,6 +228,7 @@ async function loadTeamData(teamUuid) {
     attachFeedClickListeners(document.getElementById("team-feeds-list")); // Click feeds to see detail
 
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Team dashboard load error:", error);
     contentDiv.innerHTML = `<div class="error-message">Failed to load team data: ${error.message}</div>`;
   }
@@ -279,11 +280,11 @@ function initializeCharts() {
  * Attach chart toggle listeners
  */
 function attachChartToggleListeners() {
-  document.getElementById('submissionToggle')?.addEventListener('change', (e) => {
+  document.getElementById("submissionToggle")?.addEventListener("change", (e) => {
     renderSubmissionChart(e.target.checked);
   });
 
-  document.getElementById('sentimentToggle')?.addEventListener('change', (e) => {
+  document.getElementById("sentimentToggle")?.addEventListener("change", (e) => {
     renderSentimentChart(e.target.checked);
   });
 }
@@ -361,7 +362,7 @@ function attachMemberClickListeners() {
  * Render submission chart (team-level or per-member)
  */
 function renderSubmissionChart(byMember = false) {
-  const ctx = document.getElementById('submissionChart');
+  const ctx = document.getElementById("submissionChart");
   if (!ctx) return;
 
   if (chartInstances.submission) {
@@ -382,7 +383,7 @@ function renderSubmissionChart(byMember = false) {
         label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
         data,
         borderColor: color,
-        backgroundColor: color + '33',
+        backgroundColor: color + "33",
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 3,
@@ -394,20 +395,20 @@ function renderSubmissionChart(byMember = false) {
       standups.filter(s => s.dateSubmitted.startsWith(date)).length
     );
     datasets = [{
-      label: 'Submissions',
+      label: "Submissions",
       data: submissionData,
-      borderColor: '#052B08',
-      backgroundColor: 'rgba(153, 255, 102, 0.2)',
+      borderColor: "#052B08",
+      backgroundColor: "rgba(153, 255, 102, 0.2)",
       borderWidth: 2,
       tension: 0.3,
       fill: true,
-      pointBackgroundColor: '#FFFFFF',
-      pointBorderColor: '#052B08'
+      pointBackgroundColor: "#FFFFFF",
+      pointBorderColor: "#052B08"
     }];
   }
 
   chartInstances.submission = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: { labels, datasets },
     options: getChartOptions(byMember)
   });
@@ -417,7 +418,7 @@ function renderSubmissionChart(byMember = false) {
  * Render sentiment chart (team-level or per-member)
  */
 function renderSentimentChart(byMember = false) {
-  const ctx = document.getElementById('sentimentChart');
+  const ctx = document.getElementById("sentimentChart");
   if (!ctx) return;
 
   if (chartInstances.sentiment) {
@@ -457,19 +458,19 @@ function renderSentimentChart(byMember = false) {
       return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
     });
     datasets = [{
-      label: 'Avg Sentiment',
+      label: "Avg Sentiment",
       data: sentimentData,
-      borderColor: '#052B08',
+      borderColor: "#052B08",
       borderWidth: 2,
       borderDash: [5, 5],
       tension: 0.1,
       pointRadius: 4,
-      pointBackgroundColor: '#99FF66'
+      pointBackgroundColor: "#99FF66"
     }];
   }
 
   chartInstances.sentiment = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: { labels, datasets },
     options: {
       ...getChartOptions(byMember),
@@ -485,7 +486,7 @@ function renderSentimentChart(byMember = false) {
  * Render member submissions bar chart
  */
 function renderMemberSubmissionsChart() {
-  const ctx = document.getElementById('memberSubmissionsChart');
+  const ctx = document.getElementById("memberSubmissionsChart");
   if (!ctx) return;
 
   if (chartInstances.memberSubmissions) {
@@ -499,20 +500,20 @@ function renderMemberSubmissionsChart() {
   const colors = memberList.map((_, i) => MEMBER_COLORS[i % MEMBER_COLORS.length]);
 
   chartInstances.memberSubmissions = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels,
       datasets: [{
-        label: 'Submissions',
+        label: "Submissions",
         data,
         backgroundColor: colors,
-        borderColor: '#052B08',
+        borderColor: "#052B08",
         borderWidth: 1
       }]
     },
     options: {
       ...getChartOptions(false),
-      indexAxis: 'y',
+      indexAxis: "y",
       plugins: { legend: { display: false } }
     }
   });
@@ -522,7 +523,7 @@ function renderMemberSubmissionsChart() {
  * Render member sentiment bar chart
  */
 function renderMemberSentimentChart() {
-  const ctx = document.getElementById('memberSentimentChart');
+  const ctx = document.getElementById("memberSentimentChart");
   if (!ctx) return;
 
   if (chartInstances.memberSentiment) {
@@ -540,20 +541,20 @@ function renderMemberSentimentChart() {
   const colors = memberList.map((_, i) => MEMBER_COLORS[i % MEMBER_COLORS.length]);
 
   chartInstances.memberSentiment = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels,
       datasets: [{
-        label: 'Avg Sentiment',
+        label: "Avg Sentiment",
         data,
         backgroundColor: colors,
-        borderColor: '#052B08',
+        borderColor: "#052B08",
         borderWidth: 1
       }]
     },
     options: {
       ...getChartOptions(false),
-      indexAxis: 'y',
+      indexAxis: "y",
       plugins: { legend: { display: false } },
       scales: {
         ...getChartOptions(false).scales,
@@ -581,33 +582,33 @@ function renderMetricChart(metricKey) {
 
   let data;
   switch (metricKey) {
-    case 'members':
-    case 'submissions':
-      data = memberList.map(m => m.standups.length);
-      break;
-    case 'sentiment':
-      data = memberList.map(m => {
-        const withSentiment = m.standups.filter(s => s.sentimentScore);
-        if (withSentiment.length === 0) return 0;
-        return (withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length).toFixed(1);
-      });
-      break;
-    case 'blockers':
-      data = memberList.map(m => m.standups.filter(s => s.blockers).length);
-      break;
-    default:
-      data = memberList.map(m => m.standups.length);
+  case "members":
+  case "submissions":
+    data = memberList.map(m => m.standups.length);
+    break;
+  case "sentiment":
+    data = memberList.map(m => {
+      const withSentiment = m.standups.filter(s => s.sentimentScore);
+      if (withSentiment.length === 0) return 0;
+      return (withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length).toFixed(1);
+    });
+    break;
+  case "blockers":
+    data = memberList.map(m => m.standups.filter(s => s.blockers).length);
+    break;
+  default:
+    data = memberList.map(m => m.standups.length);
   }
 
   chartInstances[metricKey] = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels,
       datasets: [{
         label: metricKey,
         data,
         backgroundColor: colors,
-        borderColor: '#052B08',
+        borderColor: "#052B08",
         borderWidth: 1
       }]
     },
@@ -618,14 +619,14 @@ function renderMetricChart(metricKey) {
         legend: { display: false },
         title: {
           display: true,
-          text: 'Breakdown by Member',
-          color: '#052B08',
-          font: { family: 'Monaco', size: 14 }
+          text: "Breakdown by Member",
+          color: "#052B08",
+          font: { family: "Monaco", size: 14 }
         }
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: '#D3FBD6' }, ticks: { font: { family: 'Monaco' } } },
-        x: { grid: { display: false }, ticks: { font: { family: 'Monaco' } } }
+        y: { beginAtZero: true, grid: { color: "#D3FBD6" }, ticks: { font: { family: "Monaco" } } },
+        x: { grid: { display: false }, ticks: { font: { family: "Monaco" } } }
       }
     }
   });
@@ -641,13 +642,13 @@ function getChartOptions(showLegend = false) {
     plugins: {
       legend: {
         display: showLegend,
-        position: 'bottom',
-        labels: { boxWidth: 12, padding: 8, font: { family: 'Monaco', size: 10 } }
+        position: "bottom",
+        labels: { boxWidth: 12, padding: 8, font: { family: "Monaco", size: 10 } }
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { font: { family: 'Monaco' } } },
-      y: { beginAtZero: true, grid: { color: '#D3FBD6' }, ticks: { font: { family: 'Monaco' } } }
+      x: { grid: { display: false }, ticks: { font: { family: "Monaco" } } },
+      y: { beginAtZero: true, grid: { color: "#D3FBD6" }, ticks: { font: { family: "Monaco" } } }
     }
   };
 }
@@ -717,7 +718,7 @@ async function renderCompactFeeds(standups, days = 7) {
     .sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
 
   if (filtered.length === 0) {
-    return '<div class="feeds-empty">No standups in this period</div>';
+    return "<div class=\"feeds-empty\">No standups in this period</div>";
   }
 
   const feedData = filtered.map(standup => {
@@ -745,7 +746,7 @@ async function renderCompactFeeds(standups, days = 7) {
 function renderFeedsCount(standups, days) {
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const count = standups.filter(s => new Date(s.dateSubmitted) >= cutoff).length;
-  return `${count} standup${count !== 1 ? 's' : ''}`;
+  return `${count} standup${count !== 1 ? "s" : ""}`;
 }
 
 /**
@@ -830,7 +831,7 @@ function showStandupDetailModal(standup) {
             </div>
             <div class="history-card-right">
               <span class="history-team">${standup.team?.teamName || ""}</span>
-              ${hasBlocker ? '<span class="history-blocker-badge">Blocker</span>' : ''}
+              ${hasBlocker ? "<span class=\"history-blocker-badge\">Blocker</span>" : ""}
             </div>
           </div>
           <div class="history-card-body">
@@ -847,13 +848,13 @@ function showStandupDetailModal(standup) {
               <span class="history-field-label">Blocker:</span>
               <span class="history-field-text">${standup.blockers}</span>
             </div>
-            ` : ''}
+            ` : ""}
             ${standup.reflection ? `
             <div class="history-field">
               <span class="history-field-label">Reflection:</span>
               <span class="history-field-text">${standup.reflection}</span>
             </div>
-            ` : ''}
+            ` : ""}
           </div>
         </div>
       </div>
