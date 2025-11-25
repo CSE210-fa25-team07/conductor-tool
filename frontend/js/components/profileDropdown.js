@@ -24,12 +24,43 @@ export async function updateProfileFromAPI() {
 
     if (response.ok) {
       const data = await response.json();
-      if (data.user && data.user.name) {
+      if (data.user && data.user.name && data.user.id) {
         updateProfileDisplay(data.user.name);
+
+        // Fetch user status and initialize dropdown menu
+        const statusResponse = await fetch("/v1/api/user-context/status", {
+          credentials: "include"
+        });
+
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          if (statusData.success && statusData.data) {
+            const userType = determineUserType(statusData.data);
+            createUserDropdown(userType);
+          }
+        } else {
+          // Default to student if status fetch fails
+          createUserDropdown("student");
+        }
       }
     }
   } catch (error) {
     // Silently fail - profile will show default state
+  }
+}
+
+/**
+ * Determine user type based on staff status
+ * @param {Object} status - User status object with isProf, isSystemAdmin, isLeadAdmin
+ * @returns {string} User type: "admin" or "professor" or "student"
+ */
+function determineUserType(status) {
+  if (status.isSystemAdmin || status.isLeadAdmin) {
+    return "admin";
+  } else if (status.isProf) {
+    return "professor";
+  } else {
+    return "student";
   }
 }
 
@@ -42,14 +73,61 @@ export function updateProfileDisplay(name) {
   const userName = document.querySelector(".user-name");
 
   if (userAvatar) {
-    // Create initials from name
-    const initials = name.split(" ").map(word => word[0]).join("").toUpperCase();
-    userAvatar.textContent = initials;
+    // Fetch and display photo URL
+    fetchUserPhoto(userAvatar, name);
   }
 
   if (userName) {
     userName.textContent = name;
   }
+}
+
+/**
+ * Fetch user photo URL and update avatar display
+ * @param {HTMLElement} userAvatar - Avatar element
+ * @param {string} name - User's full name for fallback initials
+ */
+async function fetchUserPhoto(userAvatar, name) {
+  try {
+    const response = await fetch("/v1/api/user-context/photo", {
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data.photoUrl) {
+        // Clear text content and add image
+        userAvatar.textContent = "";
+        const img = document.createElement("img");
+        img.src = data.data.photoUrl;
+        img.alt = name;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "50%";
+        userAvatar.appendChild(img);
+      } else {
+        // Fallback to initials
+        displayInitials(userAvatar, name);
+      }
+    } else {
+      // Fallback to initials
+      displayInitials(userAvatar, name);
+    }
+  } catch (error) {
+    // Fallback to initials on error
+    displayInitials(userAvatar, name);
+  }
+}
+
+/**
+ * Display user initials in avatar
+ * @param {HTMLElement} userAvatar - Avatar element
+ * @param {string} name - User's full name
+ */
+function displayInitials(userAvatar, name) {
+  const initials = name.split(" ").map(word => word[0]).join("").toUpperCase();
+  userAvatar.textContent = initials;
 }
 
 /**
@@ -85,11 +163,18 @@ export function createUserDropdown(userType = "student") {
   dropdown.innerHTML = "";
 
   // Define menu items based on user type
-  // Same menu items for all user types
+  // Add Profie for all user types
   const menuItems = [
-    { text: "Profile", href: "/profile" },
-    { text: "Log Out", href: "/logout" }
+      { text: "Profile", href: "/profile" }
   ];
+
+  // Add Requests option for admin users
+  if (userType === "admin") {
+    menuItems.push({ text: "Requests", href: "/requests" });
+  }
+
+  // Add Log Out for all users
+  menuItems.push({ text: "Log Out", href: "/logout" });
 
   // Create and append each menu item
   menuItems.forEach(item => {
@@ -99,24 +184,4 @@ export function createUserDropdown(userType = "student") {
     link.textContent = item.text;
     dropdown.appendChild(link);
   });
-}
-
-/**
- * Render the profile dropdown HTML into a container
- * @param {HTMLElement} container - Container to render into
- * @param {string} userType - User type for dropdown menu
- */
-export function renderProfileDropdown(container, userType = "student") {
-  container.innerHTML = `
-    <section class="user-profile-dropdown">
-      <article class="user-profile" id="user-profile-trigger">
-        <figure class="user-avatar">...</figure>
-        <span class="user-name">Loading...</span>
-      </article>
-      <menu class="dropdown-menu" id="user-dropdown"></menu>
-    </section>
-  `;
-
-  createUserDropdown(userType);
-  initProfileDropdown();
 }
