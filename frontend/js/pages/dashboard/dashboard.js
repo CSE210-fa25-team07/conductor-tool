@@ -1,13 +1,12 @@
 /** @module dashboard/frontend */
-import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
+import { initGlobalNavigation } from "../../components/navigation.js";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
 
   // ==================== CHECK USER ====================
-  // Initialize shared profile dropdown component
-  createUserDropdown("student");
-  await initProfileDropdown();
+  // Initialize navigation component
+  await initGlobalNavigation("dashboard");
 
   // ==================== DASHBOARD PAGE ====================
   const courseGrid = document.getElementById("course-grid");
