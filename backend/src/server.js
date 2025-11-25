@@ -4,7 +4,7 @@ import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
-import { checkSession } from "./utils/auth.js";
+import { checkSession, checkUserFromSession } from "./utils/auth.js";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -34,11 +34,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/auth/login.html"));
 });
 
-app.get("/dashboard", checkSession, (req, res) => {
+app.get("/dashboard", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
 });
 
-app.get("/dashboard/calendar", checkSession, (req, res) => {
+app.get("/calendar", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
 });
 
@@ -58,11 +58,11 @@ app.get("/dev-login", (req, res) => {
 
 app.use("/auth", checkSession, authRoutes);
 
-app.use("/profile", checkSession, profileRoutes);
+app.use("/profile", checkUserFromSession, profileRoutes);
 
 app.use("/google", googleRoutes);
 
-app.use("/courses/:courseId", checkSession, courseRoutes);
+app.use("/courses/:courseId", checkUserFromSession, courseRoutes);
 
 app.use("/v1/api/", apiRoutes);
 

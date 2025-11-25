@@ -6,6 +6,8 @@
  */
 import * as userService from "../services/userService.js";
 import * as userRepository from "../repositories/userRepository.js";
+import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
+import * as courseRepository from "../repositories/courseRepository.js";
 
 /**
  * Get current user session data
@@ -38,12 +40,12 @@ async function verifyCode(req, res) {
   const { code } = req.body;
   const profile = req.session.user;
 
-  // TODO: Implement actual verification code validation
-  // For now, accept any non-empty code
-  if (!code || code.trim().length === 0) {
+  // Check if provided code maps to a course
+  const courseInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
+  if (!courseInfo) {
     return res.status(400).json({
       success: false,
-      error: "Verification code is required"
+      error: "Verification code is invalid"
     });
   }
 
@@ -59,6 +61,13 @@ async function verifyCode(req, res) {
   });
 
   req.session.user = {id: newUser.userUuid, email: newUser.email, name: profile.name};
+
+  // Enroll user to course
+  await courseRepository.enrollUserToCourse(
+    newUser.userUuid,
+    courseInfo.courseUuid,
+    courseInfo.roleUuid
+  );
   res.status(200).json({
     success: true,
     message: "User verified and created successfully",
