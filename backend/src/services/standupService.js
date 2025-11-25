@@ -170,14 +170,49 @@ async function getTAOverview(req, res) {
     });
   }
 
-  const overview = await userContextRepository.getCourseOverview(courseId, {
+  const standups = await standupRepository.getCourseStandups(courseId, {
     startDate,
     endDate
   });
 
   return res.status(200).json({
     success: true,
-    data: standupDto.toCourseOverviewDto(overview)
+    data: standupDto.toStandupListDto(standups)
+  });
+}
+
+async function getStandupsByUser(req, res) {
+  const requesterId = req.session.user.id;
+  const { userUuid } = req.params;
+  const { courseId, startDate, endDate } = req.query;
+
+  if (!courseId) {
+    return res.status(400).json({
+      success: false,
+      error: "courseId is required"
+    });
+  }
+
+  // Allow access if: staff for this course OR share a team with the target user
+  const isStaff = await userContextRepository.checkCourseStaffRole(requesterId, courseId);
+  const isTeammate = await userContextRepository.checkSameTeamMembership(requesterId, userUuid);
+
+  if (!isStaff && !isTeammate) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view this user's standups"
+    });
+  }
+
+  const standups = await standupRepository.getUserStandups(userUuid, {
+    courseUuid: courseId,
+    startDate,
+    endDate
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: standupDto.toStandupListDto(standups)
   });
 }
 
@@ -187,5 +222,6 @@ export {
   updateStandup,
   deleteStandup,
   getTeamStandups,
-  getTAOverview
+  getTAOverview,
+  getStandupsByUser
 };

@@ -1,95 +1,88 @@
 <template>
-  <div class="standup-form">
+  <div class="standup-form standup-form-compact">
     <form id="standup-form">
-      <div class="form-section">
-        <h2 id="form-title">Submit Daily Standup</h2>
+      <h2 id="form-title">Submit Daily Standup</h2>
 
-        <div class="form-group">
-          <label for="date-submitted">Date *</label>
-          <input
-            type="date"
-            id="date-submitted"
-            name="dateSubmitted"
-            required
-          >
-          <span class="form-help-text">The date this standup is for</span>
+      <!-- Meta row: Date + Team -->
+      <div class="form-row">
+        <div class="form-group form-group-sm">
+          <label for="date-submitted">Date</label>
+          <input type="date" id="date-submitted" name="dateSubmitted" required>
         </div>
-
-        <div id="team-select-placeholder">
+        <div id="team-select-placeholder" class="form-group form-group-sm">
           <!-- Team select will be inserted here if teams exist -->
         </div>
       </div>
 
-      <div class="form-section">
-        <h2>Progress Update</h2>
-
-        <div class="form-group">
-          <label for="what-done">What did you accomplish? *</label>
-          <textarea
-            id="what-done"
-            name="whatDone"
-            required
-            placeholder="Describe what you completed today..."
-          ></textarea>
-          <span class="form-help-text">Share your completed tasks and achievements</span>
-        </div>
-
-        <div class="form-group">
-          <label for="what-next">What are you working on next? *</label>
-          <textarea
-            id="what-next"
-            name="whatNext"
-            required
-            placeholder="Describe your plans for the next work session..."
-          ></textarea>
-          <span class="form-help-text">Outline your upcoming tasks and goals</span>
-        </div>
-
-        <div class="form-group">
-          <label for="blockers">Any blockers or challenges?</label>
-          <textarea
-            id="blockers"
-            name="blockers"
-            placeholder="Describe any obstacles you're facing (optional)..."
-          ></textarea>
-          <span class="form-help-text">Share any issues that are blocking your progress</span>
-        </div>
+      <!-- Progress fields -->
+      <div class="form-group">
+        <label for="what-done">What did you accomplish? *</label>
+        <textarea id="what-done" name="whatDone" required rows="3"
+          placeholder="Completed tasks and achievements..."></textarea>
       </div>
 
-      <div class="form-section">
-        <h2>Reflection</h2>
+      <div class="form-group">
+        <label for="what-next">What's next? *</label>
+        <textarea id="what-next" name="whatNext" required rows="3"
+          placeholder="Upcoming tasks and goals..."></textarea>
+      </div>
 
-        <div class="form-group">
-          <label for="reflection">Personal Reflection</label>
-          <textarea
-            id="reflection"
-            name="reflection"
-            placeholder="How are you feeling about your progress? Any insights?"
-          ></textarea>
-          <span class="form-help-text">Optional: Reflect on your learning and progress</span>
+      <div class="form-group">
+        <label for="blockers">Blockers</label>
+        <textarea id="blockers" name="blockers" rows="2"
+          placeholder="Any obstacles? (optional)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="reflection">Reflection</label>
+        <textarea id="reflection" name="reflection" rows="2"
+          placeholder="How are you feeling about your progress? (optional)"></textarea>
+      </div>
+
+      <!-- Mood + Visibility row -->
+      <div class="form-row form-row-bottom">
+        <div class="form-group form-group-inline">
+          <label>Mood</label>
+          <div class="pill-selector" id="mood-selector">
+            <label class="pill-option mood-pill mood-1">
+              <input type="radio" name="sentimentScore" value="1">
+              <span class="pill-content">1</span>
+            </label>
+            <label class="pill-option mood-pill mood-2">
+              <input type="radio" name="sentimentScore" value="2">
+              <span class="pill-content">2</span>
+            </label>
+            <label class="pill-option mood-pill mood-3">
+              <input type="radio" name="sentimentScore" value="3" checked>
+              <span class="pill-content">3</span>
+            </label>
+            <label class="pill-option mood-pill mood-4">
+              <input type="radio" name="sentimentScore" value="4">
+              <span class="pill-content">4</span>
+            </label>
+            <label class="pill-option mood-pill mood-5">
+              <input type="radio" name="sentimentScore" value="5">
+              <span class="pill-content">5</span>
+            </label>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="sentiment">How are you feeling? (1-5)</label>
-          <input
-            type="number"
-            id="sentiment"
-            name="sentimentScore"
-            min="1"
-            max="5"
-            value="3"
-          >
-          <span class="form-help-text">1 = Struggling, 3 = Okay, 5 = Great</span>
-        </div>
-
-        <div class="form-group">
-          <label for="visibility">Visibility</label>
-          <select id="visibility" name="visibility">
-            <option value="team">Team (visible to team members and instructors)</option>
-            <option value="private">Private (only visible to you and instructors)</option>
-            <option value="public">Public (visible to everyone in the course)</option>
-          </select>
-          <span class="form-help-text">Control who can see your standup</span>
+        <div class="form-group form-group-inline">
+          <label>Visibility</label>
+          <div class="pill-selector" id="visibility-selector">
+            <label class="pill-option">
+              <input type="radio" name="visibility" value="team" checked>
+              <span class="pill-content">Team</span>
+            </label>
+            <label class="pill-option">
+              <input type="radio" name="visibility" value="private">
+              <span class="pill-content">Private</span>
+            </label>
+            <label class="pill-option">
+              <input type="radio" name="visibility" value="public">
+              <span class="pill-content">Public</span>
+            </label>
+          </div>
         </div>
       </div>
 

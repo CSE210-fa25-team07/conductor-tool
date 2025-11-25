@@ -1,20 +1,17 @@
 <template>
   <div class="ta-dashboard">
-    <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-forest-green); margin-bottom: 1.5rem;">
-      TA Overview Dashboard
-    </h2>
+    <div class="dashboard-header">
+      <h2 class="page-title">TA Overview Dashboard</h2>
+      <div class="ta-controls">
+        <div id="course-select-placeholder"></div>
 
-    <div class="ta-controls">
-      <div id="course-select-placeholder">
-        <!-- Course selector will be inserted here if multiple courses -->
-      </div>
-
-      <div id="selected-course-info" style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--color-forest-green);">
       </div>
     </div>
 
-    <div id="ta-content">
+    <div id="ta-content" class="dashboard-content">
       <div class="loading-message">Loading course overview...</div>
     </div>
   </div>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </template>

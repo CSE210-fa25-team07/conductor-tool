@@ -295,9 +295,7 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("course");
-      expect(response.body.data).toHaveProperty("teams");
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
 
     it("should return course overview for Professor", async () => {
@@ -318,12 +316,10 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("course");
-      expect(response.body.data).toHaveProperty("teams");
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
 
-    it("should include team details with latest standups", async () => {
+    it("should include standup details", async () => {
       const taUser = await prisma.user.findFirst({
         where: { email: "ta_alice@ucsd.edu" }
       });
@@ -342,12 +338,12 @@ describe("Standup API", () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
 
-      if (response.body.data.teams.length > 0) {
-        const team = response.body.data.teams[0];
-        expect(team).toHaveProperty("teamUuid");
-        expect(team).toHaveProperty("teamName");
-        expect(team).toHaveProperty("memberCount");
-        expect(team).toHaveProperty("latestStandup");
+      if (response.body.data.length > 0) {
+        const standup = response.body.data[0];
+        expect(standup).toHaveProperty("standupUuid");
+        expect(standup).toHaveProperty("user");
+        expect(standup).toHaveProperty("team");
+        expect(standup).toHaveProperty("course");
       }
     });
 
@@ -373,7 +369,7 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
   });
 });

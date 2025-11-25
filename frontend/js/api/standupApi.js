@@ -101,3 +101,20 @@ export async function getTAOverview(courseId, filters = {}) {
 
   return handleResponse(response);
 }
+
+export async function getStandupsByUser(userUuid, courseId, filters = {}) {
+  const params = new URLSearchParams();
+  params.append("courseId", courseId);
+
+  if (filters.startDate) params.append("startDate", filters.startDate);
+  if (filters.endDate) params.append("endDate", filters.endDate);
+
+  const url = `${API_BASE}/user/${userUuid}?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    credentials: "include"
+  });
+
+  return handleResponse(response);
+}

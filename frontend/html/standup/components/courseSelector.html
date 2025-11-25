@@ -1,0 +1,12 @@
+<template>
+    <div class="course-selector-container">
+        <label for="course-select" class="selector-label">Select Course:</label>
+        <select id="course-select" class="selector-input">
+            {{#courses}}
+            <option value="{{courseUuid}}" {{#selected}}selected{{/selected}}>
+                {{courseCode}} - {{courseName}}
+            </option>
+            {{/courses}}
+        </select>
+    </div>
+</template>

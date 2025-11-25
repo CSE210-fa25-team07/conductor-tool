@@ -5,7 +5,7 @@
 
 import { createStandup, updateStandup } from "../../api/standupApi.js";
 import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
-import { refreshCurrentView } from "./main.js";
+import { refreshCurrentView, navigateBack } from "./courseIntegration.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
 
 let editMode = false;
@@ -14,9 +14,12 @@ let editingStandupId = null;
 /**
  * Render the standup form
  * @param {HTMLElement} container - Container to render into
- * @param {Object} standupData - Optional standup data for editing
+ * @param {Object} params - Optional params (standupData for editing)
  */
-export async function render(container, standupData = null) {
+export async function render(container, params = {}) {
+  // Extract standupData from params
+  const standupData = params.standupData || null;
+
   // Set edit mode if standupData provided
   editMode = !!standupData;
   editingStandupId = standupData?.standupUuid || null;
@@ -50,23 +53,26 @@ export async function render(container, standupData = null) {
   // Insert team select if teams exist
   const teamSelectPlaceholder = document.getElementById("team-select-placeholder");
   if (teamSelectPlaceholder && courseTeams.length > 0) {
-    teamSelectPlaceholder.outerHTML = `
-      <div class="form-group">
-        <label for="team">Team</label>
-        <select id="team" name="teamUuid">
-          <option value="">Personal (No team)</option>
-          ${courseTeams.map(team => `
-            <option
-              value="${team.teamUuid}"
-              ${standupData?.teamUuid === team.teamUuid ? "selected" : ""}
-            >
-              ${team.teamName}
-            </option>
-          `).join("")}
-        </select>
-        <span class="form-help-text">Optional: Select a team to share with</span>
+    // Use pill-style selector for teams
+    const selectedTeam = standupData?.teamUuid || "";
+    teamSelectPlaceholder.innerHTML = `
+      <label>Team</label>
+      <div class="team-pill-selector">
+        <label class="team-pill-option">
+          <input type="radio" name="teamUuid" value="" ${!selectedTeam ? "checked" : ""}>
+          <span class="team-pill-content">None</span>
+        </label>
+        ${courseTeams.map(team => `
+          <label class="team-pill-option">
+            <input type="radio" name="teamUuid" value="${team.teamUuid}" ${selectedTeam === team.teamUuid ? "checked" : ""}>
+            <span class="team-pill-content" title="${team.teamName}">${team.teamName}</span>
+          </label>
+        `).join("")}
       </div>
     `;
+  } else if (teamSelectPlaceholder) {
+    // Hide the placeholder if no teams
+    teamSelectPlaceholder.style.display = "none";
   }
 
   // Populate form fields with standupData if editing
@@ -75,15 +81,21 @@ export async function render(container, standupData = null) {
     const whatNext = document.getElementById("what-next");
     const blockers = document.getElementById("blockers");
     const reflection = document.getElementById("reflection");
-    const sentiment = document.getElementById("sentiment");
-    const visibility = document.getElementById("visibility");
 
     if (whatDone) whatDone.value = standupData.whatDone || "";
     if (whatNext) whatNext.value = standupData.whatNext || "";
     if (blockers) blockers.value = standupData.blockers || "";
     if (reflection) reflection.value = standupData.reflection || "";
-    if (sentiment) sentiment.value = standupData.sentimentScore || "3";
-    if (visibility) visibility.value = standupData.visibility || "team";
+
+    // Set mood selector radio button
+    const moodValue = standupData.sentimentScore || 3;
+    const moodRadio = document.querySelector(`input[name="sentimentScore"][value="${moodValue}"]`);
+    if (moodRadio) moodRadio.checked = true;
+
+    // Set visibility radio button
+    const visibilityValue = standupData.visibility || "team";
+    const visibilityRadio = document.querySelector(`input[name="visibility"][value="${visibilityValue}"]`);
+    if (visibilityRadio) visibilityRadio.checked = true;
   }
 
   // Insert cancel button if in edit mode
@@ -107,7 +119,7 @@ export async function render(container, standupData = null) {
     cancelBtn?.addEventListener("click", () => {
       editMode = false;
       editingStandupId = null;
-      render(container);
+      navigateBack();
     });
   }
 }
@@ -163,7 +175,15 @@ async function handleSubmit(event) {
       // Reset to today's date
       const today = new Date().toISOString().split("T")[0];
       form.querySelector("#date-submitted").value = today;
-      form.querySelector("#sentiment").value = "3";
+      // Reset mood selector to default (3)
+      const defaultMoodRadio = form.querySelector("input[name=\"sentimentScore\"][value=\"3\"]");
+      if (defaultMoodRadio) defaultMoodRadio.checked = true;
+      // Reset visibility to default (team)
+      const defaultVisibilityRadio = form.querySelector("input[name=\"visibility\"][value=\"team\"]");
+      if (defaultVisibilityRadio) defaultVisibilityRadio.checked = true;
+      // Reset team to none
+      const defaultTeamRadio = form.querySelector("input[name=\"teamUuid\"][value=\"\"]");
+      if (defaultTeamRadio) defaultTeamRadio.checked = true;
     }
 
     // Re-enable button
@@ -200,14 +220,15 @@ function showSuccess(message) {
 
   const successDiv = document.createElement("div");
   successDiv.className = "success-message";
+  // Using class instead of inline style
   successDiv.style.cssText = `
     background-color: var(--color-radioactive-lime);
-    border: 3px solid var(--color-forest-green);
+    border: 1px solid var(--color-forest-green);
     color: var(--color-forest-green);
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: 8px;
     margin-bottom: 1rem;
-    font-family: var(--font-primary);
+    font-family: var(--font-body);
   `;
   successDiv.textContent = message;
 
@@ -238,8 +259,9 @@ function showError(message) {
 
 /**
  * Edit a standup
+ * @param {HTMLElement} container - Container to render into
  * @param {Object} standupData - Standup data to edit
  */
 export function editStandup(container, standupData) {
-  render(container, standupData);
+  render(container, { standupData });
 }
