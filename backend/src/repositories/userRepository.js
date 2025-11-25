@@ -82,4 +82,30 @@ async function getUserByUuid(userUuid) {
   return user;
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid };
+/**
+ * Get user staff status by UUID
+ * @param {string} userUuid - User UUID to search for
+ * @returns {Promise<Object>} Object containing isProf, isSystemAdmin, and isLeadAdmin flags
+ * @status IN USE
+ */
+async function getUserStatusByUuid(userUuid) {
+  const staff = await prisma.staff.findUnique({
+    where: { userUuid: userUuid }
+  });
+
+  if (!staff) {
+    return {
+      isProf: false,
+      isSystemAdmin: false,
+      isLeadAdmin: false
+    };
+  }
+
+  return {
+    isProf: staff.isProf || false,
+    isSystemAdmin: staff.isSystemAdmin || false,
+    isLeadAdmin: staff.is_lead_admin || false
+  };
+}
+
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid, getUserStatusByUuid };
