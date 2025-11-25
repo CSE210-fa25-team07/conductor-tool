@@ -82,4 +82,17 @@ async function getUserByUuid(userUuid) {
   return user;
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid };
+/**
+ * Delete a user by UUID
+ * @param {string} userUuid - User UUID to delete
+ * @returns {Promise<Object>} The deleted user object
+ * @status IN USE
+ */
+async function deleteUserByUuid(userUuid) {
+  const deletedUser = await prisma.user.delete({
+    where: { userUuid: userUuid }
+  });
+  return deletedUser;
+}
+
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid };
