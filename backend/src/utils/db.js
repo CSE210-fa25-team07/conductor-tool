@@ -25,7 +25,7 @@ export async function testConnection() {
     await prisma.$connect();
     await prisma.$queryRaw`SELECT NOW()`;
     return true;
-  } catch (_error) { // eslint-disable-line no-unused-vars
+  } catch {
     return false;
   }
 }

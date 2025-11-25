@@ -213,7 +213,7 @@ async function loadViewModules() {
       team: teamModule,
       ta: taModule
     };
-  } catch (_error) { // eslint-disable-line no-unused-vars
-    throw new Error("Failed to load required standup modules");
+  } catch (error) {
+    throw new Error("Failed to load required standup modules", { cause: error });
   }
 }

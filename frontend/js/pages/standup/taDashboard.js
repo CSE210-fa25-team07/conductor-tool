@@ -642,7 +642,7 @@ function groupStandupsByTeam(standups) {
  * Helper: Calculate stats
  */
 function calculateStats(standups, teamGroups) {
-  const _totalStandups = standups.length; // eslint-disable-line no-unused-vars
+  const _totalStandups = standups.length;
   const standupsWithSentiment = standups.filter(s => s.sentimentScore);
   const avgSentiment = standupsWithSentiment.length > 0
     ? (standupsWithSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / standupsWithSentiment.length).toFixed(1)
@@ -817,15 +817,5 @@ function truncateText(text, maxLength) {
   if (!text) return "";
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength).trim() + "...";
-}
-
-/**
- * Helper: Escape HTML
- */
-function escapeHtml(text) { // eslint-disable-line no-unused-vars
-  if (!text) return "";
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
 }
 
