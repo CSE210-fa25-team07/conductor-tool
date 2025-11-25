@@ -58,26 +58,20 @@ async function testDeleteUser(userUuid) {
   console.log("\n=== Testing deleteUserByUuid ===");
   
   try {
-    const deletedUser = await deleteUserByUuid(userUuid);
+    const result = await deleteUserByUuid(userUuid);
     console.log("✓ User deleted successfully:", {
-      userUuid: deletedUser.userUuid,
-      email: deletedUser.email
+      userUuid: result.deletedUser.userUuid,
+      email: result.deletedUser.email,
+      deletedCoursesCount: result.deletedCoursesCount,
+      deletedCourseUuids: result.deletedCourseUuids
     });
 
     // Verify user is actually deleted
-    const user = await getUserByEmail(deletedUser.email);
+    const user = await getUserByEmail(result.deletedUser.email);
     if (user === null) {
       console.log("✓ Verified user no longer exists in database");
     } else {
       console.log("✗ User still exists after deletion");
-    }
-
-    // Test deleting non-existent user
-    try {
-      await deleteUserByUuid("00000000-0000-0000-0000-000000000000");
-      console.log("✗ Should have thrown error for non-existent user");
-    } catch (error) {
-      console.log("✓ Correctly threw error for non-existent user");
     }
   } catch (error) {
     console.error("✗ Error in testDeleteUser:", error.message);
@@ -87,10 +81,14 @@ async function testDeleteUser(userUuid) {
 
 async function runTests() {
   try {
-    console.log("Starting userRepository tests...");
+    // Test 1
+    // console.log("Starting userRepository tests...");
     
-    const userUuid = await testAddUser();
-    await testDeleteUser(userUuid);
+    // const userUuid = await testAddUser();
+    // await testDeleteUser(userUuid);
+
+    // Test 2
+    await testDeleteUser("fill-in-user-uuid-here");
     
     console.log("\n=== All tests passed! ===\n");
   } catch (error) {

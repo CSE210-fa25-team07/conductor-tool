@@ -84,15 +84,57 @@ async function getUserByUuid(userUuid) {
 
 /**
  * Delete a user by UUID
+ * If the user is a professor in any course, delete those courses as well
  * @param {string} userUuid - User UUID to delete
- * @returns {Promise<Object>} The deleted user object
+ * @returns {Promise<Object>} Result with deleted user and affected courses
  * @status IN USE
  */
 async function deleteUserByUuid(userUuid) {
-  const deletedUser = await prisma.user.delete({
-    where: { userUuid: userUuid }
+  // Find all course enrollments where user is a professor
+  const professorEnrollments = await prisma.courseEnrollment.findMany({
+    where: {
+      userUuid: userUuid,
+      role: {
+        role: "Professor"
+      }
+    },
+    include: {
+      course: true
+    }
   });
-  return deletedUser;
+
+  // console.log("Professor enrollments:", professorEnrollments);
+
+  const coursesToDelete = professorEnrollments.map(e => e.courseUuid);
+  
+  // console.log("Courses to delete:", coursesToDelete);
+  
+  // Use transaction to delete courses and user atomically
+  const result = await prisma.$transaction(async (tx) => {
+    // Delete courses where user is a professor
+    if (coursesToDelete.length > 0) {
+      await tx.course.deleteMany({
+        where: {
+          courseUuid: {
+            in: coursesToDelete
+          }
+        }
+      });
+    }
+
+    // Delete the user (this will cascade delete enrollments, standups, etc.)
+    const deletedUser = await tx.user.delete({
+      where: { userUuid: userUuid }
+    });
+
+    return {
+      deletedUser,
+      deletedCoursesCount: coursesToDelete.length,
+      deletedCourseUuids: coursesToDelete
+    };
+  });
+
+  return result;
 }
 
 export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid };
