@@ -71,9 +71,13 @@ async function init() {
     // Set up navigation event listeners
     setupFeatureNavigation();
 
-    // Get initial feature from URL or use default
+    // Get initial feature from URL path
+    // URL format: /courses/:courseId/:feature (e.g., /courses/abc123/standup)
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const initialFeature = pathParts[2] || "directory";
+
+    // View can still come from query params for deep linking
     const urlParams = new URLSearchParams(window.location.search);
-    const initialFeature = urlParams.get("feature") || "directory";
     const initialView = urlParams.get("view") || "dashboard";
 
     // Load initial feature
@@ -121,6 +125,14 @@ async function switchFeature(feature, view = null) {
     // Validate feature
     if (!FEATURES[feature]) {
       throw new Error(`Unknown feature: ${feature}`);
+    }
+
+    // Update URL to reflect the current feature
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const courseId = pathParts[1];
+    const newPath = `/courses/${courseId}/${feature}`;
+    if (window.location.pathname !== newPath) {
+      history.replaceState(null, "", newPath);
     }
 
     // Update active state in feature navigation
