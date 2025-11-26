@@ -119,19 +119,23 @@ function renderTeamProfile(team) {
 
   if (membersGrid) {
     if (team.members.length === 0) {
-      membersGrid.innerHTML = "<div style=\"text-align: center; padding: var(--space-xl); grid-column: 1 / -1;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No team members</p></div>";
+      membersGrid.innerHTML = "<div class=\"loading-message\" style=\"grid-column: 1 / -1;\"><p>No team members</p></div>";
     } else {
       membersGrid.innerHTML = team.members.map(member => {
         const initials = (member.firstName[0] + member.lastName[0]).toUpperCase();
         const photoHtml = member.photoUrl
-          ? "<img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\" style=\"width: 60px; height: 60px; border-radius: 50%; border: var(--border-thick);\">"
-          : "<div style=\"width: 60px; height: 60px; border-radius: 50%; background: var(--color-radioactive-lime); border: var(--border-thick); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 600; font-size: var(--text-xl); color: var(--color-forest-green);\">" + initials + "</div>";
+          ? "<div class=\"member-avatar\"><img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\"></div>"
+          : "<div class=\"member-avatar-initials\">" + initials + "</div>";
 
-        const githubHtml = member.githubUsername
-          ? "<div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);\">@" + member.githubUsername + "</div>"
+        const pronounsHtml = member.pronouns
+          ? "<div class=\"member-pronouns\">" + member.pronouns + "</div>"
           : "";
 
-        return "<div data-user-uuid=\"" + member.userUuid + "\" class=\"member-card\" style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-lg); text-align: center; cursor: pointer; transition: all 0.2s ease;\"><div style=\"display: flex; justify-content: center; margin-bottom: var(--space-md);\">" + photoHtml + "</div><div style=\"font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green); margin-bottom: var(--space-xs);\">" + member.firstName + " " + member.lastName + "</div>" + (member.pronouns ? "<div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-bottom: var(--space-xs);\">" + member.pronouns + "</div>" : "") + "<a href=\"mailto:" + member.email + "\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); text-decoration: underline; display: block; margin-bottom: var(--space-xs);\">" + member.email + "</a>" + githubHtml + "</div>";
+        const githubHtml = member.githubUsername
+          ? "<div class=\"member-github\">@" + member.githubUsername + "</div>"
+          : "";
+
+        return "<div data-user-uuid=\"" + member.userUuid + "\" class=\"member-card\"><div class=\"member-avatar-wrapper\">" + photoHtml + "</div><div class=\"member-name\">" + member.firstName + " " + member.lastName + "</div>" + pronounsHtml + "<a href=\"mailto:" + member.email + "\" class=\"member-email\">" + member.email + "</a>" + githubHtml + "</div>";
       }).join("");
 
       // Add click handlers for member cards
@@ -144,17 +148,6 @@ function renderTeamProfile(team) {
           }
           const userUuid = card.getAttribute("data-user-uuid");
           navigateToUser(userUuid);
-        });
-
-        // Add hover effect
-        card.addEventListener("mouseenter", () => {
-          card.style.transform = "translateY(-2px)";
-          card.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
-        });
-
-        card.addEventListener("mouseleave", () => {
-          card.style.transform = "translateY(0)";
-          card.style.boxShadow = "none";
         });
       });
     }
@@ -171,7 +164,7 @@ function showLoading() {
   }
   const membersGrid = document.getElementById("team-members-grid");
   if (membersGrid) {
-    membersGrid.innerHTML = "<div style=\"text-align: center; padding: var(--space-xl); grid-column: 1 / -1;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">Loading members...</p></div>";
+    membersGrid.innerHTML = "<div class=\"loading-message\" style=\"grid-column: 1 / -1;\"><p>Loading members...</p></div>";
   }
 }
 
@@ -188,6 +181,6 @@ function showError(message) {
 
   const membersGrid = document.getElementById("team-members-grid");
   if (membersGrid) {
-    membersGrid.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center; grid-column: 1 / -1;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
+    membersGrid.innerHTML = "<div class=\"loading-message\" style=\"grid-column: 1 / -1;\"><p>" + message + "</p></div>";
   }
 }

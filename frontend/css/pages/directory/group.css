@@ -1,66 +1,268 @@
-/* Group (Teams) Page Styles */
+/**
+ * Group (Teams) Page Styles
+ * Follows "Premium Ecological" design system
+ * Matches standup team's polished styling approach
+ */
 
+/* ==================== Variables (Local Overrides) ==================== */
 .teams-container {
-  max-width: 1200px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --shadow-card: 0 4px 12px rgba(5, 43, 8, 0.08);
+  --shadow-hover: 0 8px 24px rgba(5, 43, 8, 0.12);
+  --font-body: system-ui, -apple-system, sans-serif;
 }
 
+/* ==================== Container ==================== */
+.teams-container {
+  max-width: 1200px;
+  font-family: var(--font-body);
+}
+
+/* ==================== Header ==================== */
 .teams-header {
-  margin-bottom: var(--space-xl);
+  margin-bottom: 2rem;
 }
 
 .teams-title {
   font-family: var(--font-heading);
-  font-size: var(--text-4xl);
+  font-size: 2.5rem;
   color: var(--color-forest-green);
-}
-
-.stats-bar {
-  background: var(--color-light-matcha);
-  border: var(--border-thick);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  display: flex;
-  gap: var(--space-xl);
-  align-items: center;
-}
-
-.stat-item {
-  font-family: var(--font-mono);
-  color: var(--color-forest-green);
-}
-
-.stat-number {
-  font-size: var(--text-2xl);
   font-weight: 600;
 }
 
-.stat-label {
-  font-size: var(--text-sm);
-  opacity: 0.7;
+/* ==================== Stats Bar ==================== */
+.teams-container .stats-bar {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+  flex-wrap: wrap;
 }
 
-.teams-grid {
+.teams-container .stat-item {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+}
+
+.teams-container .stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  line-height: 1.2;
+}
+
+.teams-container .stat-label {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+
+/* ==================== Teams Grid ==================== */
+.teams-container .teams-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--space-lg);
+  gap: 1.5rem;
 }
 
-.loading-card {
-  background: var(--color-light-matcha);
-  border: var(--border-thick);
-  padding: var(--space-2xl);
+.teams-container .loading-card {
+  background: var(--color-pale-mint);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 3rem 2rem;
   text-align: center;
+  box-shadow: var(--shadow-card);
 }
 
-.loading-text {
-  font-family: var(--font-mono);
-  color: var(--color-forest-green-medium);
+.teams-container .loading-text {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  opacity: 0.6;
+  font-size: 1rem;
 }
 
-.teams-pagination {
-  margin-top: var(--space-xl);
+/* ==================== Team Cards (if rendered dynamically) ==================== */
+.teams-container .team-card {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.teams-container .team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-radioactive-lime);
+}
+
+.teams-container .team-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-pale-mint);
+}
+
+.teams-container .team-name {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+  margin: 0;
+}
+
+.teams-container .team-member-count {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
+  background: var(--color-pale-mint);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ==================== Pagination ==================== */
+.teams-container .teams-pagination {
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-md);
+  gap: 1rem;
+}
+
+.teams-container .teams-pagination button {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: var(--color-light-matcha);
+  color: var(--color-forest-green);
+}
+
+.teams-container .teams-pagination button:hover:not(:disabled) {
+  background-color: var(--color-radioactive-lime);
+  transform: translateY(-1px);
+}
+
+.teams-container .teams-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.teams-container .teams-pagination .page-info {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  font-size: 0.95rem;
+}
+
+/* ==================== Team Card Content (Dynamic Rendering) ==================== */
+.teams-container .team-card-content {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.teams-container .team-card-content:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-radioactive-lime);
+}
+
+.teams-container .team-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.teams-container .team-info-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.teams-container .member-count-badge {
+  padding: 0.5rem 1rem;
+  background: var(--color-pale-mint);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+.teams-container .team-ta-info {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  opacity: 0.8;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--color-pale-mint);
+  border-radius: var(--radius-btn);
+  border-left: 3px solid var(--color-forest-green);
+}
+
+.teams-container .team-ta-info strong {
+  font-weight: 600;
+}
+
+.teams-container .team-view-btn {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-radioactive-lime);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
+  color: var(--color-forest-green);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.teams-container .team-view-btn:hover {
+  background: var(--color-forest-green);
+  color: white;
+  transform: translateX(4px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+  .teams-title {
+    font-size: 2rem;
+  }
+
+  .stats-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
 }

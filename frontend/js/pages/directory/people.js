@@ -77,14 +77,18 @@ function renderRoster(data) {
   tbody.innerHTML = data.students.map(student => {
     const initials = (student.firstName[0] + student.lastName[0]).toUpperCase();
     const photoHtml = student.photoUrl
-      ? "<img src=\"" + student.photoUrl + "\" alt=\"" + student.firstName + " " + student.lastName + "\" style=\"width: 40px; height: 40px; border-radius: 50%; border: var(--border-thick);\">"
-      : "<div style=\"width: 40px; height: 40px; border-radius: 50%; background: var(--color-radioactive-lime); border: var(--border-thick); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green);\">" + initials + "</div>";
+      ? "<img src=\"" + student.photoUrl + "\" alt=\"" + student.firstName + " " + student.lastName + "\" class=\"user-avatar\">"
+      : "<div class=\"user-avatar-initials\">" + initials + "</div>";
 
     const pronounsHtml = student.pronouns
-      ? "<div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium);\">" + student.pronouns + "</div>"
+      ? "<div class=\"user-pronouns\">" + student.pronouns + "</div>"
       : "";
 
-    return "<tr style=\"border-bottom: 1px solid var(--color-light-matcha);\"><td style=\"padding: var(--space-md);\"><div style=\"display: flex; align-items: center; gap: var(--space-md);\">" + photoHtml + "<div><div style=\"font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green);\">" + student.firstName + " " + student.lastName + "</div>" + pronounsHtml + "</div></div></td><td style=\"padding: var(--space-md); font-family: var(--font-mono); color: var(--color-forest-green);\">" + student.email + "</td><td style=\"padding: var(--space-md);\"><span style=\"font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-light-matcha); border: var(--border-thick); color: var(--color-forest-green); text-transform: capitalize;\">" + student.role + "</span></td><td style=\"padding: var(--space-md); text-align: center;\"><button data-user-uuid=\"" + student.userUuid + "\" class=\"view-profile-btn\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); text-decoration: underline; background: none; border: none; cursor: pointer;\">View Profile</button></td></tr>";
+    // Determine role badge class
+    const roleLower = student.role.toLowerCase().replace(/\s+/g, "-");
+    const roleBadgeClass = "role-badge role-badge-" + roleLower;
+
+    return "<tr><td><div style=\"display: flex; align-items: center; gap: 1rem;\">" + photoHtml + "<div><div style=\"font-family: var(--font-body); font-weight: 600; color: var(--color-forest-green);\">" + student.firstName + " " + student.lastName + "</div>" + pronounsHtml + "</div></div></td><td>" + student.email + "</td><td><span class=\"" + roleBadgeClass + "\">" + student.role + "</span></td><td><button data-user-uuid=\"" + student.userUuid + "\" class=\"view-profile-btn\">View Profile</button></td></tr>";
   }).join("");
 
   // Add click handlers for view profile buttons

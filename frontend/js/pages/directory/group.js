@@ -52,17 +52,17 @@ function renderTeams(data) {
   if (!grid) return;
 
   if (data.teams.length === 0) {
-    grid.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No teams found</p></div>";
+    grid.innerHTML = "<div class=\"loading-card\"><p class=\"loading-text\">No teams found</p></div>";
     if (totalCount) totalCount.textContent = "0";
     return;
   }
 
   grid.innerHTML = data.teams.map(team => {
     const taInfo = team.teamTa
-      ? "<div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-sm);\"><strong>TA:</strong> " + team.teamTa.firstName + " " + team.teamTa.lastName + "</div>"
-      : "<div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-sm);\">No TA assigned</div>";
+      ? "<div class=\"team-ta-info\"><strong>TA:</strong> " + team.teamTa.firstName + " " + team.teamTa.lastName + "</div>"
+      : "<div class=\"team-ta-info\">No TA assigned</div>";
 
-    return "<article style=\"background: white; border: var(--border-thick); padding: var(--space-lg); transition: all 0.2s;\"><h3 style=\"font-family: var(--font-heading); font-size: var(--text-xl); color: var(--color-forest-green); margin-bottom: var(--space-md);\">" + team.teamName + "</h3><div style=\"display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);\"><div style=\"padding: var(--space-sm) var(--space-md); background: var(--color-light-matcha); border: var(--border-thick); font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green);\"><strong>" + team.memberCount + "</strong> member" + (team.memberCount !== 1 ? "s" : "") + "</div></div>" + taInfo + "<div style=\"margin-top: var(--space-md);\"><button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-btn\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); font-weight: 600; cursor: pointer;\">View Team →</button></div></article>";
+    return "<article class=\"team-card-content\"><h3 class=\"team-card-title\">" + team.teamName + "</h3><div class=\"team-info-badges\"><div class=\"member-count-badge\">" + team.memberCount + " member" + (team.memberCount !== 1 ? "s" : "") + "</div></div>" + taInfo + "<button data-team-uuid=\"" + team.teamUuid + "\" class=\"team-view-btn view-team-btn\">View Team →</button></article>";
   }).join("");
 
   // Add click handlers for view team buttons
@@ -129,7 +129,7 @@ function renderPagination(pagination) {
 function showLoading() {
   const grid = document.getElementById("teams-grid");
   if (grid) {
-    grid.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">Loading teams...</p></div>";
+    grid.innerHTML = "<div class=\"loading-card\"><p class=\"loading-text\">Loading teams...</p></div>";
   }
 }
 
@@ -140,6 +140,6 @@ function showLoading() {
 function showError(message) {
   const grid = document.getElementById("teams-grid");
   if (grid) {
-    grid.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
+    grid.innerHTML = "<div class=\"loading-card\"><p class=\"loading-text\">" + message + "</p></div>";
   }
 }

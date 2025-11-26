@@ -100,24 +100,24 @@ function renderStaff(staff) {
   if (!container) return;
 
   if (!staff || staff.length === 0) {
-    container.innerHTML = "<p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No staff members found</p>";
+    container.innerHTML = "<p class=\"loading-text\">No staff members found</p>";
     return;
   }
 
-  container.innerHTML = "<div style=\"display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-lg);\">" + staff.map(member => {
+  container.innerHTML = "<div class=\"staff-grid\">" + staff.map(member => {
     const initials = (member.firstName[0] + member.lastName[0]).toUpperCase();
     const photoHtml = member.photoUrl
-      ? "<img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\" style=\"width: 50px; height: 50px; border-radius: 50%; border: var(--border-thick);\">"
-      : "<div style=\"width: 50px; height: 50px; border-radius: 50%; background: var(--color-radioactive-lime); border: var(--border-thick); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green);\">" + initials + "</div>";
+      ? "<div class=\"staff-avatar\"><img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\"></div>"
+      : "<div class=\"staff-avatar-initials\">" + initials + "</div>";
 
     const roleLabel = member.role === "Professor" ? "Professor" : "Teaching Assistant";
-    const roleColor = member.role === "Professor" ? "var(--color-radioactive-lime)" : "var(--color-light-matcha)";
+    const roleClass = member.role === "Professor" ? "staff-role-professor" : "staff-role-ta";
 
     const staffInfo = member.staff && member.staff.officeLocation
-      ? "<div style=\"font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-forest-green-medium); margin-top: var(--space-xs);\">Office: " + member.staff.officeLocation + "</div>"
+      ? "<div class=\"staff-office\">Office: " + member.staff.officeLocation + "</div>"
       : "";
 
-    return "<article data-user-uuid=\"" + member.userUuid + "\" class=\"staff-card\" style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-md); cursor: pointer; transition: all 0.2s ease;\"><div style=\"display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-sm);\">" + photoHtml + "<div style=\"flex: 1;\"><div style=\"font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green);\">" + member.firstName + " " + member.lastName + "</div><div style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green-medium);\">" + member.email + "</div></div></div><div style=\"margin-top: var(--space-sm);\"><span style=\"font-family: var(--font-mono); font-size: var(--text-xs); padding: var(--space-xs) var(--space-sm); background: " + roleColor + "; border: var(--border-thick); color: var(--color-forest-green);\">" + roleLabel + "</span></div>" + staffInfo + "</article>";
+    return "<article data-user-uuid=\"" + member.userUuid + "\" class=\"staff-card\"><div class=\"staff-card-header\">" + photoHtml + "<div class=\"staff-info\"><div class=\"staff-name\">" + member.firstName + " " + member.lastName + "</div><div class=\"staff-email\">" + member.email + "</div></div></div><span class=\"staff-role-badge " + roleClass + "\">" + roleLabel + "</span>" + staffInfo + "</article>";
   }).join("") + "</div>";
 
   // Add click handlers for staff cards
@@ -126,17 +126,6 @@ function renderStaff(staff) {
     card.addEventListener("click", () => {
       const userUuid = card.getAttribute("data-user-uuid");
       navigateToUser(userUuid);
-    });
-
-    // Add hover effect
-    card.addEventListener("mouseenter", () => {
-      card.style.transform = "translateY(-2px)";
-      card.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "translateY(0)";
-      card.style.boxShadow = "none";
     });
   });
 }
@@ -148,7 +137,7 @@ function renderStaff(staff) {
 function showError(message) {
   const container = document.getElementById("course-overview");
   if (container) {
-    container.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
+    container.innerHTML = "<div class=\"loading-card\"><p class=\"loading-text\">" + message + "</p></div>";
   }
 }
 

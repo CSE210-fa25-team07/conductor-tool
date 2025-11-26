@@ -106,14 +106,14 @@ function renderUserProfile(user) {
   if (contactInfo) {
     const contactItems = [];
 
-    contactItems.push("<div><strong>Email:</strong> <a href=\"mailto:" + user.email + "\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + user.email + "</a></div>");
+    contactItems.push("<div class=\"contact-info-item\"><span class=\"contact-info-label\">Email:</span><span class=\"contact-info-value\"><a href=\"mailto:" + user.email + "\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + user.email + "</a></span></div>");
 
     if (user.phoneNumber) {
-      contactItems.push("<div><strong>Phone:</strong> " + user.phoneNumber + "</div>");
+      contactItems.push("<div class=\"contact-info-item\"><span class=\"contact-info-label\">Phone:</span><span class=\"contact-info-value\">" + user.phoneNumber + "</span></div>");
     }
 
     if (user.githubUsername) {
-      contactItems.push("<div><strong>GitHub:</strong> <a href=\"https://github.com/" + user.githubUsername + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">@" + user.githubUsername + "</a></div>");
+      contactItems.push("<div class=\"contact-info-item\"><span class=\"contact-info-label\">GitHub:</span><span class=\"contact-info-value\"><a href=\"https://github.com/" + user.githubUsername + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">@" + user.githubUsername + "</a></span></div>");
     }
 
     contactInfo.innerHTML = contactItems.join("");
@@ -148,10 +148,10 @@ function renderUserProfile(user) {
       // Render grouped courses with combined roles
       coursesList.innerHTML = Object.values(courseMap).map(course => {
         const rolesText = course.roles.join(", ");
-        return "<div style=\"padding: var(--space-md); background: white; border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + course.courseCode + ": " + course.courseName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs); text-transform: capitalize;\">" + rolesText + "</div></div>";
+        return "<div class=\"course-card\"><div class=\"course-card-title\">" + course.courseCode + ": " + course.courseName + "</div><div class=\"course-card-role\">" + rolesText + "</div></div>";
       }).join("");
     } else {
-      coursesList.innerHTML = "<p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No enrolled courses</p>";
+      coursesList.innerHTML = "<p class=\"no-items-message\">No enrolled courses</p>";
     }
   }
 
@@ -177,22 +177,22 @@ function renderUserProfile(user) {
         const canViewTeam = isOwnProfile || isTeammate || isStaff;
 
         const viewTeamButton = canViewTeam
-          ? "<div style=\"margin-top: var(--space-sm);\"><button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-link\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); text-decoration: underline; background: none; border: none; cursor: pointer;\">View Team →</button></div>"
+          ? "<button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-btn\">View Team →</button>"
           : "";
 
-        return "<div style=\"padding: var(--space-xl); background: white; border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + team.teamName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
+        return "<div class=\"team-card\"><div class=\"team-card-name\">" + team.teamName + "</div><div class=\"team-card-date\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
       }).join("");
 
       // Add click handlers for view team links
-      const viewTeamLinks = teamsList.querySelectorAll(".view-team-link");
-      viewTeamLinks.forEach(button => {
+      const viewTeamButtons = teamsList.querySelectorAll(".view-team-btn");
+      viewTeamButtons.forEach(button => {
         button.addEventListener("click", () => {
           const teamUuid = button.getAttribute("data-team-uuid");
           navigateToTeam(teamUuid);
         });
       });
     } else {
-      teamsList.innerHTML = "<p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No team memberships</p>";
+      teamsList.innerHTML = "<p class=\"no-items-message\">No team memberships</p>";
     }
   }
 }
@@ -207,7 +207,7 @@ function showLoading() {
   }
   const contactInfo = document.getElementById("user-contact-info");
   if (contactInfo) {
-    contactInfo.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-lg); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">Loading profile...</p></div>";
+    contactInfo.innerHTML = "<p class=\"no-items-message\">Loading profile...</p>";
   }
 }
 
@@ -223,7 +223,7 @@ function showError(message) {
 
   const contactInfo = document.getElementById("user-contact-info");
   if (contactInfo) {
-    contactInfo.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-lg); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
+    contactInfo.innerHTML = "<p class=\"no-items-message\">" + message + "</p>";
   }
 }
 
@@ -237,21 +237,21 @@ function renderStaffInfo(staffData, container, isOwnProfile) {
   const staffItems = [];
 
   if (staffData.isProf) {
-    staffItems.push("<div><strong>Position:</strong> Professor</div>");
+    staffItems.push("<div class=\"staff-detail-item\"><span class=\"staff-detail-label\">Position:</span><span class=\"staff-detail-value\">Professor</span></div>");
   } else {
-    staffItems.push("<div><strong>Position:</strong> Teaching Assistant</div>");
+    staffItems.push("<div class=\"staff-detail-item\"><span class=\"staff-detail-label\">Position:</span><span class=\"staff-detail-value\">Teaching Assistant</span></div>");
   }
 
   if (staffData.officeLocation) {
-    staffItems.push("<div><strong>Office:</strong> " + staffData.officeLocation + "</div>");
+    staffItems.push("<div class=\"staff-detail-item\"><span class=\"staff-detail-label\">Office:</span><span class=\"staff-detail-value\">" + staffData.officeLocation + "</span></div>");
   }
 
   if (staffData.researchInterest) {
-    staffItems.push("<div><strong>Research Interests:</strong> " + staffData.researchInterest + "</div>");
+    staffItems.push("<div class=\"staff-detail-item\"><span class=\"staff-detail-label\">Research Interests:</span><span class=\"staff-detail-value\">" + staffData.researchInterest + "</span></div>");
   }
 
   if (staffData.personalWebsite) {
-    staffItems.push("<div><strong>Website:</strong> <a href=\"" + staffData.personalWebsite + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + staffData.personalWebsite + "</a></div>");
+    staffItems.push("<div class=\"staff-detail-item\"><span class=\"staff-detail-label\">Website:</span><span class=\"staff-detail-value\"><a href=\"" + staffData.personalWebsite + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + staffData.personalWebsite + "</a></span></div>");
   }
 
   container.innerHTML = staffItems.join("");
