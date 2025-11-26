@@ -9,31 +9,33 @@ Component only used by one feature → keep it in `pages/yourFeature/`.
 
 ## Components
 
-### `profileDropdown.js`
+### `navigation.js` - Global Navigation Bar
 
-User profile avatar with dropdown menu. Used in dashboard, class features, and profile pages.
+Top navigation bar with logo, navigation links, and user profile dropdown. This component automatically injects the navigation bar and profile dropdown into any page.
 
 **Functions:**
-- `initProfileDropdown()` - Initialize component, fetch user data from API
-- `createUserDropdown(userType)` - Create dropdown menu ("student" or "professor")
-- `updateProfileFromAPI()` - Fetch user name from `/v1/api/auth/session`
-- `setupDropdownBehavior()` - Set up click toggle and outside-click close
+- `initGlobalNavigation(activePage)` - Initialize and inject navigation bar into page
 
 **Usage:**
 ```javascript
-import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
+import { initGlobalNavigation } from "../../components/navigation.js";
 
-createUserDropdown("student");
-await initProfileDropdown();
+document.addEventListener("DOMContentLoaded", async () => {
+  await initGlobalNavigation("dashboard"); // Pass the current page ("dashboard" or "calendar" for styling purposes)
+  // Your page-specific code here...
+});
 ```
 
-**HTML Required:**
-```html
-<section class="user-profile-dropdown">
-  <article class="user-profile" id="user-profile-trigger">
-    <figure class="user-avatar">...</figure>
-    <span class="user-name">Loading...</span>
-  </article>
-  <menu class="dropdown-menu" id="user-dropdown"></menu>
-</section>
-```
+**Requirements for Pages:**
+
+1. **Import the module** in your page's JavaScript file
+2. **Call `initGlobalNavigation()`** with the current page name (e.g., "dashboard", "calendar")
+3. **NO HTML required** - the navigation component injects itself at the top of the body
+4. **CSS Required** - Include navigation.css in your page's HTML head:
+
+
+**What it does:**
+- Injects navigation bar HTML at the top of `document.body`
+- Sets the active page link based on the `activePage` parameter
+- Automatically initializes the profile dropdown
+- Fetches and displays user data (name, avatar, dropdown menu)

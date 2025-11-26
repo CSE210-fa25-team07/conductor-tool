@@ -159,7 +159,7 @@ function logout() {
  */
 async function handleAccessRequest() {
   // Get form data
-  const formData = {
+  const _formData = {
     firstName: document.getElementById("first-name").value,
     lastName: document.getElementById("last-name").value,
     email: document.getElementById("email").value,

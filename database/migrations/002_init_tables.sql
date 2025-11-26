@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS staffs (
     research_interest TEXT,
     personal_website TEXT,
     is_prof BOOLEAN DEFAULT FALSE,
-    is_system_admin BOOLEAN DEFAULT FALSE
+    is_system_admin BOOLEAN DEFAULT FALSE,
+    is_lead_admin BOOLEAN DEFAULT FALSE
 );
 -- Class term table
 CREATE TABLE IF NOT EXISTS class_term (
@@ -165,5 +166,15 @@ CREATE TABLE IF NOT EXISTS participants (
     present BOOLEAN NOT NULL DEFAULT FALSE,
     attendance_time TIMESTAMPTZ DEFAULT NULL,
     PRIMARY KEY (meeting_uuid, participant_uuid)
+);
+-- Form requests (for requesting access to the system)
+CREATE TABLE IF NOT EXISTS form_request (
+    request_uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    related_institution VARCHAR(255),
+    verification_code VARCHAR(100),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -23,9 +23,9 @@ const prisma = new PrismaClient({
 export async function testConnection() {
   try {
     await prisma.$connect();
-    const result = await prisma.$queryRaw`SELECT NOW()`;
+    await prisma.$queryRaw`SELECT NOW()`;
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
