@@ -236,7 +236,8 @@
 }
 
 .view-profile-btn:hover {
-  background: var(--color-radioactive-lime);
+  background: var(--color-forest-green);
+  color: white;
   transform: translateX(2px);
   box-shadow: var(--shadow-card);
 }
