@@ -5,8 +5,10 @@
 
 import * as directoryApi from "../../api/directoryApi.js";
 import { navigateToUser } from "./main.js";
+import { getUserRoleInCourse } from "../../utils/userContext.js";
 
 let currentCourseUuid = null;
+let currentCourse = null;
 
 /**
  * Initialize the dashboard page
@@ -15,6 +17,7 @@ let currentCourseUuid = null;
 export async function init(courseUuid) {
   currentCourseUuid = courseUuid;
   await loadDashboard();
+  setupEventListeners();
 }
 
 /**
@@ -28,9 +31,17 @@ async function loadDashboard() {
       directoryApi.getCourseStaff(currentCourseUuid)
     ]);
 
+    currentCourse = overview;
     renderCourseInfo(overview);
-    renderStats(overview.stats);
+    renderStats(overview.stats, staff);
     renderStaff(staff);
+
+    // Show edit button only for professors
+    const userRole = getUserRoleInCourse(currentCourseUuid);
+    const editBtn = document.getElementById("edit-course-links-btn");
+    if (editBtn && userRole === "Professor") {
+      editBtn.style.display = "block";
+    }
 
   } catch (error) {
     showError("Failed to load dashboard: " + error.message);
@@ -70,13 +81,14 @@ function renderCourseInfo(course) {
 /**
  * Render course statistics
  * @param {Object} stats - Statistics data
+ * @param {Array} staff - Staff members array
  */
-function renderStats(stats) {
+function renderStats(stats, staff) {
   const enrollmentsEl = document.getElementById("total-enrollments");
-  const teamsEl = document.getElementById("total-teams");
+  const staffEl = document.getElementById("total-staff");
 
   if (enrollmentsEl) enrollmentsEl.textContent = stats.totalEnrollments || 0;
-  if (teamsEl) teamsEl.textContent = stats.totalTeams || 0;
+  if (staffEl) staffEl.textContent = staff ? staff.length : 0;
 }
 
 /**
@@ -137,5 +149,96 @@ function showError(message) {
   const container = document.getElementById("course-overview");
   if (container) {
     container.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-2xl); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
+  }
+}
+
+/**
+ * Setup event listeners for edit functionality
+ */
+function setupEventListeners() {
+  const editBtn = document.getElementById("edit-course-links-btn");
+  const cancelBtn = document.getElementById("cancel-edit-btn");
+  const form = document.getElementById("course-links-form");
+
+  if (editBtn) {
+    editBtn.addEventListener("click", enterEditMode);
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", exitEditMode);
+  }
+
+  if (form) {
+    form.addEventListener("submit", saveCourseLinks);
+  }
+}
+
+/**
+ * Enter edit mode for course links
+ */
+function enterEditMode() {
+  if (!currentCourse) return;
+
+  // Populate form with current values
+  const syllabusInput = document.getElementById("edit-syllabusUrl");
+  const canvasInput = document.getElementById("edit-canvasUrl");
+
+  if (syllabusInput) syllabusInput.value = currentCourse.syllabusUrl || "";
+  if (canvasInput) canvasInput.value = currentCourse.canvasUrl || "";
+
+  // Toggle views
+  const viewMode = document.getElementById("course-info-view-mode");
+  const editMode = document.getElementById("course-info-edit-mode");
+  const editBtn = document.getElementById("edit-course-links-btn");
+
+  if (viewMode) viewMode.style.display = "none";
+  if (editMode) editMode.style.display = "block";
+  if (editBtn) editBtn.style.display = "none";
+}
+
+/**
+ * Exit edit mode
+ */
+function exitEditMode() {
+  const viewMode = document.getElementById("course-info-view-mode");
+  const editMode = document.getElementById("course-info-edit-mode");
+  const editBtn = document.getElementById("edit-course-links-btn");
+
+  if (viewMode) viewMode.style.display = "block";
+  if (editMode) editMode.style.display = "none";
+  if (editBtn) editBtn.style.display = "block";
+}
+
+/**
+ * Save course links
+ * @param {Event} event - Form submit event
+ */
+async function saveCourseLinks(event) {
+  event.preventDefault();
+
+  const saveBtn = document.getElementById("save-links-btn");
+  if (!saveBtn) return;
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+
+  try {
+    const syllabusUrl = document.getElementById("edit-syllabusUrl").value.trim() || null;
+    const canvasUrl = document.getElementById("edit-canvasUrl").value.trim() || null;
+
+    await directoryApi.updateCourseLinks(currentCourseUuid, {
+      syllabusUrl,
+      canvasUrl
+    });
+
+    // Reload dashboard to show updated links
+    await loadDashboard();
+    exitEditMode();
+
+  } catch (error) {
+    alert("Failed to update course links: " + error.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Changes";
   }
 }

@@ -1,115 +1,44 @@
 <template>
-  <div style="max-width: 1200px;">
+  <link rel="stylesheet" href="../../css/pages/directory/teamProfile.css">
+
+  <div class="team-profile-container">
     <!-- Back Button -->
-    <div style="margin-bottom: var(--space-lg);">
-      <button id="back-to-teams" style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green);
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        text-decoration: underline;
-      ">Back to Teams</button>
+    <div class="back-to-teams-container">
+      <button id="back-to-teams" class="back-to-teams-btn">Back to Teams</button>
     </div>
 
     <!-- Team Header -->
-    <header style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      margin-bottom: var(--space-xl);
-    ">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-md);
-      " id="team-name">Loading team...</h1>
-      
-      <div style="
-        font-family: var(--font-mono);
-        color: var(--color-forest-green-medium);
-        margin-bottom: var(--space-lg);
-      " id="team-course"></div>
+    <header class="team-header">
+      <h1 class="team-name" id="team-name">Loading team...</h1>
 
-      <div style="display: flex; gap: var(--space-xl); flex-wrap: wrap;">
+      <div class="team-course" id="team-course"></div>
+
+      <div class="team-info-row">
         <div id="team-ta-info"></div>
         <div id="team-links"></div>
       </div>
+
+      <!-- Team Stats (moved inside header) -->
+      <div class="team-stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="team-member-count">0</div>
+          <div class="stat-label">Team Members</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-number" id="team-standup-count">0</div>
+          <div class="stat-label">Standups Submitted</div>
+        </div>
+      </div>
     </header>
 
-    <!-- Team Stats -->
-    <section style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    ">
-      <div style="
-        background: white;
-        border: var(--border-thick);
-        padding: var(--space-lg);
-        text-align: center;
-      ">
-        <div style="
-          font-family: var(--font-mono);
-          font-size: var(--text-3xl);
-          font-weight: 600;
-          color: var(--color-forest-green);
-        " id="team-member-count">0</div>
-        <div style="
-          font-family: var(--font-mono);
-          font-size: var(--text-sm);
-          color: var(--color-forest-green-medium);
-          margin-top: var(--space-sm);
-        ">Team Members</div>
-      </div>
-
-      <div style="
-        background: white;
-        border: var(--border-thick);
-        padding: var(--space-lg);
-        text-align: center;
-      ">
-        <div style="
-          font-family: var(--font-mono);
-          font-size: var(--text-3xl);
-          font-weight: 600;
-          color: var(--color-forest-green);
-        " id="team-standup-count">0</div>
-        <div style="
-          font-family: var(--font-mono);
-          font-size: var(--text-sm);
-          color: var(--color-forest-green-medium);
-          margin-top: var(--space-sm);
-        ">Standups Submitted</div>
-      </div>
-    </section>
-
     <!-- Team Members -->
-    <section style="
-      background: white;
-      border: var(--border-thick);
-      padding: var(--space-xl);
-    ">
-      <h2 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">Team Members</h2>
+    <section class="team-members-section">
+      <h2 class="section-title">Team Members</h2>
 
-      <div id="team-members-grid" style="
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: var(--space-lg);
-      ">
-        <div style="text-align: center; padding: var(--space-xl);">
-          <p style="font-family: var(--font-mono); color: var(--color-forest-green-medium);">
-            Loading members...
-          </p>
+      <div id="team-members-grid" class="members-grid">
+        <div class="loading-message">
+          <p>Loading members...</p>
         </div>
       </div>
     </section>

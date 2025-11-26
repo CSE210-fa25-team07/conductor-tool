@@ -307,6 +307,34 @@ export async function getCourseRoster(courseUuid, page = 1, limit = 20, filter =
   // Convert map to array
   const uniqueUsers = Array.from(userMap.values());
 
+  // Sort users by role priority (Professor > TA > Student) then by name
+  const rolePriority = {
+    "Professor": 1,
+    "TA": 2,
+    "Student": 3,
+    "Team Leader": 3 // Team Leader has same priority as Student
+  };
+
+  uniqueUsers.sort((a, b) => {
+    // Get minimum role priority for each user (in case they have multiple roles)
+    const aPriority = Math.min(...a.roles.map(role => rolePriority[role] || 999));
+    const bPriority = Math.min(...b.roles.map(role => rolePriority[role] || 999));
+
+    // First sort by role priority
+    if (aPriority !== bPriority) {
+      return aPriority - bPriority;
+    }
+
+    // Then sort by last name
+    const lastNameCompare = a.user.lastName.localeCompare(b.user.lastName);
+    if (lastNameCompare !== 0) {
+      return lastNameCompare;
+    }
+
+    // Finally sort by first name
+    return a.user.firstName.localeCompare(b.user.firstName);
+  });
+
   // Apply pagination to unique users
   const total = uniqueUsers.length;
   const skip = (page - 1) * limit;
@@ -467,6 +495,89 @@ export async function checkCourseEnrollment(userUuid, courseUuid) {
     }
   });
   return !!enrollment;
+}
+
+/**
+ * Update user information by UUID
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} userData - User data to update
+ * @returns {Promise<Object>} Updated user object
+ */
+export async function updateUser(userUuid, userData) {
+  const updatedUser = await prisma.user.update({
+    where: { userUuid: userUuid },
+    data: userData
+  });
+
+  return updatedUser;
+}
+
+/**
+ * Update staff information by user UUID
+ * @param {string} userUuid - User UUID to update staff info for
+ * @param {Object} staffData - Staff data to update (officeLocation, researchInterest, personalWebsite)
+ * @returns {Promise<Object>} Updated staff object
+ */
+export async function updateStaff(userUuid, staffData) {
+  // Check if staff record exists
+  const existingStaff = await prisma.staff.findUnique({
+    where: { userUuid: userUuid }
+  });
+
+  if (!existingStaff) {
+    throw new Error("Staff record not found for this user");
+  }
+
+  const updatedStaff = await prisma.staff.update({
+    where: { userUuid: userUuid },
+    data: staffData
+  });
+
+  return updatedStaff;
+}
+
+/**
+ * Update course links by course UUID
+ * @param {string} courseUuid - Course UUID
+ * @param {Object} linksData - Links data to update (syllabusUrl, canvasUrl)
+ * @returns {Promise<Object>} Updated course object
+ */
+export async function updateCourseLinks(courseUuid, linksData) {
+  const updatedCourse = await prisma.course.update({
+    where: { courseUuid: courseUuid },
+    data: {
+      syllabusUrl: linksData.syllabusUrl,
+      canvasUrl: linksData.canvasUrl
+    }
+  });
+
+  return updatedCourse;
+}
+
+/**
+ * Get user's role in a specific course
+ * @param {string} userUuid - User UUID
+ * @param {string} courseUuid - Course UUID
+ * @returns {Promise<string|null>} Role name or null if not enrolled
+ */
+export async function getUserRoleInCourse(userUuid, courseUuid) {
+  const enrollment = await prisma.courseEnrollment.findFirst({
+    where: {
+      userUuid,
+      courseUuid,
+      enrollmentStatus: "active"
+    },
+    include: {
+      role: true
+    },
+    orderBy: {
+      role: {
+        role: "asc"
+      }
+    }
+  });
+
+  return enrollment ? enrollment.role.role : null;
 }
 
 

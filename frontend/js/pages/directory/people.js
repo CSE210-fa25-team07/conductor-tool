@@ -46,7 +46,7 @@ async function loadRoster() {
 
     const data = await directoryApi.getCourseRoster(currentCourseUuid, {
       page: currentPage,
-      limit: 20,
+      limit: 5,
       filter: currentFilter
     });
 
@@ -120,7 +120,12 @@ function renderPagination(pagination) {
   const prevDisabled = page === 1;
   const nextDisabled = page === totalPages;
 
-  container.innerHTML = "<button id=\"prev-page\" " + (prevDisabled ? "disabled" : "") + " style=\"font-family: var(--font-mono); padding: var(--space-sm) var(--space-md); background: " + (prevDisabled ? "var(--color-light-matcha)" : "white") + "; border: var(--border-thick); color: var(--color-forest-green); cursor: " + (prevDisabled ? "not-allowed" : "pointer") + "; opacity: " + (prevDisabled ? "0.5" : "1") + ";\">← Previous</button><span style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">Page " + page + " of " + totalPages + "</span><button id=\"next-page\" " + (nextDisabled ? "disabled" : "") + " style=\"font-family: var(--font-mono); padding: var(--space-sm) var(--space-md); background: " + (nextDisabled ? "var(--color-light-matcha)" : "white") + "; border: var(--border-thick); color: var(--color-forest-green); cursor: " + (nextDisabled ? "not-allowed" : "pointer") + "; opacity: " + (nextDisabled ? "0.5" : "1") + ";\">Next →</button>";
+  const buttonStyle = "font-family: var(--font-mono); font-size: var(--text-base); font-weight: 600; padding: var(--space-sm) var(--space-md); border: var(--border-thick); color: var(--color-forest-green); transition: background-color 0.2s ease;";
+
+  const prevStyle = buttonStyle + " background: " + (prevDisabled ? "var(--color-light-matcha)" : "white") + "; cursor: " + (prevDisabled ? "not-allowed" : "pointer") + "; opacity: " + (prevDisabled ? "0.5" : "1") + ";";
+  const nextStyle = buttonStyle + " background: " + (nextDisabled ? "var(--color-light-matcha)" : "white") + "; cursor: " + (nextDisabled ? "not-allowed" : "pointer") + "; opacity: " + (nextDisabled ? "0.5" : "1") + ";";
+
+  container.innerHTML = "<button id=\"prev-page\" " + (prevDisabled ? "disabled" : "") + " style=\"" + prevStyle + "\">Previous</button><span style=\"font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green); padding: 0 var(--space-md);\">Page " + page + " of " + totalPages + "</span><button id=\"next-page\" " + (nextDisabled ? "disabled" : "") + " style=\"" + nextStyle + "\">Next</button>";
 
   const prevBtn = document.getElementById("prev-page");
   const nextBtn = document.getElementById("next-page");

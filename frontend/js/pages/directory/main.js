@@ -10,6 +10,8 @@ import * as peoplePage from "./people.js";
 import * as groupPage from "./group.js";
 import * as teamProfilePage from "./teamProfile.js";
 import * as myPage from "./my.js";
+import * as userContextApi from "../../api/userContextApi.js";
+import * as directoryApi from "../../api/directoryApi.js";
 
 /**
  * Get course UUID from session storage
@@ -39,7 +41,35 @@ let containerRef = null;
  */
 export async function render(container, view = "dashboard", params = {}) {
   try {
-    // Scroll to top immediately (before showing loading)
+    // Get course UUID from session storage
+    const courseUuid = getCourseUuid();
+
+    // SPECIAL CASE: For "group" view, check student role BEFORE any animations
+    if (view === "group" && courseUuid) {
+      try {
+        const userContext = await userContextApi.getUserContext(courseUuid);
+        const userRole = userContext.activeCourse?.role;
+
+        // If student, check if they have a team and redirect to it
+        if (userRole === "Student") {
+          const teamsData = await directoryApi.getCourseTeams(courseUuid, {
+            page: 1,
+            limit: 1
+          });
+
+          // If student has exactly one team, redirect directly to team view
+          if (teamsData.teams && teamsData.teams.length === 1) {
+            // Change view to "team" and set params, then continue normal flow
+            view = "team";
+            params = { teamUuid: teamsData.teams[0].teamUuid };
+          }
+        }
+      } catch (error) {
+        // If there's an error, continue with normal group page load
+      }
+    }
+
+    // Scroll to top immediately
     window.scrollTo({ top: 0, behavior: "instant" });
 
     // Show loading state immediately
@@ -47,9 +77,6 @@ export async function render(container, view = "dashboard", params = {}) {
 
     // Store container reference for navigation
     containerRef = container;
-
-    // Get course UUID from session storage
-    const courseUuid = getCourseUuid();
 
     // Map view names to template names (only for special cases)
     let templateView = view;
@@ -83,6 +110,8 @@ export async function render(container, view = "dashboard", params = {}) {
 
     case "group":
       if (courseUuid) {
+        // Role check now happens at the start of render() function
+        // This case only handles instructors/TAs or students with no/multiple teams
         container.innerHTML = templateHTML;
         await groupPage.init(courseUuid);
       }

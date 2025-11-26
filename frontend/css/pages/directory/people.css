@@ -1,0 +1,96 @@
+/* People (Course Roster) Page Styles */
+
+.roster-container {
+  max-width: 1200px;
+}
+
+.roster-header {
+  margin-bottom: var(--space-xl);
+}
+
+.roster-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  color: var(--color-forest-green);
+}
+
+.filter-section {
+  background: var(--color-light-matcha);
+  border: var(--border-thick);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.filter-controls {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--color-forest-green);
+}
+
+.role-filter-select {
+  font-family: var(--font-mono);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-thick);
+  background: white;
+  color: var(--color-forest-green);
+  font-size: var(--text-base);
+  cursor: pointer;
+}
+
+.total-count-container {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green);
+}
+
+.roster-table-section {
+  background: white;
+  border: var(--border-thick);
+  overflow: hidden;
+}
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roster-table thead tr {
+  background: var(--color-light-matcha);
+  border-bottom: var(--border-thick);
+}
+
+.roster-table th {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-align: left;
+  padding: var(--space-md);
+  color: var(--color-forest-green);
+}
+
+.roster-table th:last-child {
+  text-align: center;
+}
+
+.roster-table tbody td {
+  padding: var(--space-2xl);
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
+}
+
+.pagination-section {
+  margin-top: var(--space-xl);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+}

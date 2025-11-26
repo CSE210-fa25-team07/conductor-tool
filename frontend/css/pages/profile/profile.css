@@ -1,0 +1,266 @@
+/**
+ * Profile Page Styles
+ * Ecological Brutalism Design System
+ */
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-2xl);
+}
+
+/* Back Button */
+.back-button-container {
+  margin-bottom: var(--space-lg);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-forest-green);
+  text-decoration: none;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-white);
+  border: var(--border-thick);
+  border-bottom: var(--border-thick);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-back:hover {
+  background-color: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+  border-bottom: var(--border-thick);
+}
+
+/* Profile Header */
+.profile-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  font-size: var(--text-4xl);
+  margin: 0 auto var(--space-lg);
+  background: var(--color-radioactive-lime);
+  border: var(--border-thick);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-forest-green);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-sm);
+}
+
+.profile-email {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+}
+
+/* Messages */
+.error-message {
+  background: #ffebee;
+  border: var(--border-thick);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+  color: #c62828;
+}
+
+.success-message {
+  background: var(--color-radioactive-lime);
+  border: var(--border-thick);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+}
+
+/* Profile Content */
+.profile-content {
+  background: var(--color-light-matcha);
+  border: var(--border-thick);
+  padding: var(--space-2xl);
+}
+
+.profile-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  color: var(--color-forest-green);
+}
+
+/* Profile View Mode */
+.profile-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-forest-green);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  padding: var(--space-md);
+  background: var(--color-white);
+  border: var(--border-thick);
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Profile Edit Mode */
+.profile-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-forest-green);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input,
+.form-textarea {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green);
+  padding: var(--space-md);
+  background: var(--color-white);
+  border: var(--border-thick);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--color-forest-green);
+  box-shadow: 0 0 0 2px var(--color-radioactive-lime);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  margin-top: var(--space-md);
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-md) var(--space-lg);
+  border: var(--border-thick);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+}
+
+.btn-primary:hover {
+  background: var(--color-forest-green);
+  color: var(--color-white);
+}
+
+.btn-primary:disabled {
+  background: var(--color-forest-green-light);
+  color: var(--color-forest-green-medium);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  color: var(--color-forest-green);
+}
+
+.btn-secondary:hover {
+  background: var(--color-forest-green-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: var(--space-lg);
+  }
+
+  .profile-content {
+    padding: var(--space-lg);
+  }
+
+  .profile-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

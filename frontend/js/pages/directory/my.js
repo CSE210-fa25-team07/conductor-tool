@@ -13,13 +13,23 @@ import { getCurrentUser, getUserTeams } from "../../utils/userContext.js";
  */
 export async function init(userUuid) {
   await loadUserProfile(userUuid);
-  setupEventListeners();
+  setupEventListeners(userUuid);
 }
 
 /**
  * Set up event listeners for the user profile page
+ * @param {string} userUuid - User UUID being viewed
  */
-function setupEventListeners() {
+function setupEventListeners(userUuid) {
+  // Hide "Back to People" button if viewing own profile
+  const currentUser = getCurrentUser();
+  const backToPeopleContainer = document.getElementById("back-to-people-container");
+
+  if (backToPeopleContainer && currentUser && currentUser.userUuid === userUuid) {
+    backToPeopleContainer.style.display = "none";
+  }
+
+  // Set up back button click handler
   const backBtn = document.getElementById("back-to-people");
   if (backBtn) {
     backBtn.addEventListener("click", (e) => {
@@ -112,27 +122,11 @@ function renderUserProfile(user) {
   if (staffSection && staffDetails && user.staff) {
     staffSection.style.display = "block";
 
-    const staffItems = [];
+    // Check if viewing own profile
+    const currentUser = getCurrentUser();
+    const isOwnProfile = currentUser && currentUser.userUuid === user.userUuid;
 
-    if (user.staff.isProf) {
-      staffItems.push("<div><strong>Position:</strong> Professor</div>");
-    } else {
-      staffItems.push("<div><strong>Position:</strong> Teaching Assistant</div>");
-    }
-
-    if (user.staff.officeLocation) {
-      staffItems.push("<div><strong>Office:</strong> " + user.staff.officeLocation + "</div>");
-    }
-
-    if (user.staff.researchInterest) {
-      staffItems.push("<div><strong>Research Interests:</strong> " + user.staff.researchInterest + "</div>");
-    }
-
-    if (user.staff.personalWebsite) {
-      staffItems.push("<div><strong>Website:</strong> <a href=\"" + user.staff.personalWebsite + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + user.staff.personalWebsite + "</a></div>");
-    }
-
-    staffDetails.innerHTML = staffItems.join("");
+    renderStaffInfo(user.staff, staffDetails, isOwnProfile);
   }
 
   if (coursesList) {
@@ -154,7 +148,7 @@ function renderUserProfile(user) {
       // Render grouped courses with combined roles
       coursesList.innerHTML = Object.values(courseMap).map(course => {
         const rolesText = course.roles.join(", ");
-        return "<div style=\"padding: var(--space-md); background: var(--color-light-matcha); border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + course.courseCode + ": " + course.courseName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs); text-transform: capitalize;\">" + rolesText + "</div></div>";
+        return "<div style=\"padding: var(--space-md); background: white; border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + course.courseCode + ": " + course.courseName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs); text-transform: capitalize;\">" + rolesText + "</div></div>";
       }).join("");
     } else {
       coursesList.innerHTML = "<p style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No enrolled courses</p>";
@@ -186,7 +180,7 @@ function renderUserProfile(user) {
           ? "<div style=\"margin-top: var(--space-sm);\"><button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-link\" style=\"font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); text-decoration: underline; background: none; border: none; cursor: pointer;\">View Team →</button></div>"
           : "";
 
-        return "<div style=\"padding: var(--space-md); background: var(--color-light-matcha); border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + team.teamName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
+        return "<div style=\"padding: var(--space-xl); background: white; border: var(--border-thick); margin-bottom: var(--space-sm);\"><div style=\"font-weight: 600; color: var(--color-forest-green);\">" + team.teamName + "</div><div style=\"font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
       }).join("");
 
       // Add click handlers for view team links
@@ -231,4 +225,34 @@ function showError(message) {
   if (contactInfo) {
     contactInfo.innerHTML = "<div style=\"background: var(--color-light-matcha); border: var(--border-thick); padding: var(--space-lg); text-align: center;\"><p style=\"font-family: var(--font-mono); color: var(--color-forest-green);\">" + message + "</p></div>";
   }
+}
+
+/**
+ * Render staff information without edit button
+ * @param {Object} staffData - Staff data
+ * @param {HTMLElement} container - Container element
+ * @param {boolean} isOwnProfile - Whether viewing own profile (unused now)
+ */
+function renderStaffInfo(staffData, container, isOwnProfile) {
+  const staffItems = [];
+
+  if (staffData.isProf) {
+    staffItems.push("<div><strong>Position:</strong> Professor</div>");
+  } else {
+    staffItems.push("<div><strong>Position:</strong> Teaching Assistant</div>");
+  }
+
+  if (staffData.officeLocation) {
+    staffItems.push("<div><strong>Office:</strong> " + staffData.officeLocation + "</div>");
+  }
+
+  if (staffData.researchInterest) {
+    staffItems.push("<div><strong>Research Interests:</strong> " + staffData.researchInterest + "</div>");
+  }
+
+  if (staffData.personalWebsite) {
+    staffItems.push("<div><strong>Website:</strong> <a href=\"" + staffData.personalWebsite + "\" target=\"_blank\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + staffData.personalWebsite + "</a></div>");
+  }
+
+  container.innerHTML = staffItems.join("");
 }

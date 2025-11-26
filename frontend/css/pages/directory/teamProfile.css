@@ -1,0 +1,103 @@
+/* Team Profile Page Styles */
+
+.team-profile-container {
+  max-width: 1200px;
+}
+
+.back-to-teams-container {
+  margin-bottom: var(--space-lg);
+  display: none; /* Hidden by default to prevent flash for students */
+}
+
+.back-to-teams-btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.team-header {
+  background: var(--color-light-matcha);
+  border: var(--border-thick);
+  padding: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+}
+
+.team-name {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-md);
+}
+
+.team-course {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  margin-bottom: var(--space-lg);
+}
+
+.team-info-row {
+  display: flex;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+.team-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.stat-card {
+  background: white;
+  border: var(--border-thick);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  color: var(--color-forest-green);
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-forest-green-medium);
+  margin-top: var(--space-sm);
+}
+
+.team-members-section {
+  background: white;
+  border: var(--border-thick);
+  padding: var(--space-xl);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-lg);
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-lg);
+}
+
+.loading-message {
+  text-align: center;
+  padding: var(--space-xl);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green-medium);
+}

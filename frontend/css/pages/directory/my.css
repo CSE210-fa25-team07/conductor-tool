@@ -1,0 +1,114 @@
+/* User Profile (My) Page Styles */
+
+.back-to-people-container {
+  margin-bottom: var(--space-lg);
+}
+
+.back-to-people-btn {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.user-profile-card {
+  background: var(--color-light-matcha);
+  border: var(--border-thick);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.user-profile-header {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: start;
+  margin-bottom: var(--space-lg);
+}
+
+.user-profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--color-radioactive-lime);
+  border: var(--border-thick);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  color: var(--color-forest-green);
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-profile-name {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-sm);
+}
+
+.user-email {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  margin-bottom: var(--space-md);
+}
+
+.user-pronouns {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-forest-green-medium);
+  margin-bottom: var(--space-md);
+}
+
+.user-bio {
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  color: var(--color-forest-green);
+  margin-top: var(--space-md);
+}
+
+.contact-section {
+  background: white;
+  border: var(--border-thick);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-lg);
+}
+
+.contact-info {
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.staff-section {
+  background: white;
+  border: var(--border-thick);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.staff-details {
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}

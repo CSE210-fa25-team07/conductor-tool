@@ -40,25 +40,27 @@ async function loadTeamProfile(teamUuid) {
  * @param {string} courseUuid - Course UUID
  */
 async function setupBackButton(courseUuid) {
+  const backBtnContainer = document.getElementById("back-to-teams")?.parentElement;
   const backBtn = document.getElementById("back-to-teams");
-  if (backBtn) {
+
+  if (backBtn && backBtnContainer) {
     try {
       // Get user context to check role
       const userContext = await userContextApi.getUserContext(courseUuid);
       const userRole = userContext.activeCourse?.role;
 
-      // Hide back button for students
-      if (userRole === "Student") {
-        backBtn.style.display = "none";
-      } else {
-        // Show back button for instructors/TAs
+      // Show back button only for instructors/TAs (hidden by default in CSS)
+      if (userRole !== "Student") {
+        backBtnContainer.style.display = "block";
         backBtn.addEventListener("click", (e) => {
           e.preventDefault();
           navigateToGroup();
         });
       }
+      // For students, button stays hidden (default CSS)
     } catch (error) {
       // If error, show the button by default
+      backBtnContainer.style.display = "block";
       backBtn.addEventListener("click", (e) => {
         e.preventDefault();
         navigateToGroup();

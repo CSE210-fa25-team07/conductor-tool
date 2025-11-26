@@ -114,6 +114,36 @@ router.get("/users/:userUuid", async (req, res) => {
 });
 
 /**
+ * Get current user's own profile
+ * @name GET /v1/api/directory/profile
+ */
+router.get("/profile", async (req, res) => {
+  try {
+    return await directoryService.getCurrentUserProfile(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Update current user's profile
+ * @name PUT /v1/api/directory/profile
+ */
+router.put("/profile", async (req, res) => {
+  try {
+    return await directoryService.updateCurrentUserProfile(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * Get team profile
  * @name GET /v1/api/directory/teams/:teamUuid
  */
@@ -122,6 +152,21 @@ router.get("/teams/:teamUuid", async (req, res) => {
     return await directoryService.getTeamProfile(req, res);
   } catch (error) {
     res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Update course links (professor only)
+ * @name PUT /v1/api/directory/courses/:courseUuid/links
+ */
+router.put("/courses/:courseUuid/links", async (req, res) => {
+  try {
+    return await directoryService.updateCourseLinks(req, res);
+  } catch (error) {
+    res.status(400).json({
       success: false,
       error: error.message
     });

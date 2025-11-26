@@ -1,154 +1,46 @@
 <template>
+  <link rel="stylesheet" href="../../css/pages/directory/my.css">
+
   <div style="max-width: 900px;">
     <!-- Back to People Button -->
-    <div style="margin-bottom: var(--space-lg);">
-      <button id="back-to-people" style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green);
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        text-decoration: underline;
-      ">Back to People</button>
+    <div id="back-to-people-container" class="back-to-people-container">
+      <button id="back-to-people" class="back-to-people-btn">Back to People</button>
     </div>
 
     <!-- User Profile Card -->
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      margin-bottom: var(--space-xl);
-    ">
-      <div style="display: flex; gap: var(--space-xl); align-items: start;">
+    <section class="user-profile-card">
+      <div class="user-profile-header">
         <!-- Avatar -->
-        <div id="user-avatar" style="
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          background: var(--color-radioactive-lime);
-          border: var(--border-thick);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: var(--font-heading);
-          font-size: var(--text-3xl);
-          color: var(--color-forest-green);
-          flex-shrink: 0;
-        ">?</div>
+        <div id="user-avatar" class="user-profile-avatar">?</div>
 
         <!-- User Info -->
-        <div style="flex: 1;">
-          <h1 style="
-            font-family: var(--font-heading);
-            font-size: var(--text-4xl);
-            color: var(--color-forest-green);
-            margin-bottom: var(--space-sm);
-          " id="user-name">Loading...</h1>
-
-          <div style="
-            font-family: var(--font-mono);
-            color: var(--color-forest-green-medium);
-            margin-bottom: var(--space-md);
-          " id="user-email"></div>
-
-          <div id="user-pronouns" style="
-            font-family: var(--font-mono);
-            font-size: var(--text-sm);
-            color: var(--color-forest-green-medium);
-            margin-bottom: var(--space-md);
-          "></div>
-
-          <div id="user-bio" style="
-            font-family: var(--font-mono);
-            line-height: 1.6;
-            color: var(--color-forest-green);
-            margin-top: var(--space-md);
-          "></div>
+        <div class="user-info">
+          <h1 id="user-name" class="user-profile-name">Loading...</h1>
+          <div id="user-email" class="user-email"></div>
+          <div id="user-pronouns" class="user-pronouns"></div>
+          <div id="user-bio" class="user-bio"></div>
         </div>
       </div>
+
+      <!-- Courses -->
+      <div id="user-courses-list"></div>
     </section>
 
     <!-- Contact & Links -->
-    <section style="
-      background: white;
-      border: var(--border-thick);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    ">
-      <h2 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">Contact Information</h2>
-
-      <div id="user-contact-info" style="
-        font-family: var(--font-mono);
-        color: var(--color-forest-green);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-md);
-      "></div>
+    <section class="contact-section">
+      <h2 class="section-title">Contact Information</h2>
+      <div id="user-contact-info" class="contact-info"></div>
     </section>
 
     <!-- Staff Information (if applicable) -->
     <section id="staff-info-section" style="display: none;">
-      <div style="
-        background: white;
-        border: var(--border-thick);
-        padding: var(--space-xl);
-        margin-bottom: var(--space-xl);
-      ">
-        <h2 style="
-          font-family: var(--font-heading);
-          font-size: var(--text-2xl);
-          color: var(--color-forest-green);
-          margin-bottom: var(--space-lg);
-        ">Staff Information</h2>
-
-        <div id="staff-details" style="
-          font-family: var(--font-mono);
-          color: var(--color-forest-green);
-          display: flex;
-          flex-direction: column;
-          gap: var(--space-md);
-        "></div>
+      <div class="staff-section">
+        <h2 class="section-title">Staff Information</h2>
+        <div id="staff-details" class="staff-details"></div>
       </div>
     </section>
 
-    <!-- Courses -->
-    <section style="
-      background: white;
-      border: var(--border-thick);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    ">
-      <h2 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">Enrolled Courses</h2>
-
-      <div id="user-courses-list"></div>
-    </section>
-
     <!-- Teams -->
-    <section style="
-      background: white;
-      border: var(--border-thick);
-      padding: var(--space-xl);
-    ">
-      <h2 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">Team Memberships</h2>
-
-      <div id="user-teams-list"></div>
-    </section>
+    <div id="user-teams-list"></div>
   </div>
 </template>

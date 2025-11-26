@@ -148,3 +148,53 @@ export async function getTeamProfile(teamUuid) {
 
   return handleResponse(response);
 }
+
+/**
+ * Update current user's profile
+ * @param {Object} profileData - Profile data to update
+ * @param {string} profileData.firstName - First name
+ * @param {string} profileData.lastName - Last name
+ * @param {string} profileData.email - Email address
+ * @param {string} profileData.pronouns - Pronouns
+ * @param {string} profileData.bio - Biography
+ * @param {string} profileData.phoneNumber - Phone number
+ * @param {string} profileData.githubUsername - GitHub username
+ * @param {Object} profileData.staff - Staff information (for staff members only)
+ * @param {string} profileData.staff.officeLocation - Office location
+ * @param {string} profileData.staff.researchInterest - Research interests
+ * @param {string} profileData.staff.personalWebsite - Personal website URL
+ * @returns {Promise<Object>} Updated user profile
+ */
+export async function updateProfile(profileData) {
+  const response = await fetch(API_BASE + "/profile", {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(profileData)
+  });
+
+  return handleResponse(response);
+}
+
+/**
+ * Update course links (professor only)
+ * @param {string} courseUuid - Course UUID
+ * @param {Object} linksData - Links data to update
+ * @param {string} linksData.syllabusUrl - Syllabus URL
+ * @param {string} linksData.canvasUrl - Canvas URL
+ * @returns {Promise<Object>} Updated course data
+ */
+export async function updateCourseLinks(courseUuid, linksData) {
+  const response = await fetch(API_BASE + "/courses/" + courseUuid + "/links", {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(linksData)
+  });
+
+  return handleResponse(response);
+}

@@ -1,110 +1,49 @@
 <template>
-  <div style="max-width: 1200px;">
+  <link rel="stylesheet" href="../../css/pages/directory/people.css">
+
+  <div class="roster-container">
     <!-- Header -->
-    <header style="margin-bottom: var(--space-xl);">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-      ">Course Roster</h1>
+    <header class="roster-header">
+      <h1 class="roster-title">Course Roster</h1>
     </header>
 
     <!-- Filter Controls -->
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    ">
-      <div style="display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap;">
-        <label style="
-          font-family: var(--font-mono);
-          font-weight: 600;
-          color: var(--color-forest-green);
-        ">Filter by Role:</label>
-        <select id="role-filter" style="
-          font-family: var(--font-mono);
-          padding: var(--space-sm) var(--space-md);
-          border: var(--border-thick);
-          background: white;
-          color: var(--color-forest-green);
-          font-size: var(--text-base);
-          cursor: pointer;
-        ">
+    <section class="filter-section">
+      <div class="filter-controls">
+        <label class="filter-label">Filter by Role:</label>
+        <select id="role-filter" class="role-filter-select">
           <option value="all">All Roles</option>
           <option value="student">Students</option>
           <option value="ta">Teaching Assistants</option>
           <option value="instructor">Instructors</option>
         </select>
 
-        <div style="margin-left: auto; font-family: var(--font-mono); color: var(--color-forest-green);">
+        <div class="total-count-container">
           Total: <strong id="roster-total-count">0</strong>
         </div>
       </div>
     </section>
 
     <!-- Roster Table -->
-    <section style="
-      background: white;
-      border: var(--border-thick);
-      overflow: hidden;
-    ">
-      <table style="width: 100%; border-collapse: collapse;">
+    <section class="roster-table-section">
+      <table class="roster-table">
         <thead>
-          <tr style="
-            background: var(--color-light-matcha);
-            border-bottom: var(--border-thick);
-          ">
-            <th style="
-              font-family: var(--font-mono);
-              font-weight: 600;
-              text-align: left;
-              padding: var(--space-md);
-              color: var(--color-forest-green);
-            ">Name</th>
-            <th style="
-              font-family: var(--font-mono);
-              font-weight: 600;
-              text-align: left;
-              padding: var(--space-md);
-              color: var(--color-forest-green);
-            ">Email</th>
-            <th style="
-              font-family: var(--font-mono);
-              font-weight: 600;
-              text-align: left;
-              padding: var(--space-md);
-              color: var(--color-forest-green);
-            ">Role</th>
-            <th style="
-              font-family: var(--font-mono);
-              font-weight: 600;
-              text-align: center;
-              padding: var(--space-md);
-              color: var(--color-forest-green);
-            ">Actions</th>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="roster-table-body">
           <tr>
-            <td colspan="4" style="
-              padding: var(--space-2xl);
-              text-align: center;
-              font-family: var(--font-mono);
-              color: var(--color-forest-green-medium);
-            ">Loading roster...</td>
+            <td colspan="4">Loading roster...</td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <!-- Pagination Controls -->
-    <section id="roster-pagination" style="
-      margin-top: var(--space-xl);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: var(--space-md);
-    "></section>
+    <section id="roster-pagination" class="pagination-section"></section>
   </div>
 </template>

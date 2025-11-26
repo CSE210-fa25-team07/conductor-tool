@@ -8,6 +8,7 @@
   <!-- Global Styles -->
   <link rel="stylesheet" href="../../css/components/global.css">
   <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/profile/profile.css">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,102 +38,171 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <section class="container" style="max-width: 800px; margin: 0 auto; padding: var(--space-2xl);">
+    <section class="profile-container">
 
       <!-- Profile Header -->
-      <header style="margin-bottom: var(--space-2xl); text-align: center;">
-        <figure class="user-avatar" id="profile-avatar" style="
-          width: 120px;
-          height: 120px;
-          font-size: var(--text-4xl);
-          margin: 0 auto var(--space-lg);
-        ">...</figure>
-        <h1 id="profile-name" style="
-          font-family: var(--font-heading);
-          font-size: var(--text-4xl);
-          color: var(--color-forest-green);
-          margin-bottom: var(--space-sm);
-        ">Loading...</h1>
-        <p id="profile-email" style="
-          font-family: var(--font-mono);
-          font-size: var(--text-base);
-          color: var(--color-forest-green-medium);
-        ">Loading...</p>
+      <header class="profile-header">
+        <figure class="profile-avatar" id="profile-avatar">...</figure>
+        <h1 class="profile-name" id="profile-name">Loading...</h1>
+        <p class="profile-email" id="profile-email">Loading...</p>
       </header>
 
-      <!-- Profile Content (Mock) -->
-      <section style="
-        background: var(--color-light-matcha);
-        border: var(--border-thick);
-        padding: var(--space-2xl);
-      ">
-        <h2 style="
-          font-family: var(--font-heading);
-          font-size: var(--text-2xl);
-          color: var(--color-forest-green);
-          margin-bottom: var(--space-lg);
-        ">Profile Settings</h2>
+      <!-- Error Message -->
+      <div id="error-message" class="error-message" style="display: none;"></div>
 
-        <p style="
-          font-family: var(--font-mono);
-          font-size: var(--text-base);
-          color: var(--color-forest-green-medium);
-          line-height: 1.6;
-          margin-bottom: var(--space-lg);
-        ">
-          This page will allow users to view and edit their profile information,
-          notification preferences, and account settings.
-        </p>
+      <!-- Success Message -->
+      <div id="success-message" class="success-message" style="display: none;"></div>
 
-        <a href="/dashboard" style="
-          display: inline-block;
-          padding: var(--space-md) var(--space-lg);
-          background: var(--color-radioactive-lime);
-          color: var(--color-forest-green);
-          border: var(--border-thick);
-          text-decoration: none;
-          font-family: var(--font-mono);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        ">Back to Dashboard</a>
+      <!-- Back Button -->
+      <div class="back-button-container">
+        <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+      </div>
+
+      <!-- Profile Content -->
+      <section class="profile-content">
+
+        <!-- View Mode -->
+        <div id="view-mode" class="profile-view">
+          <div class="profile-section-header">
+            <h2 class="section-title">Profile Information</h2>
+            <button id="edit-btn" class="btn-primary">Edit Profile</button>
+          </div>
+
+          <div class="profile-fields">
+            <div class="profile-field">
+              <label class="field-label">First Name</label>
+              <p class="field-value" id="view-firstName">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Last Name</label>
+              <p class="field-value" id="view-lastName">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Email</label>
+              <p class="field-value" id="view-email">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Pronouns</label>
+              <p class="field-value" id="view-pronouns">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Bio</label>
+              <p class="field-value" id="view-bio">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Phone Number</label>
+              <p class="field-value" id="view-phoneNumber">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">GitHub Username</label>
+              <p class="field-value" id="view-githubUsername">-</p>
+            </div>
+          </div>
+
+          <!-- Staff Information Section (only shown for staff) -->
+          <div id="staff-section" class="staff-info-section" style="display: none; margin-top: var(--space-xl);">
+            <h3 class="section-subtitle">Staff Information</h3>
+            <div class="profile-fields">
+              <div class="profile-field">
+                <label class="field-label">Office Location</label>
+                <p class="field-value" id="view-officeLocation">-</p>
+              </div>
+
+              <div class="profile-field">
+                <label class="field-label">Research Interests</label>
+                <p class="field-value" id="view-researchInterest">-</p>
+              </div>
+
+              <div class="profile-field">
+                <label class="field-label">Personal Website</label>
+                <p class="field-value" id="view-personalWebsite">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="edit-mode" class="profile-edit" style="display: none;">
+          <div class="profile-section-header">
+            <h2 class="section-title">Edit Profile</h2>
+          </div>
+
+          <form id="profile-form" class="profile-form">
+            <div class="form-field">
+              <label for="edit-firstName" class="form-label">First Name *</label>
+              <input type="text" id="edit-firstName" name="firstName" class="form-input" required maxlength="100">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-lastName" class="form-label">Last Name *</label>
+              <input type="text" id="edit-lastName" name="lastName" class="form-input" required maxlength="100">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-email" class="form-label">Email *</label>
+              <input type="email" id="edit-email" name="email" class="form-input" required maxlength="255">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-pronouns" class="form-label">Pronouns</label>
+              <input type="text" id="edit-pronouns" name="pronouns" class="form-input" maxlength="50" placeholder="e.g., she/her, he/him, they/them">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-bio" class="form-label">Bio</label>
+              <textarea id="edit-bio" name="bio" class="form-textarea" maxlength="1000" rows="4" placeholder="Tell us about yourself..."></textarea>
+            </div>
+
+            <div class="form-field">
+              <label for="edit-phoneNumber" class="form-label">Phone Number</label>
+              <input type="tel" id="edit-phoneNumber" name="phoneNumber" class="form-input" maxlength="20" placeholder="e.g., (123) 456-7890">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-githubUsername" class="form-label">GitHub Username</label>
+              <input type="text" id="edit-githubUsername" name="githubUsername" class="form-input" maxlength="100" placeholder="e.g., octocat">
+            </div>
+
+            <!-- Staff Information Fields (only shown for staff) -->
+            <div id="staff-edit-section" style="display: none;">
+              <h3 class="section-subtitle" style="margin-top: var(--space-xl); margin-bottom: var(--space-md);">Staff Information</h3>
+
+              <div class="form-field">
+                <label for="edit-officeLocation" class="form-label">Office Location</label>
+                <input type="text" id="edit-officeLocation" name="officeLocation" class="form-input" maxlength="255" placeholder="e.g., CSE 3110">
+              </div>
+
+              <div class="form-field">
+                <label for="edit-researchInterest" class="form-label">Research Interests</label>
+                <textarea id="edit-researchInterest" name="researchInterest" class="form-textarea" rows="3" placeholder="Describe your research interests..."></textarea>
+              </div>
+
+              <div class="form-field">
+                <label for="edit-personalWebsite" class="form-label">Personal Website</label>
+                <input type="url" id="edit-personalWebsite" name="personalWebsite" class="form-input" placeholder="https://example.com">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+              <button type="submit" id="save-btn" class="btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+
       </section>
 
     </section>
   </main>
 
   <!-- JavaScript -->
-  <script type="module">
-    import { initProfileDropdown, createUserDropdown } from "../../js/components/profileDropdown.js";
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      // Initialize dropdown
-      createUserDropdown("student");
-      await initProfileDropdown();
-
-      // Also update the large profile avatar on this page
-      try {
-        const response = await fetch("/v1/api/auth/session", {
-          credentials: "include"
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.user) {
-            const name = data.user.name || "User";
-            const email = data.user.email || "";
-            const initials = name.split(" ").map(word => word[0]).join("").toUpperCase();
-
-            document.getElementById("profile-avatar").textContent = initials;
-            document.getElementById("profile-name").textContent = name;
-            document.getElementById("profile-email").textContent = email;
-          }
-        }
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    });
-  </script>
+  <script type="module" src="../../js/pages/profile/profile.js"></script>
 
 </body>
 </html>
