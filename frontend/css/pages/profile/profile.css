@@ -1,77 +1,104 @@
 /**
  * Profile Page Styles
- * Ecological Brutalism Design System
+ * Follows "Premium Ecological" design system
+ * Matches directory team's polished styling approach
  */
 
+/* ==================== Variables (Local Overrides) ==================== */
 .profile-container {
-  max-width: 800px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --shadow-card: 0 4px 12px rgba(5, 43, 8, 0.08);
+  --shadow-hover: 0 8px 24px rgba(5, 43, 8, 0.12);
+  --font-body: system-ui, -apple-system, sans-serif;
+  max-width: 900px;
   margin: 0 auto;
   padding: var(--space-2xl);
 }
 
-/* Back Button */
+/* ==================== Back Button ==================== */
 .back-button-container {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1.5rem;
 }
 
 .btn-back {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
+  gap: 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-forest-green);
   text-decoration: none;
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-white);
-  border: var(--border-thick);
-  border-bottom: var(--border-thick);
+  padding: 0.625rem 1rem;
+  background: var(--color-pale-mint);
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  box-sizing: border-box;
+  opacity: 0.7;
+  border-bottom: none;
+  transition: all 0.2s ease;
 }
 
 .btn-back:hover {
-  background-color: var(--color-radioactive-lime);
   color: var(--color-forest-green);
-  border-bottom: var(--border-thick);
+  opacity: 1;
+  transform: translateX(-2px);
+  border-bottom: none;
 }
 
-/* Profile Header */
+/* ==================== Profile Header ==================== */
 .profile-header {
   text-align: center;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: 2rem;
+  background: var(--color-light-matcha);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-header:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .profile-avatar {
   width: 120px;
   height: 120px;
-  font-size: var(--text-4xl);
-  margin: 0 auto var(--space-lg);
+  font-size: 3rem;
+  margin: 0 auto 1rem;
   background: var(--color-radioactive-lime);
-  border: var(--border-thick);
+  border: 3px solid var(--color-forest-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-forest-green);
-  font-family: var(--font-mono);
+  font-family: var(--font-heading);
   font-weight: 700;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
 }
 
 .profile-name {
   font-family: var(--font-heading);
-  font-size: var(--text-4xl);
+  font-size: 2.5rem;
   color: var(--color-forest-green);
-  margin-bottom: var(--space-sm);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .profile-email {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  color: var(--color-forest-green-medium);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
 }
 
 /* Messages */
@@ -93,98 +120,133 @@
   color: var(--color-forest-green);
 }
 
-/* Profile Content */
+/* ==================== Profile Content ==================== */
 .profile-content {
-  background: var(--color-light-matcha);
-  border: var(--border-thick);
-  padding: var(--space-2xl);
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-content:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .profile-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: 1.5rem;
 }
 
 .section-title {
   font-family: var(--font-heading);
-  font-size: var(--text-2xl);
+  font-size: 1.5rem;
   color: var(--color-forest-green);
+  font-weight: 600;
 }
 
-/* Profile View Mode */
+.section-subtitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ==================== Profile View Mode ==================== */
 .profile-fields {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-lg);
+  gap: 1rem;
 }
 
 .profile-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0.5rem;
 }
 
 .field-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--color-forest-green);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  opacity: 0.8;
 }
 
 .field-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  color: var(--color-forest-green-medium);
-  padding: var(--space-md);
-  background: var(--color-white);
-  border: var(--border-thick);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-forest-green);
+  padding: 1rem;
+  background: var(--color-pale-mint);
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
   min-height: 2.5rem;
   display: flex;
   align-items: center;
+  transition: all 0.2s ease;
 }
 
-/* Profile Edit Mode */
+.field-value:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-forest-green);
+  transform: translateX(2px);
+}
+
+.staff-info-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--color-pale-mint);
+}
+
+/* ==================== Profile Edit Mode ==================== */
 .profile-form {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-lg);
+  gap: 1rem;
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0.5rem;
 }
 
 .form-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--color-forest-green);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  opacity: 0.8;
 }
 
 .form-input,
 .form-textarea {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
   color: var(--color-forest-green);
-  padding: var(--space-md);
-  background: var(--color-white);
-  border: var(--border-thick);
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 2px solid var(--color-pale-mint);
+  border-radius: var(--radius-btn);
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .form-input:focus,
 .form-textarea:focus {
   border-color: var(--color-forest-green);
-  box-shadow: 0 0 0 2px var(--color-radioactive-lime);
+  box-shadow: 0 0 0 3px rgba(153, 255, 102, 0.2);
+  background: var(--color-pale-mint);
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: var(--color-forest-green);
 }
 
 .form-textarea {
@@ -194,65 +256,85 @@
 
 .form-actions {
   display: flex;
-  gap: var(--space-md);
+  gap: 1rem;
   justify-content: flex-end;
-  margin-top: var(--space-md);
+  margin-top: 1.5rem;
 }
 
-/* Buttons */
+/* ==================== Buttons ==================== */
 .btn-primary,
 .btn-secondary {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: var(--space-md) var(--space-lg);
-  border: var(--border-thick);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
   background: var(--color-radioactive-lime);
   color: var(--color-forest-green);
+  box-shadow: var(--shadow-card);
 }
 
 .btn-primary:hover {
   background: var(--color-forest-green);
-  color: var(--color-white);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
 }
 
 .btn-primary:disabled {
-  background: var(--color-forest-green-light);
-  color: var(--color-forest-green-medium);
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  background: var(--color-white);
+  background: white;
   color: var(--color-forest-green);
 }
 
 .btn-secondary:hover {
-  background: var(--color-forest-green-light);
+  background: var(--color-pale-mint);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
 }
 
-/* Responsive */
+/* ==================== Responsive Design ==================== */
 @media (max-width: 768px) {
   .profile-container {
-    padding: var(--space-lg);
+    padding: 1.5rem;
+  }
+
+  .profile-header {
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  .profile-name {
+    font-size: 2rem;
   }
 
   .profile-content {
-    padding: var(--space-lg);
+    padding: 1.5rem;
   }
 
   .profile-section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-md);
+    gap: 1rem;
   }
 
   .form-actions {
