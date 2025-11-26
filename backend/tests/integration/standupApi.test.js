@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
 import express from "express";
 import session from "express-session";
@@ -30,9 +30,18 @@ describe("Standup API", () => {
   let createdStandupId;
 
   beforeAll(async () => {
-    testUser = await prisma.user.findFirst();
-    testTeam = await prisma.team.findFirst();
-    testCourse = await prisma.course.findFirst();
+    // Find a team first, then find a user who is a member of that team
+    testTeam = await prisma.team.findFirst({
+      include: { members: true, course: true }
+    });
+    testCourse = testTeam.course;
+
+    // Get the first team member's user
+    const teamMember = await prisma.teamMember.findFirst({
+      where: { teamUuid: testTeam.teamUuid, leftAt: null },
+      include: { user: true }
+    });
+    testUser = teamMember.user;
   });
 
   afterAll(async () => {
@@ -176,8 +185,20 @@ describe("Standup API", () => {
     });
 
     it("should return 403 if user is not a team member", async () => {
+      // Get all team member UUIDs for the test team
+      const teamMemberUuids = testTeam.members.map(m => m.userUuid);
+
+      // Find a user who is NOT in the team AND NOT staff for this course
       const otherUser = await prisma.user.findFirst({
-        where: { userUuid: { not: testUser.userUuid } }
+        where: {
+          userUuid: { notIn: teamMemberUuids },
+          courseEnrollments: {
+            none: {
+              courseUuid: testCourse.courseUuid,
+              role: { role: { in: ["Professor", "TA"] } }
+            }
+          }
+        }
       });
 
       const agent = request.agent(app);
