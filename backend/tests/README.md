@@ -10,9 +10,8 @@ tests/
 │   ├── services/
 │   └── repositories/
 └── integration/       # Full API tests (request → response)
-    ├── auth.test.js
-    ├── attendance.test.js
-    └── standup.test.js
+    ├── attendanceApi.test.js
+    └── standupApi.test.js
 ```
 
 ## Pattern
@@ -20,25 +19,43 @@ tests/
 **Unit test:**
 ```javascript
 import { yourService } from '../../../src/services/yourService.js';
-jest.mock('../../../src/repositories/yourRepository.js');
 
-test('does something', async () => {
-  // Mock and test
+describe('yourService', () => {
+  it('does something', async () => {
+    // Example: mock a function
+    yourRepo.someFunction.mockResolvedValue('mocked result');
+
+    const result = await yourService();
+    expect(result).toBe('expected value');
+  });
 });
 ```
 
 **Integration test:**
 ```javascript
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
-import app from '../../src/server.js';
+import express from "express";
+import session from "express-session";
+import { getPrisma } from "../../src/utils/db.js";
 
-test('POST /api/stuff', async () => {
-  const response = await request(app)
-    .post('/api/stuff')
-    .send({ data: 'test' });
-  
-  expect(response.status).toBe(201);
+const app = express();
+const prisma = getPrisma();
+
+describe('POST /api/stuff', () => {
+  beforeAll(() => {
+    // Set up test
+  });
+
+  it('should create a new resource', async () => {
+    const response = await request(app)
+      .post('/api/stuff')
+      .send({ data: 'test' });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('id');
+  });
 });
 ```
 
-Run: `npm test`
+Run `npm run test` to check if all test cases pass
