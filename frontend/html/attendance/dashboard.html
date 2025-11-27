@@ -9,7 +9,7 @@
       <button id="next-month">▶</button>
     </div>
 
-    <div class="calendar-controls">
+    <div class="calendar-today-btn">
       <button id="today-btn">Today</button>
     </div>
 
@@ -23,6 +23,7 @@
       <h2>Create Meeting</h2>
       <form id="meeting-form">
 
+        <!-- Meeting attributes -->
         <label>Meeting Title</label>
         <input type="text" id="meeting-title" required />
 
@@ -40,6 +41,7 @@
           <option>Team Meeting</option>
         </select>
 
+        <!-- placeholder until integrated with backend/database -->
         <label>Participants</label>
         <div id="meeting-participants" class="participants-container">
           <label class="participant">
@@ -67,6 +69,7 @@
         <label>Description</label>
         <textarea id="meeting-description"></textarea>
 
+        <!-- set up meeting recurrence -->
         <div class="recurring-card">
           <div class="recurring-header">
             <div class="recurring-copy">
@@ -94,13 +97,14 @@
     </div>
   </div>
 
-  <!-- Meeting Details Modal -->
+  <!-- Meeting Details Modal, displayed after clicking on an existing meeting in the calendar -->
   <div id="meeting-content-modal-wrapper" class="modal hidden">
     <div id="meeting-content-modal" class="modal-content attendance-modal">
       <span id="close-meeting-content" class="close">&times;</span>
 
       <div class="attendance-container">
-        <!-- Left: Meeting metadata -->
+        
+        <!-- Meeting metadata -->
         <div class="meeting-metadata">
           <h2 id="attendance-meeting-title">Meeting Title</h2>
           <p><strong>Date:</strong> <span id="attendance-meeting-date"></span></p>
@@ -115,14 +119,17 @@
           </div>
         </div>
 
-        <!-- Right: Attendance options -->
+        <!-- Attendance options -->
         <div class="attendance-options">
           <h3>Submit Attendance</h3>
+
+          <!-- placeholder until integrated with backend/database -->
           <div class="qr-code-placeholder">
             <p>[QR CODE]</p>
           </div>
           <p>Or enter passcode:</p>
           <input type="text" id="attendance-passcode" placeholder="Enter passcode" />
+
           <button id="submit-attendance">Submit</button>
         </div>
       </div>
