@@ -490,19 +490,42 @@ async function getParticipantListByParams(req, res) {
         userUUID,
         courseUUID
     );
+    const userContext = await userContextRepository.getUserContext(userUUID)
     const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
+    const course = await attendanceRepository.getCourseByUUID(courseUUID);
     
+    if (meetingUUID && !meeting) {
+        return res.status(404).json({
+            success: false,
+            error: "Meeting not found"
+        });
+    }
+
+    if (courseUUID && !course) {
+        return res.status(404).json({
+            success: false,
+            error: "Course not found"
+        });
+    }
+
+    if (courseUUID && course.courseUUID !== userContext.enrollments.course.courseUUID) {
+        return res.status(403).json({
+            success: false,
+            error: "Not authorized to view participants for this course"
+        });
+    }
+
     if (meetingUUID && meeting.creatorUUID != userUUID && !isStaff) {
         return res.status(403).json({
             success: false,
             error: "Not authorized to view participants for this meeting"
         });
     }
-    
-    if (meetingUUID && !meeting) {
-        return res.status(404).json({
+
+    if (!meetingUUID && !courseUUID) {
+        return res.status(400).json({
             success: false,
-            error: "Meeting not found"
+            error: "At least one of meetingUUID or courseUUID must be provided"
         });
     }
 
@@ -541,8 +564,8 @@ async function createMeetingCode(req, res) {
 
     // TODO(bukhradze): replace hostname
     const HOSTNAME = "conductor-tool.ucsd.edu";
-    let aWholeAssURL = `https://${HOSTNAME}/attendance/record/` + meetingCode;
-    let QRCodeURL = `https://api.qrserver.com/v1/create-qr-code/?data=${aWholeAssURL}&size=200x200`;
+    let redirectURL = `https://${HOSTNAME}/attendance/record/?meeting=${meetingUUID}&code=${meetingCode}`;
+    let QRCodeURL = `https://api.qrserver.com/v1/create-qr-code/?data=${redirectURL}&size=200x200`;
 
     const validStartDatetime = new Date(`${meeting.meetingDate}T${meeting.meetingStartTime}`);
     const validEndDatetime = new Date(`${meeting.meetingDate}T${meeting.meetingEndTime}`);
@@ -561,11 +584,62 @@ async function createMeetingCode(req, res) {
 }
 
 async function getMeetingCode(req, res) {
-    // TODO(bukhradze): implement lol
+    const meetingUUID = req.params.id;
+
+    const meetingCode = await attendanceRepository.getMeetingCodeByMeetingUUID(meetingUUID);
+    if (!meetingCode) {
+        return res.status(404).json({
+            success: false,
+            error: "Meeting code not found"
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: meetingCode
+    });
 }
 
 async function recordAttendanceViaCode(req, res) {
-    // TODO(bukhradze): implement lol
+    const meetingUUID = req.params.meeting;
+    const meetingCode = req.params.code
+    const userUUID = req.session.user.id;
+
+    const participant = await attendanceRepository.getParticipantByUserAndMeetingUUID(userUUID, meetingUUID);
+    if (!participant) {
+        return res.status(403).json({
+            success: false,
+            error: "User is not a participant of this meeting"
+        });
+    }
+
+    const meetingCodeData = await attendanceRepository.getMeetingCodeByMeetingUUIDAndCode(meetingUUID, meetingCode);
+    if (!meetingCodeData) {
+        return res.status(404).json({
+            success: false,
+            error: "Meeting code not found"
+        });
+    }
+
+    const now = new Date();
+    if (now < meetingCodeData.validStartDatetime || now > meetingCodeData.validEndDatetime) {
+        return res.status(403).json({
+            success: false,
+            error: "Meeting code is not valid at this time"
+        });
+    }
+
+    const updatedParticipant = await attendanceRepository.updateParticipant(
+        meetingUUID,
+        userUUID,
+        true,
+        now
+    );
+
+    return res.status(200).json({
+        success: true,
+        data: attendanceDTO.toParticipantDTO(updatedParticipant)
+    });
 }
 
 export {
@@ -578,5 +652,8 @@ export {
     createParticipants,
     updateParticipant,
     deleteParticipant,
-    getParticipantListByParams
+    getParticipantListByParams,
+    createMeetingCode,
+    getMeetingCode,
+    recordAttendanceViaCode
 }
