@@ -1,6 +1,6 @@
 /**
- * @module authentication/api
  * API endpoints for authentication and user session management
+ * @module authentication/api
  */
 import express from "express";
 import * as authService from "../../services/authService.js";
@@ -41,7 +41,6 @@ router.post("/verify", async (req, res) => {
   try {
     return await authService.verifyCode(req, res);
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       success: false,
       error: error.message

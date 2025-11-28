@@ -1,4 +1,5 @@
 /** @module authentication/frontend */
+import { handleVerification } from "../../utils/authVerify.js";
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -23,10 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       handleVerification();
     });
   }
-  const codeInput = document.getElementById("verification-code");
-  codeInput.addEventListener("input", () => {
-    codeInput.setCustomValidity("");
-  });
+
   // ==================== REQUEST ACCESS PAGE ====================
   // USER EMAIL DISPLAY
   // Load user email on any page that needs it
@@ -64,53 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleGoogleLogin() {
   // Redirect to Google OAuth - backend handles user creation/login
   window.location.href = "/google/auth";
-
-  // TODO: Bring in Backend functionality
-}
-
-// ==================== VERIFICATION FUNCTIONS ====================
-
-/**
- * Handles verification form submission by validating the user's code
- * and checking if the authenticated email belongs to UCSD.
- *
- * Retrieves the user session from `v1/api/auth/session`, confirms the email domain,
- * and sends the entered verification code to `v1/api/auth/verify`. Redirects to the
- * dashboard upon success or shows an alert on failure.
- */
-async function handleVerification() {
-  const codeInput = document.getElementById("verification-code");
-  const code = codeInput.value.trim();
-
-  // Validate input
-  if (!code) {
-    alert("Please enter a verification code");
-    return;
-  }
-
-  try {
-    // Call backend to verify code and create user
-    const response = await fetch("/v1/api/auth/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ code })
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      // Verification successful, redirect to dashboard
-      window.location.href = "/dashboard";
-    } else {
-      // Verification failed
-      codeInput.setCustomValidity("Invalid verification code. Please try again.");
-      return;
-    }
-
-  } catch {
-    alert("An error occurred during verification. Please try again.");
-  }
 }
 
 // ==================== REQUEST ACCESS FUNCTIONS ====================

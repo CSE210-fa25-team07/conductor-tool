@@ -1,6 +1,7 @@
 /**
  * @fileoverview Component Loader
  * Loads and renders HTML templates with Mustache-like syntax
+ * @module utils/componentLoader
  */
 
 const templateCache = new Map();

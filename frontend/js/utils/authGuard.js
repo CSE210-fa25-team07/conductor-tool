@@ -1,6 +1,7 @@
 /**
  * Frontend authentication guard
  * Ensures user is redirected to login if session is invalid
+ * @module utils/authGuard
  */
 
 /**
