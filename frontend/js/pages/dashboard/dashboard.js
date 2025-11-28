@@ -140,11 +140,77 @@ function createEmptyStateCard() {
   `;
 
   // TODO: Add click handler (Depending on either student or professor)
-  // article.addEventListener("click", () => {
-  //   handleAddCourse();
-  // });
+  article.addEventListener("click", () => {
+    article.replaceWith(handleAddCourse());
+  });
 
   return article;
+}
+
+/**
+ * Handle adding a new course
+ * @returns {HTMLElement} The updated card element with the form
+ */
+function handleAddCourse() {
+  const card = document.createElement("article");
+  card.className = "course-card empty-state";
+
+  card.innerHTML = `
+    <form class="add-course-inline-form">
+      <input type="text" id="verification-code" placeholder="Course Code" required />
+      <button type="submit">Add</button>
+    </form>
+  `;
+
+  const form = card.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleVerification();
+  });
+  return card;
+}
+
+/**
+ * Handles verification form submission by validating the user's code
+ * and adding the course to the user's dashboard.
+ */
+async function handleVerification() {
+  const codeInput = document.getElementById("verification-code");
+  const code = codeInput.value.trim();
+
+  codeInput.addEventListener("input", () => {
+    codeInput.setCustomValidity("");
+  });
+
+  // Validate input
+  if (!code) {
+    alert("Please enter a verification code");
+    return;
+  }
+
+  try {
+    // Call backend to verify code and create user
+    const response = await fetch("/v1/api/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ code })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      // Verification successful, redirect to dashboard
+      window.location.href = "/dashboard";
+    } else {
+      // Verification failed
+      codeInput.setCustomValidity("Invalid verification code or already enrolled in this course.");
+      return;
+    }
+
+  } catch {
+    alert("An error occurred during verification. Please try again.");
+  }
 }
 
 /**

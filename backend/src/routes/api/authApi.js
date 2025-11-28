@@ -41,6 +41,7 @@ router.post("/verify", async (req, res) => {
   try {
     return await authService.verifyCode(req, res);
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       success: false,
       error: error.message
