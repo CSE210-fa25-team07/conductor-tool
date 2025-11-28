@@ -1,6 +1,7 @@
 /**
  * @fileoverview Generic Template Loader
  * Loads and caches HTML templates for any feature
+ * @module utils/templateLoader
  */
 
 const templateCache = new Map();
