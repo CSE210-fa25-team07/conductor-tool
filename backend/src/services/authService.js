@@ -49,29 +49,37 @@ async function verifyCode(req, res) {
     });
   }
 
-  // Create user in database
-  const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
-  const firstName = profile.given_name || nameParts[0] || "Unknown";
-  const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
+  // Create user in database if not exists
+  if (!req.session.user.id) {
+    const nameParts = profile.name ? profile.name.split(" ") : ["", ""];
+    const firstName = profile.given_name || nameParts[0] || "Unknown";
+    const lastName = profile.family_name || nameParts.slice(1).join(" ") || "Unknown";
 
-  const newUser = await userService.addUser({
-    firstName,
-    lastName,
-    email: profile.email
-  });
-
-  req.session.user = {id: newUser.userUuid, email: newUser.email, name: profile.name};
+    const newUser = await userService.addUser({
+      firstName,
+      lastName,
+      email: profile.email
+    });
+    req.session.user = {id: newUser.userUuid, email: newUser.email, name: profile.name};
+  }
 
   // Enroll user to course
-  await courseRepository.enrollUserToCourse(
-    newUser.userUuid,
+  const course = await courseRepository.enrollUserToCourse(
+    req.session.user.id,
     courseInfo.courseUuid,
     courseInfo.roleUuid
   );
-  res.status(200).json({
+
+  if (!course) {
+    return res.status(400).json({
+      success: false,
+      error: "User is already enrolled in this course"
+    });
+  }
+
+  return res.status(200).json({
     success: true,
-    message: "User verified and created successfully",
-    user: newUser
+    message: "User verified and enrolled successfully"
   });
 }
 
