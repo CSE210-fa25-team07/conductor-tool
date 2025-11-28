@@ -44,19 +44,6 @@ async function getUserByEmail(email) {
   return await userRepository.getUserByEmail(normalizedEmail);
 }
 
-/**
- * Get user staff status by UUID
- * @param {string} userUuid - User UUID to search for
- * @returns {Promise<Object>} Object containing isProf, isSystemAdmin, and isLeadAdmin flags
- * @status IN USE
- */
-async function getUserStatusByUuid(userUuid) {
-  if (!userUuid || typeof userUuid !== "string") {
-    throw new Error("User UUID is required");
-  }
-
-  return await userRepository.getUserStatusByUuid(userUuid);
-}
 
 /**
  * Get user photo URL by UUID
@@ -76,6 +63,5 @@ async function getUserPhotoUrl(userUuid) {
 export {
   addUser,
   getUserByEmail,
-  getUserStatusByUuid,
   getUserPhotoUrl
 };

@@ -46,6 +46,10 @@ export function isSystemAdmin() {
   return userContext?.user?.isSystemAdmin || false;
 }
 
+export function isLeadAdmin() {
+  return userContext?.user?.isLeadAdmin || false;
+}
+
 export function isProfessorOrTA(courseId = null) {
   const targetCourseId = courseId || userContext?.activeCourse?.courseUuid;
 
