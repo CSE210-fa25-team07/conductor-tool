@@ -62,7 +62,7 @@ app.use("/profile", checkUserFromSession, profileRoutes);
 
 app.use("/google", googleRoutes);
 
-app.use("/courses/:courseId", checkUserFromSession, courseRoutes);
+app.use("/courses", checkUserFromSession, courseRoutes);
 
 app.use("/v1/api/", apiRoutes);
 

@@ -1,6 +1,7 @@
 /** @module dashboard/frontend */
 import { initGlobalNavigation } from "../../components/navigation.js";
 import { handleVerification } from "../../utils/authVerify.js";
+import { loadUserContext, isProf } from "../../utils/userContext.js";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
@@ -140,8 +141,16 @@ function createEmptyStateCard() {
     </section>
   `;
 
-  article.addEventListener("click", () => {
-    article.replaceWith(handleAddCourse());
+  article.addEventListener("click", async () => {
+    await loadUserContext();
+
+    // Enroll to new course
+    if (!isProf()) {
+      article.replaceWith(handleAddCourse());
+    } else {
+      // TODO: Create course for professors is not implemented yet
+      window.location.href = "/courses/create"; // Placeholder redirect
+    }
   });
 
   return article;
