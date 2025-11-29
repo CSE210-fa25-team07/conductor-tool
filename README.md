@@ -68,6 +68,7 @@ function functionName(param1, param2) {
   // function body
 }
 ``` 
+- To test your code, run `npm run test`
 
 ## Running the Web App (Local)
 > [!NOTE]
