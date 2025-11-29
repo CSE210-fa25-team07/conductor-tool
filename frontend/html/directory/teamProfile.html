@@ -1,0 +1,46 @@
+<template>
+  <link rel="stylesheet" href="../../css/pages/directory/teamProfile.css">
+
+  <div class="team-profile-container">
+    <!-- Back Button -->
+    <div class="back-to-teams-container">
+      <button id="back-to-teams" class="back-to-teams-btn">← Back to Teams</button>
+    </div>
+
+    <!-- Team Header -->
+    <header class="team-header">
+      <h1 class="team-name" id="team-name">Loading team...</h1>
+
+      <div class="team-course" id="team-course"></div>
+
+      <div class="team-info-row">
+        <div id="team-ta-info"></div>
+        <div id="team-links"></div>
+      </div>
+
+      <!-- Team Stats (moved inside header) -->
+      <div class="team-stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="team-member-count">0</div>
+          <div class="stat-label">Team Members</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-number" id="team-standup-count">0</div>
+          <div class="stat-label">Standups Submitted</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Team Members -->
+    <section class="team-members-section">
+      <h2 class="section-title">Team Members</h2>
+
+      <div id="team-members-grid" class="members-grid">
+        <div class="loading-message">
+          <p>Loading members...</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>

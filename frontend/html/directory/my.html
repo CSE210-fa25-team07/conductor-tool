@@ -1,45 +1,46 @@
 <template>
-  <div style="max-width: 1200px;">
-    <header style="margin-bottom: var(--space-xl);">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-sm);
-      ">My Directory</h1>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-      ">Your personal directory information and settings</p>
-    </header>
+  <link rel="stylesheet" href="../../css/pages/directory/my.css">
 
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      text-align: center;
-    ">
-      <h2 style="
-        font-size: var(--text-3xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">👤</h2>
-      <h3 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-md);
-      ">My Profile</h3>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-        line-height: 1.6;
-      ">
-        This view will display your directory profile,<br>
-        including your information and preferences.
-      </p>
+  <div class="my-profile-container">
+    <!-- Back to People Button -->
+    <div id="back-to-people-container" class="back-to-people-container">
+      <button id="back-to-people" class="back-to-people-btn">← Back to People</button>
+    </div>
+
+    <!-- User Profile Card -->
+    <section class="user-profile-card">
+      <div class="user-profile-header">
+        <!-- Avatar -->
+        <div id="user-avatar" class="user-profile-avatar">?</div>
+
+        <!-- User Info -->
+        <div class="user-info">
+          <h1 id="user-name" class="user-profile-name">Loading...</h1>
+          <div id="user-email" class="user-email"></div>
+          <div id="user-pronouns" class="user-pronouns"></div>
+          <div id="user-bio" class="user-bio"></div>
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div id="user-courses-list"></div>
     </section>
+
+    <!-- Contact & Links -->
+    <section class="contact-section">
+      <h2 class="section-title">Contact Information</h2>
+      <div id="user-contact-info" class="contact-info"></div>
+    </section>
+
+    <!-- Staff Information (if applicable) -->
+    <section id="staff-info-section" class="staff-info-section" style="display: none;">
+      <div class="staff-section">
+        <h2 class="section-title">Staff Information</h2>
+        <div id="staff-details" class="staff-details"></div>
+      </div>
+    </section>
+
+    <!-- Teams -->
+    <div id="user-teams-list"></div>
   </div>
 </template>

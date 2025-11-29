@@ -1,45 +1,69 @@
 <template>
-  <div style="max-width: 1200px;">
-    <header style="margin-bottom: var(--space-xl);">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-sm);
-      ">Directory Dashboard</h1>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-      ">Overview of course directory and organization</p>
+  <link rel="stylesheet" href="../../css/pages/directory/dashboard.css">
+
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Directory Dashboard</h1>
+      <p class="dashboard-subtitle">Course overview and quick access to directory features</p>
     </header>
 
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      text-align: center;
-    ">
-      <h2 style="
-        font-size: var(--text-3xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">📋</h2>
-      <h3 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-md);
-      ">Directory Dashboard</h3>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-        line-height: 1.6;
-      ">
-        This view will display an overview of the course directory,<br>
-        including quick stats and recent updates.
-      </p>
+    <!-- Course Overview Section -->
+    <section id="course-overview" class="course-overview-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+        <h2 class="section-title" style="margin: 0;">Course Information</h2>
+        <button id="edit-course-links-btn" class="btn-primary" style="display: none;">Edit Links</button>
+      </div>
+
+      <!-- View Mode -->
+      <div id="course-info-view-mode">
+        <div id="course-info-content">
+          <p class="loading-text">Loading course information...</p>
+        </div>
+
+        <!-- Stats Grid (inside course info card) -->
+        <div class="stats-grid-inline">
+          <!-- Total Enrollments -->
+          <article class="stat-card-inline">
+            <div class="stat-number" id="total-enrollments">0</div>
+            <div class="stat-label">Total Enrollments</div>
+          </article>
+
+          <!-- Total Staff -->
+          <article class="stat-card-inline">
+            <div class="stat-number" id="total-staff">0</div>
+            <div class="stat-label">Total Staff</div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div id="course-info-edit-mode" style="display: none;">
+        <form id="course-links-form" style="background: white; border: var(--border-thick); padding: var(--space-xl);">
+          <div style="margin-bottom: var(--space-lg);">
+            <label for="edit-syllabusUrl" style="font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green); display: block; margin-bottom: var(--space-sm);">Syllabus URL</label>
+            <input type="url" id="edit-syllabusUrl" name="syllabusUrl" placeholder="https://example.com/syllabus.pdf" style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); background: var(--color-light-matcha);">
+          </div>
+
+          <div style="margin-bottom: var(--space-lg);">
+            <label for="edit-canvasUrl" style="font-family: var(--font-mono); font-weight: 600; color: var(--color-forest-green); display: block; margin-bottom: var(--space-sm);">Canvas URL</label>
+            <input type="url" id="edit-canvasUrl" name="canvasUrl" placeholder="https://canvas.ucsd.edu/courses/12345" style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); background: var(--color-light-matcha);">
+          </div>
+
+          <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+            <button type="button" id="cancel-edit-btn" class="btn-secondary">Cancel</button>
+            <button type="submit" id="save-links-btn" class="btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Course Staff Section -->
+    <section class="staff-section">
+      <h2 class="section-title">Course Staff</h2>
+      <div id="staff-list">
+        <p class="loading-text">Loading staff...</p>
+      </div>
     </section>
   </div>
 </template>
