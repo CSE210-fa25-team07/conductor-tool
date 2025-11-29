@@ -160,7 +160,7 @@ export function createUserDropdown(userType = "student") {
 
   // Add Requests option for admin and lead-admin users
   if (userType === "admin" || userType === "lead-admin") {
-    menuItems.push({ text: "Requests", href: "/requests" });
+    menuItems.push({ text: "Administration", href: "/admin" });
   }
 
   // Add Log Out for all users
