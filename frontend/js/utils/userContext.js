@@ -42,6 +42,10 @@ export function isStaff() {
   return userContext?.user?.isStaff || false;
 }
 
+export function isProf() {
+  return userContext?.user?.isProf || false;
+}
+
 export function isSystemAdmin() {
   return userContext?.user?.isSystemAdmin || false;
 }

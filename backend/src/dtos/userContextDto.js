@@ -8,6 +8,7 @@ function toUserDto(user, sessionName) {
     name: sessionName || `${user.firstName} ${user.lastName}`,
     email: user.email,
     isStaff: !!user.staff,
+    isProf: user.staff?.isProf || false,
     isSystemAdmin: user.staff?.isSystemAdmin || false,
     isLeadAdmin: user.staff?.isLeadAdmin || false
   };

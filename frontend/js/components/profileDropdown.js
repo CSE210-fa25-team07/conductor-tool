@@ -4,7 +4,7 @@
  * Used in dashboard, class features, and other pages
  */
 
-import { loadUserContext, isSystemAdmin, isLeadAdmin, isStaff } from "../utils/userContext.js";
+import { loadUserContext, isSystemAdmin, isLeadAdmin, isProf } from "../utils/userContext.js";
 
 /**
  * Initialize the profile dropdown component
@@ -38,7 +38,7 @@ export async function updateProfileFromAPI() {
             userType = "admin";
           } else if (isLeadAdmin()) {
             userType = "lead-admin";
-          } else if (isStaff()) {
+          } else if (isProf()) {
             userType = "professor";
           }
 
