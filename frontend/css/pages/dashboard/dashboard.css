@@ -3,6 +3,11 @@
  * Main landing page with course cards
  */
 
+.add-course-inline-form input {
+  margin-bottom: 10px;
+  display: block;
+}
+
 .dashboard-header {
   margin-bottom: var(--space-2xl);
   text-align: left;
