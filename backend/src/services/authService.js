@@ -117,6 +117,14 @@ async function enrollUserByCode(req, res) {
 async function requestAccess(req, res) {
   const { firstName, lastName, email, institution, verificationCode } = req.body;
 
+  const user = await userRepository.getUserByEmail(email);
+  if (user) {
+    return res.status(400).json({
+      success: false,
+      error: "User with this email already exists"
+    });
+  }
+  
   const response = await formRequestRepository.createFormRequest(firstName, lastName, email, institution, verificationCode);
 
   if (!response) {
