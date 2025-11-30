@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS course_enrollment (
 CREATE TABLE IF NOT EXISTS verification_codes (
     course_uuid UUID NOT NULL REFERENCES courses(course_uuid) ON DELETE CASCADE,
     role_uuid UUID NOT NULL REFERENCES role(role_uuid) ON DELETE CASCADE,
-    veri_code VARCHAR(100) NOT NULL,
+    veri_code VARCHAR(100) NOT NULL UNIQUE,
     is_active BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (course_uuid, role_uuid)
 );

@@ -1,0 +1,25 @@
+<template>
+  <div class="feed-item {{blockerClass}}" data-standup-id="{{standupUuid}}" data-user-id="{{userUuid}}" data-user-name="{{userName}}">
+    <div class="feed-item-left">
+      <div class="mood-indicator mood-{{moodScore}}">
+        <svg class="mood-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path class="mood-mouth"/>
+          <circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="mood-score">{{moodScore}}</span>
+      </div>
+      <div class="feed-info">
+        <div class="feed-user">{{userName}}</div>
+        <div class="feed-meta">{{teamName}}{{dateStr}} {{timeStr}}</div>
+      </div>
+    </div>
+    <div class="feed-item-right">
+      <div class="feed-preview">{{donePreview}}</div>
+      {{#hasBlocker}}
+      <span class="feed-blocker-badge">Blocker</span>
+      {{/hasBlocker}}
+    </div>
+  </div>
+</template>

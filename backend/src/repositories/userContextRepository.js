@@ -90,6 +90,40 @@ async function checkCourseStaffRole(userUuid, courseUuid) {
   return !!enrollment;
 }
 
+/**
+ * Check if two users share at least one team
+ * @param {string} userUuid1
+ * @param {string} userUuid2
+ * @returns {Promise<boolean>}
+ */
+async function checkSameTeamMembership(userUuid1, userUuid2) {
+  // Get all active teams for user1
+  const user1Teams = await prisma.teamMember.findMany({
+    where: {
+      userUuid: userUuid1,
+      leftAt: null
+    },
+    select: { teamUuid: true }
+  });
+
+  const user1TeamUuids = user1Teams.map(t => t.teamUuid);
+
+  if (user1TeamUuids.length === 0) {
+    return false;
+  }
+
+  // Check if user2 is in any of those teams
+  const sharedMembership = await prisma.teamMember.findFirst({
+    where: {
+      userUuid: userUuid2,
+      teamUuid: { in: user1TeamUuids },
+      leftAt: null
+    }
+  });
+
+  return !!sharedMembership;
+}
+
 async function getCourseOverview(courseUuid, filters = {}) {
   const course = await prisma.course.findUnique({
     where: { courseUuid },
@@ -156,5 +190,6 @@ export {
   checkTeamMembership,
   checkCourseStaffAccess,
   checkCourseStaffRole,
+  checkSameTeamMembership,
   getCourseOverview
 };

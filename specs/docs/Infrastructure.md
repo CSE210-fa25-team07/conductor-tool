@@ -30,6 +30,26 @@ We use [ESLint](https://eslint.org/) to enforce a consistent JavaScript style an
 - Runs automatically in CI to ensure commits follow style guidelines.
 - Developers can run `npm run lint` locally before committing changes.
 
+## Testing — Vitest
+
+We use [Vitest](https://vitest.dev/) as our test runner to validate JavaScript code.
+
+### Why Vitest
+- Provides **fast and reliable unit and integration testing**.
+- Integrates seamlessly with modern front-end and back-end projects.
+- Supports features like:
+  - Mocking modules and functions
+  - Asynchronous testing for API/database interactions
+
+### Integration Testing with Supertest
+- For backend API tests, we use [Supertest](https://www.npmjs.com/package/supertest) alongside Vitest.
+- Supertest allows tests to make **HTTP requests** directly to our server without needing it to run on a network port.
+
+### How It’s Configured
+- The configuration file (`vitest.config.js`) sets test environment, globals, and coverage options.
+- Tests are automatically run in CI to prevent regressions.
+- Developers can run `npm run test` locally to execute all tests.
+
 ## Documentation — JSDoc
 
 We use [JSDoc](https://jsdoc.app/) to automatically generate HTML documentation from inline comments in our JavaScript code.
@@ -132,7 +152,6 @@ Branch protection rules are enabled on the main branch to enforce:
 ## Future Enhancements
 
 We plan to expand this infrastructure to include:
-- Unit Testing, possibly *Vitest*
 - E2E testing, possibly *Puppeteer*
 
 These additions will further strengthen our code quality and transparency.

@@ -6,6 +6,8 @@
 
 import { getPrisma } from "../utils/db.js";
 
+const prisma = getPrisma();
+
 /**
  * Get all courses currently enrolled by a user
  * @param {string} userUuid - The UUID of the user
@@ -13,8 +15,6 @@ import { getPrisma } from "../utils/db.js";
  * @throws {Error} If database query fails
  */
 async function getCoursesByUserId(userUuid) {
-  const prisma = getPrisma();
-
   const enrollments = await prisma.courseEnrollment.findMany({
     where: {
       userUuid: userUuid,
@@ -37,8 +37,6 @@ async function getCoursesByUserId(userUuid) {
  * @throws {Error} If database query fails
  */
 async function getCoursesWithDetailsByUserId(userUuid) {
-  const prisma = getPrisma();
-
   const enrollments = await prisma.courseEnrollment.findMany({
     where: {
       userUuid: userUuid,
@@ -73,4 +71,32 @@ async function getCoursesWithDetailsByUserId(userUuid) {
   }));
 }
 
-export { getCoursesByUserId, getCoursesWithDetailsByUserId };
+/**
+ * Enroll a user to a course with a specific role if not already enrolled
+ * @param {string} userUuid
+ * @param {string} courseUuid
+ * @param {string} roleUuid
+ * @returns {Promise<Object|null>} The created enrollment or null if already enrolled
+ */
+async function enrollUserToCourse(userUuid, courseUuid, roleUuid) {
+  const exists = await prisma.courseEnrollment.findFirst({
+    where: {
+      userUuid: userUuid,
+      courseUuid: courseUuid
+    }
+  });
+
+  if (exists) {
+    return null;
+  }
+
+  return await prisma.courseEnrollment.create({
+    data: {
+      userUuid: userUuid,
+      roleUuid: roleUuid,
+      courseUuid: courseUuid,
+      enrollmentStatus: "active"
+    }
+  });
+}
+export { getCoursesByUserId, getCoursesWithDetailsByUserId, enrollUserToCourse };

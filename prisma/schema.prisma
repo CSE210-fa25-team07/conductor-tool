@@ -105,7 +105,7 @@ model CourseEnrollment {
 model VerificationCode {
   courseUuid String   @map("course_uuid") @db.Uuid
   roleUuid   String   @map("role_uuid") @db.Uuid
-  veriCode   String   @map("veri_code") @db.VarChar(100)
+  veriCode   String   @unique @map("veri_code") @db.VarChar(100)
   isActive   Boolean? @default(true) @map("is_active")
   course     Course   @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
   role       Role     @relation(fields: [roleUuid], references: [roleUuid], onDelete: Cascade, onUpdate: NoAction)
