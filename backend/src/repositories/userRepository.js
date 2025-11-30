@@ -106,9 +106,9 @@ async function deleteUserByUuid(userUuid) {
   // console.log("Professor enrollments:", professorEnrollments);
 
   const coursesToDelete = professorEnrollments.map(e => e.courseUuid);
-  
+
   // console.log("Courses to delete:", coursesToDelete);
-  
+
   // Use transaction to delete courses and user atomically
   const result = await prisma.$transaction(async (tx) => {
     // Delete courses where user is a professor
