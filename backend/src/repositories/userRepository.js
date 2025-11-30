@@ -3,6 +3,7 @@
  *
  * Handles data persistence for users in a JSON file.
  * Provides CRUD operations for user management.
+ * @module user/repository
  */
 
 import { getPrisma } from "../utils/db.js";

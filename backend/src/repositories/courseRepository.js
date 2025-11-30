@@ -1,7 +1,7 @@
 /**
  * Course Repository
- *
  * Handles data operations for course enrollments.
+ * @module course/repository
  */
 
 import { getPrisma } from "../utils/db.js";
