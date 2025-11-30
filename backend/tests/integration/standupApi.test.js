@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
 import express from "express";
 import session from "express-session";
@@ -30,9 +30,18 @@ describe("Standup API", () => {
   let createdStandupId;
 
   beforeAll(async () => {
-    testUser = await prisma.user.findFirst();
-    testTeam = await prisma.team.findFirst();
-    testCourse = await prisma.course.findFirst();
+    // Find a team first, then find a user who is a member of that team
+    testTeam = await prisma.team.findFirst({
+      include: { members: true, course: true }
+    });
+    testCourse = testTeam.course;
+
+    // Get the first team member's user
+    const teamMember = await prisma.teamMember.findFirst({
+      where: { teamUuid: testTeam.teamUuid, leftAt: null },
+      include: { user: true }
+    });
+    testUser = teamMember.user;
   });
 
   afterAll(async () => {
@@ -176,8 +185,20 @@ describe("Standup API", () => {
     });
 
     it("should return 403 if user is not a team member", async () => {
+      // Get all team member UUIDs for the test team
+      const teamMemberUuids = testTeam.members.map(m => m.userUuid);
+
+      // Find a user who is NOT in the team AND NOT staff for this course
       const otherUser = await prisma.user.findFirst({
-        where: { userUuid: { not: testUser.userUuid } }
+        where: {
+          userUuid: { notIn: teamMemberUuids },
+          courseEnrollments: {
+            none: {
+              courseUuid: testCourse.courseUuid,
+              role: { role: { in: ["Professor", "TA"] } }
+            }
+          }
+        }
       });
 
       const agent = request.agent(app);
@@ -295,9 +316,7 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("course");
-      expect(response.body.data).toHaveProperty("teams");
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
 
     it("should return course overview for Professor", async () => {
@@ -318,12 +337,10 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("course");
-      expect(response.body.data).toHaveProperty("teams");
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
 
-    it("should include team details with latest standups", async () => {
+    it("should include standup details", async () => {
       const taUser = await prisma.user.findFirst({
         where: { email: "ta_alice@ucsd.edu" }
       });
@@ -342,12 +359,12 @@ describe("Standup API", () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
 
-      if (response.body.data.teams.length > 0) {
-        const team = response.body.data.teams[0];
-        expect(team).toHaveProperty("teamUuid");
-        expect(team).toHaveProperty("teamName");
-        expect(team).toHaveProperty("memberCount");
-        expect(team).toHaveProperty("latestStandup");
+      if (response.body.data.length > 0) {
+        const standup = response.body.data[0];
+        expect(standup).toHaveProperty("standupUuid");
+        expect(standup).toHaveProperty("user");
+        expect(standup).toHaveProperty("team");
+        expect(standup).toHaveProperty("course");
       }
     });
 
@@ -373,7 +390,7 @@ describe("Standup API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(Array.isArray(response.body.data.teams)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
   });
 });

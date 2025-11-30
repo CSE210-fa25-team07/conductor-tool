@@ -1,6 +1,6 @@
 /**
- * @module authentication/api
  * API endpoints for authentication and user session management
+ * @module authentication/api
  */
 import express from "express";
 import * as authService from "../../services/authService.js";

@@ -1,0 +1,16 @@
+<template>
+  <div class="feeds-container">
+    <div class="feeds-header">
+      <div class="feeds-filter" id="{{filterId}}">
+        <button class="feeds-filter-btn" data-days="1">Today</button>
+        <button class="feeds-filter-btn" data-days="3">3 Days</button>
+        <button class="feeds-filter-btn active" data-days="7">7 Days</button>
+        <button class="feeds-filter-btn" data-days="14">14 Days</button>
+      </div>
+      <span class="feeds-count" id="{{countId}}">{{feedsCount}}</span>
+    </div>
+    <div class="feeds-list" id="{{listId}}">
+      {{feedsContent}}
+    </div>
+  </div>
+</template>

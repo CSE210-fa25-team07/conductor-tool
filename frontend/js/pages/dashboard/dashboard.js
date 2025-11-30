@@ -1,13 +1,14 @@
 /** @module dashboard/frontend */
-import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
+import { initGlobalNavigation } from "../../components/navigation.js";
+import { handleVerification } from "../../utils/authVerify.js";
+import { loadUserContext, isProf } from "../../utils/userContext.js";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
 
   // ==================== CHECK USER ====================
-  // Initialize shared profile dropdown component
-  createUserDropdown("student");
-  await initProfileDropdown();
+  // Initialize navigation component
+  await initGlobalNavigation("dashboard");
 
   // ==================== DASHBOARD PAGE ====================
   const courseGrid = document.getElementById("course-grid");
@@ -140,12 +141,42 @@ function createEmptyStateCard() {
     </section>
   `;
 
-  // TODO: Add click handler (Depending on either student or professor)
-  // article.addEventListener("click", () => {
-  //   handleAddCourse();
-  // });
+  article.addEventListener("click", async () => {
+    await loadUserContext();
+
+    // Enroll to new course
+    if (!isProf()) {
+      article.replaceWith(handleAddCourse());
+    } else {
+      // TODO: Create course for professors is not implemented yet
+      window.location.href = "/courses/create"; // Placeholder redirect
+    }
+  });
 
   return article;
+}
+
+/**
+ * Handle adding a new course
+ * @returns {HTMLElement} The updated card element with the form
+ */
+function handleAddCourse() {
+  const card = document.createElement("article");
+  card.className = "course-card empty-state";
+
+  card.innerHTML = `
+    <form class="add-course-inline-form">
+      <input type="text" id="verification-code" placeholder="Course Code" required />
+      <button type="submit">Add</button>
+    </form>
+  `;
+
+  const form = card.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleVerification();
+  });
+  return card;
 }
 
 /**

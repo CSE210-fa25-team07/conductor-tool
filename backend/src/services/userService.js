@@ -44,7 +44,24 @@ async function getUserByEmail(email) {
   return await userRepository.getUserByEmail(normalizedEmail);
 }
 
+
+/**
+ * Get user photo URL by UUID
+ * @param {string} userUuid - User UUID to search for
+ * @returns {Promise<string|null>} Photo URL or null if not found
+ * @status IN USE
+ */
+async function getUserPhotoUrl(userUuid) {
+  if (!userUuid || typeof userUuid !== "string") {
+    throw new Error("User UUID is required");
+  }
+
+  const user = await userRepository.getUserByUuid(userUuid);
+  return user?.photoUrl || null;
+}
+
 export {
   addUser,
-  getUserByEmail
+  getUserByEmail,
+  getUserPhotoUrl
 };

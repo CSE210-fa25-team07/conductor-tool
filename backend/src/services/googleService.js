@@ -61,6 +61,7 @@ async function exchangeCodeForTokens(req, res) {
         return res.redirect("/dashboard");
       }
 
+      req.session.user.id = null;
       // User doesn't exist - check if UCSD email
       const isUCSDEmail = profile.email.endsWith("@ucsd.edu");
 

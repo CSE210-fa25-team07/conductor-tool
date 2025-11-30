@@ -120,11 +120,46 @@ async function getTeamStandups(teamUuid, filters = {}) {
   });
 }
 
+async function getCourseStandups(courseUuid, filters = {}) {
+  // Get all teams in the course
+  const teams = await prisma.team.findMany({
+    where: { courseUuid },
+    select: { teamUuid: true }
+  });
+
+  const teamUuids = teams.map(t => t.teamUuid);
+
+  const where = { teamUuid: { in: teamUuids } };
+
+  if (filters.startDate || filters.endDate) {
+    where.dateSubmitted = {};
+    if (filters.startDate) {
+      where.dateSubmitted.gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      const endDate = new Date(filters.endDate);
+      endDate.setDate(endDate.getDate() + 1);
+      where.dateSubmitted.lt = endDate;
+    }
+  }
+
+  return await prisma.standup.findMany({
+    where,
+    include: {
+      user: { select: { userUuid: true, firstName: true, lastName: true, email: true } },
+      team: { select: { teamUuid: true, teamName: true } },
+      course: { select: { courseUuid: true, courseCode: true, courseName: true } }
+    },
+    orderBy: { dateSubmitted: "desc" }
+  });
+}
+
 export {
   createStandup,
   getUserStandups,
   getStandupById,
   updateStandup,
   deleteStandup,
-  getTeamStandups
+  getTeamStandups,
+  getCourseStandups
 };
