@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Attendace Feature Main Entry Point
+ * Handles calendar and meeting creation on Attendance tab
+ */
+
 import { loadTemplate } from "../../utils/templateLoader.js";
 
 const meetings = {};
