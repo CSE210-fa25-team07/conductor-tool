@@ -160,4 +160,18 @@ async function getUserStatusByUuid(userUuid) {
   };
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid };
+async function getUsersByUuids(userUuids) {
+    const users = await prisma.user.findMany({
+        where: {
+            userUuid: {
+                in: userUuids
+            }
+        },
+        include: {
+            courseEnrollments: true
+        }
+    });
+    return users;
+}
+
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid, getUserStatusByUuid, getUsersByUuids };

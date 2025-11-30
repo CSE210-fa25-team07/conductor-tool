@@ -106,12 +106,41 @@ function validateUpdateMeetingData(meetingData) {
 
 function validateParticipantData(participantData) {
     const {
-        present
+        present,
+        participantUUID,
+        meetingUUID,
     } = participantData;
 
     if (present === undefined || typeof present !== "boolean") {
         throw new Error("present field is required and must be a boolean");
     }
 
+    if (!participantUUID || typeof participantUUID !== "string" || participantUUID.trim() === "") {
+        throw new Error("participantUUID is required and must be a string");
+    }
+
+    if (!meetingUUID || typeof meetingUUID !== "string" || meetingUUID.trim() === "") {
+        throw new Error("meetingUUID is required and must be a string");
+    }
+
     return true;
+}
+
+function validateParticipantListData(participants) {
+    if (!Array.isArray(participants)) {
+        throw new Error("participants must be an array");
+    }
+
+    participants.forEach(participantData => {
+        validateParticipantData(participantData);
+    });
+
+    return true;
+}
+
+export {
+    validateCreateMeetingData,
+    validateUpdateMeetingData,
+    validateParticipantData,
+    validateParticipantListData
 }

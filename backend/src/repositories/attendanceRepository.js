@@ -13,7 +13,7 @@ const prisma = getPrisma();
  * @throws {Error} on database error
  */
 async function createMeeting(meetingData) {
-    const meeting = await prisma.Meeting.create({
+    const meeting = await prisma.meeting.create({
         data: {
             creatorUuid: meetingData.creatorUUID,
             courseUuid: meetingData.courseUUID,
@@ -23,6 +23,7 @@ async function createMeeting(meetingData) {
             meetingTitle: meetingData.meetingTitle,
             meetingDescription: meetingData.meetingDescription,
             meetingLocation: meetingData.meetingLocation,
+            meetingType: meetingData.meetingType,
             isRecurring: meetingData.isRecurring
         }
     });
@@ -36,7 +37,7 @@ async function createMeeting(meetingData) {
  * @throws {Error} on database error
  */
 async function getMeetingByUUID(meetingUUID) {
-    const meeting = await prisma.Meeting.findUnique({
+    const meeting = await prisma.meeting.findUnique({
         where: { meetingUuid:  meetingUUID }
     });
     return meeting;
@@ -51,7 +52,7 @@ async function getMeetingByUUID(meetingUUID) {
  */
 async function updateMeeting(meetingUUID, updateData) {
     const updatedMeeting = await prisma.meeting.update({
-        where: { meetingUUID },
+        where: { meetingUuid: meetingUUID },
         data: {
             meetingEndTime: updateData.meetingEndTime ? new Date(updateData.meetingEndTime) : undefined,
             meetingDate: updateData.meetingDate ? new Date(updateData.meetingDate) : undefined,
@@ -72,7 +73,7 @@ async function updateMeeting(meetingUUID, updateData) {
  */
 async function deleteMeeting(meetingUUID) {
     await prisma.meeting.delete({
-        where: { meetingUUID }
+        where: { meetingUuid: meetingUUID }
     });
     return true;
 }
@@ -92,17 +93,17 @@ async function getMeetingListByParams(params) {
     let meetings;
     if (isStaff) {
         meetings = await prisma.meeting.findMany({
-            where: { courseUUID }
+            where: { courseUuid: courseUUID }
         });
     } else {
         meetings = await prisma.meeting.findMany({
             where: {
-                courseUUID,
+                courseUuid: courseUUID,
                 OR: [
-                    { creatorUUID: userUUID },
+                    { creatorUuid: userUUID },
                     {
                         participants: {
-                            some: { userUUID }
+                            some: { participantUuid: userUUID }
                         }
                     }
                 ]
@@ -113,17 +114,19 @@ async function getMeetingListByParams(params) {
 }
 
 /**
- * Get single participant record by meetingUUID and userUUID
+ * Get single participant record by meetingUUID and participantUUID
+ * @param {string} participantUUID 
  * @param {string} meetingUUID 
- * @param {string} userUUID 
  * @returns {Promise<Object>} Participant object
  * @throws {Error} on database error
  */
-async function getParticipant(meetingUUID, userUUID) {
-    const participant = await prisma.participant.findFirst({
+async function getParticipant(participantUUID, meetingUUID) {
+    const participant = await prisma.participant.findUnique({
         where: {
-            meetingUUID,
-            userUUID
+            meetingUuid_participantUuid: {
+                meetingUuid: meetingUUID,
+                participantUuid: participantUUID
+            }
         }
     });
     return participant;
@@ -145,7 +148,7 @@ async function createParticipants(participantsData) {
 
 /**
  * Get multiple participants by parameters.
- * meetingUUID and courseUUID are required -- all participants for that meeting i
+ * meetingUUID and courseUUID are required -- all participants for that meeting 
  * @param {Object} params -- meetingUUID, courseUUID, participantUUID, present  
  * @returns 
  */
@@ -161,7 +164,7 @@ async function getParticipantListByParams(params) {
 
     // If courseUUID is provided, filter by it via Meeting relation
     if (courseUUID) {
-        whereClause.Meeting = {
+        whereClause.meeting = {
             courseUuid: courseUUID
         };
     }
@@ -176,7 +179,7 @@ async function getParticipantListByParams(params) {
         whereClause.present = present;
     }
 
-    const participants = await prisma.Participant.findMany({
+    const participants = await prisma.participant.findMany({
         where: whereClause
     });
     return participants;
@@ -185,16 +188,18 @@ async function getParticipantListByParams(params) {
 /**
  * Updates participant's present status
  * @param {string} meetingUUID 
- * @param {string} userUUID 
+ * @param {string} participantUUID 
  * @param {boolean} present 
  * @param {string} attendanceTime -- optional attendance time
  * @returns updated participant object
  */
-async function updateParticipant(meetingUUID, userUUID, present, attendanceTime) {
+async function updateParticipant(meetingUUID, participantUUID, present, attendanceTime) {
     const updatedParticipant = await prisma.participant.update({
         where: {
-            meetingUuid: meetingUUID,
-            userUuid: userUUID
+            meetingUuid_participantUuid: {
+                meetingUuid: meetingUUID,
+                participantUuid: participantUUID
+            }
         },
         data: {
             present,
@@ -207,34 +212,64 @@ async function updateParticipant(meetingUUID, userUUID, present, attendanceTime)
 /**
  * Deletes a participant by meetingUUID and participantUUID
  * @param {string} meetingUUID 
- * @param {string} userUUID 
+ * @param {string} participantUUID 
  * @returns {boolean} true if deleted, false otherwise
  */
 async function deleteParticipant(meetingUUID, participantUUID) {
-    const deletedCount = await prisma.participant.delete({
+    await prisma.participant.delete({
         where: {
-            meetingUuid: meetingUUID,
-            participantUuid: participantUUID
+            meetingUuid_participantUuid: {
+                meetingUuid: meetingUUID,
+                participantUuid: participantUUID
+            }
         }
     });
 
-    return deletedCount !== 0;
+    return true;
 }   
 
-async function createMeetingCode(meetingUUID, code) {
+/**
+ * Create a meeting code for QR attendance tracking
+ * @param {Object} codeData containing meetingUuid, meetingCode, qrUrl, validStartDatetime, validEndDatetime
+ * @returns {Promise<Object>} Created meeting code object
+ */
+async function createMeetingCode(codeData) {
     const meetingCode = await prisma.meetingCode.create({
         data: {
-            meetingUuid: meetingUUID,
-            code: code
+            meetingUuid: codeData.meetingUuid,
+            meetingCode: codeData.meetingCode,
+            qrUrl: codeData.qrUrl,
+            validStartDatetime: codeData.validStartDatetime,
+            validEndDatetime: codeData.validEndDatetime
         }
     });
     return meetingCode;
 }
 
-async function getMeetingCode(meetingUUID) {
-    const meetingCode = await prisma.meetingCode.findUnique({
+/**
+ * Get the most recent meeting code by meetingUUID
+ * @param {string} meetingUUID 
+ * @returns {Promise<Object>} Meeting code object
+ */
+async function getMeetingCodeByMeetingUuid(meetingUUID) {
+    const meetingCode = await prisma.meetingCode.findFirst({
+        where: { meetingUuid: meetingUUID },
+        orderBy: { createdAt: 'desc' }
+    });
+    return meetingCode;
+}
+
+/**
+ * Get meeting code by meetingUUID and code
+ * @param {string} meetingUUID 
+ * @param {string} code 
+ * @returns {Promise<Object>} Meeting code object
+ */
+async function getMeetingCodeByMeetingUuidAndCode(meetingUUID, code) {
+    const meetingCode = await prisma.meetingCode.findFirst({
         where: {
-            meetingUuid: meetingUUID
+            meetingUuid: meetingUUID,
+            meetingCode: code
         }
     });
     return meetingCode;
@@ -250,6 +285,9 @@ export {
     createParticipants,
     getParticipantListByParams,
     updateParticipant,
-    deleteParticipant
+    deleteParticipant,
+    createMeetingCode,
+    getMeetingCodeByMeetingUuid,
+    getMeetingCodeByMeetingUuidAndCode
 };
 
