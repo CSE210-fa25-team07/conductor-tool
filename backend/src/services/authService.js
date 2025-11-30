@@ -8,6 +8,7 @@ import * as userService from "../services/userService.js";
 import * as userRepository from "../repositories/userRepository.js";
 import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
 import * as courseRepository from "../repositories/courseRepository.js";
+import * as formRequestRepository from "../repositories/formRequestRepository.js";
 
 /**
  * Get current user session data
@@ -31,12 +32,36 @@ async function getSession(req, res) {
 }
 
 /**
+ * Verify that the code is valid and corresponds to a course
+ * @param {*} req Request object containing verification code
+ * @param {*} res Response object
+ * @returns Response status
+ */
+async function verifyCode(req, res) {
+  const { code } = req.body;
+
+  // Check if provided code maps to a course
+  const courseInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
+  if (!courseInfo) {
+    return res.status(400).json({
+      success: false,
+      error: "Verification code is invalid"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    courseInfo
+  });
+}
+
+/**
  * Check the provided verification code and create user if valid
  * @param {*} req Request object that contains verification code
  * @param {*} res Response object
  * @returns Response status
  */
-async function verifyCode(req, res) {
+async function enrollUserByCode(req, res) {
   const { code } = req.body;
   const profile = req.session.user;
 
@@ -80,6 +105,30 @@ async function verifyCode(req, res) {
   return res.status(200).json({
     success: true,
     message: "User verified and enrolled successfully"
+  });
+}
+
+/**
+ * Create an access request entry in the database with the provided info
+ * @param {*} req Request object
+ * @param {*} res Response object
+ * @returns Response status
+ */
+async function requestAccess(req, res) {
+  const { firstName, lastName, email, institution, verificationCode } = req.body;
+
+  const response = await formRequestRepository.createFormRequest(firstName, lastName, email, institution, verificationCode);
+
+  if (!response) {
+    return res.status(500).json({
+      success: false,
+      error: "Request with email already exists"
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Access request submitted successfully"
   });
 }
 
@@ -149,4 +198,4 @@ async function devLogin(req, res) {
   }
 }
 
-export { getSession, verifyCode, getDevUsers, devLogin };
+export { getSession, verifyCode, getDevUsers, devLogin, enrollUserByCode, requestAccess };
