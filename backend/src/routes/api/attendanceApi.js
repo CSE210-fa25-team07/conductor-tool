@@ -16,7 +16,7 @@ const router = express.Router();
  * @returns {Object} 400 - Missing meeting UUID parameter
  * @status IN USE
  */
-router.get("/attendance/meeting/:id", async (req, res) => {
+router.get("/meeting/:id", async (req, res) => {
     try {
         return await attendanceService.getMeetingByUUID(req, res);
     } catch (error) {
@@ -36,7 +36,7 @@ router.get("/attendance/meeting/:id", async (req, res) => {
  * @returns {Object} 400 - Validation error
  * @status IN USE
  */
-router.post("/attendance/meeting/", async (req, res) => {
+router.post("/meeting/", async (req, res) => {
     try {
         return await attendanceService.createMeeting(req, res);
     } catch (error) {
@@ -57,7 +57,7 @@ router.post("/attendance/meeting/", async (req, res) => {
  * @returns {Object} 404 - Meeting not found
  * @status IN USE
  */
-router.patch("/attendance/meeting/:id", async (req, res) => {
+router.patch("/meeting/:id", async (req, res) => {
     try {
         return await attendanceService.updateMeeting(req, res);
     } catch (error) {
@@ -77,7 +77,7 @@ router.patch("/attendance/meeting/:id", async (req, res) => {
  * @returns {Object} 400 - Missing meeting UUID parameter
  * @status IN USE
  */
-router.delete("/attendance/meeting/:id", async (req, res) => {
+router.delete("/meeting/:id", async (req, res) => {
     try {
         return await attendanceService.deleteMeeting(req, res);
     } catch (error) {
@@ -98,7 +98,7 @@ router.delete("/attendance/meeting/:id", async (req, res) => {
  * @returns {Object} 404 - Course not found
  * @status IN USE
  */
-router.get("/attendance/meeting/list/:courseUUID", async (req, res) => {
+router.get("/meeting/list/:courseUUID", async (req, res) => {
     try {
         return await attendanceService.getMeetingList(req, res);
     } catch (error) {
@@ -120,7 +120,7 @@ router.get("/attendance/meeting/list/:courseUUID", async (req, res) => {
  * @returns {Object} 404 - Participant not found
  * @status IN USE
  */
-router.get("/attendance/participant/:meeting/:id", async (req, res) => {
+router.get("/participant/:meeting/:id", async (req, res) => {
     try {
         return await attendanceService.getParticipant(req, res);
     } catch (error) {
@@ -139,7 +139,7 @@ router.get("/attendance/participant/:meeting/:id", async (req, res) => {
  * @returns {Object} 400 - Validation error
  * @status IN USE
  */
-router.post("/attendance/participant/", async (req, res) => {
+router.post("/participant/", async (req, res) => {
     try {
         return await attendanceService.createParticipants(req, res);
     } catch (error) {
@@ -150,7 +150,7 @@ router.post("/attendance/participant/", async (req, res) => {
     }
 });
 
-router.patch("/attendance/participant/", async (req, res) => {
+router.patch("/participant/", async (req, res) => {
     try {
         return await attendanceService.updateParticipant(req, res);
     } catch (error) {
@@ -161,7 +161,7 @@ router.patch("/attendance/participant/", async (req, res) => {
     }
 });
 
-router.delete("/attendance/participant/:meeting/:id", async (req, res) => {
+router.delete("/participant/:meeting/:id", async (req, res) => {
     try {
         return await attendanceService.deleteParticipant(req, res);
     } catch (error) {
@@ -172,7 +172,7 @@ router.delete("/attendance/participant/:meeting/:id", async (req, res) => {
     }
 });
 
-router.post("/attendance/participant/list/", async (req, res) => {
+router.post("/participant/list/", async (req, res) => {
     try {
         return await attendanceService.getParticipantListByParams(req, res);
     } catch (error) {
@@ -183,7 +183,7 @@ router.post("/attendance/participant/list/", async (req, res) => {
     }
 });
 
-router.get("/attendance/meeting_code/:id", async (req, res) => {
+router.get("/meeting_code/:id", async (req, res) => {
     try {
         return await attendanceService.getMeetingCode(req, res);
     } catch (error) {
@@ -194,7 +194,7 @@ router.get("/attendance/meeting_code/:id", async (req, res) => {
     }
 });
 
-router.get("/attendance/meeting_code/record/:code", async (req, res) => {
+router.get("/meeting_code/record/:code", async (req, res) => {
     try {
         return await attendanceService.recordAttendanceViaCode(req, res);
     } catch (error) {
