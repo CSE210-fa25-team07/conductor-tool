@@ -11,6 +11,7 @@ import * as userContextRepository from "../repositories/userContextRepository.js
 import { RoleEnum } from "../enums/role.js";
 import * as attendanceDTO from "../dtos/attendanceDto.js";
 import * as userRepository from "../repositories/userRepository.js";
+import * as courseRepository from "../repositories/courseRepository.js";
 
 /**
  * Get a Meeting object by UUID
@@ -23,7 +24,6 @@ import * as userRepository from "../repositories/userRepository.js";
  */
 async function getMeetingByUUID(req, res) {
     const meetingUUID = req.params.id;
-    console.log(req.params);
     if (!meetingUUID) {
         return res.status(400).json({
             success: false,
@@ -32,8 +32,6 @@ async function getMeetingByUUID(req, res) {
     }
 
     const userContext = await userContextRepository.getUserContext(req.session.user.id);
-
-    console.log(userContext);
 
     const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
 
@@ -336,7 +334,7 @@ async function getMeetingList(req, res) {
         });
     }
 
-    const course = await attendanceRepository.getCourseByUUID(courseUUID);
+    const course = await courseRepository.getCourseByUuid(courseUUID);
     if (!course) {
         return res.status(404).json({
             success: false,
@@ -344,14 +342,18 @@ async function getMeetingList(req, res) {
         });
     }
 
-    const { userContext } = await userContextRepository.getUserContext(userUUID);
+    const userContext = await userContextRepository.getUserContext(userUUID);
     let inCourse = false;
-    for (const enrollment of userContext.enrollments) {
-        if (enrollment.course.courseUUID === courseUUID) {
+    let userRole = null;
+    
+    for (const enrollment of userContext?.enrollments || []) {
+        if (enrollment.course.courseUuid === courseUUID) {
             inCourse = true;
+            userRole = enrollment.role.role;
             break;
         }
     }
+
     if (!inCourse) {
         return res.status(403).json({
             success: false,
@@ -359,10 +361,7 @@ async function getMeetingList(req, res) {
         });
     }
 
-    const isStaff = await userContextRepository.checkCourseStaffAccess(
-        userUUID,
-        courseUUID
-    );
+    const isStaff = [RoleEnum.PROFESSOR, RoleEnum.TA, RoleEnum.TUTOR].includes(userRole);
 
     // Staff will see all meetings for the course, non-staff only ones where they are participant or owner
     const meetings = await attendanceRepository.getMeetingListByParams({
