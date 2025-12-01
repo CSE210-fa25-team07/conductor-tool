@@ -111,6 +111,6 @@ async function getCourseByUuid(courseUuid) {
     where: {
       courseUuid: courseUuid
     }
-  }); 
+  });
 }
 export { getCoursesByUserId, getCoursesWithDetailsByUserId, enrollUserToCourse, getCourseByUuid };
