@@ -86,13 +86,13 @@ function createCourseCard(course) {
   const deptCode = course.code.split(" ")[0];
 
   // Build card HTML
-   article.innerHTML = `
+  article.innerHTML = `
     <header class="course-card-header">
       <figure class="course-icon">${deptCode}</figure>
       <section class="course-info">
         <span class="course-code">${course.code}</span>
         <h3 class="course-name">${course.name}</h3>
-      </section>
+       </section>
       <div class="course-menu-container">
         <button class="course-menu-button" aria-label="Course options">
           <span class="menu-dots">⋮</span>
@@ -100,7 +100,7 @@ function createCourseCard(course) {
         <div class="course-menu-dropdown">
           ${createMenuItems(course)}
         </div>
-      </div>
+       </div>
     </header>
 
     <p class="course-description">
@@ -160,7 +160,6 @@ function createCourseCard(course) {
  * @returns {string} HTML string for menu items based on user role
  */
 function createMenuItems(course) {
-  console.log("isProf:", isProf(), "isLeadAdmin:", isLeadAdmin(), "isSystemAdmin:", isSystemAdmin());
   if (isProf() || isLeadAdmin() || isSystemAdmin()) {
     // Professor menu items
     return `
