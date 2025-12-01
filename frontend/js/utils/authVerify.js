@@ -25,8 +25,8 @@ export async function handleVerification() {
   }
 
   try {
-    // Call backend to verify code and create user
-    const response = await fetch("/v1/api/auth/verify", {
+    // Call backend to verify code and enroll user
+    const response = await fetch("/v1/api/auth/enroll", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
