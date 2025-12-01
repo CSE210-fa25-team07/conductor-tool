@@ -45,7 +45,7 @@ async function getMeetingByUUID(req, res) {
   let isInCourse = false;
   let courseEnrollment = null;
   userContext.enrollments.forEach(enrollment => {
-    if (enrollment.course.courseUUID === meeting.courseUUID) {
+    if (enrollment.course.courseUuid === meeting.courseUuid) {
       isInCourse = true;
       courseEnrollment = enrollment;
     }
@@ -88,6 +88,12 @@ async function getMeetingByUUID(req, res) {
  */
 async function createMeeting(req, res) {
   const userUUID = req.session.user.id;
+
+  // Add creatorUUID to request body if not provided
+  if (!req.body.creatorUUID) {
+    req.body.creatorUUID = userUUID;
+  }
+
   attendanceValidator.validateCreateMeetingData(req.body);
   const {
     courseUUID,
@@ -167,9 +173,15 @@ async function createMeeting(req, res) {
   );
 
   // Create meeting code for the newly created meeting
-  req.params = req.params || {};
-  req.params.id = meeting.meetingUuid;
-  const meetingCode = await createMeetingCode(req, res);
+  let meetingCode = null;
+  try {
+    req.params = req.params || {};
+    req.params.id = meeting.meetingUuid;
+    meetingCode = await createMeetingCode(req, res);
+  } catch (error) {
+    // Don't fail the entire meeting creation if code creation fails
+    console.error("Error creating meeting code:", error);
+  }
 
   return res.status(201).json({
     success: true,
@@ -220,7 +232,7 @@ async function updateMeeting(req, res) {
       error: "Meeting not found"
     });
   }
-  const courseUUID = existingMeeting.courseUUID;
+  const courseUUID = existingMeeting.courseUuid;
 
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
@@ -235,7 +247,7 @@ async function updateMeeting(req, res) {
     });
   }
 
-  if (existingMeeting.creatorUUID !== userUUID) {
+  if (existingMeeting.creatorUuid !== userUUID) {
     return res.status(403).json({
       success: false,
       error: "Only the meeting creator can update this meeting"
@@ -281,7 +293,7 @@ async function deleteMeeting(req, res) {
       error: "Meeting not found"
     });
   }
-  const courseUUID = existingMeeting.courseUUID;
+  const courseUUID = existingMeeting.courseUuid;
 
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
@@ -291,7 +303,7 @@ async function deleteMeeting(req, res) {
   );
   const canDelete = (
     isInActiveCourse
-        && existingMeeting.creatorUUID === userUUID
+        && existingMeeting.creatorUuid === userUUID
         && existingMeeting.meetingEndTime > new Date()
   );
   if (!canDelete) {
@@ -408,7 +420,7 @@ async function getParticipant(req, res) {
     });
   }
 
-  if (participant.participantUuid !== userUUID && meeting.creatorUUID !== userUUID) {
+  if (participant.participantUuid !== userUUID && meeting.creatorUuid !== userUUID) {
     return res.status(403).json({
       success: false,
       error: "Not authorized to view this participant"
@@ -560,7 +572,7 @@ async function updateParticipant(req, res) {
     });
   }
 
-  if (meeting.creatorUUID !== userUUID) {
+  if (meeting.creatorUuid !== userUUID) {
     return res.status(403).json({
       success: false,
       error: "Only the meeting creator can update participants"
@@ -633,7 +645,7 @@ async function deleteParticipant(req, res) {
     });
   }
 
-  if (meeting.creatorUUID !== userUUID) {
+  if (meeting.creatorUuid !== userUUID) {
     return res.status(403).json({
       success: false,
       error: "Only the meeting creator can delete participants"
@@ -703,7 +715,7 @@ async function getParticipantListByParams(req, res) {
     }
   }
 
-  if (meetingUUID && meeting.creatorUUID !== userUUID && !isStaff) {
+  if (meetingUUID && meeting.creatorUuid !== userUUID && !isStaff) {
     return res.status(403).json({
       success: false,
       error: "Not authorized to view participants for this meeting"
@@ -747,6 +759,51 @@ async function getParticipantListByParams(req, res) {
  * @status IN USE
  */
 async function createMeetingCode(req, res) {
+  const meetingUUID = req.params.id;
+  const userUUID = req.session.user.id;
+
+  const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      error: "Meeting not found"
+    });
+  }
+
+  if (meeting.creatorUuid !== userUUID) {
+    return res.status(403).json({
+      success: false,
+      error: "Only the meeting creator can create meeting codes"
+    });
+  }
+
+  const meetingCode = Math.random().toString(36).substring(2).substring(0, 6).toUpperCase();
+
+  // TODO(bukhradze): replace hostname
+  const HOSTNAME = "conductor-tool.ucsd.edu";
+  const redirectURL = `https://${HOSTNAME}/attendance/record/?meeting=${meetingUUID}&code=${meetingCode}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${redirectURL}&size=200x200`;
+
+  const validStartDatetime = meeting.meetingStartTime;
+  const validEndDatetime = meeting.meetingEndTime;
+
+  const codeData = {
+    qrUrl: qrUrl,
+    meetingUuid: meetingUUID,
+    meetingCode: meetingCode,
+    validStartDatetime: validStartDatetime,
+    validEndDatetime: validEndDatetime
+  };
+
+  const createdCode = await attendanceRepository.createMeetingCode(codeData);
+
+  return createdCode;
+}
+
+/**
+ * Get meeting code for standalone endpoint (sends response)
+ */
+async function getMeetingCodeResponse(req, res) {
   const meetingUUID = req.params.id;
   const userUUID = req.session.user.id;
 
@@ -896,7 +953,6 @@ export {
   updateParticipant,
   deleteParticipant,
   getParticipantListByParams,
-  createMeetingCode,
   getMeetingCode,
   recordAttendanceViaCode
 };

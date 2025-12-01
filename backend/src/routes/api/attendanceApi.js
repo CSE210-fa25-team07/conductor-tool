@@ -194,7 +194,7 @@ router.get("/meeting_code/:id", async (req, res) => {
   }
 });
 
-router.get("/meeting_code/record/:code", async (req, res) => {
+router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
   try {
     return await attendanceService.recordAttendanceViaCode(req, res);
   } catch (error) {

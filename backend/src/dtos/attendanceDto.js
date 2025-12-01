@@ -5,9 +5,9 @@
 
 function toMeetingDTO(meetingData) {
   return {
-    meetingUUID: meetingData.meetingUUID,
-    creatorUUID: meetingData.creatorUUID,
-    courseUUID: meetingData.courseUUID,
+    meetingUuid: meetingData.meetingUuid,
+    creatorUuid: meetingData.creatorUuid,
+    courseUuid: meetingData.courseUuid,
     meetingStartTime: meetingData.meetingStartTime,
     meetingEndTime: meetingData.meetingEndTime,
     meetingDate: meetingData.meetingDate,
@@ -15,21 +15,17 @@ function toMeetingDTO(meetingData) {
     meetingDescription: meetingData.meetingDescription,
     meetingLocation: meetingData.meetingLocation,
     isRecurring: meetingData.isRecurring,
-    parentMeetingUUID: meetingData.parentMeetingUUID,
-    createdAt: meetingData.createdAt,
-    updatedAt: meetingData.updatedAt
+    parentMeetingUuid: meetingData.parentMeetingUuid,
+    meetingType: meetingData.meetingType
   };
 }
 
 function toParticipantDTO(participantData) {
   return {
-    participantUUID: participantData.participantUUID,
-    meetingUUID: participantData.meetingUUID,
-    userUUID: participantData.userUUID,
-    status: participantData.status,
-    checkInTime: participantData.checkInTime,
-    createdAt: participantData.createdAt,
-    updatedAt: participantData.updatedAt
+    participantUuid: participantData.participantUuid,
+    meetingUuid: participantData.meetingUuid,
+    present: participantData.present,
+    attendanceTime: participantData.attendanceTime
   };
 }
 
