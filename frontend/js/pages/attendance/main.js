@@ -4,11 +4,13 @@
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";
-import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList } from "../../api/attendanceApi.js";
-import { loadUserContext, isProfessorOrTA, getUserRoleInCourse } from "../../utils/userContext.js";
+import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails } from "../../api/attendanceApi.js";
+import { loadUserContext, isProfessorOrTA, getUserRoleInCourse, getCurrentUser } from "../../utils/userContext.js";
 
 const meetings = {};
 let currentDate = new Date();
+let courseStartDate = null;
+let courseEndDate = null;
 
 /**
  * Map meeting type string to integer
@@ -43,9 +45,9 @@ function mapMeetingTypeToString(typeInt) {
 export async function render(container, view = "dashboard") {
   try {
     const templateHTML = await loadTemplate("attendance", view);
-    container.innerHTML = templateHTML;
+        container.innerHTML = templateHTML;
 
-    const wrapper = container;
+        const wrapper = container;
     const calendarGrid = wrapper.querySelector("#calendar-grid");
     const currentMonthEl = wrapper.querySelector("#current-month");
     const prevBtn = wrapper.querySelector("#prev-month");
@@ -65,6 +67,9 @@ export async function render(container, view = "dashboard") {
     const meetingTypeSelect = wrapper.querySelector("#meeting-type");
     const meetingDescTextarea = wrapper.querySelector("#meeting-description");
     const participantsContainer = wrapper.querySelector("#meeting-participants");
+    const selectAllBtn = wrapper.querySelector("#select-all-participants");
+    const deselectAllBtn = wrapper.querySelector("#deselect-all-participants");
+    const selectByTeamDropdown = wrapper.querySelector("#select-by-team");
     const recurringCheckbox = wrapper.querySelector("#recurring");
     const recurringEndInput = wrapper.querySelector("#recurring-end-date");
     const recurringSummaryEl = wrapper.querySelector("#recurring-summary");
@@ -72,6 +77,8 @@ export async function render(container, view = "dashboard") {
     let chainCounter = 0;
     let userRole = null;
     let canCreateStaffMeetings = false;
+    let allUsers = []; // Store all users loaded from backend
+    let allTeams = []; // Store all teams loaded from backend
 
     /**
      * Get course UUID from current URL path
@@ -124,10 +131,10 @@ export async function render(container, view = "dashboard") {
     }
 
     /**
-     * Load and populate participants from the backend
+     * Load all users and teams for the course
      * @returns {Promise<void>}
      */
-    async function loadParticipants() {
+    async function loadAllUsersAndTeams() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) {
         console.error("No course UUID found in URL");
@@ -135,47 +142,200 @@ export async function render(container, view = "dashboard") {
       }
 
       try {
-        const participants = await getCourseParticipants(courseUUID);
-        populateParticipantsContainer(participants);
+        // Load all users in the course
+        const users = await getAllCourseUsers(courseUUID);
+        allUsers = users || [];
+        
+        // Load all teams in the course
+        const teams = await getCourseTeams(courseUUID);
+        allTeams = teams || [];
+        
+        // Populate the UI
+        populateParticipantsContainer();
+        populateTeamSelector();
       } catch (error) {
-        console.error("Failed to load participants:", error);
-        // Show error message to user
-        participantsContainer.innerHTML = `<p style="color: red; padding: 10px;">Failed to load participants: ${error.message}</p>`;
+        console.error("Failed to load users/teams:", error);
+        // Show error but don't block - use empty arrays
+        allUsers = [];
+        allTeams = [];
+        participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants. Error: ${error.message}</p>`;
       }
     }
 
     /**
-     * Populate the participants container with user data
-     * @param {Array} participants - Array of participant objects with userUuid, firstName, lastName, email
+     * Populate the team selector dropdown
      */
-    function populateParticipantsContainer(participants) {
-      participantsContainer.innerHTML = "";
+    function populateTeamSelector() {
+      if (!selectByTeamDropdown) return;
       
-      if (!participants || participants.length === 0) {
-        participantsContainer.innerHTML = "<p style='padding: 10px; color: #666;'>No participants found for this course.</p>";
+      // Clear existing options except the first one
+      selectByTeamDropdown.innerHTML = '<option value="">Add by Team...</option>';
+      
+      if (!allTeams || allTeams.length === 0) {
         return;
       }
 
-      participants.forEach(participant => {
-        const label = document.createElement("label");
-        label.classList.add("participant");
-        
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = participant.userUuid;
-        
-        const nameSpan = document.createElement("span");
-        nameSpan.classList.add("participant-name");
-        nameSpan.textContent = `${participant.firstName} ${participant.lastName}`;
-        
-        label.appendChild(checkbox);
-        label.appendChild(nameSpan);
-        participantsContainer.appendChild(label);
+      allTeams.forEach(team => {
+        const option = document.createElement("option");
+        option.value = team.teamUuid;
+        option.textContent = team.teamName || `Team ${team.teamUuid.substring(0, 8)}`;
+        selectByTeamDropdown.appendChild(option);
       });
     }
 
     /**
+     * Populate the participants container with user data, organized by team
+     */
+    function populateParticipantsContainer() {
+      participantsContainer.innerHTML = "";
+      
+      if (!allUsers || allUsers.length === 0) {
+        participantsContainer.innerHTML = "<p style='padding: 10px; color: #666;'>No users found for this course.</p>";
+        return;
+      }
+
+      // Group users by team
+      const usersByTeam = {};
+      const usersWithoutTeam = [];
+      
+      allUsers.forEach(user => {
+        if (user.teamUuid && user.teamUuid.trim() !== "") {
+          if (!usersByTeam[user.teamUuid]) {
+            usersByTeam[user.teamUuid] = [];
+          }
+          usersByTeam[user.teamUuid].push(user);
+        } else {
+          usersWithoutTeam.push(user);
+        }
+      });
+
+      // Create team sections
+      allTeams.forEach(team => {
+        if (usersByTeam[team.teamUuid] && usersByTeam[team.teamUuid].length > 0) {
+          const teamSection = document.createElement("div");
+          teamSection.classList.add("team-section");
+          
+          const teamHeader = document.createElement("div");
+          teamHeader.classList.add("team-header");
+          teamHeader.textContent = team.teamName || `Team ${team.teamUuid.substring(0, 8)}`;
+          teamSection.appendChild(teamHeader);
+          
+          usersByTeam[team.teamUuid].forEach(user => {
+            const label = createParticipantCheckbox(user);
+            teamSection.appendChild(label);
+          });
+          
+          participantsContainer.appendChild(teamSection);
+        }
+      });
+
+      // Add users without teams
+      if (usersWithoutTeam.length > 0) {
+        const noTeamSection = document.createElement("div");
+        noTeamSection.classList.add("team-section");
+        
+        const noTeamHeader = document.createElement("div");
+        noTeamHeader.classList.add("team-header");
+        noTeamHeader.textContent = "No Team";
+        noTeamSection.appendChild(noTeamHeader);
+        
+        usersWithoutTeam.forEach(user => {
+          const label = createParticipantCheckbox(user);
+          noTeamSection.appendChild(label);
+        });
+        
+        participantsContainer.appendChild(noTeamSection);
+      }
+    }
+
+    /**
+     * Create a participant checkbox element
+     * @param {Object} user - User object with userUuid, firstName, lastName, email
+     * @returns {HTMLElement} Label element with checkbox
+     */
+    function createParticipantCheckbox(user) {
+      const label = document.createElement("label");
+      label.classList.add("participant");
+      
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = user.userUuid;
+      checkbox.dataset.userUuid = user.userUuid;
+      
+      const nameSpan = document.createElement("span");
+      nameSpan.classList.add("participant-name");
+      nameSpan.textContent = `${user.firstName} ${user.lastName}`;
+      
+      label.appendChild(checkbox);
+      label.appendChild(nameSpan);
+      
+      return label;
+    }
+
+    /**
+     * Select all participants
+     */
+    function selectAllParticipants() {
+      const checkboxes = participantsContainer.querySelectorAll("input[type=\"checkbox\"]");
+      checkboxes.forEach(cb => {
+        cb.checked = true;
+      });
+    }
+
+    /**
+     * Deselect all participants
+     */
+    function deselectAllParticipants() {
+      const checkboxes = participantsContainer.querySelectorAll("input[type=\"checkbox\"]");
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+      });
+    }
+
+    /**
+     * Select participants by team
+     * @param {string} teamUuid - Team UUID to select
+     */
+    function selectParticipantsByTeam(teamUuid) {
+      if (!teamUuid) return;
+      
+      // Find the team
+      const team = allTeams.find(t => t.teamUuid === teamUuid);
+      if (!team) return;
+      
+      // Get all user UUIDs in this team
+      const teamUserUuids = new Set();
+      if (team.members && team.members.length > 0) {
+        team.members.forEach(member => {
+          teamUserUuids.add(member.userUuid);
+        });
+      } else {
+        // Fallback: use users from allUsers that have this teamUuid
+        allUsers.forEach(user => {
+          if (user.teamUuid === teamUuid) {
+            teamUserUuids.add(user.userUuid);
+          }
+        });
+      }
+      
+      // Check all checkboxes for users in this team
+      const checkboxes = participantsContainer.querySelectorAll("input[type=\"checkbox\"]");
+      checkboxes.forEach(cb => {
+        if (teamUserUuids.has(cb.value)) {
+          cb.checked = true;
+        }
+      });
+      
+      // Reset dropdown
+      selectByTeamDropdown.value = "";
+    }
+
+    /**
      * Load meetings from the backend and populate the calendar
+     * This loads all meetings where the current user is either:
+     * - The creator of the meeting, OR
+     * - A participant in the meeting
+     * This ensures all invited participants see meetings on their calendars.
      * @returns {Promise<void>}
      */
     async function loadMeetingsFromBackend() {
@@ -186,6 +346,8 @@ export async function render(container, view = "dashboard") {
       }
 
       try {
+        // Backend returns meetings where user is creator OR participant
+        // This ensures all invited participants see the meeting on their calendars
         const meetingList = await getMeetingList(courseUUID);
         
         // Clear existing meetings
@@ -193,14 +355,46 @@ export async function render(container, view = "dashboard") {
         
         // Group meetings by date
         meetingList.forEach(meeting => {
-          const meetingDate = new Date(meeting.meetingDate);
-          const dateStr = `${meetingDate.getFullYear()}-${String(meetingDate.getMonth() + 1).padStart(2, "0")}-${String(meetingDate.getDate()).padStart(2, "0")}`;
+          // Handle meetingDate - could be a Date object, ISO string, or date string
+          let meetingDateObj;
+          if (meeting.meetingDate instanceof Date) {
+            meetingDateObj = meeting.meetingDate;
+          } else if (typeof meeting.meetingDate === "string") {
+            // Try parsing as ISO string first, then as date string
+            meetingDateObj = new Date(meeting.meetingDate);
+            // If parsing fails or results in invalid date, try local date parsing
+            if (isNaN(meetingDateObj.getTime())) {
+              meetingDateObj = parseLocalDate(meeting.meetingDate);
+            }
+          } else {
+            console.warn("Invalid meetingDate format:", meeting.meetingDate);
+            return; // Skip this meeting
+          }
+          
+          if (!meetingDateObj || isNaN(meetingDateObj.getTime())) {
+            console.warn("Could not parse meeting date:", meeting.meetingDate);
+            return; // Skip this meeting
+          }
+          
+          const dateStr = `${meetingDateObj.getFullYear()}-${String(meetingDateObj.getMonth() + 1).padStart(2, "0")}-${String(meetingDateObj.getDate()).padStart(2, "0")}`;
           
           if (!meetings[dateStr]) {
             meetings[dateStr] = [];
           }
           
-          const startTime = new Date(meeting.meetingStartTime);
+          // Handle meetingStartTime - could be a Date object or ISO string
+          let startTime;
+          if (meeting.meetingStartTime instanceof Date) {
+            startTime = meeting.meetingStartTime;
+          } else {
+            startTime = new Date(meeting.meetingStartTime);
+          }
+          
+          if (isNaN(startTime.getTime())) {
+            console.warn("Could not parse meeting start time:", meeting.meetingStartTime);
+            return; // Skip this meeting
+          }
+          
           const timeStr = `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`;
           
           meetings[dateStr].push({
@@ -211,7 +405,10 @@ export async function render(container, view = "dashboard") {
             participants: [], // Will be loaded separately if needed
             chainId: meeting.parentMeetingUUID || null,
             meetingUUID: meeting.meetingUUID,
-            isRecurring: meeting.isRecurring
+            isRecurring: meeting.isRecurring,
+            creatorUUID: meeting.creatorUUID || null,
+            meetingStartTime: meeting.meetingStartTime, // Store for time validation
+            meetingEndTime: meeting.meetingEndTime // Store for time validation
           });
         });
         
@@ -219,6 +416,144 @@ export async function render(container, view = "dashboard") {
       } catch (error) {
         console.error("Failed to load meetings:", error);
         // Continue with empty meetings if load fails
+      }
+    }
+
+    /**
+     * Load course dates to restrict calendar navigation
+     */
+    async function loadCourseDates() {
+      const courseUUID = getCourseIdFromUrl();
+      if (!courseUUID) {
+        console.warn("No course UUID found, cannot restrict calendar dates");
+        return;
+      }
+
+      try {
+        const courseData = await getCourseDetails(courseUUID);
+        
+        if (courseData && courseData.data) {
+          // Handle different possible response structures
+          const term = courseData.data.term || courseData.term;
+          if (term) {
+            courseStartDate = term.startDate ? new Date(term.startDate) : null;
+            courseEndDate = term.endDate ? new Date(term.endDate) : null;
+            
+            // Set to start of day for accurate comparison
+            if (courseStartDate) {
+              courseStartDate.setHours(0, 0, 0, 0);
+            }
+            if (courseEndDate) {
+              courseEndDate.setHours(23, 59, 59, 999); // End of day
+            }
+            
+            console.log("Course dates loaded:", {
+              start: courseStartDate,
+              end: courseEndDate
+            });
+            
+            // Ensure currentDate is within bounds
+            if (courseStartDate && currentDate < courseStartDate) {
+              currentDate = new Date(courseStartDate);
+            }
+            if (courseEndDate && currentDate > courseEndDate) {
+              currentDate = new Date(courseEndDate);
+            }
+            
+            // Update button states
+            updateNavigationButtons();
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to load course dates:", error);
+        // Continue without date restrictions if API call fails
+      }
+    }
+
+    /**
+     * Check if a date is within the course date range
+     * @param {Date} date - Date to check
+     * @returns {boolean} True if date is within course dates
+     */
+    function isDateWithinCourseRange(date) {
+      if (!courseStartDate || !courseEndDate) {
+        return true; // If dates not loaded, allow all dates
+      }
+      
+      const checkDate = new Date(date);
+      checkDate.setHours(0, 0, 0, 0);
+      
+      return checkDate >= courseStartDate && checkDate <= courseEndDate;
+    }
+
+    /**
+     * Check if a month is within the course date range
+     * @param {Date} date - Date representing the month to check
+     * @returns {boolean} True if any day in the month is within course dates
+     */
+    function isMonthWithinCourseRange(date) {
+      if (!courseStartDate || !courseEndDate) {
+        return true; // If dates not loaded, allow all months
+      }
+      
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      
+      // Check if the first day of the month is before end date
+      // and the last day of the month is after start date
+      const firstDayOfMonth = new Date(year, month, 1);
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      
+      return firstDayOfMonth <= courseEndDate && lastDayOfMonth >= courseStartDate;
+    }
+
+    /**
+     * Update navigation button states based on course dates
+     */
+    function updateNavigationButtons() {
+      if (!prevBtn || !nextBtn || !todayBtn) return;
+      
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      // Check if previous month would be out of bounds
+      const prevMonth = new Date(year, month - 1, 1);
+      const canGoPrev = isMonthWithinCourseRange(prevMonth);
+      
+      // Check if next month would be out of bounds
+      const nextMonth = new Date(year, month + 1, 1);
+      const canGoNext = isMonthWithinCourseRange(nextMonth);
+      
+      // Check if today is within course dates
+      const today = new Date();
+      const canGoToToday = isDateWithinCourseRange(today);
+      
+      // Update button states
+      if (prevBtn) {
+        prevBtn.disabled = !canGoPrev;
+        if (!canGoPrev) {
+          prevBtn.title = "Cannot navigate before course start date";
+        } else {
+          prevBtn.title = "Previous month";
+        }
+      }
+      
+      if (nextBtn) {
+        nextBtn.disabled = !canGoNext;
+        if (!canGoNext) {
+          nextBtn.title = "Cannot navigate after course end date";
+        } else {
+          nextBtn.title = "Next month";
+        }
+      }
+      
+      if (todayBtn) {
+        todayBtn.disabled = !canGoToToday;
+        if (!canGoToToday) {
+          todayBtn.title = "Today is outside the course date range";
+        } else {
+          todayBtn.title = "Go to today";
+        }
       }
     }
 
@@ -302,80 +637,80 @@ export async function render(container, view = "dashboard") {
     recurringEndInput?.addEventListener("change", updateRecurringSummary);
     recurringCheckbox?.addEventListener("change", syncRecurringControlState);
 
-    function renderCalendar() {
+        function renderCalendar() {
       calendarGrid.innerHTML = "";
 
       const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const headersDiv = document.createElement("div");
       headersDiv.classList.add("calendar-days");
-      daysOfWeek.forEach(day => {
+            daysOfWeek.forEach(day => {
         const dayDiv = document.createElement("div");
-        dayDiv.textContent = day;
-        headersDiv.appendChild(dayDiv);
-      });
-      calendarGrid.appendChild(headersDiv);
+                dayDiv.textContent = day;
+                headersDiv.appendChild(dayDiv);
+            });
+            calendarGrid.appendChild(headersDiv);
 
       const datesContainer = document.createElement("div");
       datesContainer.classList.add("calendar-dates");
 
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       currentMonthEl.textContent = currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-      for (let i = 0; i < firstDay; i++) {
+            for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
         empty.classList.add("calendar-day");
-        datesContainer.appendChild(empty);
-      }
+                datesContainer.appendChild(empty);
+            }
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
 
-      for (let day = 1; day <= daysInMonth; day++) {
+            for (let day = 1; day <= daysInMonth; day++) {
         const dateDiv = document.createElement("div");
         dateDiv.classList.add("calendar-day");
 
         const fullDate = `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-        const currentDateObj = new Date(year, month, day);
+                const currentDateObj = new Date(year, month, day);
 
-        // Check if this date is in the past
-        const isPastDate = currentDateObj < today;
+                // Check if this date is in the past
+                const isPastDate = currentDateObj < today;
 
-        if (isPastDate) {
+                if (isPastDate) {
           dateDiv.classList.add("past-date");
-        }
+                }
 
-        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
           dateDiv.classList.add("today");
-        }
+                }
 
         const num = document.createElement("div");
         num.classList.add("date-number");
-        num.textContent = day;
-        dateDiv.appendChild(num);
+                num.textContent = day;
+                dateDiv.appendChild(num);
 
-        if (meetings[fullDate]) {
-          meetings[fullDate].forEach((m, idx) => {
+                if (meetings[fullDate]) {
+                    meetings[fullDate].forEach((m, idx) => {
             const meetDiv = document.createElement("div");
             meetDiv.classList.add("meeting-tag", `type-${m.type.toLowerCase().replace(/\s+/g,"")}`);
-            meetDiv.textContent = m.title;
-            meetDiv.addEventListener("click", e => {
-              e.stopPropagation();
-              openMeetingAttendance(fullDate, idx);
-            });
-            dateDiv.appendChild(meetDiv);
-          });
-        }
+                        meetDiv.textContent = m.title;
+            meetDiv.addEventListener("click", async (e) => {
+                            e.stopPropagation();
+              await openMeetingAttendance(fullDate, idx);
+                        });
+                        dateDiv.appendChild(meetDiv);
+                    });
+                }
 
-        // Only allow clicking on future dates or today
-        if (!isPastDate) {
+                // Only allow clicking on future dates or today
+                if (!isPastDate) {
           dateDiv.addEventListener("click", async () => {
-            // Reset all fields
+                        // Reset all fields
             meetingTitleInput.value = "";
-            meetingDateInput.value = fullDate;
+                        meetingDateInput.value = fullDate;
             selectedCalendarDate = fullDate;
             meetingTimeInput.value = "";
             
@@ -387,30 +722,48 @@ export async function render(container, view = "dashboard") {
             }
             
             meetingDescTextarea.value = "";
-            recurringCheckbox.checked = false;
+                        recurringCheckbox.checked = false;
             if (recurringEndInput) recurringEndInput.value = "";
             syncRecurringControlState();
             participantsContainer.querySelectorAll("input[type=\"checkbox\"]").forEach(cb => cb.checked = false);
 
-            // Load participants when opening modal
-            await loadParticipants();
+            // Reload users/teams when opening modal
+            await loadAllUsersAndTeams();
 
             meetingModal.classList.remove("hidden");
-          });
+                    });
+                }
+
+                datesContainer.appendChild(dateDiv);
+            }
+
+            calendarGrid.appendChild(datesContainer);
+        
+        // Update navigation buttons after rendering
+        updateNavigationButtons();
         }
-
-        datesContainer.appendChild(dateDiv);
-      }
-
-      calendarGrid.appendChild(datesContainer);
-    }
 
     const deleteMeetingBtn = wrapper.querySelector("#delete-meeting");
     const deleteAllFutureBtn = wrapper.querySelector("#delete-future-meetings");
+    const creatorView = wrapper.querySelector("#creator-attendance-view");
+    const participantView = wrapper.querySelector("#participant-attendance-view");
+    const qrCodeImage = wrapper.querySelector("#meeting-qr-code");
+    const meetingCodeDisplay = wrapper.querySelector("#meeting-code-display");
+    const copyCodeBtn = wrapper.querySelector("#copy-code-btn");
+    const qrScannerVideo = wrapper.querySelector("#qr-scanner-video");
+    const qrScannerCanvas = wrapper.querySelector("#qr-scanner-canvas");
+    const startCameraBtn = wrapper.querySelector("#start-camera-btn");
+    const stopCameraBtn = wrapper.querySelector("#stop-camera-btn");
+    const submitAttendanceBtn = wrapper.querySelector("#submit-attendance");
+    const attendancePasscodeInput = wrapper.querySelector("#attendance-passcode");
     let activeMeetingContext = { date: null, index: null, chainId: null };
+    let cameraStream = null;
+    let qrScanningInterval = null;
 
-    function openMeetingAttendance(date, index) {
-      const meeting = meetings[date][index];
+    async function openMeetingAttendance(date, index) {
+            const meeting = meetings[date][index];
+      const currentUser = getCurrentUser();
+      const isCreator = currentUser && meeting.creatorUUID === currentUser.userUuid;
 
       wrapper.querySelector("#attendance-meeting-title").textContent = meeting.title;
       wrapper.querySelector("#attendance-meeting-date").textContent = date;
@@ -421,91 +774,485 @@ export async function render(container, view = "dashboard") {
         ? meeting.participants.join(", ") 
         : "No participants";
 
-      wrapper.querySelector("#attendance-passcode").value = "";
       activeMeetingContext = { 
         date, 
         index, 
         chainId: meeting.chainId || null,
-        meetingUUID: meeting.meetingUUID || null
+        meetingUUID: meeting.meetingUUID || null,
+        creatorUUID: meeting.creatorUUID || null,
+        isRecurring: meeting.isRecurring || false,
+        parentMeetingUUID: meeting.chainId || null, // chainId is the parentMeetingUUID
+        meetingStartTime: meeting.meetingStartTime || null, // For time window validation
+        meetingEndTime: meeting.meetingEndTime || null // For time window validation
       };
+      
+      // Enable "Delete All Future" button only if this is part of a recurring series
       if (deleteAllFutureBtn) {
-        deleteAllFutureBtn.disabled = !meeting.chainId;
+        const isPartOfRecurringSeries = meeting.isRecurring || meeting.chainId;
+        deleteAllFutureBtn.disabled = !isPartOfRecurringSeries;
       }
+      
+      // Show/hide delete buttons based on creator status
+      if (deleteMeetingBtn) {
+        deleteMeetingBtn.style.display = isCreator ? "block" : "none";
+      }
+      if (deleteAllFutureBtn) {
+        deleteAllFutureBtn.style.display = isCreator ? "block" : "none";
+      }
+
+      // Show appropriate view based on creator status
+      if (isCreator) {
+        // Show creator view with QR code and alphanumeric code
+        if (creatorView) creatorView.classList.remove("hidden");
+        if (participantView) participantView.classList.add("hidden");
+        await loadMeetingCode(meeting.meetingUUID);
+      } else {
+        // Show participant view with camera scanner and code input
+        if (creatorView) creatorView.classList.add("hidden");
+        if (participantView) participantView.classList.remove("hidden");
+        if (attendancePasscodeInput) attendancePasscodeInput.value = "";
+      }
+
       meetingContentModalWrapper.classList.remove("hidden");
     }
 
-    deleteMeetingBtn?.addEventListener("click", async () => {
-      const { date, index, meetingUUID } = activeMeetingContext;
-      if (!date || typeof index !== "number") return;
+    /**
+     * Load meeting code and QR code for creator view
+     * @param {string} meetingUUID - Meeting UUID
+     */
+    async function loadMeetingCode(meetingUUID) {
+      if (!meetingUUID) return;
 
-      const confirmDelete = confirm("Delete this meeting from the calendar?");
-      if (!confirmDelete) return;
-
-      // Delete from backend if meetingUUID exists
-      if (meetingUUID) {
-        try {
-          await deleteMeeting(meetingUUID, false);
-        } catch (error) {
-          console.error("Failed to delete meeting:", error);
-          alert(`Failed to delete meeting: ${error.message}`);
-          return;
+      try {
+        const codeData = await getMeetingCode(meetingUUID);
+        
+        if (qrCodeImage && codeData.qrUrl) {
+          qrCodeImage.src = codeData.qrUrl;
+          qrCodeImage.alt = "Meeting QR Code";
+        }
+        
+        if (meetingCodeDisplay && codeData.meetingCode) {
+          meetingCodeDisplay.textContent = codeData.meetingCode;
+        }
+      } catch (error) {
+        console.error("Failed to load meeting code:", error);
+        // If code doesn't exist, show message to create one
+        if (meetingCodeDisplay) {
+          meetingCodeDisplay.textContent = "No code generated yet";
+        }
+        if (qrCodeImage) {
+          qrCodeImage.src = "";
+          qrCodeImage.alt = "QR code not available";
         }
       }
+    }
 
-      // Remove from local state
-      meetings[date].splice(index, 1);
-      if (meetings[date].length === 0) {
-        delete meetings[date];
+    /**
+     * Copy meeting code to clipboard
+     */
+    function copyMeetingCode() {
+      if (!meetingCodeDisplay) return;
+      
+      const code = meetingCodeDisplay.textContent;
+      if (!code || code === "No code generated yet") return;
+
+      navigator.clipboard.writeText(code).then(() => {
+        if (copyCodeBtn) {
+          const originalText = copyCodeBtn.textContent;
+          copyCodeBtn.textContent = "Copied!";
+          setTimeout(() => {
+            copyCodeBtn.textContent = originalText;
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error("Failed to copy code:", err);
+        alert("Failed to copy code. Please copy manually: " + code);
+      });
+    }
+
+    /**
+     * Start camera for QR code scanning
+     */
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: "environment", // Use back camera on mobile
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          } 
+        });
+        
+        cameraStream = stream;
+        if (qrScannerVideo) {
+          qrScannerVideo.srcObject = stream;
+        }
+        
+        if (startCameraBtn) startCameraBtn.classList.add("hidden");
+        if (stopCameraBtn) stopCameraBtn.classList.remove("hidden");
+        
+        // Start QR code scanning
+        startQRScanning();
+      } catch (error) {
+        console.error("Failed to access camera:", error);
+        alert("Failed to access camera. Please check permissions and try again.");
+      }
+    }
+
+    /**
+     * Stop camera
+     */
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      
+      if (qrScannerVideo) {
+        qrScannerVideo.srcObject = null;
+      }
+      
+      if (qrScanningInterval) {
+        clearInterval(qrScanningInterval);
+        qrScanningInterval = null;
+      }
+      
+      if (startCameraBtn) startCameraBtn.classList.remove("hidden");
+      if (stopCameraBtn) stopCameraBtn.classList.add("hidden");
+    }
+
+    /**
+     * Start QR code scanning using camera
+     * Uses jsQR library if available, otherwise shows camera feed
+     */
+    function startQRScanning() {
+      if (!qrScannerVideo || !qrScannerCanvas) return;
+
+      // Check if jsQR library is available
+      if (typeof jsQR === "undefined") {
+        console.warn("jsQR library not loaded. QR scanning will be limited.");
+        // Load jsQR library dynamically
+        loadQRCodeLibrary().then(() => {
+          if (typeof jsQR !== "undefined") {
+            startQRScanningWithLibrary();
+          }
+        }).catch(err => {
+          console.error("Failed to load jsQR library:", err);
+          alert("QR code scanning library could not be loaded. Please use manual code entry.");
+        });
+        return;
       }
 
-      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null };
+      startQRScanningWithLibrary();
+    }
+
+    /**
+     * Load jsQR library dynamically
+     */
+    function loadQRCodeLibrary() {
+      return new Promise((resolve, reject) => {
+        if (typeof jsQR !== "undefined") {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    /**
+     * Start QR code scanning with jsQR library
+     */
+    function startQRScanningWithLibrary() {
+      if (!qrScannerVideo || !qrScannerCanvas || typeof jsQR === "undefined") return;
+
+      qrScanningInterval = setInterval(() => {
+        if (qrScannerVideo.readyState === qrScannerVideo.HAVE_ENOUGH_DATA) {
+          const canvas = qrScannerCanvas;
+          const video = qrScannerVideo;
+          
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          
+          // Try to decode QR code from canvas
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          
+          if (code) {
+            // QR code detected - extract meeting code from URL or use code directly
+            console.log("QR code detected:", code.data);
+            
+            // Stop scanning
+            clearInterval(qrScanningInterval);
+            qrScanningInterval = null;
+            
+            // Extract code from QR data (might be a URL like /attendance/record/?meeting=...&code=...)
+            let extractedCode = code.data;
+            const codeMatch = code.data.match(/[?&]code=([A-Z0-9]+)/i);
+            if (codeMatch) {
+              extractedCode = codeMatch[1].toUpperCase();
+            }
+            
+            // Handle the scanned code
+            handleQRCodeScan(extractedCode);
+          }
+        }
+      }, 100);
+    }
+
+    /**
+     * Check if current time is within meeting time window
+     * @param {string|Date} startTime - Meeting start time
+     * @param {string|Date} endTime - Meeting end time
+     * @returns {Object} { isValid: boolean, message: string }
+     */
+    function validateMeetingTimeWindow(startTime, endTime) {
+      if (!startTime || !endTime) {
+        return { isValid: false, message: "Meeting time information not available" };
+      }
+
+      const now = new Date();
+      let start, end;
+
+      // Parse start and end times
+      if (startTime instanceof Date) {
+        start = startTime;
+      } else {
+        start = new Date(startTime);
+      }
+
+      if (endTime instanceof Date) {
+        end = endTime;
+      } else {
+        end = new Date(endTime);
+      }
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return { isValid: false, message: "Invalid meeting time format" };
+      }
+
+      if (now < start) {
+        const startStr = start.toLocaleString("en-US", { 
+          month: "short", 
+          day: "numeric", 
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        });
+        return { 
+          isValid: false, 
+          message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${startStr}` 
+        };
+      }
+
+      if (now > end) {
+        const endStr = end.toLocaleString("en-US", { 
+          month: "short", 
+          day: "numeric", 
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        });
+        return { 
+          isValid: false, 
+          message: `Attendance submission window has closed.\n\nMeeting ended at: ${endStr}` 
+        };
+      }
+
+      return { isValid: true, message: "" };
+    }
+
+    /**
+     * Submit attendance using code (QR scan or manual entry)
+     */
+    async function submitAttendance() {
+      const code = attendancePasscodeInput ? attendancePasscodeInput.value.trim().toUpperCase() : "";
+      const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
+
+      if (!code) {
+        alert("Please enter a code");
+        return;
+      }
+
+      if (!meetingUUID) {
+        alert("Meeting information not available");
+        return;
+      }
+
+      // Validate time window before submitting
+      const timeValidation = validateMeetingTimeWindow(meetingStartTime, meetingEndTime);
+      if (!timeValidation.isValid) {
+        alert(timeValidation.message);
+        return;
+      }
+
+      try {
+        await recordAttendanceByCode(meetingUUID, code);
+        alert("Attendance recorded successfully!");
+        meetingContentModalWrapper.classList.add("hidden");
+        stopCamera();
+        if (attendancePasscodeInput) attendancePasscodeInput.value = "";
+      } catch (error) {
+        console.error("Failed to submit attendance:", error);
+        
+        // Check if error is due to time window (backend validation)
+        if (error.message.includes("not valid at this time") || error.message.includes("time")) {
+          alert(`Cannot submit attendance: ${error.message}\n\nPlease ensure you are submitting during the meeting's scheduled time.`);
+        } else {
+          alert(`Failed to submit attendance: ${error.message}`);
+        }
+      }
+    }
+
+    /**
+     * Handle QR code scan result
+     * @param {string} code - Scanned QR code
+     */
+    async function handleQRCodeScan(code) {
+      if (!code || !code.trim()) return;
+
+      const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
+
+      if (!meetingUUID) {
+        console.error("Meeting UUID not available for QR scan");
+        return;
+      }
+
+      // Validate time window before submitting
+      const timeValidation = validateMeetingTimeWindow(meetingStartTime, meetingEndTime);
+      if (!timeValidation.isValid) {
+        alert(timeValidation.message);
+        return;
+      }
+
+      try {
+        await recordAttendanceByCode(meetingUUID, code.trim().toUpperCase());
+        alert("Attendance recorded successfully from QR code!");
+        meetingContentModalWrapper.classList.add("hidden");
+        stopCamera();
+      } catch (error) {
+        console.error("Failed to submit attendance from QR code:", error);
+        
+        // Check if error is due to time window (backend validation)
+        if (error.message.includes("not valid at this time") || error.message.includes("time")) {
+          alert(`Cannot submit attendance: ${error.message}\n\nPlease ensure you are submitting during the meeting's scheduled time.`);
+        } else {
+          alert(`Failed to submit attendance: ${error.message}`);
+        }
+      }
+    }
+
+    deleteMeetingBtn?.addEventListener("click", async () => {
+      const { date, index, meetingUUID, chainId } = activeMeetingContext;
+      
+      if (!date || typeof index !== "number") {
+        alert("Meeting information not available.");
+        return;
+      }
+
+      if (!meetingUUID) {
+        alert("Cannot delete meeting: Meeting ID not found.");
+        return;
+      }
+
+      const meeting = meetings[date] && meetings[date][index];
+      const isRecurring = meeting && (meeting.isRecurring || meeting.chainId);
+      
+      let confirmMessage = "Delete this meeting from the calendar?";
+      if (isRecurring) {
+        confirmMessage = "Delete this meeting? (This will only delete this occurrence, not future recurring meetings.)";
+      }
+      
+      const confirmDelete = confirm(confirmMessage);
+      if (!confirmDelete) return;
+
+      // Delete from backend (deleteFuture = false to only delete this meeting)
+      try {
+        await deleteMeeting(meetingUUID, false);
+        console.log("Meeting deleted successfully from database");
+      } catch (error) {
+        console.error("Failed to delete meeting:", error);
+        alert(`Failed to delete meeting: ${error.message}\n\nThe meeting may have already been deleted or you may not have permission.`);
+        return;
+      }
+
+      // Reload meetings from backend to reflect deletion for all users
+      await loadMeetingsFromBackend();
+
+      // Reset context and close modal
+      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null, creatorUUID: null };
       if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
       meetingContentModalWrapper.classList.add("hidden");
-      renderCalendar();
     });
 
     deleteAllFutureBtn?.addEventListener("click", async () => {
       const { chainId, date, meetingUUID } = activeMeetingContext;
-      if (!chainId || !date || !meetingUUID) return;
-
-      const confirmDelete = confirm("Delete this and all future recurring meetings?");
-      if (!confirmDelete) return;
-
-      // Delete from backend (deleteFuture = true)
-      try {
-        await deleteMeeting(meetingUUID, true);
-      } catch (error) {
-        console.error("Failed to delete future meetings:", error);
-        alert(`Failed to delete future meetings: ${error.message}`);
+      
+      if (!chainId || !date || !meetingUUID) {
+        alert("Cannot delete future meetings: Meeting information not available.");
         return;
       }
 
-      // Remove from local state
-      const cutoff = parseLocalDate(date);
-      if (!cutoff) return;
+      const meeting = meetings[date] && meetings[date][activeMeetingContext.index];
+      if (!meeting || !meeting.isRecurring) {
+        alert("This meeting is not part of a recurring series.");
+        return;
+      }
 
-      Object.keys(meetings).forEach(meetingDate => {
-        const parsed = parseLocalDate(meetingDate);
-        if (!parsed || parsed < cutoff) return;
+      const confirmDelete = confirm(
+        "Delete this meeting and ALL future recurring meetings in this series?\n\n" +
+        "This action cannot be undone. All future occurrences will be removed from the calendar."
+      );
+      
+      if (!confirmDelete) return;
 
-        meetings[meetingDate] = meetings[meetingDate].filter(entry => entry.chainId !== chainId);
-        if (meetings[meetingDate].length === 0) delete meetings[meetingDate];
-      });
+      // Delete from backend (deleteFuture = true to delete all future recurring meetings)
+      try {
+        await deleteMeeting(meetingUUID, true);
+        console.log("Meeting and all future recurring meetings deleted successfully from database");
+      } catch (error) {
+        console.error("Failed to delete future meetings:", error);
+        alert(`Failed to delete future meetings: ${error.message}\n\nThe meetings may have already been deleted or you may not have permission.`);
+        return;
+      }
 
-      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null };
+      // Reload meetings from backend to reflect deletion for all users
+      await loadMeetingsFromBackend();
+
+      // Reset context and close modal
+      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null, creatorUUID: null };
       if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
       meetingContentModalWrapper.classList.add("hidden");
-      renderCalendar();
     });
 
-    wrapper.querySelector("#submit-attendance").onclick = () => {
-      const code = wrapper.querySelector("#attendance-passcode").value;
-      alert(`Attendance submitted with passcode: ${code}\n(Backend integration needed)`);
-      meetingContentModalWrapper.classList.add("hidden");
-    };
+    // Wire up camera buttons
+    if (startCameraBtn) {
+      startCameraBtn.onclick = () => {
+        startCamera();
+      };
+    }
+    if (stopCameraBtn) {
+      stopCameraBtn.onclick = () => {
+        stopCamera();
+      };
+    }
+
+    // Wire up submit attendance button
+    if (submitAttendanceBtn) {
+      submitAttendanceBtn.onclick = () => {
+        submitAttendance();
+      };
+    }
 
     meetingForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+            e.preventDefault();
 
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) {
@@ -520,26 +1267,37 @@ export async function render(container, view = "dashboard") {
       const desc = meetingDescTextarea.value.trim();
       const recurring = recurringCheckbox.checked;
 
-      const participants = Array.from(participantsContainer.querySelectorAll("input[type=\"checkbox\"]:checked"))
-        .map(cb => cb.value);
-
-      const meetingDateTime = new Date(`${date}T${time}`);
-      const now = new Date();
-
-      if (meetingDateTime < now) {
-        alert("You cannot create a meeting in the past.");
-        return;
+      // Get participants and filter out placeholder names (only keep valid UUIDs)
+      const allParticipants = Array.from(participantsContainer.querySelectorAll("input[type=\"checkbox\"]:checked"))
+                .map(cb => cb.value);
+      
+      // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 hex characters)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const participants = allParticipants.filter(p => uuidRegex.test(p));
+      
+      // Warn if placeholder participants were selected
+      const placeholderParticipants = allParticipants.filter(p => !uuidRegex.test(p));
+      if (placeholderParticipants.length > 0) {
+        console.warn("Placeholder participants ignored (not real UUIDs):", placeholderParticipants);
       }
 
-      if (recurring) {
+            const meetingDateTime = new Date(`${date}T${time}`);
+            const now = new Date();
+
+            if (meetingDateTime < now) {
+                alert("You cannot create a meeting in the past.");
+                return;
+            }
+
+            if (recurring) {
         if (!recurringEndInput || !recurringEndInput.value) {
           alert("Please select an end date for recurring meetings.");
           return;
         }
 
         const [year, month, day] = date.split("-").map(Number);
-        const startDate = new Date(year, month - 1, day);
-
+                const startDate = new Date(year, month - 1, day);
+                
         const [endYear, endMonth, endDay] = recurringEndInput.value.split("-").map(Number);
         const endDate = new Date(endYear, (endMonth || 1) - 1, endDay || 1);
 
@@ -554,15 +1312,15 @@ export async function render(container, view = "dashboard") {
         }
 
         // Create recurring meetings
-        const nextDate = new Date(startDate);
+                    const nextDate = new Date(startDate);
         let parentMeetingUUID = null;
-
+                    
         while (nextDate <= endDate) {
-          const nextYear = nextDate.getFullYear();
+                    const nextYear = nextDate.getFullYear();
           const nextMonth = String(nextDate.getMonth() + 1).padStart(2, "0");
           const nextDay = String(nextDate.getDate()).padStart(2, "0");
-          const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
-
+                    const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
+                    
           // Calculate meeting start and end times
           const [hours, minutes] = time.split(":").map(Number);
           const meetingStart = new Date(nextDate);
@@ -570,35 +1328,59 @@ export async function render(container, view = "dashboard") {
           const meetingEnd = new Date(meetingStart);
           meetingEnd.setHours(meetingStart.getHours() + 1); // Default 1 hour duration
 
+          const currentUser = getCurrentUser();
+          if (!currentUser || !currentUser.userUuid) {
+            alert("User information not available. Please refresh the page.");
+            return;
+          }
+
+          const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
+          console.log("Meeting type:", type, "->", meetingTypeInt, "typeof:", typeof meetingTypeInt, "isInteger:", Number.isInteger(meetingTypeInt));
+          
+          if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 1 || meetingTypeInt > 4) {
+            alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
+            return;
+          }
+          
+          const meetingData = {
+            creatorUUID: currentUser.userUuid,
+            courseUUID: courseUUID,
+            meetingStartTime: meetingStart.toISOString(),
+            meetingEndTime: meetingEnd.toISOString(),
+            meetingDate: nextDateStr,
+            meetingTitle: title,
+            meetingDescription: desc || null,
+            meetingLocation: null,
+            meetingType: meetingTypeInt,
+            isRecurring: true,
+            participants: participants // Array of participant UUIDs - these users will see the meeting on their calendars
+          };
+          
+          console.log("Sending meeting data:", JSON.stringify(meetingData, null, 2));
+          console.log(`Creating meeting with ${participants.length} participant(s). All participants will see this meeting on their calendars.`);
+
+          // Set parentMeetingUUID for recurring meetings (first one is parent, rest are children)
+          if (parentMeetingUUID) {
+            meetingData.parentMeetingUUID = parentMeetingUUID;
+          }
+
           try {
-            const meetingData = {
-              courseUUID: courseUUID,
-              meetingStartTime: meetingStart.toISOString(),
-              meetingEndTime: meetingEnd.toISOString(),
-              meetingDate: nextDateStr,
-              meetingTitle: title,
-              meetingDescription: desc || null,
-              meetingLocation: null,
-              meetingType: mapMeetingTypeToInt(type),
-              isRecurring: true,
-              participants: participants
-            };
-
-            // Set parentMeetingUUID for recurring meetings (first one is parent, rest are children)
-            if (parentMeetingUUID) {
-              meetingData.parentMeetingUUID = parentMeetingUUID;
-            }
-
             const response = await createMeeting(meetingData);
             
             // Store parent UUID for next iterations
-            if (!parentMeetingUUID && response.meeting) {
+            if (response && response.meeting && !parentMeetingUUID) {
               parentMeetingUUID = response.meeting.meetingUUID;
             }
           } catch (error) {
-            console.error("Failed to create recurring meeting:", error);
-            alert(`Failed to create meeting on ${nextDateStr}: ${error.message}`);
-            return;
+            // If status was 201, the meeting was likely created despite the error
+            if (error.message.includes("201") || error.message.includes("Created") || error.message.includes("Failed to fetch")) {
+              console.warn("Meeting may have been created despite response parsing error:", error);
+              // Continue with next meeting
+            } else {
+              console.error("Failed to create recurring meeting:", error);
+              alert(`Failed to create meeting on ${nextDateStr}: ${error.message}`);
+              return;
+            }
           }
 
           nextDate.setDate(nextDate.getDate() + 7);
@@ -610,25 +1392,49 @@ export async function render(container, view = "dashboard") {
         const meetingEnd = new Date(meetingStart);
         meetingEnd.setHours(meetingStart.getHours() + 1); // Default 1 hour duration
 
-        try {
-          const meetingData = {
-            courseUUID: courseUUID,
-            meetingStartTime: meetingStart.toISOString(),
-            meetingEndTime: meetingEnd.toISOString(),
-            meetingDate: date,
-            meetingTitle: title,
-            meetingDescription: desc || null,
-            meetingLocation: null,
-            meetingType: mapMeetingTypeToInt(type),
-            isRecurring: false,
-            participants: participants
-          };
+        const currentUser = getCurrentUser();
+        if (!currentUser || !currentUser.userUuid) {
+          alert("User information not available. Please refresh the page.");
+          return;
+        }
 
+        const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
+        console.log("Meeting type:", type, "->", meetingTypeInt, "typeof:", typeof meetingTypeInt, "isInteger:", Number.isInteger(meetingTypeInt));
+        
+        if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 1 || meetingTypeInt > 4) {
+          alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
+          return;
+        }
+        
+        const meetingData = {
+          creatorUUID: currentUser.userUuid,
+          courseUUID: courseUUID,
+          meetingStartTime: meetingStart.toISOString(),
+          meetingEndTime: meetingEnd.toISOString(),
+          meetingDate: date,
+          meetingTitle: title,
+          meetingDescription: desc || null,
+          meetingLocation: null,
+          meetingType: meetingTypeInt,
+          isRecurring: false,
+          participants: participants // Array of participant UUIDs - these users will see the meeting on their calendars
+        };
+        
+        console.log("Sending meeting data:", JSON.stringify(meetingData, null, 2));
+        console.log(`Creating meeting with ${participants.length} participant(s). All participants will see this meeting on their calendars.`);
+
+        try {
           await createMeeting(meetingData);
         } catch (error) {
-          console.error("Failed to create meeting:", error);
-          alert(`Failed to create meeting: ${error.message}`);
-          return;
+          // If status was 201, the meeting was likely created despite the error
+          if (error.message.includes("201") || error.message.includes("Created") || error.message.includes("Failed to fetch")) {
+            console.warn("Meeting may have been created despite response parsing error:", error);
+            // Continue - we'll reload meetings to check
+          } else {
+            console.error("Failed to create meeting:", error);
+            alert(`Failed to create meeting: ${error.message}`);
+            return;
+          }
         }
       }
 
@@ -636,26 +1442,64 @@ export async function render(container, view = "dashboard") {
       await loadMeetingsFromBackend();
 
       meetingModal.classList.add("hidden");
-      meetingForm.reset();
+            meetingForm.reset();
       if (recurringEndInput) recurringEndInput.value = "";
       syncRecurringControlState();
     });
 
     closeModalBtn.onclick = () => meetingModal.classList.add("hidden");
     closeMeetingContentBtn.onclick = () => {
-      activeMeetingContext = { date: null, index: null, chainId: null };
+      stopCamera(); // Stop camera if running
+      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null, creatorUUID: null };
       if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
       meetingContentModalWrapper.classList.add("hidden");
     };
 
-    prevBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
-    nextBtn.onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
-    todayBtn.onclick = () => { currentDate = new Date(); renderCalendar(); };
+        prevBtn.onclick = () => {
+          const newDate = new Date(currentDate);
+          newDate.setMonth(newDate.getMonth() - 1);
+          
+          // Check if navigation is allowed
+          if (isMonthWithinCourseRange(newDate)) {
+            currentDate = newDate;
+            renderCalendar();
+            updateNavigationButtons();
+          } else {
+            alert("Cannot navigate before the course start date.");
+          }
+        };
+        
+        nextBtn.onclick = () => {
+          const newDate = new Date(currentDate);
+          newDate.setMonth(newDate.getMonth() + 1);
+          
+          // Check if navigation is allowed
+          if (isMonthWithinCourseRange(newDate)) {
+            currentDate = newDate;
+            renderCalendar();
+            updateNavigationButtons();
+          } else {
+            alert("Cannot navigate after the course end date.");
+          }
+        };
+        
+        todayBtn.onclick = () => {
+          const today = new Date();
+          
+          // Check if today is within course dates
+          if (isDateWithinCourseRange(today)) {
+            currentDate = today;
+            renderCalendar();
+            updateNavigationButtons();
+          } else {
+            alert("Today is outside the course date range. Please select a date within the course period.");
+          }
+        };
 
     syncRecurringControlState();
     
     // Render calendar initially (even if empty) so it's visible immediately
-    renderCalendar();
+        renderCalendar();
     
     // Load user context to determine role
     const courseUUID = getCourseIdFromUrl();
@@ -664,11 +1508,24 @@ export async function render(container, view = "dashboard") {
       setupMeetingTypeOptions();
     }
     
-    // Load meetings and participants from backend on initial render
+    // Set up participant selection controls
+    if (selectAllBtn) {
+      selectAllBtn.addEventListener("click", selectAllParticipants);
+    }
+    if (deselectAllBtn) {
+      deselectAllBtn.addEventListener("click", deselectAllParticipants);
+    }
+    if (selectByTeamDropdown) {
+      selectByTeamDropdown.addEventListener("change", (e) => {
+        selectParticipantsByTeam(e.target.value);
+      });
+    }
+    
+    // Load meetings and users/teams from backend on initial render
     await loadMeetingsFromBackend();
-    await loadParticipants();
+    await loadAllUsersAndTeams();
 
-  } catch (error) {
-    container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
-  }
+    } catch (error) {
+        container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
+    }
 }
