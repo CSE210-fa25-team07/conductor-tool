@@ -654,6 +654,9 @@ export async function render(container, view = "dashboard") {
 
     syncRecurringControlState();
     
+    // Render calendar initially (even if empty) so it's visible immediately
+    renderCalendar();
+    
     // Load user context to determine role
     const courseUUID = getCourseIdFromUrl();
     if (courseUUID) {
