@@ -403,7 +403,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
     // Update verification codes (upsert to handle new codes)
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: taRole.roleUuid
         }
@@ -422,7 +422,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: tutorRole.roleUuid
         }
@@ -441,7 +441,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: studentRole.roleUuid
         }

@@ -111,6 +111,7 @@ model VerificationCode {
   role       Role     @relation(fields: [roleUuid], references: [roleUuid], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([courseUuid, roleUuid])
+  @@unique([courseUuid, roleUuid], name: "courseUuidRoleUuid")
   @@map("verification_codes")
 }
 
