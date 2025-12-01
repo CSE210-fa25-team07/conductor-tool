@@ -57,15 +57,15 @@ async function getMeetingByUUID(req, res) {
     });
   }
 
-  const participants = await attendanceRepository.getParticipantListByParams({ meetingUUID: meeting.meetingUUID }, res);
+  const participants = await attendanceRepository.getParticipantListByParams({ meetingUUID: meeting.meetingUuid }, res);
 
   let isInMeeting = false;
   participants.forEach(participant => {
-    if (participant.participantUuid === userContext.user.userUUID) {
+    if (participant.participantUuid === userContext.user.userUuid) {
       isInMeeting = true;
     }
   });
-  isInMeeting = isInMeeting || meeting.creatorUUID === userContext.user.userUUID;
+  isInMeeting = isInMeeting || meeting.creatorUuid === userContext.user.userUuid;
   const specialPerms = [RoleEnum.PROFESSOR, RoleEnum.TA, RoleEnum.TUTOR, RoleEnum.TEAM_LEADER].includes(courseEnrollment.role.roleName);
 
   if (!(isInMeeting || specialPerms)) {
@@ -89,8 +89,10 @@ async function getMeetingByUUID(req, res) {
 async function createMeeting(req, res) {
   const userUUID = req.session.user.id;
 
+  // TODO(bukhradze): This does not create recurring meetings!
+
   // Add creatorUUID to request body if not provided
-  if (!req.body.creatorUUID) {
+  if (!req.body.creatorUUID || req.body.creatorUUID !== userUUID) {
     req.body.creatorUUID = userUUID;
   }
 
@@ -237,7 +239,7 @@ async function updateMeeting(req, res) {
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
     userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUUID === courseUUID && enrollment.course.term.isActive
+      enrollment.course.courseUuid === courseUUID && enrollment.course.term.isActive
     )
   );
   if (!isInActiveCourse) {
@@ -255,7 +257,7 @@ async function updateMeeting(req, res) {
   }
 
   const meeting = await attendanceRepository.updateMeeting({
-    meetingUUID: existingMeeting.meetingUUID,
+    meetingUUID: existingMeeting.meetingUuid,
     meetingStartTime: meetingStartTime || existingMeeting.meetingStartTime,
     meetingEndTime: meetingEndTime || existingMeeting.meetingEndTime,
     meetingDate: meetingDate || existingMeeting.meetingDate,
@@ -298,7 +300,7 @@ async function deleteMeeting(req, res) {
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
     userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUUID === courseUUID && enrollment.course.term.isActive
+      enrollment.course.courseUuid === courseUUID && enrollment.course.term.isActive
     )
   );
   const canDelete = (
@@ -316,7 +318,7 @@ async function deleteMeeting(req, res) {
   await attendanceRepository.deleteMeeting(meetingUUID);
 
   if (existingMeeting.isRecurring && deleteFuture) {
-    await attendanceRepository.deleteMeetingByParentUUID(existingMeeting.meetingUUID);
+  await attendanceRepository.deleteMeetingByParentUUID(existingMeeting.meetingUuid);
   }
 
   return res.status(200).json({
@@ -562,7 +564,7 @@ async function updateParticipant(req, res) {
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
     userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUUID === meeting.courseUUID && enrollment.course.term.isActive
+      enrollment.course.courseUuid === meeting.courseUuid && enrollment.course.term.isActive
     )
   );
   if (!isInActiveCourse) {
@@ -635,7 +637,7 @@ async function deleteParticipant(req, res) {
   const userContext = await userContextRepository.getUserContext(userUUID);
   const isInActiveCourse = (
     userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUUID === meeting.courseUUID && enrollment.course.term.isActive
+      enrollment.course.courseUuid === meeting.courseUuid && enrollment.course.term.isActive
     )
   );
   if (!isInActiveCourse) {
@@ -705,7 +707,7 @@ async function getParticipantListByParams(req, res) {
 
   if (courseUUID) {
     const isInCourse = userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUUID === courseUUID
+      enrollment.course.courseUuid === courseUUID
     );
     if (!isInCourse && !isStaff) {
       return res.status(403).json({
@@ -901,8 +903,9 @@ async function getMeetingCode(req, res) {
  * @status IN USE
  */
 async function recordAttendanceViaCode(req, res) {
-  const meetingUUID = req.params.meeting;
-  const meetingCode = req.params.code;
+  // Accept meeting as either query param (from QR redirect) or route param
+  const meetingUUID = req.query.meeting || req.params.meeting || req.params.id;
+  const meetingCode = req.params.code || req.params.id;
   const userUUID = req.session.user.id;
 
   const participant = await attendanceRepository.getParticipant(userUUID, meetingUUID);

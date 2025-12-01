@@ -106,11 +106,34 @@ async function enrollUserToCourse(userUuid, courseUuid, roleUuid) {
  * @returns {Promise<Object>} Course object
  */
 async function getCourseByUuid(courseUuid) {
-  // TODO(bukhradze): shouldn't there be a DTO here?
   return await prisma.course.findUnique({
     where: {
-      courseUuid: courseUuid
+      courseUuid: courseUuid,
+      include: {
+        term: true,
+        teams: true
+      }
     }
   });
 }
-export { getCoursesByUserId, getCoursesWithDetailsByUserId, enrollUserToCourse, getCourseByUuid };
+
+async function getUsersByCourseUuid(courseUuid) {
+  const enrollments = await prisma.courseEnrollment.findMany({
+    where: {
+      courseUuid: courseUuid
+    },
+    select: {
+      userUuid: true
+    }
+  });
+
+  return enrollments.map(enrollment => enrollment.user);
+} 
+
+export { 
+  getCoursesByUserId,
+  getCoursesWithDetailsByUserId, 
+  enrollUserToCourse, 
+  getCourseByUuid,
+  getUsersByCourseUuid
+};
