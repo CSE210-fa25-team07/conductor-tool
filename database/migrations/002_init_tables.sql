@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS verification_codes (
 CREATE TABLE IF NOT EXISTS teams (
     team_uuid     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     course_uuid   UUID NOT NULL REFERENCES courses(course_uuid)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+        ON UPDATE CASCADE ON DELETE CASCADE,
     team_name     TEXT NOT NULL,
     team_page_url TEXT,
     repo_url      TEXT,

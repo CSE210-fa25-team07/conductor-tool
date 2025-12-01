@@ -123,7 +123,7 @@ model Team {
   teamTaUuid  String?      @map("team_ta_uuid") @db.Uuid
   standups    Standup[]
   members     TeamMember[]
-  course      Course       @relation(fields: [courseUuid], references: [courseUuid])
+  course      Course       @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade)
   teamTa      User?        @relation("TeamTA", fields: [teamTaUuid], references: [userUuid])
 
   @@unique([courseUuid, teamName], name: "uq_team_name_per_course", map: "uq_team_name_per_course")
