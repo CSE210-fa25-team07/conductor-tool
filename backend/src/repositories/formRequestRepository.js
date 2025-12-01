@@ -10,11 +10,11 @@ const prisma = getPrisma();
 
 /**
  * Create a new form request entry in the database using the provided information. Fails if a request with the same email already exists.
- * @param {string} firstName 
- * @param {string} lastName 
- * @param {string} email 
- * @param {string} relatedInstitution 
- * @param {string} verificationCode 
+ * @param {string} firstName
+ * @param {string} lastName
+ * @param {string} email
+ * @param {string} relatedInstitution
+ * @param {string} verificationCode
  * @returns {Promise<Object|null>} Created form request or null if failed
  */
 async function createFormRequest(firstName, lastName, email, relatedInstitution, verificationCode) {
