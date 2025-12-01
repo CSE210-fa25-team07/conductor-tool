@@ -1,9 +1,9 @@
 /** @module courseConfig/frontend */
 import { initGlobalNavigation } from "../../components/navigation.js";
 
-// Detect if we're on create or edit page
-const isCreatePage = window.location.pathname.includes('/create');
-const isEditPage = window.location.pathname.includes('/edit');
+// Detect if we"re on create or edit page
+const isCreatePage = window.location.pathname.includes("/create");
+const isEditPage = window.location.pathname.includes("/edit");
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
@@ -23,19 +23,19 @@ document.addEventListener("DOMContentLoaded", async () => {
  */
 async function initCreateCoursePage() {
   // Load available terms
-  await loadTerms('create');
+  await loadTerms("create");
 
   // Setup generate buttons for verification codes
-  setupGenerateButtons('create');
+  setupGenerateButtons("create");
 
   // Setup cancel button
-  document.getElementById('cancel-button').addEventListener('click', () => {
-    window.location.href = '/dashboard';
+  document.getElementById("cancel-button").addEventListener("click", () => {
+    window.location.href = "/dashboard";
   });
 
   // Setup form submission
-  const form = document.getElementById('create-course-form');
-  form.addEventListener('submit', handleCreateCourseSubmit);
+  const form = document.getElementById("create-course-form");
+  form.addEventListener("submit", handleCreateCourseSubmit);
 }
 
 /**
@@ -43,60 +43,60 @@ async function initCreateCoursePage() {
  */
 async function initEditCoursePage() {
   // Extract courseUuid from URL: /courses/:courseUuid/edit
-  const pathParts = window.location.pathname.split('/');
+  const pathParts = window.location.pathname.split("/");
   const courseUuid = pathParts[2];
 
   if (!courseUuid) {
-    showError('edit', 'Invalid course URL');
+    showError("edit", "Invalid course URL");
     return;
   }
 
   // Load available terms
-  await loadTerms('edit');
+  await loadTerms("edit");
 
   // Load existing course data
   await loadCourseData(courseUuid);
 
   // Setup generate buttons for verification codes
-  setupGenerateButtons('edit');
+  setupGenerateButtons("edit");
 
   // Setup cancel button
-  document.getElementById('cancel-button').addEventListener('click', () => {
-    window.location.href = '/dashboard';
+  document.getElementById("cancel-button").addEventListener("click", () => {
+    window.location.href = "/dashboard";
   });
 
   // Setup form submission
-  const form = document.getElementById('edit-course-form');
-  form.addEventListener('submit', (e) => handleEditCourseSubmit(e, courseUuid));
+  const form = document.getElementById("edit-course-form");
+  form.addEventListener("submit", (e) => handleEditCourseSubmit(e, courseUuid));
 }
 
 /**
  * Load available terms (current and next term)
- * @param {string} mode - 'create' or 'edit'
+ * @param {string} mode - "create" or "edit"
  */
 async function loadTerms(mode) {
   try {
-    const response = await fetch('/v1/api/courses/terms');
+    const response = await fetch("/v1/api/courses/terms");
 
     if (!response.ok) {
-      throw new Error('Failed to fetch terms');
+      throw new Error("Failed to fetch terms");
     }
 
     const data = await response.json();
     const terms = data.terms || [];
 
     const selectElement = document.getElementById(`term-select-${mode}`);
-    selectElement.innerHTML = '<option value="">Select a term...</option>';
+    selectElement.innerHTML = "<option value=\"\">Select a term...</option>";
 
     terms.forEach(term => {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = term.termUuid;
       option.textContent = `${term.season} ${term.year}`;
       selectElement.appendChild(option);
     });
 
-  } catch (error) {
-    showError(mode, 'Failed to load terms. Please refresh the page.');
+  } catch {
+    showError(mode, "Failed to load terms. Please refresh the page.");
   }
 }
 
@@ -109,40 +109,40 @@ async function loadCourseData(courseUuid) {
     const response = await fetch(`/v1/api/courses/${courseUuid}`);
 
     if (!response.ok) {
-      throw new Error('Failed to fetch course data');
+      throw new Error("Failed to fetch course data");
     }
 
     const data = await response.json();
     const course = data.course;
 
     // Populate form fields
-    document.getElementById('course-code-edit').value = course.courseCode || '';
-    document.getElementById('course-name-edit').value = course.courseName || '';
-    document.getElementById('term-select-edit').value = course.termUuid || '';
-    document.getElementById('description-edit').value = course.description || '';
-    document.getElementById('ta-code-edit').value = course.taCode || '';
-    document.getElementById('tutor-code-edit').value = course.tutorCode || '';
-    document.getElementById('student-code-edit').value = course.studentCode || '';
-    document.getElementById('syllabus-url-edit').value = course.syllabusUrl || '';
-    document.getElementById('canvas-url-edit').value = course.canvasUrl || '';
+    document.getElementById("course-code-edit").value = course.courseCode || "";
+    document.getElementById("course-name-edit").value = course.courseName || "";
+    document.getElementById("term-select-edit").value = course.termUuid || "";
+    document.getElementById("description-edit").value = course.description || "";
+    document.getElementById("ta-code-edit").value = course.taCode || "";
+    document.getElementById("tutor-code-edit").value = course.tutorCode || "";
+    document.getElementById("student-code-edit").value = course.studentCode || "";
+    document.getElementById("syllabus-url-edit").value = course.syllabusUrl || "";
+    document.getElementById("canvas-url-edit").value = course.canvasUrl || "";
 
-  } catch (error) {
-    showError('edit', 'Failed to load course data. Please try again.');
+  } catch {
+    showError("edit", "Failed to load course data. Please try again.");
   }
 }
 
 /**
  * Setup generate buttons for verification codes
- * @param {string} mode - 'create' or 'edit'
+ * @param {string} mode - "create" or "edit"
  */
 function setupGenerateButtons(mode) {
-  const roles = ['ta', 'tutor', 'student'];
+  const roles = ["ta", "tutor", "student"];
 
   roles.forEach(role => {
     const button = document.getElementById(`generate-${role}-code-${mode}`);
     const input = document.getElementById(`${role}-code-${mode}`);
 
-    button.addEventListener('click', () => {
+    button.addEventListener("click", () => {
       const code = generateVerificationCode();
       input.value = code;
     });
@@ -154,8 +154,8 @@ function setupGenerateButtons(mode) {
  * @returns {string} A random verification code
  */
 function generateVerificationCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
   for (let i = 0; i < 8; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -170,38 +170,38 @@ async function handleCreateCourseSubmit(e) {
   e.preventDefault();
 
   // Clear previous errors
-  clearError('create');
+  clearError("create");
 
   // Get form data
   const formData = {
-    courseCode: document.getElementById('course-code-create').value.trim(),
-    courseName: document.getElementById('course-name-create').value.trim(),
-    termUuid: document.getElementById('term-select-create').value,
-    description: document.getElementById('description-create').value.trim(),
-    taCode: document.getElementById('ta-code-create').value.trim(),
-    tutorCode: document.getElementById('tutor-code-create').value.trim(),
-    studentCode: document.getElementById('student-code-create').value.trim(),
-    syllabusUrl: document.getElementById('syllabus-url-create').value.trim(),
-    canvasUrl: document.getElementById('canvas-url-create').value.trim()
+    courseCode: document.getElementById("course-code-create").value.trim(),
+    courseName: document.getElementById("course-name-create").value.trim(),
+    termUuid: document.getElementById("term-select-create").value,
+    description: document.getElementById("description-create").value.trim(),
+    taCode: document.getElementById("ta-code-create").value.trim(),
+    tutorCode: document.getElementById("tutor-code-create").value.trim(),
+    studentCode: document.getElementById("student-code-create").value.trim(),
+    syllabusUrl: document.getElementById("syllabus-url-create").value.trim(),
+    canvasUrl: document.getElementById("canvas-url-create").value.trim()
   };
 
   // Validate form data
   const validationError = validateCourseData(formData);
   if (validationError) {
-    showError('create', validationError);
+    showError("create", validationError);
     return;
   }
 
   // Disable submit button to prevent double submission
-  const submitButton = document.getElementById('submit-button');
+  const submitButton = document.getElementById("submit-button");
   submitButton.disabled = true;
-  submitButton.textContent = 'Creating...';
+  submitButton.textContent = "Creating...";
 
   try {
-    const response = await fetch('/v1/api/courses/create', {
-      method: 'POST',
+    const response = await fetch("/v1/api/courses/create", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(formData)
     });
@@ -209,16 +209,16 @@ async function handleCreateCourseSubmit(e) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to create course');
+      throw new Error(data.error || "Failed to create course");
     }
 
     // Success - redirect to dashboard
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
 
   } catch (error) {
-    showError('create', error.message);
+    showError("create", error.message);
     submitButton.disabled = false;
-    submitButton.textContent = 'Create Course';
+    submitButton.textContent = "Create Course";
   }
 }
 
@@ -231,38 +231,38 @@ async function handleEditCourseSubmit(e, courseUuid) {
   e.preventDefault();
 
   // Clear previous errors
-  clearError('edit');
+  clearError("edit");
 
   // Get form data
   const formData = {
-    courseCode: document.getElementById('course-code-edit').value.trim(),
-    courseName: document.getElementById('course-name-edit').value.trim(),
-    termUuid: document.getElementById('term-select-edit').value,
-    description: document.getElementById('description-edit').value.trim(),
-    taCode: document.getElementById('ta-code-edit').value.trim(),
-    tutorCode: document.getElementById('tutor-code-edit').value.trim(),
-    studentCode: document.getElementById('student-code-edit').value.trim(),
-    syllabusUrl: document.getElementById('syllabus-url-edit').value.trim(),
-    canvasUrl: document.getElementById('canvas-url-edit').value.trim()
+    courseCode: document.getElementById("course-code-edit").value.trim(),
+    courseName: document.getElementById("course-name-edit").value.trim(),
+    termUuid: document.getElementById("term-select-edit").value,
+    description: document.getElementById("description-edit").value.trim(),
+    taCode: document.getElementById("ta-code-edit").value.trim(),
+    tutorCode: document.getElementById("tutor-code-edit").value.trim(),
+    studentCode: document.getElementById("student-code-edit").value.trim(),
+    syllabusUrl: document.getElementById("syllabus-url-edit").value.trim(),
+    canvasUrl: document.getElementById("canvas-url-edit").value.trim()
   };
 
   // Validate form data
   const validationError = validateCourseData(formData);
   if (validationError) {
-    showError('edit', validationError);
+    showError("edit", validationError);
     return;
   }
 
   // Disable submit button to prevent double submission
-  const submitButton = document.getElementById('submit-button');
+  const submitButton = document.getElementById("submit-button");
   submitButton.disabled = true;
-  submitButton.textContent = 'Saving...';
+  submitButton.textContent = "Saving...";
 
   try {
     const response = await fetch(`/v1/api/courses/${courseUuid}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(formData)
     });
@@ -270,16 +270,16 @@ async function handleEditCourseSubmit(e, courseUuid) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to update course');
+      throw new Error(data.error || "Failed to update course");
     }
 
     // Success - redirect to dashboard
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
 
   } catch (error) {
-    showError('edit', error.message);
+    showError("edit", error.message);
     submitButton.disabled = false;
-    submitButton.textContent = 'Save Changes';
+    submitButton.textContent = "Save Changes";
   }
 }
 
@@ -291,61 +291,60 @@ async function handleEditCourseSubmit(e, courseUuid) {
 function validateCourseData(data) {
   // Check required fields
   if (!data.courseCode) {
-    return 'Course code is required';
+    return "Course code is required";
   }
   if (!data.courseName) {
-    return 'Course name is required';
+    return "Course name is required";
   }
   if (!data.termUuid) {
-    return 'Academic term is required';
+    return "Academic term is required";
   }
   if (!data.taCode) {
-    return 'TA verification code is required';
+    return "TA verification code is required";
   }
   if (!data.tutorCode) {
-    return 'Tutor verification code is required';
+    return "Tutor verification code is required";
   }
   if (!data.studentCode) {
-    return 'Student verification code is required';
+    return "Student verification code is required";
   }
 
   // Check length constraints
   if (data.courseCode.length > 20) {
-    return 'Course code must be 20 characters or less';
+    return "Course code must be 20 characters or less";
   }
   if (data.courseName.length > 255) {
-    return 'Course name must be 255 characters or less';
+    return "Course name must be 255 characters or less";
   }
   if (data.taCode.length > 50) {
-    return 'TA code must be 50 characters or less';
+    return "TA code must be 50 characters or less";
   }
   if (data.tutorCode.length > 50) {
-    return 'Tutor code must be 50 characters or less';
+    return "Tutor code must be 50 characters or less";
   }
   if (data.studentCode.length > 50) {
-    return 'Student code must be 50 characters or less';
+    return "Student code must be 50 characters or less";
   }
 
   // Check that verification codes are unique among themselves
   const codes = [data.taCode, data.tutorCode, data.studentCode];
   const uniqueCodes = new Set(codes);
   if (uniqueCodes.size !== codes.length) {
-    return 'TA, Tutor, and Student verification codes must be different from each other';
+    return "TA, Tutor, and Student verification codes must be different from each other";
   }
 
   // Check url validity if provided
   if (data.syllabusUrl) {
     if (!isValidUrl(data.syllabusUrl)) {
-        return 'Invalid syllabus Url'
+      return "Invalid syllabus URL";
     }
   }
 
   if (data.canvasUrl) {
     if (!isValidUrl(data.canvasUrl)) {
-        return 'Invalid canvas Url'        
+      return "Invalid canvas URL";
     }
   }
-
   return null;
 }
 
@@ -365,21 +364,21 @@ function isValidUrl(url) {
 
 /**
  * Show error message
- * @param {string} mode - 'create' or 'edit'
+ * @param {string} mode - "create" or "edit"
  * @param {string} message - The error message
  */
 function showError(mode, message) {
   const errorDiv = document.getElementById(`form-error-message-${mode}`);
   errorDiv.textContent = message;
-  errorDiv.style.display = 'block';
+  errorDiv.style.display = "block";
 }
 
 /**
  * Clear error message
- * @param {string} mode - 'create' or 'edit'
+ * @param {string} mode - "create" or "edit"
  */
 function clearError(mode) {
   const errorDiv = document.getElementById(`form-error-message-${mode}`);
-  errorDiv.textContent = '';
-  errorDiv.style.display = 'none';
+  errorDiv.textContent = "";
+  errorDiv.style.display = "none";
 }

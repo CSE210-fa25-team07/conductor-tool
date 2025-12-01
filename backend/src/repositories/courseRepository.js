@@ -110,7 +110,7 @@ async function getAllActiveTerms() {
       isActive: true
     },
     orderBy: {
-      startDate: 'asc'
+      startDate: "asc"
     }
   });
 
@@ -160,7 +160,7 @@ async function isUserCourseProfessor(userUuid, courseUuid) {
 async function findCourseByCodeTermAndProfessor(courseCode, termUuid, professorUuid) {
   // Get the Professor role UUID
   const professorRole = await prisma.role.findUnique({
-    where: { role: 'Professor' }
+    where: { role: "Professor" }
   });
 
   if (!professorRole) {
@@ -246,9 +246,9 @@ async function getCourseWithVerificationCodes(courseUuid) {
   }
 
   // Map verification codes to their roles
-  const taCode = course.verificationCodes.find(vc => vc.role.role === 'TA')?.veriCode || '';
-  const tutorCode = course.verificationCodes.find(vc => vc.role.role === 'Tutor')?.veriCode || '';
-  const studentCode = course.verificationCodes.find(vc => vc.role.role === 'Student')?.veriCode || '';
+  const taCode = course.verificationCodes.find(vc => vc.role.role === "TA")?.veriCode || "";
+  const tutorCode = course.verificationCodes.find(vc => vc.role.role === "Tutor")?.veriCode || "";
+  const studentCode = course.verificationCodes.find(vc => vc.role.role === "Student")?.veriCode || "";
 
   return {
     courseUuid: course.courseUuid,
@@ -287,15 +287,15 @@ async function createCourseWithVerificationCodes(courseData) {
   const roles = await prisma.role.findMany({
     where: {
       role: {
-        in: ['TA', 'Tutor', 'Student', 'Professor']
+        in: ["TA", "Tutor", "Student", "Professor"]
       }
     }
   });
 
-  const taRole = roles.find(r => r.role === 'TA');
-  const tutorRole = roles.find(r => r.role === 'Tutor');
-  const studentRole = roles.find(r => r.role === 'Student');
-  const professorRole = roles.find(r => r.role === 'Professor');
+  const taRole = roles.find(r => r.role === "TA");
+  const tutorRole = roles.find(r => r.role === "Tutor");
+  const studentRole = roles.find(r => r.role === "Student");
+  const professorRole = roles.find(r => r.role === "Professor");
 
   // Create course and verification codes in a transaction
   const result = await prisma.$transaction(async (tx) => {
@@ -341,7 +341,7 @@ async function createCourseWithVerificationCodes(courseData) {
         userUuid: instructorId,
         roleUuid: professorRole.roleUuid,
         courseUuid: newCourse.courseUuid,
-        enrollmentStatus: 'active'
+        enrollmentStatus: "active"
       }
     });
 
@@ -374,14 +374,14 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
   const roles = await prisma.role.findMany({
     where: {
       role: {
-        in: ['TA', 'Tutor', 'Student']
+        in: ["TA", "Tutor", "Student"]
       }
     }
   });
 
-  const taRole = roles.find(r => r.role === 'TA');
-  const tutorRole = roles.find(r => r.role === 'Tutor');
-  const studentRole = roles.find(r => r.role === 'Student');
+  const taRole = roles.find(r => r.role === "TA");
+  const tutorRole = roles.find(r => r.role === "Tutor");
+  const studentRole = roles.find(r => r.role === "Student");
 
   // Update course and verification codes in a transaction
   const result = await prisma.$transaction(async (tx) => {
@@ -403,7 +403,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
     // Update verification codes (upsert to handle new codes)
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: taRole.roleUuid
         }
@@ -422,7 +422,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: tutorRole.roleUuid
         }
@@ -441,7 +441,7 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuid_roleUuid: {
+        courseUuidRoleUuid: {
           courseUuid: courseUuid,
           roleUuid: studentRole.roleUuid
         }
