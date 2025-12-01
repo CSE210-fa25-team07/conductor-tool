@@ -60,8 +60,8 @@ function validateCreateMeetingData(meetingData) {
     throw new Error("isRecurring is required and must be a boolean");
   }
 
-  if (meetingType && typeof meetingType !== "integer") {
-    throw new Error("meetingType must be an integer");
+  if (meetingType && typeof meetingType !== "number") {
+    throw new Error("meetingType must be a number");
   }
 
   return true;

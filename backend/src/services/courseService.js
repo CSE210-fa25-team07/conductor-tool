@@ -5,9 +5,15 @@
  * Business logic layer for course operations.
  */
 import * as courseRepository from "../repositories/courseRepository.js";
+<<<<<<< HEAD
 import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
 import * as userRepository from "../repositories/userRepository.js";
 import * as courseValidator from "../validators/courseValidator.js";
+=======
+import * as courseDTO from "../dtos/courseDto.js";
+import * as userContextRepository from "../repositories/userContextRepository.js";
+import { RoleEnum } from "../enums/role.js";
+>>>>>>> 2c9930a (Formatting for frontend requests)
 
 /**
  * Get all courses for a user
@@ -41,6 +47,7 @@ async function getUserCourses(req, res) {
 }
 
 /**
+<<<<<<< HEAD
  * Get available terms (current and next term)
  * @param {*} req Request object
  * @param {*} res Response object
@@ -48,6 +55,22 @@ async function getUserCourses(req, res) {
 async function getAvailableTerms(req, res) {
   try {
     const userId = req.session.user?.id;
+=======
+ * 
+ * @param {Object} req 
+ * @param {Object} res 
+ * @returns {Object}  200 - Course object
+ * @returns {Object}  400 - Missing course UUID parameter
+ * @returns {Object}  401 - Not authenticated
+ * @returns {Object}  403 - Not authorized to access this course
+ * @returns {Object}  404 - Course not found
+ * @returns {Object}  500 - Failed to fetch course
+ */
+async function getCourseByUUID(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUUID = req.params.courseUUID;
+>>>>>>> 2c9930a (Formatting for frontend requests)
 
     if (!userId) {
       return res.status(401).json({
@@ -56,6 +79,7 @@ async function getAvailableTerms(req, res) {
       });
     }
 
+<<<<<<< HEAD
     const terms = await courseRepository.getAllActiveTerms();
 
     res.status(200).json({
@@ -98,6 +122,20 @@ async function getCourseForEdit(req, res) {
     }
 
     const course = await courseRepository.getCourseWithVerificationCodes(courseUuid);
+=======
+    const userContext = await userContextRepository.getUserContext(userId);
+    const isEnrolled = userContext.enrollments.some(
+      enrollment => enrollment.course.courseUuid === courseUUID
+    );
+    if (!isEnrolled) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to access this course"
+      });
+    }
+
+    const course = await courseRepository.getCourseByUuid(courseUUID);
+>>>>>>> 2c9930a (Formatting for frontend requests)
 
     if (!course) {
       return res.status(404).json({
@@ -108,16 +146,25 @@ async function getCourseForEdit(req, res) {
 
     res.status(200).json({
       success: true,
+<<<<<<< HEAD
       course: course
+=======
+      course: courseDTO.toCourseDTO(course)
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   } catch {
     res.status(500).json({
       success: false,
+<<<<<<< HEAD
       error: "Failed to fetch course data"
+=======
+      error: "Failed to fetch course"
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   }
 }
 
+<<<<<<< HEAD
 /**
  * Create a new course
  * @param {*} req Request object with course data in body
@@ -126,6 +173,12 @@ async function getCourseForEdit(req, res) {
 async function createCourse(req, res) {
   try {
     const userId = req.session.user?.id;
+=======
+async function getUsersByCourseUUID(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUUID = req.params.courseUUID;
+>>>>>>> 2c9930a (Formatting for frontend requests)
 
     if (!userId) {
       return res.status(401).json({
@@ -134,6 +187,7 @@ async function createCourse(req, res) {
       });
     }
 
+<<<<<<< HEAD
     // Check if user is a professor
     const userStatus = await userRepository.getUserStatusByUuid(userId);
 
@@ -301,15 +355,38 @@ async function updateCourse(req, res) {
     res.status(200).json({
       success: true,
       course: updatedCourse
+=======
+    const userContext = await userContextRepository.getUserContext(userId);
+    const isEnrolled = userContext.enrollments.some(
+      enrollment => enrollment.course.courseUuid === courseUUID
+    );
+    if (!isEnrolled) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to access this course"
+      });
+    }
+
+    const users = await courseRepository.getUsersByCourseUuid(courseUUID);
+
+    res.status(200).json({
+      success: true,
+      data: courseDTO.toCourseWithUsersDTO(users)  
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   } catch {
     res.status(500).json({
       success: false,
+<<<<<<< HEAD
       error: "Failed to update course"
+=======
+      error: "Failed to fetch users for course"
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   }
 }
 
+<<<<<<< HEAD
 /**
  * Remove user from course (student leaving a course)
  * @param {*} req Request object with courseUuid param
@@ -319,6 +396,12 @@ async function removeUserFromCourse(req, res) {
   try {
     const userId = req.session.user?.id;
     const courseUuid = req.params.courseUuid;
+=======
+async function getTeamsByCourseUUID(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUUID = req.params.courseUUID;
+>>>>>>> 2c9930a (Formatting for frontend requests)
 
     if (!userId) {
       return res.status(401).json({
@@ -327,6 +410,7 @@ async function removeUserFromCourse(req, res) {
       });
     }
 
+<<<<<<< HEAD
     // Remove the user from the course
     const result = await courseRepository.removeUserFromCourse(userId, courseUuid);
 
@@ -334,21 +418,49 @@ async function removeUserFromCourse(req, res) {
       return res.status(404).json({
         success: false,
         error: "Enrollment not found"
+=======
+    const userContext = await userContextRepository.getUserContext(userId);
+    const isEnrolled = userContext.enrollments.some(
+      enrollment => enrollment.course.courseUuid === courseUUID
+    );
+    if (!isEnrolled) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to access this course"
+      });
+    }
+
+    const course = await courseRepository.getCourseByUuid(courseUUID);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        error: "Course not found"
+>>>>>>> 2c9930a (Formatting for frontend requests)
       });
     }
 
     res.status(200).json({
       success: true,
+<<<<<<< HEAD
       message: "Successfully removed from course"
+=======
+      data: courseDTO.toCourseWithTeamsDTO(course.teams)  
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   } catch {
     res.status(500).json({
       success: false,
+<<<<<<< HEAD
       error: "Failed to remove from course"
+=======
+      error: "Failed to fetch teams for course"
+>>>>>>> 2c9930a (Formatting for frontend requests)
     });
   }
 }
 
+<<<<<<< HEAD
 export {
   getUserCourses,
   getAvailableTerms,
@@ -357,3 +469,6 @@ export {
   updateCourse,
   removeUserFromCourse
 };
+=======
+export { getUserCourses, getUsersByCourseUUID, getTeamsByCourseUUID, getCourseByUUID };
+>>>>>>> 2c9930a (Formatting for frontend requests)
