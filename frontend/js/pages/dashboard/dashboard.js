@@ -1,7 +1,7 @@
 /** @module dashboard/frontend */
 import { initGlobalNavigation } from "../../components/navigation.js";
 import { handleVerification } from "../../utils/authVerify.js";
-import { loadUserContext, isProf } from "../../utils/userContext.js";
+import { loadUserContext, isProf, isLeadAdmin, isSystemAdmin } from "../../utils/userContext.js";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
  */
 async function loadCourses() {
   try {
+    // Load user context first
+    await loadUserContext();
+
     const response = await fetch("/v1/api/courses");
 
     if (!response.ok) {
@@ -83,7 +86,7 @@ function createCourseCard(course) {
   const deptCode = course.code.split(" ")[0];
 
   // Build card HTML
-  article.innerHTML = `
+   article.innerHTML = `
     <header class="course-card-header">
       <figure class="course-icon">${deptCode}</figure>
       <section class="course-info">
@@ -95,10 +98,7 @@ function createCourseCard(course) {
           <span class="menu-dots">⋮</span>
         </button>
         <div class="course-menu-dropdown">
-          <a href="/courses/${course.courseUuid}/edit" class="menu-item">
-            <span class="menu-item-icon">✎</span>
-            <span>Edit</span>
-          </a>
+          ${createMenuItems(course)}
         </div>
       </div>
     </header>
@@ -151,6 +151,31 @@ function createCourseCard(course) {
   article.style.cursor = "pointer";
 
   return article;
+}
+
+/**
+ * Create role-specific menu items for course card
+ * @param {Object} course - Course data object
+ * @param {string} course.courseUuid - Course UUID
+ * @returns {string} HTML string for menu items based on user role
+ */
+function createMenuItems(course) {
+  console.log("isProf:", isProf(), "isLeadAdmin:", isLeadAdmin(), "isSystemAdmin:", isSystemAdmin());
+  if (isProf() || isLeadAdmin() || isSystemAdmin()) {
+    // Professor menu items
+    return `
+      <a href="/courses/${course.courseUuid}/edit" class="menu-item">
+        <span>Edit</span>
+      </a>
+    `;
+  } else {
+    // Student menu items
+    return `
+      <a href="/courses/${course.courseUuid}/leave" class="menu-item">
+        <span>Leave</span>
+      </a>
+    `;
+  }
 }
 
 /**
