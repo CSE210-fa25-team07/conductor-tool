@@ -110,7 +110,7 @@ function createCourseCard(course) {
     ${course.term ? `<p style="font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);">Term: ${course.term}</p>` : ""}
 
     <footer class="course-footer">
-      <span class="course-people">${course.people} people</span>
+      <span class="course-people">${course.people} enrolled</span>
     </footer>
   `;
 
