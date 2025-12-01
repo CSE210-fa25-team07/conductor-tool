@@ -13,19 +13,28 @@ const prisma = getPrisma();
  * @throws {Error} on database error
  */
 async function createMeeting(meetingData) {
+  const data = {
+    creatorUuid: meetingData.creatorUUID,
+    courseUuid: meetingData.courseUUID,
+    meetingStartTime: new Date(meetingData.meetingStartTime),
+    meetingEndTime: new Date(meetingData.meetingEndTime),
+    meetingDate: new Date(meetingData.meetingDate),
+    meetingTitle: meetingData.meetingTitle,
+    isRecurring: meetingData.isRecurring,
+    meetingType: meetingData.meetingType || 0  // Default to 0 if not provided
+  };
+
+  // Add optional fields only if defined
+  if (meetingData.meetingDescription !== undefined) {
+    data.meetingDescription = meetingData.meetingDescription;
+  }
+
+  if (meetingData.meetingLocation !== undefined) {
+    data.meetingLocation = meetingData.meetingLocation;
+  }
+
   const meeting = await prisma.meeting.create({
-    data: {
-      creatorUuid: meetingData.creatorUUID,
-      courseUuid: meetingData.courseUUID,
-      meetingStartTime: new Date(meetingData.meetingStartTime),
-      meetingEndTime: new Date(meetingData.meetingEndTime),
-      meetingDate: new Date(meetingData.meetingDate),
-      meetingTitle: meetingData.meetingTitle,
-      meetingDescription: meetingData.meetingDescription,
-      meetingLocation: meetingData.meetingLocation,
-      meetingType: meetingData.meetingType,
-      isRecurring: meetingData.isRecurring
-    }
+    data
   });
   return meeting;
 }
@@ -275,6 +284,13 @@ async function getMeetingCodeByMeetingUuidAndCode(meetingUUID, code) {
   return meetingCode;
 }
 
+async function deleteMeetingByParentUUID(meetingUUID) {
+    await prisma.meeting.deleteMany({
+        where: { parentMeetingUuid: meetingUUID }
+    });
+    return true;
+}
+
 export {
   createMeeting,
   getMeetingByUUID,
@@ -288,6 +304,7 @@ export {
   deleteParticipant,
   createMeetingCode,
   getMeetingCodeByMeetingUuid,
-  getMeetingCodeByMeetingUuidAndCode
+  getMeetingCodeByMeetingUuidAndCode,
+  deleteMeetingByParentUUID
 };
 
