@@ -403,7 +403,9 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
     // Update verification codes (upsert to handle new codes)
     await tx.verificationCode.upsert({
       where: {
-        courseUuidRoleUuid: {
+        // Prisma requires snake_case for composite unique constraints
+        // eslint-disable-next-line camelcase
+        courseUuid_roleUuid: {
           courseUuid: courseUuid,
           roleUuid: taRole.roleUuid
         }
@@ -422,7 +424,9 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuidRoleUuid: {
+        // Prisma requires snake_case for composite unique constraints
+        // eslint-disable-next-line camelcase
+        courseUuid_roleUuid: {
           courseUuid: courseUuid,
           roleUuid: tutorRole.roleUuid
         }
@@ -441,7 +445,9 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
 
     await tx.verificationCode.upsert({
       where: {
-        courseUuidRoleUuid: {
+        // Prisma requires snake_case for composite unique constraints
+        // eslint-disable-next-line camelcase
+        courseUuid_roleUuid: {
           courseUuid: courseUuid,
           roleUuid: studentRole.roleUuid
         }
