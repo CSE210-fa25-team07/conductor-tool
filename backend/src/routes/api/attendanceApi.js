@@ -17,19 +17,19 @@ const router = express.Router();
  * @status IN USE
  */
 router.get("/meeting/:id", async (req, res) => {
-    try {
-        return await attendanceService.getMeetingByUUID(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.getMeetingByUUID(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
  * Create Meeting by data
- * 
+ *
  * @name POST /attendance/meeting/
  * @param {Object} req.body -- Meeting data
  * @returns {Object} 200 - Meeting created
@@ -37,14 +37,14 @@ router.get("/meeting/:id", async (req, res) => {
  * @status IN USE
  */
 router.post("/meeting/", async (req, res) => {
-    try {
-        return await attendanceService.createMeeting(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.createMeeting(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
@@ -58,14 +58,14 @@ router.post("/meeting/", async (req, res) => {
  * @status IN USE
  */
 router.patch("/meeting/:id", async (req, res) => {
-    try {
-        return await attendanceService.updateMeeting(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.updateMeeting(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
@@ -78,14 +78,14 @@ router.patch("/meeting/:id", async (req, res) => {
  * @status IN USE
  */
 router.delete("/meeting/:id", async (req, res) => {
-    try {
-        return await attendanceService.deleteMeeting(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.deleteMeeting(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
@@ -99,14 +99,14 @@ router.delete("/meeting/:id", async (req, res) => {
  * @status IN USE
  */
 router.get("/meeting/list/:courseUUID", async (req, res) => {
-    try {
-        return await attendanceService.getMeetingList(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.getMeetingList(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
@@ -121,88 +121,88 @@ router.get("/meeting/list/:courseUUID", async (req, res) => {
  * @status IN USE
  */
 router.get("/participant/:meeting/:id", async (req, res) => {
-    try {
-        return await attendanceService.getParticipant(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.getParticipant(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
  * Create Participants
- * 
+ *
  * @param {Object} req.body -- Participant data
  * @returns {Object} 200 - Participant created
  * @returns {Object} 400 - Validation error
  * @status IN USE
  */
 router.post("/participant/", async (req, res) => {
-    try {
-        return await attendanceService.createParticipants(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.createParticipants(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 router.patch("/participant/", async (req, res) => {
-    try {
-        return await attendanceService.updateParticipant(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.updateParticipant(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 router.delete("/participant/:meeting/:id", async (req, res) => {
-    try {
-        return await attendanceService.deleteParticipant(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.deleteParticipant(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 router.post("/participant/list/", async (req, res) => {
-    try {
-        return await attendanceService.getParticipantListByParams(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.getParticipantListByParams(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 router.get("/meeting_code/:id", async (req, res) => {
-    try {
-        return await attendanceService.getMeetingCode(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.getMeetingCode(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 router.get("/meeting_code/record/:code", async (req, res) => {
-    try {
-        return await attendanceService.recordAttendanceViaCode(req, res);
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
+  try {
+    return await attendanceService.recordAttendanceViaCode(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 
