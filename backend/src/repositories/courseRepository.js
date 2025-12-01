@@ -99,4 +99,18 @@ async function enrollUserToCourse(userUuid, courseUuid, roleUuid) {
     }
   });
 }
-export { getCoursesByUserId, getCoursesWithDetailsByUserId, enrollUserToCourse };
+
+/**
+ * Find and return course by its UUID
+ * @param {string} courseUuid -- course UUID to search
+ * @returns {Promise<Object>} Course object
+ */
+async function getCourseByUuid(courseUuid) {
+  // TODO(bukhradze): shouldn't there be a DTO here?
+  return await prisma.course.findUnique({
+    where: {
+      courseUuid: courseUuid
+    }
+  }); 
+}
+export { getCoursesByUserId, getCoursesWithDetailsByUserId, enrollUserToCourse, getCourseByUuid };

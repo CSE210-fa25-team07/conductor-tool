@@ -37,8 +37,13 @@ function toParticipantListDTO(participants) {
     return participants.map(toParticipantDTO);
 }
 
+function toMeetingListDTO(meetings) {
+    return meetings.map(toMeetingDTO);
+}
+
 export {
     toMeetingDTO,
     toParticipantDTO,
-    toParticipantListDTO
+    toParticipantListDTO,
+    toMeetingListDTO
 }
