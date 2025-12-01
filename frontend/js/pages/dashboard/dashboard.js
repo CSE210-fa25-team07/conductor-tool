@@ -67,11 +67,11 @@ function renderCourses(courses) {
  * Create a course card element
  * @param {Object} course - Course data object
  * @param {string} course.courseUuid - Course UUID (primary key)
- * @param {string} course.code - Course code (e.g., "CSE 210")
+ * @param {string} course.code - Course code
  * @param {string} course.name - Course name
  * @param {string} [course.description] - Course description
  * @param {string} [course.term] - Term name
- * @param {number} course.students - Number of students enrolled
+ * @param {number} course.people - Number of people enrolled
  * @returns {HTMLElement} Course card article element
  */
 function createCourseCard(course) {
@@ -90,6 +90,17 @@ function createCourseCard(course) {
         <span class="course-code">${course.code}</span>
         <h3 class="course-name">${course.name}</h3>
       </section>
+      <div class="course-menu-container">
+        <button class="course-menu-button" aria-label="Course options">
+          <span class="menu-dots">⋮</span>
+        </button>
+        <div class="course-menu-dropdown">
+          <a href="/courses/${course.courseUuid}/edit" class="menu-item">
+            <span class="menu-item-icon">✎</span>
+            <span>Edit</span>
+          </a>
+        </div>
+      </div>
     </header>
 
     <p class="course-description">
@@ -99,13 +110,42 @@ function createCourseCard(course) {
     ${course.term ? `<p style="font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);">Term: ${course.term}</p>` : ""}
 
     <footer class="course-footer">
-      <span class="course-students">${course.students} students</span>
+      <span class="course-people">${course.people} people</span>
     </footer>
   `;
 
   // Add click handler to navigate to course features page
-  article.addEventListener("click", () => {
+  article.addEventListener("click", (e) => {
+    // Don't navigate if clicking on menu or menu items
+    if (e.target.closest(".course-menu-container")) {
+      return;
+    }
     handleCourseClick(course);
+  });
+
+  // Setup menu toggle
+  const menuButton = article.querySelector(".course-menu-button");
+  const menuDropdown = article.querySelector(".course-menu-dropdown");
+
+  menuButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Close all other open menus
+    document.querySelectorAll(".course-menu-dropdown.active").forEach(menu => {
+      if (menu !== menuDropdown) {
+        menu.classList.remove("active");
+      }
+    });
+
+    // Toggle current menu
+    menuDropdown.classList.toggle("active");
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".course-menu-container")) {
+      menuDropdown.classList.remove("active");
+    }
   });
 
   article.style.cursor = "pointer";

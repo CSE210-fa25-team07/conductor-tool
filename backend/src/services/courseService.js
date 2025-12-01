@@ -5,6 +5,8 @@
  * Business logic layer for course operations.
  */
 import * as courseRepository from "../repositories/courseRepository.js";
+import * as userRepository from "../repositories/userRepository.js";
+import * as courseValidator from "../validators/courseValidator.js";
 
 /**
  * Get all courses for a user
@@ -37,4 +39,280 @@ async function getUserCourses(req, res) {
   }
 }
 
-export { getUserCourses };
+/**
+ * Get available terms (current and next term)
+ * @param {*} req Request object
+ * @param {*} res Response object
+ */
+async function getAvailableTerms(req, res) {
+  try {
+    const userId = req.session.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    const terms = await courseRepository.getAllActiveTerms();
+
+    res.status(200).json({
+      success: true,
+      terms: terms
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch terms"
+    });
+  }
+}
+
+/**
+ * Get course details for editing
+ * @param {*} req Request object with courseUuid param
+ * @param {*} res Response object
+ */
+async function getCourseForEdit(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUuid = req.params.courseUuid;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Check if user is professor for this course
+    const isProfessor = await courseRepository.isUserCourseProfessor(userId, courseUuid);
+
+    if (!isProfessor) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to edit this course"
+      });
+    }
+
+    const course = await courseRepository.getCourseWithVerificationCodes(courseUuid);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        error: "Course not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      course: course
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch course data"
+    });
+  }
+}
+
+/**
+ * Create a new course
+ * @param {*} req Request object with course data in body
+ * @param {*} res Response object
+ */
+async function createCourse(req, res) {
+  try {
+    const userId = req.session.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Check if user is a professor
+    const userStatus = await userRepository.getUserStatusByUuid(userId);
+
+    if (!userStatus.isProf) {
+      return res.status(403).json({
+        success: false,
+        error: "Only professors can create courses"
+      });
+    }
+
+    const {
+      courseCode,
+      courseName,
+      termUuid,
+      description,
+      taCode,
+      tutorCode,
+      studentCode,
+      syllabusUrl,
+      canvasUrl
+    } = req.body;
+
+    // Validate course data
+    try {
+      await courseValidator.validateCourseData(req.body);
+    } catch (validationError) {
+      return res.status(400).json({
+        success: false,
+        error: validationError.message
+      });
+    }
+
+    // Check if this professor already has a course with this code in this term
+    const existingCourse = await courseRepository.findCourseByCodeTermAndProfessor(
+      courseCode,
+      termUuid,
+      userId
+    );
+
+    if (existingCourse) {
+      return res.status(409).json({
+        success: false,
+        error: "You already have a course with this code for the selected term"
+      });
+    }
+
+    // Check if verification codes are unique
+    const codesAreUnique = await courseRepository.areVerificationCodesUnique([
+      taCode,
+      tutorCode,
+      studentCode
+    ]);
+
+    if (!codesAreUnique) {
+      return res.status(409).json({
+        success: false,
+        error: "One or more verification codes are already in use. Please generate new codes."
+      });
+    }
+
+    // Create the course with verification codes
+    const newCourse = await courseRepository.createCourseWithVerificationCodes({
+      courseCode,
+      courseName,
+      termUuid,
+      description,
+      syllabusUrl,
+      canvasUrl,
+      taCode,
+      tutorCode,
+      studentCode,
+      instructorId: userId
+    });
+
+    res.status(201).json({
+      success: true,
+      course: newCourse
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to create course"
+    });
+  }
+}
+
+/**
+ * Update an existing course
+ * @param {*} req Request object with course data in body and courseUuid param
+ * @param {*} res Response object
+ */
+async function updateCourse(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUuid = req.params.courseUuid;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Check if user is professor for this course
+    const isProfessor = await courseRepository.isUserCourseProfessor(userId, courseUuid);
+
+    if (!isProfessor) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to edit this course"
+      });
+    }
+
+    const {
+      courseCode,
+      courseName,
+      termUuid,
+      description,
+      taCode,
+      tutorCode,
+      studentCode,
+      syllabusUrl,
+      canvasUrl
+    } = req.body;
+
+    // Validate course data
+    try {
+      await courseValidator.validateCourseData(req.body);
+    } catch (validationError) {
+      return res.status(400).json({
+        success: false,
+        error: validationError.message
+      });
+    }
+
+    // Check if verification codes are unique (excluding current course codes)
+    const codesAreUnique = await courseRepository.areVerificationCodesUniqueForUpdate(
+      courseUuid,
+      [taCode, tutorCode, studentCode]
+    );
+
+    if (!codesAreUnique) {
+      return res.status(409).json({
+        success: false,
+        error: "One or more verification codes are already in use. Please generate new codes."
+      });
+    }
+
+    // Update the course with verification codes
+    const updatedCourse = await courseRepository.updateCourseWithVerificationCodes(
+      courseUuid,
+      {
+        courseCode,
+        courseName,
+        termUuid,
+        description,
+        syllabusUrl,
+        canvasUrl,
+        taCode,
+        tutorCode,
+        studentCode
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      course: updatedCourse
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to update course"
+    });
+  }
+}
+
+export {
+  getUserCourses,
+  getAvailableTerms,
+  getCourseForEdit,
+  createCourse,
+  updateCourse
+};
