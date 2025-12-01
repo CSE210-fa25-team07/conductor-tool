@@ -111,12 +111,16 @@ async function handleAccessRequest() {
   codeInput.addEventListener("input", () => {
     codeInput.setCustomValidity("");
   });
+  const emailInput = document.getElementById("email");
+  emailInput.addEventListener("input", () => {
+    emailInput.setCustomValidity("");
+  });
 
   // Get form data
   const formData = {
     firstName: document.getElementById("first-name").value.trim(),
     lastName: document.getElementById("last-name").value.trim(),
-    email: document.getElementById("email").value.trim(),
+    email: emailInput.value.trim(),
     institution: document.getElementById("institution").value.trim(),
     verificationCode: codeInput.value.trim()
   };
@@ -142,7 +146,8 @@ async function handleAccessRequest() {
     if (requestData.success) {
       showSuccessMessage();
     } else {
-      alert("Error submitting access request: " + requestData.error);
+      emailInput.setCustomValidity(requestData.error || "Failed to submit access request.");
+      return;
     }
   } else {
     // Verification failed
