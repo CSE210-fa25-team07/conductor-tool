@@ -4,9 +4,41 @@
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";
+import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList } from "../../api/attendanceApi.js";
+import { loadUserContext, isProfessorOrTA, getUserRoleInCourse } from "../../utils/userContext.js";
 
 const meetings = {};
 let currentDate = new Date();
+
+/**
+ * Map meeting type string to integer
+ * @param {string} typeString - Meeting type as string
+ * @returns {number} Meeting type as integer
+ */
+function mapMeetingTypeToInt(typeString) {
+  const typeMap = {
+    "Lecture": 1,
+    "OH": 2,
+    "TA Check-In": 3,
+    "Team Meeting": 4
+  };
+  return typeMap[typeString] || 1;
+}
+
+/**
+ * Map meeting type integer to string
+ * @param {number} typeInt - Meeting type as integer
+ * @returns {string} Meeting type as string
+ */
+function mapMeetingTypeToString(typeInt) {
+  const typeMap = {
+    1: "Lecture",
+    2: "OH",
+    3: "TA Check-In",
+    4: "Team Meeting"
+  };
+  return typeMap[typeInt] || "Lecture";
+}
 
 export async function render(container, view = "dashboard") {
   try {
@@ -38,6 +70,157 @@ export async function render(container, view = "dashboard") {
     const recurringSummaryEl = wrapper.querySelector("#recurring-summary");
     let selectedCalendarDate = "";
     let chainCounter = 0;
+    let userRole = null;
+    let canCreateStaffMeetings = false;
+
+    /**
+     * Get course UUID from current URL path
+     * URL pattern: /courses/:courseId/attendance
+     * @returns {string|null} courseId or null if not in course context
+     */
+    function getCourseIdFromUrl() {
+      const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
+      return match ? match[1] : null;
+    }
+
+    /**
+     * Setup meeting type options based on user role
+     * Professors/TAs can create: Lecture, OH, TA Check-In, Team Meeting
+     * Students/Team Leads can only create: Team Meeting
+     */
+    function setupMeetingTypeOptions() {
+      const courseUUID = getCourseIdFromUrl();
+      if (!courseUUID) return;
+
+      canCreateStaffMeetings = isProfessorOrTA(courseUUID);
+      userRole = getUserRoleInCourse(courseUUID);
+
+      // Clear existing options
+      meetingTypeSelect.innerHTML = "";
+
+      if (canCreateStaffMeetings) {
+        // Professors and TAs can create all meeting types
+        const options = [
+          { value: "Lecture", text: "Lecture" },
+          { value: "OH", text: "OH" },
+          { value: "TA Check-In", text: "TA Check-In" },
+          { value: "Team Meeting", text: "Team Meeting" }
+        ];
+        options.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt.value;
+          option.textContent = opt.text;
+          meetingTypeSelect.appendChild(option);
+        });
+        meetingTypeSelect.value = "Lecture"; // Default for staff
+      } else {
+        // Students and Team Leads can only create Team Meetings
+        const option = document.createElement("option");
+        option.value = "Team Meeting";
+        option.textContent = "Team Meeting";
+        meetingTypeSelect.appendChild(option);
+        meetingTypeSelect.value = "Team Meeting";
+      }
+    }
+
+    /**
+     * Load and populate participants from the backend
+     * @returns {Promise<void>}
+     */
+    async function loadParticipants() {
+      const courseUUID = getCourseIdFromUrl();
+      if (!courseUUID) {
+        console.error("No course UUID found in URL");
+        return;
+      }
+
+      try {
+        const participants = await getCourseParticipants(courseUUID);
+        populateParticipantsContainer(participants);
+      } catch (error) {
+        console.error("Failed to load participants:", error);
+        // Show error message to user
+        participantsContainer.innerHTML = `<p style="color: red; padding: 10px;">Failed to load participants: ${error.message}</p>`;
+      }
+    }
+
+    /**
+     * Populate the participants container with user data
+     * @param {Array} participants - Array of participant objects with userUuid, firstName, lastName, email
+     */
+    function populateParticipantsContainer(participants) {
+      participantsContainer.innerHTML = "";
+      
+      if (!participants || participants.length === 0) {
+        participantsContainer.innerHTML = "<p style='padding: 10px; color: #666;'>No participants found for this course.</p>";
+        return;
+      }
+
+      participants.forEach(participant => {
+        const label = document.createElement("label");
+        label.classList.add("participant");
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = participant.userUuid;
+        
+        const nameSpan = document.createElement("span");
+        nameSpan.classList.add("participant-name");
+        nameSpan.textContent = `${participant.firstName} ${participant.lastName}`;
+        
+        label.appendChild(checkbox);
+        label.appendChild(nameSpan);
+        participantsContainer.appendChild(label);
+      });
+    }
+
+    /**
+     * Load meetings from the backend and populate the calendar
+     * @returns {Promise<void>}
+     */
+    async function loadMeetingsFromBackend() {
+      const courseUUID = getCourseIdFromUrl();
+      if (!courseUUID) {
+        console.error("No course UUID found in URL");
+        return;
+      }
+
+      try {
+        const meetingList = await getMeetingList(courseUUID);
+        
+        // Clear existing meetings
+        Object.keys(meetings).forEach(key => delete meetings[key]);
+        
+        // Group meetings by date
+        meetingList.forEach(meeting => {
+          const meetingDate = new Date(meeting.meetingDate);
+          const dateStr = `${meetingDate.getFullYear()}-${String(meetingDate.getMonth() + 1).padStart(2, "0")}-${String(meetingDate.getDate()).padStart(2, "0")}`;
+          
+          if (!meetings[dateStr]) {
+            meetings[dateStr] = [];
+          }
+          
+          const startTime = new Date(meeting.meetingStartTime);
+          const timeStr = `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`;
+          
+          meetings[dateStr].push({
+            title: meeting.meetingTitle,
+            time: timeStr,
+            type: mapMeetingTypeToString(meeting.meetingType),
+            desc: meeting.meetingDescription || "",
+            participants: [], // Will be loaded separately if needed
+            chainId: meeting.parentMeetingUUID || null,
+            meetingUUID: meeting.meetingUUID,
+            isRecurring: meeting.isRecurring
+          });
+        });
+        
+        renderCalendar();
+      } catch (error) {
+        console.error("Failed to load meetings:", error);
+        // Continue with empty meetings if load fails
+      }
+    }
 
     function parseLocalDate(dateStr) {
       if (!dateStr) return null;
@@ -189,18 +372,28 @@ export async function render(container, view = "dashboard") {
 
         // Only allow clicking on future dates or today
         if (!isPastDate) {
-          dateDiv.addEventListener("click", () => {
+          dateDiv.addEventListener("click", async () => {
             // Reset all fields
             meetingTitleInput.value = "";
             meetingDateInput.value = fullDate;
             selectedCalendarDate = fullDate;
             meetingTimeInput.value = "";
-            meetingTypeSelect.value = "Lecture";
+            
+            // Set default meeting type based on role
+            if (canCreateStaffMeetings) {
+              meetingTypeSelect.value = "Lecture";
+            } else {
+              meetingTypeSelect.value = "Team Meeting";
+            }
+            
             meetingDescTextarea.value = "";
             recurringCheckbox.checked = false;
             if (recurringEndInput) recurringEndInput.value = "";
             syncRecurringControlState();
             participantsContainer.querySelectorAll("input[type=\"checkbox\"]").forEach(cb => cb.checked = false);
+
+            // Load participants when opening modal
+            await loadParticipants();
 
             meetingModal.classList.remove("hidden");
           });
@@ -223,42 +416,71 @@ export async function render(container, view = "dashboard") {
       wrapper.querySelector("#attendance-meeting-date").textContent = date;
       wrapper.querySelector("#attendance-meeting-time").textContent = meeting.time;
       wrapper.querySelector("#attendance-meeting-type").textContent = meeting.type;
-      wrapper.querySelector("#attendance-meeting-desc").textContent = meeting.desc;
-      wrapper.querySelector("#attendance-meeting-participants").textContent = meeting.participants.join(", ");
+      wrapper.querySelector("#attendance-meeting-desc").textContent = meeting.desc || "";
+      wrapper.querySelector("#attendance-meeting-participants").textContent = meeting.participants && meeting.participants.length > 0 
+        ? meeting.participants.join(", ") 
+        : "No participants";
 
       wrapper.querySelector("#attendance-passcode").value = "";
-      activeMeetingContext = { date, index, chainId: meeting.chainId || null };
+      activeMeetingContext = { 
+        date, 
+        index, 
+        chainId: meeting.chainId || null,
+        meetingUUID: meeting.meetingUUID || null
+      };
       if (deleteAllFutureBtn) {
         deleteAllFutureBtn.disabled = !meeting.chainId;
       }
       meetingContentModalWrapper.classList.remove("hidden");
     }
 
-    deleteMeetingBtn?.addEventListener("click", () => {
-      const { date, index } = activeMeetingContext;
+    deleteMeetingBtn?.addEventListener("click", async () => {
+      const { date, index, meetingUUID } = activeMeetingContext;
       if (!date || typeof index !== "number") return;
 
       const confirmDelete = confirm("Delete this meeting from the calendar?");
       if (!confirmDelete) return;
 
+      // Delete from backend if meetingUUID exists
+      if (meetingUUID) {
+        try {
+          await deleteMeeting(meetingUUID, false);
+        } catch (error) {
+          console.error("Failed to delete meeting:", error);
+          alert(`Failed to delete meeting: ${error.message}`);
+          return;
+        }
+      }
+
+      // Remove from local state
       meetings[date].splice(index, 1);
       if (meetings[date].length === 0) {
         delete meetings[date];
       }
 
-      activeMeetingContext = { date: null, index: null, chainId: null };
+      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null };
       if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
       meetingContentModalWrapper.classList.add("hidden");
       renderCalendar();
     });
 
-    deleteAllFutureBtn?.addEventListener("click", () => {
-      const { chainId, date } = activeMeetingContext;
-      if (!chainId || !date) return;
+    deleteAllFutureBtn?.addEventListener("click", async () => {
+      const { chainId, date, meetingUUID } = activeMeetingContext;
+      if (!chainId || !date || !meetingUUID) return;
 
       const confirmDelete = confirm("Delete this and all future recurring meetings?");
       if (!confirmDelete) return;
 
+      // Delete from backend (deleteFuture = true)
+      try {
+        await deleteMeeting(meetingUUID, true);
+      } catch (error) {
+        console.error("Failed to delete future meetings:", error);
+        alert(`Failed to delete future meetings: ${error.message}`);
+        return;
+      }
+
+      // Remove from local state
       const cutoff = parseLocalDate(date);
       if (!cutoff) return;
 
@@ -270,7 +492,7 @@ export async function render(container, view = "dashboard") {
         if (meetings[meetingDate].length === 0) delete meetings[meetingDate];
       });
 
-      activeMeetingContext = { date: null, index: null, chainId: null };
+      activeMeetingContext = { date: null, index: null, chainId: null, meetingUUID: null };
       if (deleteAllFutureBtn) deleteAllFutureBtn.disabled = true;
       meetingContentModalWrapper.classList.add("hidden");
       renderCalendar();
@@ -282,14 +504,20 @@ export async function render(container, view = "dashboard") {
       meetingContentModalWrapper.classList.add("hidden");
     };
 
-    meetingForm.addEventListener("submit", e => {
+    meetingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const title = meetingTitleInput.value;
+      const courseUUID = getCourseIdFromUrl();
+      if (!courseUUID) {
+        alert("Course ID not found. Please navigate to a course page.");
+        return;
+      }
+
+      const title = meetingTitleInput.value.trim();
       const date = meetingDateInput.value;
       const time = meetingTimeInput.value;
       const type = meetingTypeSelect.value;
-      const desc = meetingDescTextarea.value;
+      const desc = meetingDescTextarea.value.trim();
       const recurring = recurringCheckbox.checked;
 
       const participants = Array.from(participantsContainer.querySelectorAll("input[type=\"checkbox\"]:checked"))
@@ -302,11 +530,6 @@ export async function render(container, view = "dashboard") {
         alert("You cannot create a meeting in the past.");
         return;
       }
-
-      if (!meetings[date]) meetings[date] = [];
-      const chainId = recurring ? `chain-${Date.now()}-${chainCounter++}` : null;
-
-      meetings[date].push({title, time, type, desc, participants, chainId});
 
       if (recurring) {
         if (!recurringEndInput || !recurringEndInput.value) {
@@ -330,8 +553,9 @@ export async function render(container, view = "dashboard") {
           return;
         }
 
+        // Create recurring meetings
         const nextDate = new Date(startDate);
-        nextDate.setDate(nextDate.getDate() + 7);
+        let parentMeetingUUID = null;
 
         while (nextDate <= endDate) {
           const nextYear = nextDate.getFullYear();
@@ -339,18 +563,82 @@ export async function render(container, view = "dashboard") {
           const nextDay = String(nextDate.getDate()).padStart(2, "0");
           const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
 
-          if (!meetings[nextDateStr]) meetings[nextDateStr] = [];
-          meetings[nextDateStr].push({title, time, type, desc, participants, chainId});
+          // Calculate meeting start and end times
+          const [hours, minutes] = time.split(":").map(Number);
+          const meetingStart = new Date(nextDate);
+          meetingStart.setHours(hours, minutes, 0, 0);
+          const meetingEnd = new Date(meetingStart);
+          meetingEnd.setHours(meetingStart.getHours() + 1); // Default 1 hour duration
+
+          try {
+            const meetingData = {
+              courseUUID: courseUUID,
+              meetingStartTime: meetingStart.toISOString(),
+              meetingEndTime: meetingEnd.toISOString(),
+              meetingDate: nextDateStr,
+              meetingTitle: title,
+              meetingDescription: desc || null,
+              meetingLocation: null,
+              meetingType: mapMeetingTypeToInt(type),
+              isRecurring: true,
+              participants: participants
+            };
+
+            // Set parentMeetingUUID for recurring meetings (first one is parent, rest are children)
+            if (parentMeetingUUID) {
+              meetingData.parentMeetingUUID = parentMeetingUUID;
+            }
+
+            const response = await createMeeting(meetingData);
+            
+            // Store parent UUID for next iterations
+            if (!parentMeetingUUID && response.meeting) {
+              parentMeetingUUID = response.meeting.meetingUUID;
+            }
+          } catch (error) {
+            console.error("Failed to create recurring meeting:", error);
+            alert(`Failed to create meeting on ${nextDateStr}: ${error.message}`);
+            return;
+          }
 
           nextDate.setDate(nextDate.getDate() + 7);
         }
+      } else {
+        // Create single meeting
+        const [hours, minutes] = time.split(":").map(Number);
+        const meetingStart = new Date(meetingDateTime);
+        const meetingEnd = new Date(meetingStart);
+        meetingEnd.setHours(meetingStart.getHours() + 1); // Default 1 hour duration
+
+        try {
+          const meetingData = {
+            courseUUID: courseUUID,
+            meetingStartTime: meetingStart.toISOString(),
+            meetingEndTime: meetingEnd.toISOString(),
+            meetingDate: date,
+            meetingTitle: title,
+            meetingDescription: desc || null,
+            meetingLocation: null,
+            meetingType: mapMeetingTypeToInt(type),
+            isRecurring: false,
+            participants: participants
+          };
+
+          await createMeeting(meetingData);
+        } catch (error) {
+          console.error("Failed to create meeting:", error);
+          alert(`Failed to create meeting: ${error.message}`);
+          return;
+        }
       }
+
+      // Reload meetings from backend to get the new ones
+      await loadMeetingsFromBackend();
 
       meetingModal.classList.add("hidden");
       meetingForm.reset();
       if (recurringEndInput) recurringEndInput.value = "";
       syncRecurringControlState();
-      renderCalendar();
     });
 
     closeModalBtn.onclick = () => meetingModal.classList.add("hidden");
@@ -365,7 +653,17 @@ export async function render(container, view = "dashboard") {
     todayBtn.onclick = () => { currentDate = new Date(); renderCalendar(); };
 
     syncRecurringControlState();
-    renderCalendar();
+    
+    // Load user context to determine role
+    const courseUUID = getCourseIdFromUrl();
+    if (courseUUID) {
+      await loadUserContext(courseUUID);
+      setupMeetingTypeOptions();
+    }
+    
+    // Load meetings and participants from backend on initial render
+    await loadMeetingsFromBackend();
+    await loadParticipants();
 
   } catch (error) {
     container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
