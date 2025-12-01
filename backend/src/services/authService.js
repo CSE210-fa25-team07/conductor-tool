@@ -124,7 +124,7 @@ async function requestAccess(req, res) {
       error: "User with this email already exists"
     });
   }
-  
+
   const response = await formRequestRepository.createFormRequest(firstName, lastName, email, institution, verificationCode);
 
   if (!response) {
