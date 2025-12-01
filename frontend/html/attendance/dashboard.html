@@ -41,29 +41,17 @@
           <option>Team Meeting</option>
         </select>
 
-        <!-- placeholder until integrated with backend/database -->
         <label>Participants</label>
+        <div class="participants-controls">
+          <button type="button" id="select-all-participants" class="btn-select-all">Select All</button>
+          <button type="button" id="deselect-all-participants" class="btn-deselect-all">Deselect All</button>
+          <select id="select-by-team" class="team-selector">
+            <option value="">Add by Team...</option>
+          </select>
+        </div>
         <div id="meeting-participants" class="participants-container">
-          <label class="participant">
-            <input type="checkbox" value="Alice">
-            <span class="participant-name">Alice</span>
-          </label>
-          <label class="participant">
-            <input type="checkbox" value="Bob">
-            <span class="participant-name">Bob</span>
-          </label>
-          <label class="participant">
-            <input type="checkbox" value="Charlie">
-            <span class="participant-name">Charlie</span>
-          </label>
-          <label class="participant">
-            <input type="checkbox" value="Diana">
-            <span class="participant-name">Diana</span>
-          </label>
-          <label class="participant">
-            <input type="checkbox" value="Eve">
-            <span class="participant-name">Eve</span>
-          </label>
+          <!-- Participants will be loaded dynamically -->
+          <p style="padding: 10px; color: #666; text-align: center;">Loading participants...</p>
         </div>
 
         <label>Description</label>
@@ -119,18 +107,42 @@
           </div>
         </div>
 
-        <!-- Attendance options -->
+        <!-- Attendance options - Different views for creator vs participant -->
         <div class="attendance-options">
-          <h3>Submit Attendance</h3>
-
-          <!-- placeholder until integrated with backend/database -->
-          <div class="qr-code-placeholder">
-            <p>[QR CODE]</p>
+          <!-- Creator View: Show QR Code and Alphanumeric Code -->
+          <div id="creator-attendance-view" class="attendance-view hidden">
+            <h3>Meeting Attendance Code</h3>
+            <div class="code-display-section">
+              <div class="qr-code-container">
+                <img id="meeting-qr-code" src="" alt="QR Code" class="qr-code-image" />
+                <p class="qr-code-label">Scan this QR code to mark attendance</p>
+              </div>
+              <div class="alphanumeric-code-container">
+                <label for="meeting-code-display">Alphanumeric Code:</label>
+                <div id="meeting-code-display" class="code-display"></div>
+                <button id="copy-code-btn" class="btn-copy-code">Copy Code</button>
+              </div>
+            </div>
           </div>
-          <p>Or enter passcode:</p>
-          <input type="text" id="attendance-passcode" placeholder="Enter passcode" />
 
-          <button id="submit-attendance">Submit</button>
+          <!-- Participant View: Camera Scanner and Code Input -->
+          <div id="participant-attendance-view" class="attendance-view hidden">
+            <h3>Submit Attendance</h3>
+            <div class="attendance-input-section">
+              <div class="camera-scanner-container">
+                <video id="qr-scanner-video" class="camera-video" autoplay playsinline></video>
+                <canvas id="qr-scanner-canvas" class="camera-canvas hidden"></canvas>
+                <p class="camera-label">Point camera at QR code to scan</p>
+                <button id="start-camera-btn" class="btn-start-camera">Start Camera</button>
+                <button id="stop-camera-btn" class="btn-stop-camera hidden">Stop Camera</button>
+              </div>
+              <div class="code-input-container">
+                <p class="or-divider">Or enter code manually:</p>
+                <input type="text" id="attendance-passcode" placeholder="Enter alphanumeric code" maxlength="6" />
+                <button id="submit-attendance">Submit Attendance</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
