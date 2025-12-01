@@ -5,6 +5,7 @@
  */
 
 import { getPrisma } from "../utils/db.js";
+import * as verificationCodeRepository from "./verificationCodeRepository.js";
 
 const prisma = getPrisma();
 
@@ -183,46 +184,6 @@ async function findCourseByCodeTermAndProfessor(courseCode, termUuid, professorU
 }
 
 /**
- * Check if verification codes are unique (not already used)
- * @param {Array<string>} codes - Array of verification codes to check
- * @returns {Promise<boolean>} True if all codes are unique
- */
-async function areVerificationCodesUnique(codes) {
-  const existingCodes = await prisma.verificationCode.findMany({
-    where: {
-      veriCode: {
-        in: codes
-      },
-      isActive: true
-    }
-  });
-
-  return existingCodes.length === 0;
-}
-
-/**
- * Check if verification codes are unique for update (excluding current course)
- * @param {string} courseUuid - The UUID of the course being updated
- * @param {Array<string>} codes - Array of verification codes to check
- * @returns {Promise<boolean>} True if all codes are unique
- */
-async function areVerificationCodesUniqueForUpdate(courseUuid, codes) {
-  const existingCodes = await prisma.verificationCode.findMany({
-    where: {
-      veriCode: {
-        in: codes
-      },
-      isActive: true,
-      courseUuid: {
-        not: courseUuid
-      }
-    }
-  });
-
-  return existingCodes.length === 0;
-}
-
-/**
  * Get course with verification codes
  * @param {string} courseUuid - The UUID of the course
  * @returns {Promise<Object|null>} Course object with verification codes
@@ -231,13 +192,6 @@ async function getCourseWithVerificationCodes(courseUuid) {
   const course = await prisma.course.findUnique({
     where: {
       courseUuid: courseUuid
-    },
-    include: {
-      verificationCodes: {
-        include: {
-          role: true
-        }
-      }
     }
   });
 
@@ -245,10 +199,8 @@ async function getCourseWithVerificationCodes(courseUuid) {
     return null;
   }
 
-  // Map verification codes to their roles
-  const taCode = course.verificationCodes.find(vc => vc.role.role === "TA")?.veriCode || "";
-  const tutorCode = course.verificationCodes.find(vc => vc.role.role === "Tutor")?.veriCode || "";
-  const studentCode = course.verificationCodes.find(vc => vc.role.role === "Student")?.veriCode || "";
+  // Get verification codes from the verification code repository
+  const codes = await verificationCodeRepository.getVerificationCodesByCourseUuid(courseUuid);
 
   return {
     courseUuid: course.courseUuid,
@@ -258,9 +210,7 @@ async function getCourseWithVerificationCodes(courseUuid) {
     description: course.description,
     syllabusUrl: course.syllabusUrl,
     canvasUrl: course.canvasUrl,
-    taCode,
-    tutorCode,
-    studentCode
+    ...codes
   };
 }
 
@@ -283,19 +233,10 @@ async function createCourseWithVerificationCodes(courseData) {
     instructorId
   } = courseData;
 
-  // Get role UUIDs
-  const roles = await prisma.role.findMany({
-    where: {
-      role: {
-        in: ["TA", "Tutor", "Student", "Professor"]
-      }
-    }
+  // Get Professor role UUID
+  const professorRole = await prisma.role.findUnique({
+    where: { role: "Professor" }
   });
-
-  const taRole = roles.find(r => r.role === "TA");
-  const tutorRole = roles.find(r => r.role === "Tutor");
-  const studentRole = roles.find(r => r.role === "Student");
-  const professorRole = roles.find(r => r.role === "Professor");
 
   // Create course and verification codes in a transaction
   const result = await prisma.$transaction(async (tx) => {
@@ -311,28 +252,11 @@ async function createCourseWithVerificationCodes(courseData) {
       }
     });
 
-    // Create verification codes
-    await tx.verificationCode.createMany({
-      data: [
-        {
-          courseUuid: newCourse.courseUuid,
-          roleUuid: taRole.roleUuid,
-          veriCode: taCode,
-          isActive: true
-        },
-        {
-          courseUuid: newCourse.courseUuid,
-          roleUuid: tutorRole.roleUuid,
-          veriCode: tutorCode,
-          isActive: true
-        },
-        {
-          courseUuid: newCourse.courseUuid,
-          roleUuid: studentRole.roleUuid,
-          veriCode: studentCode,
-          isActive: true
-        }
-      ]
+    // Create verification codes using the verification code repository
+    await verificationCodeRepository.createVerificationCodes(tx, newCourse.courseUuid, {
+      taCode,
+      tutorCode,
+      studentCode
     });
 
     // Enroll the professor as instructor
@@ -370,19 +294,6 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
     studentCode
   } = courseData;
 
-  // Get role UUIDs
-  const roles = await prisma.role.findMany({
-    where: {
-      role: {
-        in: ["TA", "Tutor", "Student"]
-      }
-    }
-  });
-
-  const taRole = roles.find(r => r.role === "TA");
-  const tutorRole = roles.find(r => r.role === "Tutor");
-  const studentRole = roles.find(r => r.role === "Student");
-
   // Update course and verification codes in a transaction
   const result = await prisma.$transaction(async (tx) => {
     // Update the course
@@ -400,68 +311,11 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
       }
     });
 
-    // Update verification codes (upsert to handle new codes)
-    await tx.verificationCode.upsert({
-      where: {
-        // Prisma requires snake_case for composite unique constraints
-        // eslint-disable-next-line camelcase
-        courseUuid_roleUuid: {
-          courseUuid: courseUuid,
-          roleUuid: taRole.roleUuid
-        }
-      },
-      update: {
-        veriCode: taCode,
-        isActive: true
-      },
-      create: {
-        courseUuid: courseUuid,
-        roleUuid: taRole.roleUuid,
-        veriCode: taCode,
-        isActive: true
-      }
-    });
-
-    await tx.verificationCode.upsert({
-      where: {
-        // Prisma requires snake_case for composite unique constraints
-        // eslint-disable-next-line camelcase
-        courseUuid_roleUuid: {
-          courseUuid: courseUuid,
-          roleUuid: tutorRole.roleUuid
-        }
-      },
-      update: {
-        veriCode: tutorCode,
-        isActive: true
-      },
-      create: {
-        courseUuid: courseUuid,
-        roleUuid: tutorRole.roleUuid,
-        veriCode: tutorCode,
-        isActive: true
-      }
-    });
-
-    await tx.verificationCode.upsert({
-      where: {
-        // Prisma requires snake_case for composite unique constraints
-        // eslint-disable-next-line camelcase
-        courseUuid_roleUuid: {
-          courseUuid: courseUuid,
-          roleUuid: studentRole.roleUuid
-        }
-      },
-      update: {
-        veriCode: studentCode,
-        isActive: true
-      },
-      create: {
-        courseUuid: courseUuid,
-        roleUuid: studentRole.roleUuid,
-        veriCode: studentCode,
-        isActive: true
-      }
+    // Update verification codes using the verification code repository
+    await verificationCodeRepository.updateVerificationCodes(tx, courseUuid, {
+      taCode,
+      tutorCode,
+      studentCode
     });
 
     return updatedCourse;
@@ -477,8 +331,6 @@ export {
   getAllActiveTerms,
   isUserCourseProfessor,
   findCourseByCodeTermAndProfessor,
-  areVerificationCodesUnique,
-  areVerificationCodesUniqueForUpdate,
   getCourseWithVerificationCodes,
   createCourseWithVerificationCodes,
   updateCourseWithVerificationCodes

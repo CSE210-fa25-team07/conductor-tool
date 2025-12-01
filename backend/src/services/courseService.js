@@ -5,6 +5,7 @@
  * Business logic layer for course operations.
  */
 import * as courseRepository from "../repositories/courseRepository.js";
+import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
 import * as userRepository from "../repositories/userRepository.js";
 import * as courseValidator from "../validators/courseValidator.js";
 
@@ -180,7 +181,7 @@ async function createCourse(req, res) {
     }
 
     // Check if verification codes are unique
-    const codesAreUnique = await courseRepository.areVerificationCodesUnique([
+    const codesAreUnique = await verificationCodeRepository.areVerificationCodesUnique([
       taCode,
       tutorCode,
       studentCode
@@ -269,7 +270,7 @@ async function updateCourse(req, res) {
     }
 
     // Check if verification codes are unique (excluding current course codes)
-    const codesAreUnique = await courseRepository.areVerificationCodesUniqueForUpdate(
+    const codesAreUnique = await verificationCodeRepository.areVerificationCodesUniqueForUpdate(
       courseUuid,
       [taCode, tutorCode, studentCode]
     );
