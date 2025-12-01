@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "docs": "jsdoc -c jsdoc.json",
     "test": "vitest run",
     "db:start": "docker compose up -d",

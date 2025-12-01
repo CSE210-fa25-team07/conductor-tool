@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS form_request (
     request_uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     related_institution VARCHAR(255),
     verification_code VARCHAR(100),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
