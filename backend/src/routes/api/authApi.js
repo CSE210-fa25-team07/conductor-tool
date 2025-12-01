@@ -1,6 +1,6 @@
 /**
- * @module authentication/api
  * API endpoints for authentication and user session management
+ * @module authentication/api
  */
 import express from "express";
 import * as authService from "../../services/authService.js";
@@ -34,7 +34,6 @@ router.get("/session", async (req, res) => {
  * @param {string} req.body.code - Verification code
  * @returns {Object} 200 - Success, user created
  * @returns {Object} 400 - Invalid code or error
- * @returns {Object} 401 - Not authenticated
  * @status IN USE - Verifies code and creates user in database
  */
 router.post("/verify", async (req, res) => {
@@ -42,6 +41,49 @@ router.post("/verify", async (req, res) => {
     return await authService.verifyCode(req, res);
   } catch (error) {
     res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Enroll user by verification code; if valid, enroll the user into the
+ * corresponding course.
+ * @name POST /v1/api/auth/enroll
+ * @param {string} req.body.code - Verification code
+ * @returns {Object} 200 - Success, user enrolled
+ * @returns {Object} 400 - Invalid code or error
+ * @status IN USE - Enrolls user into course based on verification code
+ */
+router.post("/enroll", async (req, res) => {
+  try {
+    return await authService.enrollUserByCode(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Handle access request form submission
+ * @name POST /v1/api/auth/request-access
+ * @param {string} req.body.firstName - User's first name
+ * @param {string} req.body.lastName - User's last name
+ * @param {string} req.body.email - User's email address
+ * @param {string} req.body.institution - User's related institution
+ * @param {string} req.body.verificationCode - Verification code entered
+ * @returns {Object} 200 - Success message
+ * @returns {Object} 500 - Server error
+ * @status IN USE - Handles access request form submissions
+ */
+router.post("/request-access", async (req, res) => {
+  try {
+    return await authService.requestAccess(req, res);
+  } catch (error) {
+    res.status(500).json({
       success: false,
       error: error.message
     });

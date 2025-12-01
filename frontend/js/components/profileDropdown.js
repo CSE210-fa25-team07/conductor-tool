@@ -4,6 +4,8 @@
  * Used in dashboard, class features, and other pages
  */
 
+import { loadUserContext, isSystemAdmin, isLeadAdmin, isProf } from "../utils/userContext.js";
+
 /**
  * Initialize the profile dropdown component
  * Fetches user data from API and sets up dropdown behavior
@@ -27,40 +29,28 @@ export async function updateProfileFromAPI() {
       if (data.user && data.user.name && data.user.id) {
         updateProfileDisplay(data.user.name);
 
-        // Fetch user status and initialize dropdown menu
-        const statusResponse = await fetch("/v1/api/user-context/status", {
-          credentials: "include"
-        });
+        // Load user context and initialize dropdown menu
+        try {
+          await loadUserContext();
 
-        if (statusResponse.ok) {
-          const statusData = await statusResponse.json();
-          if (statusData.success && statusData.data) {
-            const userType = determineUserType(statusData.data);
-            createUserDropdown(userType);
+          let userType = "student"; // default
+          if (isSystemAdmin()) {
+            userType = "admin";
+          } else if (isLeadAdmin()) {
+            userType = "lead-admin";
+          } else if (isProf()) {
+            userType = "professor";
           }
-        } else {
-          // Default to student if status fetch fails
+
+          createUserDropdown(userType);
+        } catch {
+          // Default to student if loading context fails
           createUserDropdown("student");
         }
       }
     }
   } catch {
     // Silently fail - profile will show default state
-  }
-}
-
-/**
- * Determine user type based on staff status
- * @param {Object} status - User status object with isProf, isSystemAdmin, isLeadAdmin
- * @returns {string} User type: "admin" or "professor" or "student"
- */
-function determineUserType(status) {
-  if (status.isSystemAdmin || status.isLeadAdmin) {
-    return "admin";
-  } else if (status.isProf) {
-    return "professor";
-  } else {
-    return "student";
   }
 }
 
@@ -152,7 +142,7 @@ export function setupDropdownBehavior() {
 
 /**
  * Create and populate the user dropdown menu
- * @param {string} userType - Either "professor", "admin", or "student"
+ * @param {string} userType - Either "admin", "lead-admin", "professor", or "student"
  */
 export function createUserDropdown(userType = "student") {
   const dropdown = document.getElementById("user-dropdown");
@@ -163,14 +153,14 @@ export function createUserDropdown(userType = "student") {
   dropdown.innerHTML = "";
 
   // Define menu items based on user type
-  // Add Profie for all user types
+  // Add Profile for all user types
   const menuItems = [
     { text: "Profile", href: "/profile" }
   ];
 
-  // Add Requests option for admin users
-  if (userType === "admin") {
-    menuItems.push({ text: "Requests", href: "/requests" });
+  // Add Requests option for admin and lead-admin users
+  if (userType === "admin" || userType === "lead-admin") {
+    menuItems.push({ text: "Administration", href: "/admin" });
   }
 
   // Add Log Out for all users

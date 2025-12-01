@@ -105,7 +105,7 @@ model CourseEnrollment {
 model VerificationCode {
   courseUuid String   @map("course_uuid") @db.Uuid
   roleUuid   String   @map("role_uuid") @db.Uuid
-  veriCode   String   @map("veri_code") @db.VarChar(100)
+  veriCode   String   @unique @map("veri_code") @db.VarChar(100)
   isActive   Boolean? @default(true) @map("is_active")
   course     Course   @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
   role       Role     @relation(fields: [roleUuid], references: [roleUuid], onDelete: Cascade, onUpdate: NoAction)
@@ -123,7 +123,7 @@ model Team {
   teamTaUuid  String?      @map("team_ta_uuid") @db.Uuid
   standups    Standup[]
   members     TeamMember[]
-  course      Course       @relation(fields: [courseUuid], references: [courseUuid])
+  course      Course       @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade)
   teamTa      User?        @relation("TeamTA", fields: [teamTaUuid], references: [userUuid])
 
   @@unique([courseUuid, teamName], name: "uq_team_name_per_course", map: "uq_team_name_per_course")
@@ -252,13 +252,13 @@ model MeetingCode {
 }
 
 model FormRequest {
-  request_uuid        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  first_name          String   @db.VarChar(100)
-  last_name           String   @db.VarChar(100)
-  email               String   @db.VarChar(255)
-  related_institution String?  @db.VarChar(255)
-  verification_code   String?  @db.VarChar(100)
-  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  requestUuid        String   @id @default(dbgenerated("gen_random_uuid()")) @map("request_uuid") @db.Uuid
+  firstName          String   @map("first_name") @db.VarChar(100)
+  lastName           String   @map("last_name") @db.VarChar(100)
+  email              String   @unique @db.VarChar(255)
+  relatedInstitution String?  @map("related_institution") @db.VarChar(255)
+  verificationCode   String?  @map("verification_code") @db.VarChar(100)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@map("form_request")
 }

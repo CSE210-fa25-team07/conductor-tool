@@ -1,5 +1,7 @@
 /** @module dashboard/frontend */
 import { initGlobalNavigation } from "../../components/navigation.js";
+import { handleVerification } from "../../utils/authVerify.js";
+import { loadUserContext, isProf, isLeadAdmin, isSystemAdmin } from "../../utils/userContext.js";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
@@ -22,6 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
  */
 async function loadCourses() {
   try {
+    // Load user context first
+    await loadUserContext();
+
     const response = await fetch("/v1/api/courses");
 
     if (!response.ok) {
@@ -65,11 +70,11 @@ function renderCourses(courses) {
  * Create a course card element
  * @param {Object} course - Course data object
  * @param {string} course.courseUuid - Course UUID (primary key)
- * @param {string} course.code - Course code (e.g., "CSE 210")
+ * @param {string} course.code - Course code
  * @param {string} course.name - Course name
  * @param {string} [course.description] - Course description
  * @param {string} [course.term] - Term name
- * @param {number} course.students - Number of students enrolled
+ * @param {number} course.people - Number of people enrolled
  * @returns {HTMLElement} Course card article element
  */
 function createCourseCard(course) {
@@ -87,7 +92,15 @@ function createCourseCard(course) {
       <section class="course-info">
         <span class="course-code">${course.code}</span>
         <h3 class="course-name">${course.name}</h3>
-      </section>
+       </section>
+      <div class="course-menu-container">
+        <button class="course-menu-button" aria-label="Course options">
+          <span class="menu-dots">⋮</span>
+        </button>
+        <div class="course-menu-dropdown">
+          ${createMenuItems(course)}
+        </div>
+       </div>
     </header>
 
     <p class="course-description">
@@ -97,18 +110,71 @@ function createCourseCard(course) {
     ${course.term ? `<p style="font-size: var(--text-sm); color: var(--color-forest-green-medium); margin-top: var(--space-xs);">Term: ${course.term}</p>` : ""}
 
     <footer class="course-footer">
-      <span class="course-students">${course.students} students</span>
+      <span class="course-people">${course.people} enrolled</span>
     </footer>
   `;
 
   // Add click handler to navigate to course features page
-  article.addEventListener("click", () => {
+  article.addEventListener("click", (e) => {
+    // Don't navigate if clicking on menu or menu items
+    if (e.target.closest(".course-menu-container")) {
+      return;
+    }
     handleCourseClick(course);
+  });
+
+  // Setup menu toggle
+  const menuButton = article.querySelector(".course-menu-button");
+  const menuDropdown = article.querySelector(".course-menu-dropdown");
+
+  menuButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Close all other open menus
+    document.querySelectorAll(".course-menu-dropdown.active").forEach(menu => {
+      if (menu !== menuDropdown) {
+        menu.classList.remove("active");
+      }
+    });
+
+    // Toggle current menu
+    menuDropdown.classList.toggle("active");
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".course-menu-container")) {
+      menuDropdown.classList.remove("active");
+    }
   });
 
   article.style.cursor = "pointer";
 
   return article;
+}
+
+/**
+ * Create role-specific menu items for course card
+ * @param {Object} course - Course data object
+ * @param {string} course.courseUuid - Course UUID
+ * @returns {string} HTML string for menu items based on user role
+ */
+function createMenuItems(course) {
+  if (isProf() || isLeadAdmin() || isSystemAdmin()) {
+    // Professor menu items
+    return `
+      <a href="/courses/${course.courseUuid}/edit" class="menu-item">
+        <span>Edit</span>
+      </a>
+    `;
+  } else {
+    // Student menu items
+    return `
+      <a href="/courses/${course.courseUuid}/leave" class="menu-item">
+        <span>Leave</span>
+      </a>
+    `;
+  }
 }
 
 /**
@@ -139,12 +205,42 @@ function createEmptyStateCard() {
     </section>
   `;
 
-  // TODO: Add click handler (Depending on either student or professor)
-  // article.addEventListener("click", () => {
-  //   handleAddCourse();
-  // });
+  article.addEventListener("click", async () => {
+    await loadUserContext();
+
+    // Enroll to new course
+    if (!isProf()) {
+      article.replaceWith(handleAddCourse());
+    } else {
+      // TODO: Create course for professors is not implemented yet
+      window.location.href = "/courses/create"; // Placeholder redirect
+    }
+  });
 
   return article;
+}
+
+/**
+ * Handle adding a new course
+ * @returns {HTMLElement} The updated card element with the form
+ */
+function handleAddCourse() {
+  const card = document.createElement("article");
+  card.className = "course-card empty-state";
+
+  card.innerHTML = `
+    <form class="add-course-inline-form">
+      <input type="text" id="verification-code" placeholder="Course Code" required />
+      <button type="submit">Add</button>
+    </form>
+  `;
+
+  const form = card.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleVerification();
+  });
+  return card;
 }
 
 /**

@@ -26,37 +26,6 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * Get user status by UUID
- * @name GET /v1/api/user-context/status
- * @returns {Object} 200 - User status with isProf, isSystemAdmin, isLeadAdmin flags
- * @returns {Object} 401 - Not authenticated
- */
-router.get("/status", async (req, res) => {
-  try {
-    const userId = req.session.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        error: "Not authenticated"
-      });
-    }
-
-    const userStatus = await userService.getUserStatusByUuid(userId);
-
-    return res.status(200).json({
-      success: true,
-      data: userStatus
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-/**
  * Get user photo URL
  * @name GET /v1/api/user-context/photo
  * @returns {Object} 200 - User photo URL
