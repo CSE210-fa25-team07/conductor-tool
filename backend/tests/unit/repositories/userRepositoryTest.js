@@ -2,7 +2,7 @@
  * Tests for userRepository
  */
 
-import { describe, it, expect, afterAll } from "@jest/globals";
+import { describe, it, expect, afterAll } from "vitest";
 import {
   addUser,
   getUserByEmail,
