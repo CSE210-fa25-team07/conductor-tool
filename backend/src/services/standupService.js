@@ -5,7 +5,7 @@
 import * as standupRepository from "../repositories/standupRepository.js";
 import * as standupDto from "../dtos/standupDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
-import * as emailService from "./emailService.js"; // ADD THIS LINE
+import * as emailService from "./emailService.js";
 
 
 async function createStandup(req, res) {
@@ -50,7 +50,6 @@ async function createStandup(req, res) {
         blockerContent: blockers
       });
     } catch (emailError) {
-      console.error('Failed to send email:', emailError);
     }
   }
 

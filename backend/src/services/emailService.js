@@ -2,13 +2,13 @@
  * @module email/service
  */
 
-import sgMail from '@sendgrid/mail';
+import sgMail from "@sendgrid/mail";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
  * Sends blocker notification email to TA
- * 
+ *
  * @param {Object} emailData - Email data
  * @param {string} emailData.studentName - Student's full name
  * @param {string} emailData.studentEmail - Student's email
@@ -40,9 +40,7 @@ ${blockerContent}
 
   try {
     await sgMail.send(msg);
-    console.log('✓ Blocker notification sent');
   } catch (error) {
-    console.error('✗ Email send failed:', error);
     throw error;
   }
 }
