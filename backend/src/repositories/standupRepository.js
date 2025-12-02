@@ -14,6 +14,7 @@ async function createStandup(data) {
       courseUuid: data.courseUuid,
       dateSubmitted: data.dateSubmitted || new Date(),
       whatDone: data.whatDone,
+      githubActivities: data.githubActivities || null,
       whatNext: data.whatNext,
       blockers: data.blockers,
       reflection: data.reflection,
@@ -75,6 +76,7 @@ async function updateStandup(standupUuid, data) {
     where: { standupUuid },
     data: {
       whatDone: data.whatDone,
+      githubActivities: data.githubActivities,
       whatNext: data.whatNext,
       blockers: data.blockers,
       reflection: data.reflection,

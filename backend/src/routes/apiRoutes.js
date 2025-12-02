@@ -10,6 +10,7 @@ import attendanceApis from "./api/attendanceApi.js";
 import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
 import courseApis from "./api/courseApi.js";
+import githubApis from "./api/githubApi.js";
 
 const router = express.Router();
 
@@ -26,5 +27,7 @@ router.use("/standups", checkApiSession, standupApis);
 router.use("/attendance", checkApiSession, attendanceApis);
 
 router.use("/user-context", checkApiSession, userContextApis);
+
+router.use("/github", checkApiSession, githubApis);
 
 export default router;

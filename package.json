@@ -17,6 +17,7 @@
   "devDependencies": {
     "eslint": "^9.38.0",
     "jsdoc": "^4.0.0",
+    "jsdom": "^27.0.1",
     "prisma": "^6.19.0",
     "supertest": "^7.1.4",
     "vitest": "^3.2.4"

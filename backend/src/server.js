@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
 import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
+import githubAuthRoutes from "./routes/githubAuthRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
 import { checkSession, checkUserFromSession } from "./utils/auth.js";
@@ -61,6 +62,8 @@ app.use("/auth", checkSession, authRoutes);
 app.use("/profile", checkUserFromSession, profileRoutes);
 
 app.use("/google", googleRoutes);
+
+app.use("/github", githubAuthRoutes);
 
 app.use("/courses", checkUserFromSession, courseRoutes);
 
