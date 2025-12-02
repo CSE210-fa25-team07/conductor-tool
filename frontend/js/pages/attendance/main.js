@@ -4,7 +4,7 @@
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";
-import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails } from "../../api/attendanceApi.js";
+import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
 import { loadUserContext, isProfessorOrTA, getUserRoleInCourse, getCurrentUser } from "../../utils/userContext.js";
 
 const meetings = {};
@@ -13,31 +13,32 @@ let courseStartDate = null;
 let courseEndDate = null;
 
 /**
- * Map meeting type string to integer
+ * Map meeting type string to integer (0–3)
  * @param {string} typeString - Meeting type as string
  * @returns {number} Meeting type as integer
  */
 function mapMeetingTypeToInt(typeString) {
   const typeMap = {
-    "Lecture": 1,
-    "OH": 2,
-    "TA Check-In": 3,
-    "Team Meeting": 4
+    "Lecture": 0,
+    "OH": 1,
+    "TA Check-In": 2,
+    "Team Meeting": 3
   };
-  return typeMap[typeString] || 1;
+  // Default to Lecture (0) if unknown
+  return typeMap[typeString] ?? 0;
 }
 
 /**
- * Map meeting type integer to string
+ * Map meeting type integer to string (0–3)
  * @param {number} typeInt - Meeting type as integer
  * @returns {string} Meeting type as string
  */
 function mapMeetingTypeToString(typeInt) {
   const typeMap = {
-    1: "Lecture",
-    2: "OH",
-    3: "TA Check-In",
-    4: "Team Meeting"
+    0: "Lecture",
+    1: "OH",
+    2: "TA Check-In",
+    3: "Team Meeting"
   };
   return typeMap[typeInt] || "Lecture";
 }
@@ -142,23 +143,38 @@ export async function render(container, view = "dashboard") {
       }
 
       try {
-        // Load all users in the course
-        const users = await getAllCourseUsers(courseUUID);
-        allUsers = users || [];
+        // --- Load all users in the course (required for participant list) ---
+        try {
+          const users = await getAllCourseUsers(courseUUID);
+          console.log("loadAllUsersAndTeams: received users:", users);
+          console.log("loadAllUsersAndTeams: users type:", typeof users, "isArray:", Array.isArray(users), "length:", users?.length);
+          allUsers = users || [];
+          console.log("loadAllUsersAndTeams: allUsers set to:", allUsers.length, "users");
+        } catch (error) {
+          console.error("Failed to load users for course:", error);
+          allUsers = [];
+          participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants. Error: ${error.message}</p>`;
+          return;
+        }
+
+        // --- Load all teams in the course (optional, used for grouping / add-by-team) ---
+        try {
+          const teams = await getCourseTeams(courseUUID);
+          allTeams = teams || [];
+        } catch (error) {
+          console.warn("Failed to load teams for course (participants will still be available):", error);
+          // Fallback: no teams, but we still have users
+          allTeams = [];
+        }
         
-        // Load all teams in the course
-        const teams = await getCourseTeams(courseUUID);
-        allTeams = teams || [];
-        
-        // Populate the UI
+        // Populate the UI using whatever data we have
         populateParticipantsContainer();
         populateTeamSelector();
       } catch (error) {
-        console.error("Failed to load users/teams:", error);
-        // Show error but don't block - use empty arrays
+        console.error("Unexpected error while loading users/teams:", error);
         allUsers = [];
         allTeams = [];
-        participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants. Error: ${error.message}</p>`;
+        participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants due to an unexpected error.</p>`;
       }
     }
 
@@ -349,6 +365,7 @@ export async function render(container, view = "dashboard") {
         // Backend returns meetings where user is creator OR participant
         // This ensures all invited participants see the meeting on their calendars
         const meetingList = await getMeetingList(courseUUID);
+        console.log("Loaded meetings from backend:", Array.isArray(meetingList) ? meetingList.length : "non-array", meetingList);
         
         // Clear existing meetings
         Object.keys(meetings).forEach(key => delete meetings[key]);
@@ -357,14 +374,41 @@ export async function render(container, view = "dashboard") {
         meetingList.forEach(meeting => {
           // Handle meetingDate - could be a Date object, ISO string, or date string
           let meetingDateObj;
+          const originalDate = meeting.meetingDate;
+          
           if (meeting.meetingDate instanceof Date) {
             meetingDateObj = meeting.meetingDate;
           } else if (typeof meeting.meetingDate === "string") {
-            // Try parsing as ISO string first, then as date string
-            meetingDateObj = new Date(meeting.meetingDate);
-            // If parsing fails or results in invalid date, try local date parsing
-            if (isNaN(meetingDateObj.getTime())) {
+            // Check if it's a date-only string (YYYY-MM-DD) or ISO string with time
+            if (meeting.meetingDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              // Date-only string - use parseLocalDate to avoid timezone issues
+              // This prevents "2025-12-06" from being interpreted as UTC midnight
               meetingDateObj = parseLocalDate(meeting.meetingDate);
+              console.log(`Parsing date-only string "${meeting.meetingDate}" -> local date:`, meetingDateObj);
+            } else {
+              // ISO string with time - extract date components from the ISO string directly
+              // This avoids timezone conversion issues
+              const isoMatch = meeting.meetingDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+              if (isoMatch) {
+                // Extract year, month, day directly from ISO string (before timezone conversion)
+                const [, year, month, day] = isoMatch;
+                meetingDateObj = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+                console.log(`Parsing ISO string "${meeting.meetingDate}" -> extracted date: ${year}-${month}-${day} -> local date:`, meetingDateObj);
+              } else {
+                // Fallback: try parsing as Date and extract UTC components
+                const tempDate = new Date(meeting.meetingDate);
+                if (!isNaN(tempDate.getTime())) {
+                  // Use UTC methods to get the date components, then create local date
+                  // This ensures we get the correct calendar date regardless of timezone
+                  const year = tempDate.getUTCFullYear();
+                  const month = tempDate.getUTCMonth();
+                  const day = tempDate.getUTCDate();
+                  meetingDateObj = new Date(year, month, day);
+                  console.log(`Parsing ISO string "${meeting.meetingDate}" -> UTC date: ${year}-${month+1}-${day} -> local date:`, meetingDateObj);
+                } else {
+                  meetingDateObj = parseLocalDate(meeting.meetingDate);
+                }
+              }
             }
           } else {
             console.warn("Invalid meetingDate format:", meeting.meetingDate);
@@ -372,11 +416,13 @@ export async function render(container, view = "dashboard") {
           }
           
           if (!meetingDateObj || isNaN(meetingDateObj.getTime())) {
-            console.warn("Could not parse meeting date:", meeting.meetingDate);
+            console.warn("Could not parse meeting date:", originalDate);
             return; // Skip this meeting
           }
           
+          // Use local date components to avoid timezone shifts
           const dateStr = `${meetingDateObj.getFullYear()}-${String(meetingDateObj.getMonth() + 1).padStart(2, "0")}-${String(meetingDateObj.getDate()).padStart(2, "0")}`;
+          console.log(`Meeting "${meeting.meetingTitle}" date: original="${originalDate}" -> parsed="${dateStr}"`);
           
           if (!meetings[dateStr]) {
             meetings[dateStr] = [];
@@ -403,10 +449,10 @@ export async function render(container, view = "dashboard") {
             type: mapMeetingTypeToString(meeting.meetingType),
             desc: meeting.meetingDescription || "",
             participants: [], // Will be loaded separately if needed
-            chainId: meeting.parentMeetingUUID || null,
-            meetingUUID: meeting.meetingUUID,
+            chainId: meeting.parentMeetingUUID || meeting.parentMeetingUuid || null,
+            meetingUUID: meeting.meetingUUID || meeting.meetingUuid,
             isRecurring: meeting.isRecurring,
-            creatorUUID: meeting.creatorUUID || null,
+            creatorUUID: meeting.creatorUUID || meeting.creatorUuid || null, // Handle both camelCase and PascalCase
             meetingStartTime: meeting.meetingStartTime, // Store for time validation
             meetingEndTime: meeting.meetingEndTime // Store for time validation
           });
@@ -430,39 +476,36 @@ export async function render(container, view = "dashboard") {
       }
 
       try {
-        const courseData = await getCourseDetails(courseUUID);
+        const course = await getCourseDetails(courseUUID);
         
-        if (courseData && courseData.data) {
-          // Handle different possible response structures
-          const term = courseData.data.term || courseData.term;
-          if (term) {
-            courseStartDate = term.startDate ? new Date(term.startDate) : null;
-            courseEndDate = term.endDate ? new Date(term.endDate) : null;
-            
-            // Set to start of day for accurate comparison
-            if (courseStartDate) {
-              courseStartDate.setHours(0, 0, 0, 0);
-            }
-            if (courseEndDate) {
-              courseEndDate.setHours(23, 59, 59, 999); // End of day
-            }
-            
-            console.log("Course dates loaded:", {
-              start: courseStartDate,
-              end: courseEndDate
-            });
-            
-            // Ensure currentDate is within bounds
-            if (courseStartDate && currentDate < courseStartDate) {
-              currentDate = new Date(courseStartDate);
-            }
-            if (courseEndDate && currentDate > courseEndDate) {
-              currentDate = new Date(courseEndDate);
-            }
-            
-            // Update button states
-            updateNavigationButtons();
+        if (course && course.term) {
+          const term = course.term;
+          courseStartDate = term.startDate ? new Date(term.startDate) : null;
+          courseEndDate = term.endDate ? new Date(term.endDate) : null;
+          
+          // Set to start of day for accurate comparison
+          if (courseStartDate) {
+            courseStartDate.setHours(0, 0, 0, 0);
           }
+          if (courseEndDate) {
+            courseEndDate.setHours(23, 59, 59, 999); // End of day
+          }
+          
+          console.log("Course dates loaded:", {
+            start: courseStartDate,
+            end: courseEndDate
+          });
+          
+          // Ensure currentDate is within bounds
+          if (courseStartDate && currentDate < courseStartDate) {
+            currentDate = new Date(courseStartDate);
+          }
+          if (courseEndDate && currentDate > courseEndDate) {
+            currentDate = new Date(courseEndDate);
+          }
+          
+          // Update button states
+          updateNavigationButtons();
         }
       } catch (error) {
         console.warn("Failed to load course dates:", error);
@@ -477,7 +520,7 @@ export async function render(container, view = "dashboard") {
      */
     function isDateWithinCourseRange(date) {
       if (!courseStartDate || !courseEndDate) {
-        return true; // If dates not loaded, allow all dates
+        return false; // If dates not loaded, be conservative and disallow
       }
       
       const checkDate = new Date(date);
@@ -493,7 +536,7 @@ export async function render(container, view = "dashboard") {
      */
     function isMonthWithinCourseRange(date) {
       if (!courseStartDate || !courseEndDate) {
-        return true; // If dates not loaded, allow all months
+        return false; // If dates not loaded, be conservative and disallow navigation
       }
       
       const year = date.getFullYear();
@@ -511,7 +554,10 @@ export async function render(container, view = "dashboard") {
      * Update navigation button states based on course dates
      */
     function updateNavigationButtons() {
-      if (!prevBtn || !nextBtn || !todayBtn) return;
+      if (!prevBtn || !nextBtn || !todayBtn) {
+        console.warn("updateNavigationButtons: buttons not found");
+        return;
+      }
       
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -528,9 +574,13 @@ export async function render(container, view = "dashboard") {
       const today = new Date();
       const canGoToToday = isDateWithinCourseRange(today);
       
+      console.log("updateNavigationButtons: currentDate:", currentDate, "courseStartDate:", courseStartDate, "courseEndDate:", courseEndDate);
+      console.log("updateNavigationButtons: canGoPrev:", canGoPrev, "canGoNext:", canGoNext, "canGoToToday:", canGoToToday);
+      
       // Update button states
       if (prevBtn) {
         prevBtn.disabled = !canGoPrev;
+        console.log("updateNavigationButtons: prevBtn.disabled set to:", !canGoPrev);
         if (!canGoPrev) {
           prevBtn.title = "Cannot navigate before course start date";
         } else {
@@ -540,6 +590,7 @@ export async function render(container, view = "dashboard") {
       
       if (nextBtn) {
         nextBtn.disabled = !canGoNext;
+        console.log("updateNavigationButtons: nextBtn.disabled set to:", !canGoNext);
         if (!canGoNext) {
           nextBtn.title = "Cannot navigate after course end date";
         } else {
@@ -763,15 +814,58 @@ export async function render(container, view = "dashboard") {
     async function openMeetingAttendance(date, index) {
             const meeting = meetings[date][index];
       const currentUser = getCurrentUser();
-      const isCreator = currentUser && meeting.creatorUUID === currentUser.userUuid;
+      console.log("openMeetingAttendance: currentUser:", currentUser);
+      console.log("openMeetingAttendance: currentUser.userUuid:", currentUser?.userUuid);
+      console.log("openMeetingAttendance: meeting.creatorUUID:", meeting.creatorUUID);
+      console.log("openMeetingAttendance: meeting object:", meeting);
+      
+      // Check if current user is the creator - handle both UUID formats
+      const creatorUUID = meeting.creatorUUID || meeting.creatorUuid;
+      const isCreator = currentUser && creatorUUID && creatorUUID === currentUser.userUuid;
+      console.log("openMeetingAttendance: isCreator:", isCreator, "creatorUUID:", creatorUUID, "currentUser.userUuid:", currentUser?.userUuid);
 
       wrapper.querySelector("#attendance-meeting-title").textContent = meeting.title;
       wrapper.querySelector("#attendance-meeting-date").textContent = date;
       wrapper.querySelector("#attendance-meeting-time").textContent = meeting.time;
       wrapper.querySelector("#attendance-meeting-type").textContent = meeting.type;
       wrapper.querySelector("#attendance-meeting-desc").textContent = meeting.desc || "";
-      wrapper.querySelector("#attendance-meeting-participants").textContent = meeting.participants && meeting.participants.length > 0 
-        ? meeting.participants.join(", ") 
+      
+      // Load participants for this meeting
+      let participantNames = [];
+      if (meeting.meetingUUID) {
+        try {
+          const courseUUID = getCourseIdFromUrl();
+          const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
+          console.log("openMeetingAttendance: loaded participants:", participants);
+          
+          // Get user info for each participant - backend now includes user info
+          participantNames = participants
+            .map(p => {
+              if (p.user) {
+                return `${p.user.firstName} ${p.user.lastName}`;
+              }
+              // Fallback: try to find in allUsers
+              const participantUuid = p.participantUuid || p.participantUUID;
+              const user = allUsers.find(u => u.userUuid === participantUuid);
+              if (user) {
+                return `${user.firstName} ${user.lastName}`;
+              }
+              // Last resort: show partial UUID
+              return participantUuid ? `User ${participantUuid.substring(0, 8)}...` : "Unknown";
+            })
+            .filter(name => name); // Remove any null/undefined
+          
+          if (participantNames.length === 0) {
+            participantNames = ["No participants"];
+          }
+        } catch (error) {
+          console.error("Failed to load participants:", error);
+          participantNames = ["Unable to load participants"];
+        }
+      }
+      
+      wrapper.querySelector("#attendance-meeting-participants").textContent = participantNames.length > 0 
+        ? participantNames.join(", ") 
         : "No participants";
 
       activeMeetingContext = { 
@@ -821,28 +915,94 @@ export async function render(container, view = "dashboard") {
      * @param {string} meetingUUID - Meeting UUID
      */
     async function loadMeetingCode(meetingUUID) {
-      if (!meetingUUID) return;
+      if (!meetingUUID) {
+        console.warn("loadMeetingCode: no meetingUUID provided");
+        return;
+      }
 
+      console.log("loadMeetingCode: fetching code for meeting:", meetingUUID);
       try {
         const codeData = await getMeetingCode(meetingUUID);
+        console.log("loadMeetingCode: received code data:", codeData);
         
-        if (qrCodeImage && codeData.qrUrl) {
-          qrCodeImage.src = codeData.qrUrl;
-          qrCodeImage.alt = "Meeting QR Code";
+        // Backend returns: { success: true, data: { meetingCode, qrUrl, ... } }
+        // handleResponse extracts: result.data || result
+        // So codeData should be the meeting code object directly
+        // The database fields are: meetingCode, qrUrl (camelCase)
+        const qrUrl = codeData.qrUrl || codeData.qr_code_url || codeData.qrCodeUrl;
+        const meetingCode = codeData.meetingCode || codeData.meeting_code || codeData.code;
+        
+        console.log("loadMeetingCode: extracted qrUrl:", qrUrl, "meetingCode:", meetingCode);
+        
+        if (qrCodeImage) {
+          if (qrUrl) {
+            qrCodeImage.src = qrUrl;
+            qrCodeImage.alt = "Meeting QR Code";
+            qrCodeImage.style.display = "block";
+            console.log("loadMeetingCode: set QR code image src to:", qrUrl);
+          } else {
+            qrCodeImage.src = "";
+            qrCodeImage.alt = "QR code not available";
+            qrCodeImage.style.display = "none";
+            console.warn("loadMeetingCode: no QR URL in response");
+          }
         }
         
-        if (meetingCodeDisplay && codeData.meetingCode) {
-          meetingCodeDisplay.textContent = codeData.meetingCode;
+        if (meetingCodeDisplay) {
+          if (meetingCode) {
+            meetingCodeDisplay.textContent = meetingCode;
+            console.log("loadMeetingCode: set meeting code to:", meetingCode);
+          } else {
+            meetingCodeDisplay.textContent = "No code generated yet";
+            console.warn("loadMeetingCode: no meeting code in response");
+          }
         }
       } catch (error) {
         console.error("Failed to load meeting code:", error);
-        // If code doesn't exist, show message to create one
+        
+        // If code doesn't exist (404), try to create it
+        if (error.message && (error.message.includes("404") || error.message.includes("not found"))) {
+          console.log("loadMeetingCode: meeting code not found, attempting to create one");
+          try {
+            // Try to create a meeting code - backend route might be POST /meeting_code/:id
+            const createCodeUrl = `/v1/api/attendance/meeting_code/${meetingUUID}`;
+            const createResponse = await fetch(createCodeUrl, {
+              method: "POST",
+              credentials: "include"
+            });
+            
+            if (createResponse.ok) {
+              const newCodeData = await createResponse.json();
+              const createdCode = newCodeData.data || newCodeData;
+              console.log("loadMeetingCode: created new code:", createdCode);
+              
+              // Display the newly created code
+              if (qrCodeImage && createdCode.qrUrl) {
+                qrCodeImage.src = createdCode.qrUrl;
+                qrCodeImage.alt = "Meeting QR Code";
+                qrCodeImage.style.display = "block";
+              }
+              if (meetingCodeDisplay && createdCode.meetingCode) {
+                meetingCodeDisplay.textContent = createdCode.meetingCode;
+              }
+              return;
+            } else {
+              const errorData = await createResponse.json().catch(() => ({ error: "Unknown error" }));
+              console.error("Failed to create meeting code:", errorData);
+            }
+          } catch (createError) {
+            console.error("Failed to create meeting code:", createError);
+          }
+        }
+        
+        // If code doesn't exist and couldn't create, show message
         if (meetingCodeDisplay) {
           meetingCodeDisplay.textContent = "No code generated yet";
         }
         if (qrCodeImage) {
           qrCodeImage.src = "";
           qrCodeImage.alt = "QR code not available";
+          qrCodeImage.style.display = "none";
         }
       }
     }
@@ -1273,7 +1433,13 @@ export async function render(container, view = "dashboard") {
       
       // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 hex characters)
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const participants = allParticipants.filter(p => uuidRegex.test(p));
+      let participants = allParticipants.filter(p => uuidRegex.test(p));
+      
+      // Remove duplicates
+      participants = [...new Set(participants)];
+      
+      console.log("Creating meeting with participants:", participants);
+      console.log("Participant count:", participants.length);
       
       // Warn if placeholder participants were selected
       const placeholderParticipants = allParticipants.filter(p => !uuidRegex.test(p));
@@ -1337,17 +1503,24 @@ export async function render(container, view = "dashboard") {
           const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
           console.log("Meeting type:", type, "->", meetingTypeInt, "typeof:", typeof meetingTypeInt, "isInteger:", Number.isInteger(meetingTypeInt));
           
-          if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 1 || meetingTypeInt > 4) {
+          // Validate meetingType is an integer in [0, 3]
+          if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
             alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
             return;
           }
+          
+          // Create a date string with noon local time to avoid timezone shifts
+          // This ensures "2025-12-06" stays as Dec 6 regardless of timezone
+          const [dateYear, dateMonth, dateDay] = nextDateStr.split("-").map(Number);
+          const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
+          const meetingDateISO = dateWithNoon.toISOString();
           
           const meetingData = {
             creatorUUID: currentUser.userUuid,
             courseUUID: courseUUID,
             meetingStartTime: meetingStart.toISOString(),
             meetingEndTime: meetingEnd.toISOString(),
-            meetingDate: nextDateStr,
+            meetingDate: meetingDateISO, // Send as ISO string with noon local time
             meetingTitle: title,
             meetingDescription: desc || null,
             meetingLocation: null,
@@ -1401,17 +1574,24 @@ export async function render(container, view = "dashboard") {
         const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
         console.log("Meeting type:", type, "->", meetingTypeInt, "typeof:", typeof meetingTypeInt, "isInteger:", Number.isInteger(meetingTypeInt));
         
-        if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 1 || meetingTypeInt > 4) {
+        // Validate meetingType is an integer in [0, 3]
+        if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
           alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
           return;
         }
+        
+        // Create a date string with noon local time to avoid timezone shifts
+        // This ensures "2025-12-06" stays as Dec 6 regardless of timezone
+        const [dateYear, dateMonth, dateDay] = date.split("-").map(Number);
+        const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
+        const meetingDateISO = dateWithNoon.toISOString();
         
         const meetingData = {
           creatorUUID: currentUser.userUuid,
           courseUUID: courseUUID,
           meetingStartTime: meetingStart.toISOString(),
           meetingEndTime: meetingEnd.toISOString(),
-          meetingDate: date,
+          meetingDate: meetingDateISO, // Send as ISO string with noon local time
           meetingTitle: title,
           meetingDescription: desc || null,
           meetingLocation: null,
@@ -1456,20 +1636,31 @@ export async function render(container, view = "dashboard") {
     };
 
         prevBtn.onclick = () => {
+          // Don't navigate if button is disabled
+          if (prevBtn.disabled) {
+            return;
+          }
+          
           const newDate = new Date(currentDate);
           newDate.setMonth(newDate.getMonth() - 1);
           
           // Check if navigation is allowed
           if (isMonthWithinCourseRange(newDate)) {
             currentDate = newDate;
-            renderCalendar();
+        renderCalendar();
             updateNavigationButtons();
           } else {
             alert("Cannot navigate before the course start date.");
+            updateNavigationButtons(); // Update buttons in case state changed
           }
         };
         
         nextBtn.onclick = () => {
+          // Don't navigate if button is disabled
+          if (nextBtn.disabled) {
+            return;
+          }
+          
           const newDate = new Date(currentDate);
           newDate.setMonth(newDate.getMonth() + 1);
           
@@ -1480,10 +1671,16 @@ export async function render(container, view = "dashboard") {
             updateNavigationButtons();
           } else {
             alert("Cannot navigate after the course end date.");
+            updateNavigationButtons(); // Update buttons in case state changed
           }
         };
         
         todayBtn.onclick = () => {
+          // Don't navigate if button is disabled
+          if (todayBtn.disabled) {
+            return;
+          }
+          
           const today = new Date();
           
           // Check if today is within course dates
@@ -1493,6 +1690,7 @@ export async function render(container, view = "dashboard") {
             updateNavigationButtons();
           } else {
             alert("Today is outside the course date range. Please select a date within the course period.");
+            updateNavigationButtons(); // Update buttons in case state changed
           }
         };
 
@@ -1500,6 +1698,11 @@ export async function render(container, view = "dashboard") {
     
     // Render calendar initially (even if empty) so it's visible immediately
         renderCalendar();
+    
+    // Initially disable navigation buttons until course dates are loaded
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+    if (todayBtn) todayBtn.disabled = true;
     
     // Load user context to determine role
     const courseUUID = getCourseIdFromUrl();
@@ -1520,6 +1723,9 @@ export async function render(container, view = "dashboard") {
         selectParticipantsByTeam(e.target.value);
       });
     }
+    
+    // Load course dates first to restrict calendar navigation
+    await loadCourseDates();
     
     // Load meetings and users/teams from backend on initial render
     await loadMeetingsFromBackend();

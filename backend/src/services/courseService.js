@@ -120,11 +120,14 @@ async function getUsersByCourseUUID(req, res) {
 
     const users = await courseRepository.getUsersByCourseUuid(courseUUID);
 
+    console.log("getUsersByCourseUUID: fetched", users?.length || 0, "users for course", courseUUID);
+
     res.status(200).json({
       success: true,
-      data: courseDTO.toCourseWithUsersDTO(users)  
+      data: users
     });
-  } catch {
+  } catch (error) {
+    console.error("getUsersByCourseUUID error:", error);
     res.status(500).json({
       success: false,
       error: "Failed to fetch users for course"
@@ -164,11 +167,31 @@ async function getTeamsByCourseUUID(req, res) {
       });
     }
 
+    // Format teams with members
+    const teams = (course.teams || []).map(team => {
+      // Get team members if they exist
+      const members = team.members ? team.members
+        .filter(member => member.leftAt === null)
+        .map(member => ({
+          userUuid: member.userUuid,
+          firstName: member.user?.firstName || null,
+          lastName: member.user?.lastName || null,
+          email: member.user?.email || null
+        })) : [];
+
+      return {
+        teamUuid: team.teamUuid,
+        teamName: team.teamName,
+        members: members
+      };
+    });
+
     res.status(200).json({
       success: true,
-      data: courseDTO.toCourseWithTeamsDTO(course.teams)  
+      data: teams
     });
-  } catch {
+  } catch (error) {
+    console.error("getTeamsByCourseUUID error:", error);
     res.status(500).json({
       success: false,
       error: "Failed to fetch teams for course"

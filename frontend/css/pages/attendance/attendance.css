@@ -55,7 +55,8 @@
 }
 
 .calendar-day {
-    min-height: 80px;
+    height: 100px;
+    max-height: 100px;
     background: #fafafa;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -63,6 +64,10 @@
     position: relative;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .calendar-day:hover {
@@ -88,6 +93,29 @@
 .date-number {
     font-weight: bold;
     margin-bottom: 5px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 1;
+    padding-bottom: 2px;
+}
+
+.calendar-day::-webkit-scrollbar {
+    width: 4px;
+}
+
+.calendar-day::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.calendar-day::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}
+
+.calendar-day::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }
 
 .meeting-tag {
@@ -99,6 +127,7 @@
     cursor: pointer;
     color: white;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .type-lecture { background: #007bff; }
@@ -521,6 +550,9 @@
   color: #666;
   font-size: 14px;
   position: relative;
+  text-align: center;
+  padding: 0 20px;
+  display: block;
 }
 
 .or-divider::before,
@@ -528,7 +560,7 @@
   content: "";
   position: absolute;
   top: 50%;
-  width: 40%;
+  width: calc(50% - 90px);
   height: 1px;
   background: #ddd;
 }

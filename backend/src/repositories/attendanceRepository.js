@@ -164,6 +164,8 @@ async function createParticipants(participantsData) {
 async function getParticipantListByParams(params) {
   const { meetingUUID, courseUUID, participantUUID, present } = params;
 
+  console.log("getParticipantListByParams repository: params:", { meetingUUID, courseUUID, participantUUID, present });
+
   const whereClause = {};
 
   // If meetingUUID is provided, filter by it
@@ -188,9 +190,27 @@ async function getParticipantListByParams(params) {
     whereClause.present = present;
   }
 
+  console.log("getParticipantListByParams repository: whereClause:", JSON.stringify(whereClause, null, 2));
+
   const participants = await prisma.participant.findMany({
-    where: whereClause
+    where: whereClause,
+    include: {
+      participant: {
+        select: {
+          userUuid: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      }
+    }
   });
+  
+  console.log("getParticipantListByParams repository: found", participants.length, "participants");
+  if (participants.length > 0) {
+    console.log("getParticipantListByParams repository: first participant user:", participants[0].participant);
+  }
+  
   return participants;
 }
 
@@ -261,9 +281,10 @@ async function createMeetingCode(codeData) {
  * @returns {Promise<Object>} Meeting code object
  */
 async function getMeetingCodeByMeetingUuid(meetingUUID) {
+  // Get the most recent meeting code by validStartDatetime (most recent valid code)
   const meetingCode = await prisma.meetingCode.findFirst({
     where: { meetingUuid: meetingUUID },
-    orderBy: { createdAt: "desc" }
+    orderBy: { validStartDatetime: "desc" }
   });
   return meetingCode;
 }
