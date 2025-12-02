@@ -109,10 +109,28 @@ async function enrollUserToCourse(userUuid, courseUuid, roleUuid) {
 async function getCourseByUuid(courseUuid) {
   return await prisma.course.findUnique({
     where: {
-      courseUuid: courseUuid,
-      include: {
-        term: true,
-        teams: true
+      courseUuid: courseUuid
+    },
+    include: {
+      term: true,
+      teams: {
+        include: {
+          members: {
+            where: {
+              leftAt: null
+            },
+            include: {
+              user: {
+                select: {
+                  userUuid: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true
+                }
+              }
+            }
+          }
+        }
       }
     }
   });
@@ -123,12 +141,63 @@ async function getUsersByCourseUuid(courseUuid) {
     where: {
       courseUuid: courseUuid
     },
-    select: {
-      userUuid: true
+    include: {
+      user: {
+        select: {
+          userUuid: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      }
     }
   });
 
-  return enrollments.map(enrollment => enrollment.user);
+  // Get team memberships for all users in this course
+  const userUuids = enrollments.map(e => e.userUuid).filter(uuid => uuid !== null && uuid !== undefined);
+  
+  let teamMemberships = [];
+  if (userUuids.length > 0) {
+    teamMemberships = await prisma.teamMember.findMany({
+      where: {
+        userUuid: { in: userUuids },
+        leftAt: null,
+        team: {
+          courseUuid: courseUuid
+        }
+      },
+      include: {
+        team: {
+          select: {
+            teamUuid: true,
+            teamName: true
+          }
+        }
+      }
+    });
+  }
+
+  // Create a map of userUuid -> team info
+  const userTeamMap = {};
+  teamMemberships.forEach(membership => {
+    userTeamMap[membership.userUuid] = {
+      teamUuid: membership.team.teamUuid,
+      teamName: membership.team.teamName
+    };
+  });
+
+  // Map enrollments to user objects with team info
+  // Filter out any enrollments where user is null (shouldn't happen, but safety check)
+  return enrollments
+    .filter(enrollment => enrollment.user !== null)
+    .map(enrollment => ({
+      userUuid: enrollment.user.userUuid,
+      firstName: enrollment.user.firstName,
+      lastName: enrollment.user.lastName,
+      email: enrollment.user.email,
+      teamUuid: userTeamMap[enrollment.userUuid]?.teamUuid || null,
+      teamName: userTeamMap[enrollment.userUuid]?.teamName || null
+    }));
 } 
 
 export { 

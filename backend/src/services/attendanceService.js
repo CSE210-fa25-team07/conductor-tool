@@ -128,28 +128,47 @@ async function createMeeting(req, res) {
     });
   }
 
-  const existingUsers = await userRepository.getUsersByUuids(
-    participants
-  );
-  if (existingUsers.length !== participants.length) {
-    return res.status(400).json({
-      success: false,
-      error: "One or more participants refer to non-existing users"
-    });
-  }
-
-  for (const user of existingUsers) {
-    let isInCourse = false;
-    user.courseEnrollments.forEach(enrollment => {
-      if (enrollment.courseUuid === courseUUID) {
-        isInCourse = true;
-      }
-    });
-    if (!isInCourse) {
+  // Filter out duplicates and empty values
+  const uniqueParticipants = [...new Set(participants.filter(p => p && typeof p === "string" && p.trim() !== ""))];
+  
+  console.log("createMeeting: validating participants:", uniqueParticipants);
+  console.log("createMeeting: participant count:", uniqueParticipants.length);
+  
+  // If no participants, that's okay - meeting can be created without participants
+  if (uniqueParticipants.length === 0) {
+    console.log("createMeeting: no participants provided, proceeding without participant validation");
+  } else {
+    const existingUsers = await userRepository.getUsersByUuids(
+      uniqueParticipants
+    );
+    
+    console.log("createMeeting: found", existingUsers.length, "existing users out of", uniqueParticipants.length, "requested");
+    console.log("createMeeting: existing user UUIDs:", existingUsers.map(u => u.userUuid));
+    console.log("createMeeting: requested UUIDs:", uniqueParticipants);
+    
+    if (existingUsers.length !== uniqueParticipants.length) {
+      const foundUuids = new Set(existingUsers.map(u => u.userUuid));
+      const missingUuids = uniqueParticipants.filter(uuid => !foundUuids.has(uuid));
+      console.error("createMeeting: missing user UUIDs:", missingUuids);
       return res.status(400).json({
         success: false,
-        error: `User ${user.userUuid} is not enrolled in the course`
+        error: "One or more participants refer to non-existing users"
       });
+    }
+
+    for (const user of existingUsers) {
+      let isInCourse = false;
+      user.courseEnrollments.forEach(enrollment => {
+        if (enrollment.courseUuid === courseUUID) {
+          isInCourse = true;
+        }
+      });
+      if (!isInCourse) {
+        return res.status(400).json({
+          success: false,
+          error: `User ${user.userUuid} is not enrolled in the course`
+        });
+      }
     }
   }
 
@@ -166,8 +185,11 @@ async function createMeeting(req, res) {
     isRecurring: isRecurring || false
   });
 
+  // Add creator as a participant (they should also see the meeting on their calendar)
+  const allParticipants = [...new Set([userUUID, ...uniqueParticipants])];
+  
   const createdParticipants = await attendanceRepository.createParticipants(
-    participants.map(participant => ({
+    allParticipants.map(participant => ({
       participantUuid: participant,
       meetingUuid: meeting.meetingUuid,
       present: false
@@ -689,7 +711,7 @@ async function getParticipantListByParams(req, res) {
   );
   const userContext = await userContextRepository.getUserContext(userUUID);
   const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
-  const course = await attendanceRepository.getCourseByUUID(courseUUID);
+  const course = courseUUID ? await courseRepository.getCourseByUuid(courseUUID) : null;
 
   if (meetingUUID && !meeting) {
     return res.status(404).json({
@@ -717,7 +739,21 @@ async function getParticipantListByParams(req, res) {
     }
   }
 
-  if (meetingUUID && meeting.creatorUuid !== userUUID && !isStaff) {
+  // Check if user is the creator of the meeting
+  const isCreator = meetingUUID && meeting && meeting.creatorUuid === userUUID;
+  
+  // Check if user is a participant of the meeting
+  let isParticipant = false;
+  if (meetingUUID && meeting) {
+    const userParticipation = await attendanceRepository.getParticipantListByParams({
+      meetingUUID,
+      participantUUID: userUUID
+    });
+    isParticipant = userParticipation && userParticipation.length > 0;
+  }
+  
+  // Only allow if user is creator, staff, or a participant of the meeting
+  if (meetingUUID && !isCreator && !isStaff && !isParticipant) {
     return res.status(403).json({
       success: false,
       error: "Not authorized to view participants for this meeting"
@@ -731,23 +767,42 @@ async function getParticipantListByParams(req, res) {
     });
   }
 
+  // If user is creator, staff, or participant, show all participants (participantUUID = null)
+  // Otherwise, only show their own participation
+  const participantFilter = (isStaff || isCreator || isParticipant) ? null : userUUID;
+  console.log("getParticipantListByParams: meetingUUID:", meetingUUID, "courseUUID:", courseUUID, "participantFilter:", participantFilter, "isCreator:", isCreator, "isStaff:", isStaff, "isParticipant:", isParticipant);
+  
   const participants = await attendanceRepository.getParticipantListByParams({
     meetingUUID,
     courseUUID,
-    participantUUID: isStaff ? null : userUUID,
+    participantUUID: participantFilter,
     present
   });
 
+  console.log("getParticipantListByParams: found", participants?.length || 0, "participants");
+  if (participants && participants.length > 0) {
+    console.log("getParticipantListByParams: first participant:", JSON.stringify(participants[0], null, 2));
+  }
+
+  // Return empty array instead of 404 if no participants found
+  // This is more graceful for the frontend
   if (!participants || participants.length === 0) {
-    return res.status(404).json({
-      success: false,
-      error: "No participants found by parameters"
+    console.log("getParticipantListByParams: returning empty array");
+    return res.status(200).json({
+      success: true,
+      data: []
     });
+  }
+
+  const participantDTOs = attendanceDTO.toParticipantListDTO(participants);
+  console.log("getParticipantListByParams: returning", participantDTOs.length, "participant DTOs");
+  if (participantDTOs.length > 0) {
+    console.log("getParticipantListByParams: first DTO:", JSON.stringify(participantDTOs[0], null, 2));
   }
 
   return res.status(200).json({
     success: true,
-    data: attendanceDTO.toParticipantListDTO(participants)
+    data: participantDTOs
   });
 }
 

@@ -164,21 +164,10 @@ async function getCourseForEdit(req, res) {
   }
 }
 
-<<<<<<< HEAD
-/**
- * Create a new course
- * @param {*} req Request object with course data in body
- * @param {*} res Response object
- */
-async function createCourse(req, res) {
-  try {
-    const userId = req.session.user?.id;
-=======
 async function getUsersByCourseUUID(req, res) {
   try {
     const userId = req.session.user?.id;
     const courseUUID = req.params.courseUUID;
->>>>>>> 2c9930a (Formatting for frontend requests)
 
     if (!userId) {
       return res.status(401).json({
@@ -187,7 +176,6 @@ async function getUsersByCourseUUID(req, res) {
       });
     }
 
-<<<<<<< HEAD
     // Check if user is a professor
     const userStatus = await userRepository.getUserStatusByUuid(userId);
 
@@ -369,12 +357,19 @@ async function updateCourse(req, res) {
 
     const users = await courseRepository.getUsersByCourseUuid(courseUUID);
 
+    console.log("getUsersByCourseUUID: fetched", users?.length || 0, "users for course", courseUUID);
+
     res.status(200).json({
       success: true,
+<<<<<<< HEAD
       data: courseDTO.toCourseWithUsersDTO(users)  
 >>>>>>> 2c9930a (Formatting for frontend requests)
+=======
+      data: users
+>>>>>>> 7043af7 (frontend integrations)
     });
-  } catch {
+  } catch (error) {
+    console.error("getUsersByCourseUUID error:", error);
     res.status(500).json({
       success: false,
 <<<<<<< HEAD
@@ -440,15 +435,39 @@ async function getTeamsByCourseUUID(req, res) {
       });
     }
 
+    // Format teams with members
+    const teams = (course.teams || []).map(team => {
+      // Get team members if they exist
+      const members = team.members ? team.members
+        .filter(member => member.leftAt === null)
+        .map(member => ({
+          userUuid: member.userUuid,
+          firstName: member.user?.firstName || null,
+          lastName: member.user?.lastName || null,
+          email: member.user?.email || null
+        })) : [];
+
+      return {
+        teamUuid: team.teamUuid,
+        teamName: team.teamName,
+        members: members
+      };
+    });
+
     res.status(200).json({
       success: true,
+<<<<<<< HEAD
 <<<<<<< HEAD
       message: "Successfully removed from course"
 =======
       data: courseDTO.toCourseWithTeamsDTO(course.teams)  
 >>>>>>> 2c9930a (Formatting for frontend requests)
+=======
+      data: teams
+>>>>>>> 7043af7 (frontend integrations)
     });
-  } catch {
+  } catch (error) {
+    console.error("getTeamsByCourseUUID error:", error);
     res.status(500).json({
       success: false,
 <<<<<<< HEAD

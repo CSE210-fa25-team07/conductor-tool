@@ -139,7 +139,24 @@ export async function getMeetingList(courseUUID) {
     credentials: "include"
   });
 
-  return handleResponse(response);
+  const data = await handleResponse(response);
+
+  // Backend may return:
+  // - An array of meetings directly
+  // - An object with .data (array)
+  // - An object with .meetings (array)
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (data && Array.isArray(data.data)) {
+    return data.data;
+  }
+  if (data && Array.isArray(data.meetings)) {
+    return data.meetings;
+  }
+
+  console.warn("getMeetingList: unexpected response shape", data);
+  return [];
 }
 
 /**
@@ -172,7 +189,47 @@ export async function getAllCourseUsers(courseUUID) {
     credentials: "include"
   });
 
-  return handleResponse(response);
+  // Check response status before parsing
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => "Unknown error");
+    console.error("getAllCourseUsers: HTTP error", response.status, errorText);
+    throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await handleResponse(response);
+
+  console.log("getAllCourseUsers raw response:", data);
+  console.log("getAllCourseUsers data type:", typeof data, "isArray:", Array.isArray(data));
+
+  // Backend returns: { success: true, data: [users array] }
+  // handleResponse extracts: result.data || result
+  // So we should get the users array directly, or it might be wrapped
+  
+  // Backend may return:
+  // - An array of users directly (from handleResponse extracting .data)
+  // - An object with .users
+  // - An object with .data (array) - if handleResponse didn't extract it
+  if (Array.isArray(data)) {
+    console.log("getAllCourseUsers: returning array of", data.length, "users");
+    return data;
+  }
+  if (data && Array.isArray(data.users)) {
+    console.log("getAllCourseUsers: returning data.users array of", data.users.length, "users");
+    return data.users;
+  }
+  if (data && Array.isArray(data.data)) {
+    console.log("getAllCourseUsers: returning data.data array of", data.data.length, "users");
+    return data.data;
+  }
+
+  // If data is an empty object, it might mean the backend returned { success: true } without data
+  if (data && typeof data === "object" && Object.keys(data).length === 0) {
+    console.warn("getAllCourseUsers: received empty object, backend may have returned { success: true } without data field");
+    return [];
+  }
+
+  console.warn("getAllCourseUsers: unexpected response shape", data);
+  return [];
 }
 
 /**
@@ -209,7 +266,24 @@ export async function getCourseTeams(courseUUID) {
     credentials: "include"
   });
 
-  return handleResponse(response);
+  const data = await handleResponse(response);
+
+  // Backend may return:
+  // - An array of teams directly
+  // - An object with .teams
+  // - An object with .data (array)
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (data && Array.isArray(data.teams)) {
+    return data.teams;
+  }
+  if (data && Array.isArray(data.data)) {
+    return data.data;
+  }
+
+  console.warn("getCourseTeams: unexpected response shape", data);
+  return [];
 }
 
 /**
@@ -317,6 +391,77 @@ export async function getCourseDetails(courseUUID) {
     credentials: "include"
   });
 
-  return handleResponse(response);
+  const data = await handleResponse(response);
+
+  // Backend course API currently returns:
+  // { success: true, course: { ...courseDto } }
+  // Normalize to always return the course DTO object
+  if (data && data.course) {
+    return data.course;
+  }
+
+  // Fallback: if the DTO is returned directly, just return it
+  return data;
+}
+
+/**
+ * Get participants for a meeting
+ * @param {string} meetingUUID - Meeting UUID
+ * @param {string} courseUUID - Course UUID (optional, but recommended for authorization)
+ * @returns {Promise<Array>} Array of participant objects with user info
+ */
+export async function getMeetingParticipants(meetingUUID, courseUUID = null) {
+  const url = `/v1/api/attendance/participant/list/`;
+
+  const requestBody = {
+    meetingUUID: meetingUUID
+  };
+  
+  // Add courseUUID if provided (helps with authorization)
+  if (courseUUID) {
+    requestBody.courseUUID = courseUUID;
+  }
+
+  console.log("getMeetingParticipants: requesting participants for meeting:", meetingUUID, "course:", courseUUID);
+  console.log("getMeetingParticipants: request body:", requestBody);
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "include",
+    body: JSON.stringify(requestBody)
+  });
+
+  console.log("getMeetingParticipants: response status:", response.status);
+
+  // Handle 404 gracefully (no participants found is not necessarily an error)
+  if (response.status === 404) {
+    console.log("getMeetingParticipants: no participants found for meeting:", meetingUUID);
+    return [];
+  }
+
+  const data = await handleResponse(response);
+  console.log("getMeetingParticipants: response data:", data);
+  console.log("getMeetingParticipants: data type:", typeof data, "isArray:", Array.isArray(data));
+  
+  // Backend returns: { success: true, data: [participants] }
+  // handleResponse extracts: result.data || result
+  if (Array.isArray(data)) {
+    console.log("getMeetingParticipants: returning array of", data.length, "participants");
+    return data;
+  }
+  if (data && Array.isArray(data.data)) {
+    console.log("getMeetingParticipants: returning data.data array of", data.data.length, "participants");
+    return data.data;
+  }
+  if (data && Array.isArray(data.participants)) {
+    console.log("getMeetingParticipants: returning data.participants array of", data.participants.length, "participants");
+    return data.participants;
+  }
+  
+  console.warn("getMeetingParticipants: unexpected response shape", data);
+  return [];
 }
 
