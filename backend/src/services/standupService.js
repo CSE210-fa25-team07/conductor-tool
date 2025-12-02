@@ -5,6 +5,8 @@
 import * as standupRepository from "../repositories/standupRepository.js";
 import * as standupDto from "../dtos/standupDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
+import * as emailService from "./emailService.js"; // ADD THIS LINE
+
 
 async function createStandup(req, res) {
   const userId = req.session.user.id;
@@ -37,6 +39,21 @@ async function createStandup(req, res) {
     reflection,
     visibility: visibility || "team"
   });
+
+  if (blockers && blockers.trim().length > 0) {
+    try {
+      await emailService.sendBlockerNotification({
+        studentName: `${standup.user.firstName} ${standup.user.lastName}`,
+        studentEmail: standup.user.email,
+        teamName: standup.team.teamName,
+        courseName: standup.course.courseName,
+        blockerContent: blockers
+      });
+    } catch (emailError) {
+      console.error('Failed to send email:', emailError);
+    }
+  }
+
 
   return res.status(201).json({
     success: true,
