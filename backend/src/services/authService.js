@@ -130,7 +130,7 @@ async function requestAccess(req, res) {
   if (!response) {
     return res.status(500).json({
       success: false,
-      error: "Request with email already exists"
+      error: "Request with this email already exists"
     });
   }
 
