@@ -7,7 +7,6 @@
 import * as courseRepository from "../repositories/courseRepository.js";
 import * as courseDTO from "../dtos/courseDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
-import { RoleEnum } from "../enums/role.js";
 
 /**
  * Get all courses for a user
@@ -41,9 +40,9 @@ async function getUserCourses(req, res) {
 }
 
 /**
- * 
- * @param {Object} req 
- * @param {Object} res 
+ *
+ * @param {Object} req
+ * @param {Object} res
  * @returns {Object}  200 - Course object
  * @returns {Object}  400 - Missing course UUID parameter
  * @returns {Object}  401 - Not authenticated
@@ -122,7 +121,7 @@ async function getUsersByCourseUUID(req, res) {
 
     res.status(200).json({
       success: true,
-      data: courseDTO.toCourseWithUsersDTO(users)  
+      data: users
     });
   } catch {
     res.status(500).json({
@@ -164,9 +163,28 @@ async function getTeamsByCourseUUID(req, res) {
       });
     }
 
+    // Format teams with members
+    const teams = (course.teams || []).map(team => {
+      // Get team members if they exist
+      const members = team.members ? team.members
+        .filter(member => member.leftAt === null)
+        .map(member => ({
+          userUuid: member.userUuid,
+          firstName: member.user?.firstName || null,
+          lastName: member.user?.lastName || null,
+          email: member.user?.email || null
+        })) : [];
+
+      return {
+        teamUuid: team.teamUuid,
+        teamName: team.teamName,
+        members: members
+      };
+    });
+
     res.status(200).json({
       success: true,
-      data: courseDTO.toCourseWithTeamsDTO(course.teams)  
+      data: teams
     });
   } catch {
     res.status(500).json({

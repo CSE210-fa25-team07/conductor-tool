@@ -28,10 +28,10 @@ function toCourseWithUsersDTO(courseData, users) {
 }
 
 function toCourseWithTeamsDTO(courseData, teams) {
-    return {
-        ...toCourseDTO(courseData),
-        teams: teams
-    };
+  return {
+    ...toCourseDTO(courseData),
+    teams: teams
+  };
 }
 
 export {

@@ -23,9 +23,18 @@ function toMeetingDTO(meetingData) {
 function toParticipantDTO(participantData) {
   return {
     participantUuid: participantData.participantUuid,
+    participantUUID: participantData.participantUuid, // Alias for consistency
     meetingUuid: participantData.meetingUuid,
+    meetingUUID: participantData.meetingUuid, // Alias for consistency
     present: participantData.present,
-    attendanceTime: participantData.attendanceTime
+    attendanceTime: participantData.attendanceTime,
+    // The Prisma relation is called "participant" not "user"
+    user: participantData.participant ? {
+      userUuid: participantData.participant.userUuid,
+      firstName: participantData.participant.firstName,
+      lastName: participantData.participant.lastName,
+      email: participantData.participant.email
+    } : null
   };
 }
 

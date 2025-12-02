@@ -132,6 +132,8 @@ async function getMeetingListByParams(params) {
 async function getParticipant(participantUUID, meetingUUID) {
   const participant = await prisma.participant.findUnique({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -183,14 +185,24 @@ async function getParticipantListByParams(params) {
     whereClause.participantUuid = participantUUID;
   }
 
-  // If present is provided, filter by it
   if (present !== undefined) {
     whereClause.present = present;
   }
 
   const participants = await prisma.participant.findMany({
-    where: whereClause
+    where: whereClause,
+    include: {
+      participant: {
+        select: {
+          userUuid: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      }
+    }
   });
+
   return participants;
 }
 
@@ -205,6 +217,8 @@ async function getParticipantListByParams(params) {
 async function updateParticipant(meetingUUID, participantUUID, present, attendanceTime) {
   const updatedParticipant = await prisma.participant.update({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -227,6 +241,8 @@ async function updateParticipant(meetingUUID, participantUUID, present, attendan
 async function deleteParticipant(meetingUUID, participantUUID) {
   await prisma.participant.delete({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -261,9 +277,10 @@ async function createMeetingCode(codeData) {
  * @returns {Promise<Object>} Meeting code object
  */
 async function getMeetingCodeByMeetingUuid(meetingUUID) {
+  // Get the most recent meeting code by validStartDatetime (most recent valid code)
   const meetingCode = await prisma.meetingCode.findFirst({
     where: { meetingUuid: meetingUUID },
-    orderBy: { createdAt: "desc" }
+    orderBy: { validStartDatetime: "desc" }
   });
   return meetingCode;
 }
@@ -285,10 +302,10 @@ async function getMeetingCodeByMeetingUuidAndCode(meetingUUID, code) {
 }
 
 async function deleteMeetingByParentUUID(meetingUUID) {
-    await prisma.meeting.deleteMany({
-        where: { parentMeetingUuid: meetingUUID }
-    });
-    return true;
+  await prisma.meeting.deleteMany({
+    where: { parentMeetingUuid: meetingUUID }
+  });
+  return true;
 }
 
 export {
