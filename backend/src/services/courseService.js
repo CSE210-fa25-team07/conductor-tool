@@ -7,7 +7,6 @@
 import * as courseRepository from "../repositories/courseRepository.js";
 import * as courseDTO from "../dtos/courseDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
-import { RoleEnum } from "../enums/role.js";
 
 /**
  * Get all courses for a user
@@ -41,9 +40,9 @@ async function getUserCourses(req, res) {
 }
 
 /**
- * 
- * @param {Object} req 
- * @param {Object} res 
+ *
+ * @param {Object} req
+ * @param {Object} res
  * @returns {Object}  200 - Course object
  * @returns {Object}  400 - Missing course UUID parameter
  * @returns {Object}  401 - Not authenticated
@@ -120,14 +119,11 @@ async function getUsersByCourseUUID(req, res) {
 
     const users = await courseRepository.getUsersByCourseUuid(courseUUID);
 
-    console.log("getUsersByCourseUUID: fetched", users?.length || 0, "users for course", courseUUID);
-
     res.status(200).json({
       success: true,
       data: users
     });
-  } catch (error) {
-    console.error("getUsersByCourseUUID error:", error);
+  } catch {
     res.status(500).json({
       success: false,
       error: "Failed to fetch users for course"
@@ -190,8 +186,7 @@ async function getTeamsByCourseUUID(req, res) {
       success: true,
       data: teams
     });
-  } catch (error) {
-    console.error("getTeamsByCourseUUID error:", error);
+  } catch {
     res.status(500).json({
       success: false,
       error: "Failed to fetch teams for course"

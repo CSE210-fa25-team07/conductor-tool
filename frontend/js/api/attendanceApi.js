@@ -46,7 +46,7 @@ async function handleResponse(response) {
  * @param {string} courseUUID - Course UUID
  * @returns {Promise<Array>} Array of user objects with userUuid, firstName, lastName, email
  * @throws {Error} If the endpoint doesn't exist or request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/attendance/participants/:courseUUID
  * Expected response format:
  * {
@@ -121,11 +121,11 @@ export async function deleteMeeting(meetingUUID, deleteFuture = false) {
  * - The creator of the meeting, OR
  * - A participant in the meeting
  * This ensures all invited participants see meetings on their calendars.
- * 
+ *
  * @param {string} courseUUID - Course UUID
  * @returns {Promise<Array>} Array of meeting objects
  * @throws {Error} If the request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/attendance/meeting/list/:courseUUID
  * Backend filters meetings to show only those where user is creator or participant
  */
@@ -161,7 +161,7 @@ export async function getMeetingList(courseUUID) {
  * @param {string} courseUUID - Course UUID
  * @returns {Promise<Array>} Array of user objects with userUuid, firstName, lastName, email, teamUuid (optional)
  * @throws {Error} If the endpoint doesn't exist or request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/courses/:courseUUID/users
  * Expected response format:
  * {
@@ -187,7 +187,7 @@ export async function getAllCourseUsers(courseUUID) {
   });
 
   if (!response.ok) {
-    const errorText = await response.text().catch(() => "Unknown error");
+    await response.text().catch(() => "Unknown error");
     throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
   }
 
@@ -215,7 +215,7 @@ export async function getAllCourseUsers(courseUUID) {
  * @param {string} courseUUID - Course UUID
  * @returns {Promise<Array>} Array of team objects with teamUuid, teamName, members
  * @throws {Error} If the endpoint doesn't exist or request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/courses/:courseUUID/teams
  * Expected response format:
  * {
@@ -268,7 +268,7 @@ export async function getCourseTeams(courseUUID) {
  * @param {string} meetingUUID - Meeting UUID
  * @returns {Promise<Object>} Meeting code object with qrUrl, meetingCode, etc.
  * @throws {Error} If the request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/attendance/meeting_code/:meetingUUID
  * Expected response format:
  * {
@@ -299,14 +299,14 @@ export async function getMeetingCode(meetingUUID) {
  * @param {string} code - Meeting code (alphanumeric)
  * @returns {Promise<Object>} Success response with participant data
  * @throws {Error} If the request fails or time window is invalid
- * 
+ *
  * Expected endpoint: GET /v1/api/attendance/meeting_code/record/:code
  * Backend expects meetingUUID in req.params.meeting (may need to be in path or query)
  * Backend validates:
  * - User is a participant of the meeting
  * - Code is valid for the meeting
  * - Current time is within meeting start/end time window
- * 
+ *
  * Expected response format:
  * {
  *   success: true,
@@ -343,7 +343,7 @@ export async function recordAttendanceByCode(meetingUUID, code) {
  * @param {string} courseUUID - Course UUID
  * @returns {Promise<Object>} Course object with term dates
  * @throws {Error} If the request fails
- * 
+ *
  * Expected endpoint: GET /v1/api/courses/:courseUUID
  * Expected response format:
  * {
@@ -388,12 +388,12 @@ export async function getCourseDetails(courseUUID) {
  * @returns {Promise<Array>} Array of participant objects with user info
  */
 export async function getMeetingParticipants(meetingUUID, courseUUID = null) {
-  const url = `/v1/api/attendance/participant/list/`;
+  const url = "/v1/api/attendance/participant/list/";
 
   const requestBody = {
     meetingUUID: meetingUUID
   };
-  
+
   // Add courseUUID if provided (helps with authorization)
   if (courseUUID) {
     requestBody.courseUUID = courseUUID;
@@ -413,7 +413,7 @@ export async function getMeetingParticipants(meetingUUID, courseUUID = null) {
   }
 
   const data = await handleResponse(response);
-  
+
   if (Array.isArray(data)) {
     return data;
   }
@@ -423,7 +423,7 @@ export async function getMeetingParticipants(meetingUUID, courseUUID = null) {
   if (data && Array.isArray(data.participants)) {
     return data.participants;
   }
-  
+
   return [];
 }
 

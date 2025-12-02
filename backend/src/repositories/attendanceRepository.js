@@ -132,6 +132,8 @@ async function getMeetingListByParams(params) {
 async function getParticipant(participantUUID, meetingUUID) {
   const participant = await prisma.participant.findUnique({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -200,7 +202,7 @@ async function getParticipantListByParams(params) {
       }
     }
   });
-  
+
   return participants;
 }
 
@@ -215,6 +217,8 @@ async function getParticipantListByParams(params) {
 async function updateParticipant(meetingUUID, participantUUID, present, attendanceTime) {
   const updatedParticipant = await prisma.participant.update({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -237,6 +241,8 @@ async function updateParticipant(meetingUUID, participantUUID, present, attendan
 async function deleteParticipant(meetingUUID, participantUUID) {
   await prisma.participant.delete({
     where: {
+      // Prisma composite unique key name
+      // eslint-disable-next-line camelcase
       meetingUuid_participantUuid: {
         meetingUuid: meetingUUID,
         participantUuid: participantUUID
@@ -296,10 +302,10 @@ async function getMeetingCodeByMeetingUuidAndCode(meetingUUID, code) {
 }
 
 async function deleteMeetingByParentUUID(meetingUUID) {
-    await prisma.meeting.deleteMany({
-        where: { parentMeetingUuid: meetingUUID }
-    });
-    return true;
+  await prisma.meeting.deleteMany({
+    where: { parentMeetingUuid: meetingUUID }
+  });
+  return true;
 }
 
 export {

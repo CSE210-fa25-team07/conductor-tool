@@ -154,7 +154,7 @@ async function getUsersByCourseUuid(courseUuid) {
 
   // Get team memberships for all users in this course
   const userUuids = enrollments.map(e => e.userUuid).filter(uuid => uuid !== null && uuid !== undefined);
-  
+
   let teamMemberships = [];
   if (userUuids.length > 0) {
     teamMemberships = await prisma.teamMember.findMany({
@@ -197,12 +197,12 @@ async function getUsersByCourseUuid(courseUuid) {
       teamUuid: userTeamMap[enrollment.userUuid]?.teamUuid || null,
       teamName: userTeamMap[enrollment.userUuid]?.teamName || null
     }));
-} 
+}
 
-export { 
+export {
   getCoursesByUserId,
-  getCoursesWithDetailsByUserId, 
-  enrollUserToCourse, 
+  getCoursesWithDetailsByUserId,
+  enrollUserToCourse,
   getCourseByUuid,
   getUsersByCourseUuid
 };
