@@ -128,28 +128,18 @@ async function createMeeting(req, res) {
     });
   }
 
-  // Filter out duplicates and empty values
   const uniqueParticipants = [...new Set(participants.filter(p => p && typeof p === "string" && p.trim() !== ""))];
   
-  console.log("createMeeting: validating participants:", uniqueParticipants);
-  console.log("createMeeting: participant count:", uniqueParticipants.length);
-  
-  // If no participants, that's okay - meeting can be created without participants
   if (uniqueParticipants.length === 0) {
-    console.log("createMeeting: no participants provided, proceeding without participant validation");
+    // Meeting can be created without participants
   } else {
     const existingUsers = await userRepository.getUsersByUuids(
       uniqueParticipants
     );
     
-    console.log("createMeeting: found", existingUsers.length, "existing users out of", uniqueParticipants.length, "requested");
-    console.log("createMeeting: existing user UUIDs:", existingUsers.map(u => u.userUuid));
-    console.log("createMeeting: requested UUIDs:", uniqueParticipants);
-    
     if (existingUsers.length !== uniqueParticipants.length) {
       const foundUuids = new Set(existingUsers.map(u => u.userUuid));
       const missingUuids = uniqueParticipants.filter(uuid => !foundUuids.has(uuid));
-      console.error("createMeeting: missing user UUIDs:", missingUuids);
       return res.status(400).json({
         success: false,
         error: "One or more participants refer to non-existing users"
@@ -204,7 +194,6 @@ async function createMeeting(req, res) {
     meetingCode = await createMeetingCode(req, res);
   } catch (error) {
     // Don't fail the entire meeting creation if code creation fails
-    console.error("Error creating meeting code:", error);
   }
 
   return res.status(201).json({
@@ -767,10 +756,7 @@ async function getParticipantListByParams(req, res) {
     });
   }
 
-  // If user is creator, staff, or participant, show all participants (participantUUID = null)
-  // Otherwise, only show their own participation
   const participantFilter = (isStaff || isCreator || isParticipant) ? null : userUUID;
-  console.log("getParticipantListByParams: meetingUUID:", meetingUUID, "courseUUID:", courseUUID, "participantFilter:", participantFilter, "isCreator:", isCreator, "isStaff:", isStaff, "isParticipant:", isParticipant);
   
   const participants = await attendanceRepository.getParticipantListByParams({
     meetingUUID,
@@ -779,15 +765,7 @@ async function getParticipantListByParams(req, res) {
     present
   });
 
-  console.log("getParticipantListByParams: found", participants?.length || 0, "participants");
-  if (participants && participants.length > 0) {
-    console.log("getParticipantListByParams: first participant:", JSON.stringify(participants[0], null, 2));
-  }
-
-  // Return empty array instead of 404 if no participants found
-  // This is more graceful for the frontend
   if (!participants || participants.length === 0) {
-    console.log("getParticipantListByParams: returning empty array");
     return res.status(200).json({
       success: true,
       data: []
@@ -795,10 +773,6 @@ async function getParticipantListByParams(req, res) {
   }
 
   const participantDTOs = attendanceDTO.toParticipantListDTO(participants);
-  console.log("getParticipantListByParams: returning", participantDTOs.length, "participant DTOs");
-  if (participantDTOs.length > 0) {
-    console.log("getParticipantListByParams: first DTO:", JSON.stringify(participantDTOs[0], null, 2));
-  }
 
   return res.status(200).json({
     success: true,

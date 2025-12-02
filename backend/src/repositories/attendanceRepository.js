@@ -164,8 +164,6 @@ async function createParticipants(participantsData) {
 async function getParticipantListByParams(params) {
   const { meetingUUID, courseUUID, participantUUID, present } = params;
 
-  console.log("getParticipantListByParams repository: params:", { meetingUUID, courseUUID, participantUUID, present });
-
   const whereClause = {};
 
   // If meetingUUID is provided, filter by it
@@ -185,12 +183,9 @@ async function getParticipantListByParams(params) {
     whereClause.participantUuid = participantUUID;
   }
 
-  // If present is provided, filter by it
   if (present !== undefined) {
     whereClause.present = present;
   }
-
-  console.log("getParticipantListByParams repository: whereClause:", JSON.stringify(whereClause, null, 2));
 
   const participants = await prisma.participant.findMany({
     where: whereClause,
@@ -205,11 +200,6 @@ async function getParticipantListByParams(params) {
       }
     }
   });
-  
-  console.log("getParticipantListByParams repository: found", participants.length, "participants");
-  if (participants.length > 0) {
-    console.log("getParticipantListByParams repository: first participant user:", participants[0].participant);
-  }
   
   return participants;
 }
