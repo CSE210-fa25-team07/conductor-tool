@@ -3,7 +3,7 @@
  * @description Middleware for collecting API-level performance metrics based on RAIL principles
  */
 
-import { metricsStorage } from './metricsStorage.js';
+import { metricsStorage } from "./metricsStorage.js";
 
 /**
  * Express middleware that collects performance metrics for each request
@@ -40,7 +40,7 @@ export function metricsCollector(req, res, next) {
       path: req.path || req.url,
       statusCode: res.statusCode,
       responseTime, // in milliseconds
-      userAgent: req.get('user-agent') || 'unknown',
+      userAgent: req.get("user-agent") || "unknown"
     };
 
     // Store the metric

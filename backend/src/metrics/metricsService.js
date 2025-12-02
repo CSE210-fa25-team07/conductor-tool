@@ -3,7 +3,7 @@
  * @description Service for calculating RAIL performance metrics and statistics
  */
 
-import { metricsStorage } from './metricsStorage.js';
+import { metricsStorage } from "./metricsStorage.js";
 
 /**
  * Calculate percentile value from sorted array
@@ -51,7 +51,7 @@ function calculateStats(values) {
       p50: 0,
       p75: 0,
       p95: 0,
-      p99: 0,
+      p99: 0
     };
   }
 
@@ -66,7 +66,7 @@ function calculateStats(values) {
     p50: calculatePercentile(sorted, 50),
     p75: calculatePercentile(sorted, 75),
     p95: calculatePercentile(sorted, 95),
-    p99: calculatePercentile(sorted, 99),
+    p99: calculatePercentile(sorted, 99)
   };
 }
 
@@ -109,22 +109,22 @@ export function getRailMetrics(options = {}) {
       totalRequests: 0,
       timeRange: {
         start: null,
-        end: null,
+        end: null
       },
       rail: {
         response: {
           threshold: 100, // ms
           stats: calculateStats([]),
-          compliance: 0,
+          compliance: 0
         },
         load: {
           threshold: 5000, // ms
           stats: calculateStats([]),
-          compliance: 0,
-        },
+          compliance: 0
+        }
       },
       statusCodes: {},
-      topPaths: [],
+      topPaths: []
     };
   }
 
@@ -162,24 +162,24 @@ export function getRailMetrics(options = {}) {
     totalRequests: metrics.length,
     timeRange: {
       start: metrics[0]?.timestamp,
-      end: metrics[metrics.length - 1]?.timestamp,
+      end: metrics[metrics.length - 1]?.timestamp
     },
     rail: {
       response: {
         threshold: 100, // ms
         stats,
         compliance: responseComplianceRate,
-        compliantRequests: responseCompliant,
+        compliantRequests: responseCompliant
       },
       load: {
         threshold: 5000, // ms
         stats,
         compliance: loadComplianceRate,
-        compliantRequests: loadCompliant,
-      },
+        compliantRequests: loadCompliant
+      }
     },
     statusCodes,
-    topPaths,
+    topPaths
   };
 }
 
@@ -200,8 +200,8 @@ export function getEndpointMetrics(path) {
     recentRequests: metrics.slice(-10).map(m => ({
       timestamp: m.timestamp,
       responseTime: m.responseTime,
-      statusCode: m.statusCode,
-    })),
+      statusCode: m.statusCode
+    }))
   };
 }
 
@@ -215,13 +215,13 @@ export function getEndpointMetrics(path) {
  * @example
  * const hourlyMetrics = getMetricsByTimeBucket('hour', 24);
  */
-export function getMetricsByTimeBucket(bucketSize = 'hour', bucketCount = 24) {
+export function getMetricsByTimeBucket(bucketSize = "hour", bucketCount = 24) {
   const metrics = metricsStorage.getAllMetrics();
 
   const bucketSizeMs = {
     hour: 60 * 60 * 1000,
     day: 24 * 60 * 60 * 1000,
-    week: 7 * 24 * 60 * 60 * 1000,
+    week: 7 * 24 * 60 * 60 * 1000
   }[bucketSize] || 60 * 60 * 1000;
 
   const now = Date.now();
@@ -243,7 +243,7 @@ export function getMetricsByTimeBucket(bucketSize = 'hour', bucketCount = 24) {
       start: new Date(bucketStart).toISOString(),
       end: new Date(bucketEnd).toISOString(),
       requestCount: bucketMetrics.length,
-      stats: calculateStats(responseTimes),
+      stats: calculateStats(responseTimes)
     });
   }
 
@@ -261,6 +261,6 @@ export function getMonitoringStatus() {
     metricsCount: metricsStorage.getMetricsCount(),
     maxEntries: metricsStorage.maxEntries,
     oldestEntry: metricsStorage.getAllMetrics()[0]?.timestamp || null,
-    newestEntry: metricsStorage.getAllMetrics().slice(-1)[0]?.timestamp || null,
+    newestEntry: metricsStorage.getAllMetrics().slice(-1)[0]?.timestamp || null
   };
 }

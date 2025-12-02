@@ -3,9 +3,9 @@
  * @description API routes for code monitoring and RAIL metrics
  */
 
-import express from 'express';
-import * as metricsService from './metricsService.js';
-import { metricsStorage } from './metricsStorage.js';
+import express from "express";
+import * as metricsService from "./metricsService.js";
+import { metricsStorage } from "./metricsStorage.js";
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ const router = express.Router();
  * GET /v1/api/metrics/rail?startTime=2025-12-01T00:00:00Z
  * GET /v1/api/metrics/rail?path=/api/users
  */
-router.get('/rail', async (req, res) => {
+router.get("/rail", async (req, res) => {
   try {
     const { startTime, endTime, path } = req.query;
 
@@ -36,12 +36,12 @@ router.get('/rail', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: metrics,
+      data: metrics
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -56,14 +56,14 @@ router.get('/rail', async (req, res) => {
  * @example
  * GET /v1/api/metrics/endpoint?path=/api/users
  */
-router.get('/endpoint', async (req, res) => {
+router.get("/endpoint", async (req, res) => {
   try {
     const { path } = req.query;
 
     if (!path) {
       return res.status(400).json({
         success: false,
-        error: 'Path parameter is required',
+        error: "Path parameter is required"
       });
     }
 
@@ -71,12 +71,12 @@ router.get('/endpoint', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: metrics,
+      data: metrics
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -92,16 +92,16 @@ router.get('/endpoint', async (req, res) => {
  * @example
  * GET /v1/api/metrics/timeseries?bucketSize=hour&bucketCount=24
  */
-router.get('/timeseries', async (req, res) => {
+router.get("/timeseries", async (req, res) => {
   try {
-    const bucketSize = req.query.bucketSize || 'hour';
+    const bucketSize = req.query.bucketSize || "hour";
     const bucketCount = parseInt(req.query.bucketCount) || 24;
 
-    const validBucketSizes = ['hour', 'day', 'week'];
+    const validBucketSizes = ["hour", "day", "week"];
     if (!validBucketSizes.includes(bucketSize)) {
       return res.status(400).json({
         success: false,
-        error: `Invalid bucketSize. Must be one of: ${validBucketSizes.join(', ')}`,
+        error: `Invalid bucketSize. Must be one of: ${validBucketSizes.join(", ")}`
       });
     }
 
@@ -109,12 +109,12 @@ router.get('/timeseries', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: metrics,
+      data: metrics
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -126,18 +126,18 @@ router.get('/timeseries', async (req, res) => {
  * @example
  * GET /v1/api/metrics/status
  */
-router.get('/status', async (req, res) => {
+router.get("/status", async (req, res) => {
   try {
     const status = metricsService.getMonitoringStatus();
 
     res.status(200).json({
       success: true,
-      data: status,
+      data: status
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -153,7 +153,7 @@ router.get('/status', async (req, res) => {
  * @example
  * GET /v1/api/metrics/raw?limit=50
  */
-router.get('/raw', async (req, res) => {
+router.get("/raw", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 100;
     const offset = parseInt(req.query.offset) || 0;
@@ -167,13 +167,13 @@ router.get('/raw', async (req, res) => {
         total: allMetrics.length,
         offset,
         limit,
-        metrics: paginatedMetrics,
-      },
+        metrics: paginatedMetrics
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });
@@ -187,19 +187,19 @@ router.get('/raw', async (req, res) => {
  * @example
  * DELETE /v1/api/metrics
  */
-router.delete('/', async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     metricsStorage.clearMetrics();
     await metricsStorage.saveToFile();
 
     res.status(200).json({
       success: true,
-      message: 'All metrics cleared',
+      message: "All metrics cleared"
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message
     });
   }
 });

@@ -15,10 +15,10 @@ import { excludeFromMetrics } from "../metrics/metricsMiddleware.js";
 
 const router = express.Router();
 
-// Metrics collection middleware 
+// Metrics collection middleware
 // Tracks all API routes except the metrics endpoints themselves
 router.use(excludeFromMetrics([
-  /^\/metrics/,  // Don't track metrics API endpoints
+  /^\/metrics/  // Don't track metrics API endpoints
 ]));
 
 // Auth routes don't require session (checking/verifying session)

@@ -3,16 +3,16 @@
  * @description In-memory storage for performance metrics with configurable retention
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Default configuration
 const DEFAULT_MAX_ENTRIES = 1000; // Keep last N entries
-const METRICS_FILE_PATH = path.join(__dirname, '../../data/metrics.json');
+const METRICS_FILE_PATH = path.join(__dirname, "../../data/metrics.json");
 
 /**
  * @class MetricsStorage
@@ -141,12 +141,12 @@ class MetricsStorage {
         lastUpdated: new Date().toISOString(),
         totalEntries: this.metrics.length,
         maxEntries: this.maxEntries,
-        metrics: this.metrics,
+        metrics: this.metrics
       }, null, 2);
 
-      await fs.promises.writeFile(METRICS_FILE_PATH, data, 'utf8');
-    } catch (error) {
-      console.error('Error saving metrics to file:', error);
+      await fs.promises.writeFile(METRICS_FILE_PATH, data, "utf8");
+    } catch {
+      // Silent fail - metrics continue in memory
     }
   }
 
@@ -158,13 +158,13 @@ class MetricsStorage {
   async loadFromFile() {
     try {
       if (fs.existsSync(METRICS_FILE_PATH)) {
-        const data = await fs.promises.readFile(METRICS_FILE_PATH, 'utf8');
+        const data = await fs.promises.readFile(METRICS_FILE_PATH, "utf8");
         const parsed = JSON.parse(data);
         this.metrics = parsed.metrics || [];
         this.maxEntries = parsed.maxEntries || DEFAULT_MAX_ENTRIES;
       }
-    } catch (error) {
-      console.error('Error loading metrics from file:', error);
+    } catch {
+      // File doesn't exist or is invalid - start fresh
       this.metrics = [];
     }
   }
@@ -189,12 +189,12 @@ export const metricsStorage = new MetricsStorage();
 metricsStorage.setupAutoSave();
 
 // Save on process exit
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   await metricsStorage.saveToFile();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on("SIGTERM", async () => {
   await metricsStorage.saveToFile();
   process.exit(0);
 });
