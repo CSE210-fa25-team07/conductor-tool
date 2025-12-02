@@ -4,7 +4,7 @@
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";
-import { getCourseParticipants, createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
+import { createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
 import { loadUserContext, isProfessorOrTA, getUserRoleInCourse, getCurrentUser } from "../../utils/userContext.js";
 
 const meetings = {};
@@ -46,9 +46,9 @@ function mapMeetingTypeToString(typeInt) {
 export async function render(container, view = "dashboard") {
   try {
     const templateHTML = await loadTemplate("attendance", view);
-        container.innerHTML = templateHTML;
+    container.innerHTML = templateHTML;
 
-        const wrapper = container;
+    const wrapper = container;
     const calendarGrid = wrapper.querySelector("#calendar-grid");
     const currentMonthEl = wrapper.querySelector("#current-month");
     const prevBtn = wrapper.querySelector("#prev-month");
@@ -75,7 +75,6 @@ export async function render(container, view = "dashboard") {
     const recurringEndInput = wrapper.querySelector("#recurring-end-date");
     const recurringSummaryEl = wrapper.querySelector("#recurring-summary");
     let selectedCalendarDate = "";
-    let chainCounter = 0;
     let userRole = null;
     let canCreateStaffMeetings = false;
     let allUsers = []; // Store all users loaded from backend
@@ -157,13 +156,13 @@ export async function render(container, view = "dashboard") {
         } catch (error) {
           allTeams = [];
         }
-        
+
         populateParticipantsContainer();
         populateTeamSelector();
       } catch (error) {
         allUsers = [];
         allTeams = [];
-        participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants due to an unexpected error.</p>`;
+        participantsContainer.innerHTML = "<p style=\"color: #666; padding: 10px;\">Unable to load participants due to an unexpected error.</p>";
       }
     }
 
@@ -172,10 +171,10 @@ export async function render(container, view = "dashboard") {
      */
     function populateTeamSelector() {
       if (!selectByTeamDropdown) return;
-      
+
       // Clear existing options except the first one
-      selectByTeamDropdown.innerHTML = '<option value="">Add by Team...</option>';
-      
+      selectByTeamDropdown.innerHTML = "<option value=\"\">Add by Team...</option>";
+
       if (!allTeams || allTeams.length === 0) {
         return;
       }
@@ -193,7 +192,7 @@ export async function render(container, view = "dashboard") {
      */
     function populateParticipantsContainer() {
       participantsContainer.innerHTML = "";
-      
+
       if (!allUsers || allUsers.length === 0) {
         participantsContainer.innerHTML = "<p style='padding: 10px; color: #666;'>No users found for this course.</p>";
         return;
@@ -202,7 +201,7 @@ export async function render(container, view = "dashboard") {
       // Group users by team
       const usersByTeam = {};
       const usersWithoutTeam = [];
-      
+
       allUsers.forEach(user => {
         if (user.teamUuid && user.teamUuid.trim() !== "") {
           if (!usersByTeam[user.teamUuid]) {
@@ -219,17 +218,17 @@ export async function render(container, view = "dashboard") {
         if (usersByTeam[team.teamUuid] && usersByTeam[team.teamUuid].length > 0) {
           const teamSection = document.createElement("div");
           teamSection.classList.add("team-section");
-          
+
           const teamHeader = document.createElement("div");
           teamHeader.classList.add("team-header");
           teamHeader.textContent = team.teamName || `Team ${team.teamUuid.substring(0, 8)}`;
           teamSection.appendChild(teamHeader);
-          
+
           usersByTeam[team.teamUuid].forEach(user => {
             const label = createParticipantCheckbox(user);
             teamSection.appendChild(label);
           });
-          
+
           participantsContainer.appendChild(teamSection);
         }
       });
@@ -238,17 +237,17 @@ export async function render(container, view = "dashboard") {
       if (usersWithoutTeam.length > 0) {
         const noTeamSection = document.createElement("div");
         noTeamSection.classList.add("team-section");
-        
+
         const noTeamHeader = document.createElement("div");
         noTeamHeader.classList.add("team-header");
         noTeamHeader.textContent = "No Team";
         noTeamSection.appendChild(noTeamHeader);
-        
+
         usersWithoutTeam.forEach(user => {
           const label = createParticipantCheckbox(user);
           noTeamSection.appendChild(label);
         });
-        
+
         participantsContainer.appendChild(noTeamSection);
       }
     }
@@ -261,19 +260,19 @@ export async function render(container, view = "dashboard") {
     function createParticipantCheckbox(user) {
       const label = document.createElement("label");
       label.classList.add("participant");
-      
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.value = user.userUuid;
       checkbox.dataset.userUuid = user.userUuid;
-      
+
       const nameSpan = document.createElement("span");
       nameSpan.classList.add("participant-name");
       nameSpan.textContent = `${user.firstName} ${user.lastName}`;
-      
+
       label.appendChild(checkbox);
       label.appendChild(nameSpan);
-      
+
       return label;
     }
 
@@ -303,11 +302,11 @@ export async function render(container, view = "dashboard") {
      */
     function selectParticipantsByTeam(teamUuid) {
       if (!teamUuid) return;
-      
+
       // Find the team
       const team = allTeams.find(t => t.teamUuid === teamUuid);
       if (!team) return;
-      
+
       // Get all user UUIDs in this team
       const teamUserUuids = new Set();
       if (team.members && team.members.length > 0) {
@@ -322,7 +321,7 @@ export async function render(container, view = "dashboard") {
           }
         });
       }
-      
+
       // Check all checkboxes for users in this team
       const checkboxes = participantsContainer.querySelectorAll("input[type=\"checkbox\"]");
       checkboxes.forEach(cb => {
@@ -330,7 +329,7 @@ export async function render(container, view = "dashboard") {
           cb.checked = true;
         }
       });
-      
+
       // Reset dropdown
       selectByTeamDropdown.value = "";
     }
@@ -351,16 +350,16 @@ export async function render(container, view = "dashboard") {
 
       try {
         const meetingList = await getMeetingList(courseUUID);
-        
+
         // Clear existing meetings
         Object.keys(meetings).forEach(key => delete meetings[key]);
-        
+
         // Group meetings by date
         meetingList.forEach(meeting => {
           // Handle meetingDate - could be a Date object, ISO string, or date string
           let meetingDateObj;
           const originalDate = meeting.meetingDate;
-          
+
           if (meeting.meetingDate instanceof Date) {
             meetingDateObj = meeting.meetingDate;
           } else if (typeof meeting.meetingDate === "string") {
@@ -387,17 +386,17 @@ export async function render(container, view = "dashboard") {
           } else {
             return;
           }
-          
+
           if (!meetingDateObj || isNaN(meetingDateObj.getTime())) {
             return;
           }
-          
+
           const dateStr = `${meetingDateObj.getFullYear()}-${String(meetingDateObj.getMonth() + 1).padStart(2, "0")}-${String(meetingDateObj.getDate()).padStart(2, "0")}`;
-          
+
           if (!meetings[dateStr]) {
             meetings[dateStr] = [];
           }
-          
+
           // Handle meetingStartTime - could be a Date object or ISO string
           let startTime;
           if (meeting.meetingStartTime instanceof Date) {
@@ -405,13 +404,13 @@ export async function render(container, view = "dashboard") {
           } else {
             startTime = new Date(meeting.meetingStartTime);
           }
-          
+
           if (isNaN(startTime.getTime())) {
             return;
           }
-          
+
           const timeStr = `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`;
-          
+
           meetings[dateStr].push({
             title: meeting.meetingTitle,
             time: timeStr,
@@ -426,7 +425,7 @@ export async function render(container, view = "dashboard") {
             meetingEndTime: meeting.meetingEndTime // Store for time validation
           });
         });
-        
+
         renderCalendar();
       } catch (error) {
         // Continue with empty meetings if load fails
@@ -444,12 +443,12 @@ export async function render(container, view = "dashboard") {
 
       try {
         const course = await getCourseDetails(courseUUID);
-        
+
         if (course && course.term) {
           const term = course.term;
           courseStartDate = term.startDate ? new Date(term.startDate) : null;
           courseEndDate = term.endDate ? new Date(term.endDate) : null;
-          
+
           // Set to start of day for accurate comparison
           if (courseStartDate) {
             courseStartDate.setHours(0, 0, 0, 0);
@@ -457,7 +456,7 @@ export async function render(container, view = "dashboard") {
           if (courseEndDate) {
             courseEndDate.setHours(23, 59, 59, 999); // End of day
           }
-          
+
           // Ensure currentDate is within bounds
           if (courseStartDate && currentDate < courseStartDate) {
             currentDate = new Date(courseStartDate);
@@ -465,7 +464,7 @@ export async function render(container, view = "dashboard") {
           if (courseEndDate && currentDate > courseEndDate) {
             currentDate = new Date(courseEndDate);
           }
-          
+
           // Update button states
           updateNavigationButtons();
         }
@@ -483,10 +482,10 @@ export async function render(container, view = "dashboard") {
       if (!courseStartDate || !courseEndDate) {
         return false; // If dates not loaded, be conservative and disallow
       }
-      
+
       const checkDate = new Date(date);
       checkDate.setHours(0, 0, 0, 0);
-      
+
       return checkDate >= courseStartDate && checkDate <= courseEndDate;
     }
 
@@ -499,15 +498,15 @@ export async function render(container, view = "dashboard") {
       if (!courseStartDate || !courseEndDate) {
         return false; // If dates not loaded, be conservative and disallow navigation
       }
-      
+
       const year = date.getFullYear();
       const month = date.getMonth();
-      
+
       // Check if the first day of the month is before end date
       // and the last day of the month is after start date
       const firstDayOfMonth = new Date(year, month, 1);
       const lastDayOfMonth = new Date(year, month + 1, 0);
-      
+
       return firstDayOfMonth <= courseEndDate && lastDayOfMonth >= courseStartDate;
     }
 
@@ -518,22 +517,22 @@ export async function render(container, view = "dashboard") {
       if (!prevBtn || !nextBtn || !todayBtn) {
         return;
       }
-      
+
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
-      
+
       // Check if previous month would be out of bounds
       const prevMonth = new Date(year, month - 1, 1);
       const canGoPrev = isMonthWithinCourseRange(prevMonth);
-      
+
       // Check if next month would be out of bounds
       const nextMonth = new Date(year, month + 1, 1);
       const canGoNext = isMonthWithinCourseRange(nextMonth);
-      
+
       // Check if today is within course dates
       const today = new Date();
       const canGoToToday = isDateWithinCourseRange(today);
-      
+
       if (prevBtn) {
         prevBtn.disabled = !canGoPrev;
         if (!canGoPrev) {
@@ -542,7 +541,7 @@ export async function render(container, view = "dashboard") {
           prevBtn.title = "Previous month";
         }
       }
-      
+
       if (nextBtn) {
         nextBtn.disabled = !canGoNext;
         if (!canGoNext) {
@@ -551,7 +550,7 @@ export async function render(container, view = "dashboard") {
           nextBtn.title = "Next month";
         }
       }
-      
+
       if (todayBtn) {
         todayBtn.disabled = !canGoToToday;
         if (!canGoToToday) {
@@ -599,7 +598,7 @@ export async function render(container, view = "dashboard") {
       const startLabel = anchorDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
       if (!recurringCheckbox || !recurringCheckbox.checked) {
-        recurringSummaryEl.textContent = `Recurring is off.`;
+        recurringSummaryEl.textContent = "Recurring is off.";
         return;
       }
 
@@ -642,92 +641,92 @@ export async function render(container, view = "dashboard") {
     recurringEndInput?.addEventListener("change", updateRecurringSummary);
     recurringCheckbox?.addEventListener("change", syncRecurringControlState);
 
-        function renderCalendar() {
+    function renderCalendar() {
       calendarGrid.innerHTML = "";
 
       const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const headersDiv = document.createElement("div");
       headersDiv.classList.add("calendar-days");
-            daysOfWeek.forEach(day => {
+      daysOfWeek.forEach(day => {
         const dayDiv = document.createElement("div");
-                dayDiv.textContent = day;
-                headersDiv.appendChild(dayDiv);
-            });
-            calendarGrid.appendChild(headersDiv);
+        dayDiv.textContent = day;
+        headersDiv.appendChild(dayDiv);
+      });
+      calendarGrid.appendChild(headersDiv);
 
       const datesContainer = document.createElement("div");
       datesContainer.classList.add("calendar-dates");
 
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       currentMonthEl.textContent = currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-            for (let i = 0; i < firstDay; i++) {
+      for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
         empty.classList.add("calendar-day");
-                datesContainer.appendChild(empty);
-            }
+        datesContainer.appendChild(empty);
+      }
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
 
-            for (let day = 1; day <= daysInMonth; day++) {
+      for (let day = 1; day <= daysInMonth; day++) {
         const dateDiv = document.createElement("div");
         dateDiv.classList.add("calendar-day");
 
         const fullDate = `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-                const currentDateObj = new Date(year, month, day);
+        const currentDateObj = new Date(year, month, day);
 
-                // Check if this date is in the past
-                const isPastDate = currentDateObj < today;
+        // Check if this date is in the past
+        const isPastDate = currentDateObj < today;
 
-                if (isPastDate) {
+        if (isPastDate) {
           dateDiv.classList.add("past-date");
-                }
+        }
 
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
           dateDiv.classList.add("today");
-                }
+        }
 
         const num = document.createElement("div");
         num.classList.add("date-number");
-                num.textContent = day;
-                dateDiv.appendChild(num);
+        num.textContent = day;
+        dateDiv.appendChild(num);
 
-                if (meetings[fullDate]) {
-                    meetings[fullDate].forEach((m, idx) => {
+        if (meetings[fullDate]) {
+          meetings[fullDate].forEach((m, idx) => {
             const meetDiv = document.createElement("div");
             meetDiv.classList.add("meeting-tag", `type-${m.type.toLowerCase().replace(/\s+/g,"")}`);
-                        meetDiv.textContent = m.title;
+            meetDiv.textContent = m.title;
             meetDiv.addEventListener("click", async (e) => {
-                            e.stopPropagation();
+              e.stopPropagation();
               await openMeetingAttendance(fullDate, idx);
-                        });
-                        dateDiv.appendChild(meetDiv);
-                    });
-                }
+            });
+            dateDiv.appendChild(meetDiv);
+          });
+        }
 
-                // Only allow clicking on future dates or today
-                if (!isPastDate) {
+        // Only allow clicking on future dates or today
+        if (!isPastDate) {
           dateDiv.addEventListener("click", async () => {
-                        // Reset all fields
+            // Reset all fields
             meetingTitleInput.value = "";
-                        meetingDateInput.value = fullDate;
+            meetingDateInput.value = fullDate;
             selectedCalendarDate = fullDate;
             meetingTimeInput.value = "";
-            
+
             // Set default meeting type based on role
             if (canCreateStaffMeetings) {
               meetingTypeSelect.value = "Lecture";
             } else {
               meetingTypeSelect.value = "Team Meeting";
             }
-            
+
             meetingDescTextarea.value = "";
-                        recurringCheckbox.checked = false;
+            recurringCheckbox.checked = false;
             if (recurringEndInput) recurringEndInput.value = "";
             syncRecurringControlState();
             participantsContainer.querySelectorAll("input[type=\"checkbox\"]").forEach(cb => cb.checked = false);
@@ -736,17 +735,17 @@ export async function render(container, view = "dashboard") {
             await loadAllUsersAndTeams();
 
             meetingModal.classList.remove("hidden");
-                    });
-                }
-
-                datesContainer.appendChild(dateDiv);
-            }
-
-            calendarGrid.appendChild(datesContainer);
-        
-        // Update navigation buttons after rendering
-        updateNavigationButtons();
+          });
         }
+
+        datesContainer.appendChild(dateDiv);
+      }
+
+      calendarGrid.appendChild(datesContainer);
+
+      // Update navigation buttons after rendering
+      updateNavigationButtons();
+    }
 
     const deleteMeetingBtn = wrapper.querySelector("#delete-meeting");
     const deleteAllFutureBtn = wrapper.querySelector("#delete-future-meetings");
@@ -769,9 +768,9 @@ export async function render(container, view = "dashboard") {
     let qrScanningInterval = null;
 
     async function openMeetingAttendance(date, index) {
-            const meeting = meetings[date][index];
+      const meeting = meetings[date][index];
       const currentUser = getCurrentUser();
-      
+
       const creatorUUID = meeting.creatorUUID || meeting.creatorUuid;
       const isCreator = currentUser && creatorUUID && creatorUUID === currentUser.userUuid;
 
@@ -780,14 +779,14 @@ export async function render(container, view = "dashboard") {
       wrapper.querySelector("#attendance-meeting-time").textContent = meeting.time;
       wrapper.querySelector("#attendance-meeting-type").textContent = meeting.type;
       wrapper.querySelector("#attendance-meeting-desc").textContent = meeting.desc || "";
-      
+
       // Load participants for this meeting
       let participantNames = [];
       if (meeting.meetingUUID) {
         try {
           const courseUUID = getCourseIdFromUrl();
           const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
-          
+
           // Get user info for each participant - backend now includes user info
           participantNames = participants
             .map(p => {
@@ -804,7 +803,7 @@ export async function render(container, view = "dashboard") {
               return participantUuid ? `User ${participantUuid.substring(0, 8)}...` : "Unknown";
             })
             .filter(name => name); // Remove any null/undefined
-          
+
           if (participantNames.length === 0) {
             participantNames = ["No participants"];
           }
@@ -812,14 +811,14 @@ export async function render(container, view = "dashboard") {
           participantNames = ["Unable to load participants"];
         }
       }
-      
-      wrapper.querySelector("#attendance-meeting-participants").textContent = participantNames.length > 0 
-        ? participantNames.join(", ") 
+
+      wrapper.querySelector("#attendance-meeting-participants").textContent = participantNames.length > 0
+        ? participantNames.join(", ")
         : "No participants";
 
-      activeMeetingContext = { 
-        date, 
-        index, 
+      activeMeetingContext = {
+        date,
+        index,
         chainId: meeting.chainId || null,
         meetingUUID: meeting.meetingUUID || null,
         creatorUUID: meeting.creatorUUID || null,
@@ -828,13 +827,13 @@ export async function render(container, view = "dashboard") {
         meetingStartTime: meeting.meetingStartTime || null, // For time window validation
         meetingEndTime: meeting.meetingEndTime || null // For time window validation
       };
-      
+
       // Enable "Delete All Future" button only if this is part of a recurring series
       if (deleteAllFutureBtn) {
         const isPartOfRecurringSeries = meeting.isRecurring || meeting.chainId;
         deleteAllFutureBtn.disabled = !isPartOfRecurringSeries;
       }
-      
+
       // Show/hide delete buttons based on creator status
       if (deleteMeetingBtn) {
         deleteMeetingBtn.style.display = isCreator ? "block" : "none";
@@ -870,10 +869,10 @@ export async function render(container, view = "dashboard") {
 
       try {
         const codeData = await getMeetingCode(meetingUUID);
-        
+
         const qrUrl = codeData.qrUrl || codeData.qr_code_url || codeData.qrCodeUrl;
         const meetingCode = codeData.meetingCode || codeData.meeting_code || codeData.code;
-        
+
         if (qrCodeImage) {
           if (qrUrl) {
             qrCodeImage.src = qrUrl;
@@ -885,7 +884,7 @@ export async function render(container, view = "dashboard") {
             qrCodeImage.style.display = "none";
           }
         }
-        
+
         if (meetingCodeDisplay) {
           if (meetingCode) {
             meetingCodeDisplay.textContent = meetingCode;
@@ -901,11 +900,11 @@ export async function render(container, view = "dashboard") {
               method: "POST",
               credentials: "include"
             });
-            
+
             if (createResponse.ok) {
               const newCodeData = await createResponse.json();
               const createdCode = newCodeData.data || newCodeData;
-              
+
               if (qrCodeImage && createdCode.qrUrl) {
                 qrCodeImage.src = createdCode.qrUrl;
                 qrCodeImage.alt = "Meeting QR Code";
@@ -920,7 +919,7 @@ export async function render(container, view = "dashboard") {
             // Failed to create code
           }
         }
-        
+
         // If code doesn't exist and couldn't create, show message
         if (meetingCodeDisplay) {
           meetingCodeDisplay.textContent = "No code generated yet";
@@ -938,7 +937,7 @@ export async function render(container, view = "dashboard") {
      */
     function copyMeetingCode() {
       if (!meetingCodeDisplay) return;
-      
+
       const code = (meetingCodeDisplay.textContent || "").trim();
       if (!code || code === "No code generated yet") {
         alert("No meeting code available to copy yet.");
@@ -998,22 +997,22 @@ export async function render(container, view = "dashboard") {
      */
     async function startCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
             facingMode: "environment", // Use back camera on mobile
             width: { ideal: 640 },
             height: { ideal: 480 }
-          } 
+          }
         });
-        
+
         cameraStream = stream;
         if (qrScannerVideo) {
           qrScannerVideo.srcObject = stream;
         }
-        
+
         if (startCameraBtn) startCameraBtn.classList.add("hidden");
         if (stopCameraBtn) stopCameraBtn.classList.remove("hidden");
-        
+
         // Start QR code scanning
         startQRScanning();
       } catch (error) {
@@ -1029,16 +1028,16 @@ export async function render(container, view = "dashboard") {
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
       }
-      
+
       if (qrScannerVideo) {
         qrScannerVideo.srcObject = null;
       }
-      
+
       if (qrScanningInterval) {
         clearInterval(qrScanningInterval);
         qrScanningInterval = null;
       }
-      
+
       if (startCameraBtn) startCameraBtn.classList.remove("hidden");
       if (stopCameraBtn) stopCameraBtn.classList.add("hidden");
     }
@@ -1092,31 +1091,31 @@ export async function render(container, view = "dashboard") {
         if (qrScannerVideo.readyState === qrScannerVideo.HAVE_ENOUGH_DATA) {
           const canvas = qrScannerCanvas;
           const video = qrScannerVideo;
-          
+
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
-          
+
           const ctx = canvas.getContext("2d");
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          
+
           // Try to decode QR code from canvas
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, imageData.width, imageData.height);
-          
+
           if (code) {
             // QR code detected - extract meeting code from URL or use code directly
-            
+
             // Stop scanning
             clearInterval(qrScanningInterval);
             qrScanningInterval = null;
-            
+
             // Extract code from QR data (might be a URL like /attendance/record/?meeting=...&code=...)
             let extractedCode = code.data;
             const codeMatch = code.data.match(/[?&]code=([A-Z0-9]+)/i);
             if (codeMatch) {
               extractedCode = codeMatch[1].toUpperCase();
             }
-            
+
             // Handle the scanned code
             handleQRCodeScan(extractedCode);
           }
@@ -1156,30 +1155,30 @@ export async function render(container, view = "dashboard") {
       }
 
       if (now < start) {
-        const startStr = start.toLocaleString("en-US", { 
-          month: "short", 
-          day: "numeric", 
+        const startStr = start.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
           year: "numeric",
           hour: "numeric",
           minute: "2-digit"
         });
-        return { 
-          isValid: false, 
-          message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${startStr}` 
+        return {
+          isValid: false,
+          message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${startStr}`
         };
       }
 
       if (now > end) {
-        const endStr = end.toLocaleString("en-US", { 
-          month: "short", 
-          day: "numeric", 
+        const endStr = end.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
           year: "numeric",
           hour: "numeric",
           minute: "2-digit"
         });
-        return { 
-          isValid: false, 
-          message: `Attendance submission window has closed.\n\nMeeting ended at: ${endStr}` 
+        return {
+          isValid: false,
+          message: `Attendance submission window has closed.\n\nMeeting ended at: ${endStr}`
         };
       }
 
@@ -1263,7 +1262,7 @@ export async function render(container, view = "dashboard") {
 
     deleteMeetingBtn?.addEventListener("click", async () => {
       const { date, index, meetingUUID, chainId } = activeMeetingContext;
-      
+
       if (!date || typeof index !== "number") {
         alert("Meeting information not available.");
         return;
@@ -1276,12 +1275,12 @@ export async function render(container, view = "dashboard") {
 
       const meeting = meetings[date] && meetings[date][index];
       const isRecurring = meeting && (meeting.isRecurring || meeting.chainId);
-      
+
       let confirmMessage = "Delete this meeting from the calendar?";
       if (isRecurring) {
         confirmMessage = "Delete this meeting? (This will only delete this occurrence, not future recurring meetings.)";
       }
-      
+
       const confirmDelete = confirm(confirmMessage);
       if (!confirmDelete) return;
 
@@ -1304,7 +1303,7 @@ export async function render(container, view = "dashboard") {
 
     deleteAllFutureBtn?.addEventListener("click", async () => {
       const { chainId, date, meetingUUID } = activeMeetingContext;
-      
+
       if (!chainId || !date || !meetingUUID) {
         alert("Cannot delete future meetings: Meeting information not available.");
         return;
@@ -1320,7 +1319,7 @@ export async function render(container, view = "dashboard") {
         "Delete this meeting and ALL future recurring meetings in this series?\n\n" +
         "This action cannot be undone. All future occurrences will be removed from the calendar."
       );
-      
+
       if (!confirmDelete) return;
 
       // Delete from backend (deleteFuture = true to delete all future recurring meetings)
@@ -1360,7 +1359,7 @@ export async function render(container, view = "dashboard") {
     }
 
     meetingForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+      e.preventDefault();
 
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) {
@@ -1377,36 +1376,36 @@ export async function render(container, view = "dashboard") {
 
       // Get participants and filter out placeholder names (only keep valid UUIDs)
       const allParticipants = Array.from(participantsContainer.querySelectorAll("input[type=\"checkbox\"]:checked"))
-                .map(cb => cb.value);
-      
+        .map(cb => cb.value);
+
       // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12 hex characters)
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       let participants = allParticipants.filter(p => uuidRegex.test(p));
-      
+
       // Remove duplicates
       participants = [...new Set(participants)];
-      
-      
+
+
       // Warn if placeholder participants were selected
       const placeholderParticipants = allParticipants.filter(p => !uuidRegex.test(p));
 
-            const meetingDateTime = new Date(`${date}T${time}`);
-            const now = new Date();
+      const meetingDateTime = new Date(`${date}T${time}`);
+      const now = new Date();
 
-            if (meetingDateTime < now) {
-                alert("You cannot create a meeting in the past.");
-                return;
-            }
+      if (meetingDateTime < now) {
+        alert("You cannot create a meeting in the past.");
+        return;
+      }
 
-            if (recurring) {
+      if (recurring) {
         if (!recurringEndInput || !recurringEndInput.value) {
           alert("Please select an end date for recurring meetings.");
           return;
         }
 
         const [year, month, day] = date.split("-").map(Number);
-                const startDate = new Date(year, month - 1, day);
-                
+        const startDate = new Date(year, month - 1, day);
+
         const [endYear, endMonth, endDay] = recurringEndInput.value.split("-").map(Number);
         const endDate = new Date(endYear, (endMonth || 1) - 1, endDay || 1);
 
@@ -1421,15 +1420,15 @@ export async function render(container, view = "dashboard") {
         }
 
         // Create recurring meetings
-                    const nextDate = new Date(startDate);
+        const nextDate = new Date(startDate);
         let parentMeetingUUID = null;
-                    
+
         while (nextDate <= endDate) {
-                    const nextYear = nextDate.getFullYear();
+          const nextYear = nextDate.getFullYear();
           const nextMonth = String(nextDate.getMonth() + 1).padStart(2, "0");
           const nextDay = String(nextDate.getDate()).padStart(2, "0");
-                    const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
-                    
+          const nextDateStr = `${nextYear}-${nextMonth}-${nextDay}`;
+
           // Calculate meeting start and end times
           const [hours, minutes] = time.split(":").map(Number);
           const meetingStart = new Date(nextDate);
@@ -1444,19 +1443,19 @@ export async function render(container, view = "dashboard") {
           }
 
           const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
-          
+
           // Validate meetingType is an integer in [0, 3]
           if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
             alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
             return;
           }
-          
+
           // Create a date string with noon local time to avoid timezone shifts
           // This ensures "2025-12-06" stays as Dec 6 regardless of timezone
           const [dateYear, dateMonth, dateDay] = nextDateStr.split("-").map(Number);
           const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
           const meetingDateISO = dateWithNoon.toISOString();
-          
+
           const meetingData = {
             creatorUUID: currentUser.userUuid,
             courseUUID: courseUUID,
@@ -1470,7 +1469,7 @@ export async function render(container, view = "dashboard") {
             isRecurring: true,
             participants: participants // Array of participant UUIDs - these users will see the meeting on their calendars
           };
-          
+
           // Set parentMeetingUUID for recurring meetings (first one is parent, rest are children)
           if (parentMeetingUUID) {
             meetingData.parentMeetingUUID = parentMeetingUUID;
@@ -1478,7 +1477,7 @@ export async function render(container, view = "dashboard") {
 
           try {
             const response = await createMeeting(meetingData);
-            
+
             // Store parent UUID for next iterations
             if (response && response.meeting && !parentMeetingUUID) {
               parentMeetingUUID = response.meeting.meetingUUID;
@@ -1508,19 +1507,19 @@ export async function render(container, view = "dashboard") {
         }
 
         const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
-        
+
         // Validate meetingType is an integer in [0, 3]
         if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
           alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
           return;
         }
-        
+
         // Create a date string with noon local time to avoid timezone shifts
         // This ensures "2025-12-06" stays as Dec 6 regardless of timezone
         const [dateYear, dateMonth, dateDay] = date.split("-").map(Number);
         const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
         const meetingDateISO = dateWithNoon.toISOString();
-        
+
         const meetingData = {
           creatorUUID: currentUser.userUuid,
           courseUUID: courseUUID,
@@ -1534,7 +1533,7 @@ export async function render(container, view = "dashboard") {
           isRecurring: false,
           participants: participants // Array of participant UUIDs - these users will see the meeting on their calendars
         };
-        
+
         try {
           await createMeeting(meetingData);
         } catch (error) {
@@ -1551,7 +1550,7 @@ export async function render(container, view = "dashboard") {
       await loadMeetingsFromBackend();
 
       meetingModal.classList.add("hidden");
-            meetingForm.reset();
+      meetingForm.reset();
       if (recurringEndInput) recurringEndInput.value = "";
       syncRecurringControlState();
     });
@@ -1564,82 +1563,82 @@ export async function render(container, view = "dashboard") {
       meetingContentModalWrapper.classList.add("hidden");
     };
 
-        prevBtn.onclick = () => {
-          // Don't navigate if button is disabled
-          if (prevBtn.disabled) {
-            return;
-          }
-          
-          const newDate = new Date(currentDate);
-          newDate.setMonth(newDate.getMonth() - 1);
-          
-          // Check if navigation is allowed
-          if (isMonthWithinCourseRange(newDate)) {
-            currentDate = newDate;
+    prevBtn.onclick = () => {
+      // Don't navigate if button is disabled
+      if (prevBtn.disabled) {
+        return;
+      }
+
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() - 1);
+
+      // Check if navigation is allowed
+      if (isMonthWithinCourseRange(newDate)) {
+        currentDate = newDate;
         renderCalendar();
-            updateNavigationButtons();
-          } else {
-            alert("Cannot navigate before the course start date.");
-            updateNavigationButtons(); // Update buttons in case state changed
-          }
-        };
-        
-        nextBtn.onclick = () => {
-          // Don't navigate if button is disabled
-          if (nextBtn.disabled) {
-            return;
-          }
-          
-          const newDate = new Date(currentDate);
-          newDate.setMonth(newDate.getMonth() + 1);
-          
-          // Check if navigation is allowed
-          if (isMonthWithinCourseRange(newDate)) {
-            currentDate = newDate;
-            renderCalendar();
-            updateNavigationButtons();
-          } else {
-            alert("Cannot navigate after the course end date.");
-            updateNavigationButtons(); // Update buttons in case state changed
-          }
-        };
-        
-        todayBtn.onclick = () => {
-          // Don't navigate if button is disabled
-          if (todayBtn.disabled) {
-            return;
-          }
-          
-          const today = new Date();
-          
-          // Check if today is within course dates
-          if (isDateWithinCourseRange(today)) {
-            currentDate = today;
-            renderCalendar();
-            updateNavigationButtons();
-          } else {
-            alert("Today is outside the course date range. Please select a date within the course period.");
-            updateNavigationButtons(); // Update buttons in case state changed
-          }
-        };
+        updateNavigationButtons();
+      } else {
+        alert("Cannot navigate before the course start date.");
+        updateNavigationButtons(); // Update buttons in case state changed
+      }
+    };
+
+    nextBtn.onclick = () => {
+      // Don't navigate if button is disabled
+      if (nextBtn.disabled) {
+        return;
+      }
+
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() + 1);
+
+      // Check if navigation is allowed
+      if (isMonthWithinCourseRange(newDate)) {
+        currentDate = newDate;
+        renderCalendar();
+        updateNavigationButtons();
+      } else {
+        alert("Cannot navigate after the course end date.");
+        updateNavigationButtons(); // Update buttons in case state changed
+      }
+    };
+
+    todayBtn.onclick = () => {
+      // Don't navigate if button is disabled
+      if (todayBtn.disabled) {
+        return;
+      }
+
+      const today = new Date();
+
+      // Check if today is within course dates
+      if (isDateWithinCourseRange(today)) {
+        currentDate = today;
+        renderCalendar();
+        updateNavigationButtons();
+      } else {
+        alert("Today is outside the course date range. Please select a date within the course period.");
+        updateNavigationButtons(); // Update buttons in case state changed
+      }
+    };
 
     syncRecurringControlState();
-    
+
     // Render calendar initially (even if empty) so it's visible immediately
-        renderCalendar();
-    
+    renderCalendar();
+
     // Initially disable navigation buttons until course dates are loaded
     if (prevBtn) prevBtn.disabled = true;
     if (nextBtn) nextBtn.disabled = true;
     if (todayBtn) todayBtn.disabled = true;
-    
+
     // Load user context to determine role
     const courseUUID = getCourseIdFromUrl();
     if (courseUUID) {
       await loadUserContext(courseUUID);
       setupMeetingTypeOptions();
     }
-    
+
     // Set up participant selection controls
     if (selectAllBtn) {
       selectAllBtn.addEventListener("click", selectAllParticipants);
@@ -1652,15 +1651,15 @@ export async function render(container, view = "dashboard") {
         selectParticipantsByTeam(e.target.value);
       });
     }
-    
+
     // Load course dates first to restrict calendar navigation
     await loadCourseDates();
-    
+
     // Load meetings and users/teams from backend on initial render
     await loadMeetingsFromBackend();
     await loadAllUsersAndTeams();
 
-    } catch (error) {
-        container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
-    }
+  } catch (error) {
+    container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
+  }
 }

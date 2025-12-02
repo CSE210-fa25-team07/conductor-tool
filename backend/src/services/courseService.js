@@ -5,15 +5,8 @@
  * Business logic layer for course operations.
  */
 import * as courseRepository from "../repositories/courseRepository.js";
-<<<<<<< HEAD
-import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
-import * as userRepository from "../repositories/userRepository.js";
-import * as courseValidator from "../validators/courseValidator.js";
-=======
 import * as courseDTO from "../dtos/courseDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
-import { RoleEnum } from "../enums/role.js";
->>>>>>> 2c9930a (Formatting for frontend requests)
 
 /**
  * Get all courses for a user
@@ -56,9 +49,9 @@ async function getAvailableTerms(req, res) {
   try {
     const userId = req.session.user?.id;
 =======
- * 
- * @param {Object} req 
- * @param {Object} res 
+ *
+ * @param {Object} req
+ * @param {Object} res
  * @returns {Object}  200 - Course object
  * @returns {Object}  400 - Missing course UUID parameter
  * @returns {Object}  401 - Not authenticated
@@ -357,8 +350,6 @@ async function updateCourse(req, res) {
 
     const users = await courseRepository.getUsersByCourseUuid(courseUUID);
 
-    console.log("getUsersByCourseUUID: fetched", users?.length || 0, "users for course", courseUUID);
-
     res.status(200).json({
       success: true,
 <<<<<<< HEAD
@@ -368,8 +359,7 @@ async function updateCourse(req, res) {
       data: users
 >>>>>>> 7043af7 (frontend integrations)
     });
-  } catch (error) {
-    console.error("getUsersByCourseUUID error:", error);
+  } catch {
     res.status(500).json({
       success: false,
 <<<<<<< HEAD
@@ -466,8 +456,7 @@ async function getTeamsByCourseUUID(req, res) {
       data: teams
 >>>>>>> 7043af7 (frontend integrations)
     });
-  } catch (error) {
-    console.error("getTeamsByCourseUUID error:", error);
+  } catch {
     res.status(500).json({
       success: false,
 <<<<<<< HEAD
