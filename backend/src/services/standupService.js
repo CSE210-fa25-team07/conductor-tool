@@ -1,11 +1,32 @@
 /**
  * @module standup/service
+ * Standup Service
+ *
+ * Business logic for standup CRUD operations and authorization.
+ * Handles user permissions, team membership validation, and data transformation.
  */
 
 import * as standupRepository from "../repositories/standupRepository.js";
 import * as standupDto from "../dtos/standupDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
 
+/**
+ * Create a new standup entry
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.teamUuid - Team UUID (required)
+ * @param {string} req.body.courseUuid - Course UUID (required)
+ * @param {string} [req.body.whatDone] - What was accomplished
+ * @param {Array} [req.body.githubActivities] - Linked GitHub activities
+ * @param {string} [req.body.whatNext] - What's planned next
+ * @param {string} [req.body.blockers] - Current blockers
+ * @param {string} [req.body.reflection] - Personal reflection
+ * @param {string} [req.body.visibility="team"] - Visibility level
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with created standup or error
+ */
 async function createStandup(req, res) {
   const userId = req.session.user.id;
   const { teamUuid, courseUuid, whatDone, githubActivities, whatNext, blockers, reflection, visibility } = req.body;
@@ -45,6 +66,19 @@ async function createStandup(req, res) {
   });
 }
 
+/**
+ * Get standups for the authenticated user
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.courseUuid] - Filter by course
+ * @param {string} [req.query.teamUuid] - Filter by team
+ * @param {string} [req.query.startDate] - Filter from date (ISO string)
+ * @param {string} [req.query.endDate] - Filter to date (ISO string)
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with list of standups
+ */
 async function getUserStandups(req, res) {
   const userId = req.session.user.id;
   const { courseUuid, teamUuid, startDate, endDate } = req.query;
@@ -62,6 +96,24 @@ async function getUserStandups(req, res) {
   });
 }
 
+/**
+ * Update an existing standup
+ * Only the standup owner can update their own standup.
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.standupId - Standup UUID to update
+ * @param {Object} req.body - Request body with fields to update
+ * @param {string} [req.body.whatDone] - What was accomplished
+ * @param {Array} [req.body.githubActivities] - Linked GitHub activities
+ * @param {string} [req.body.whatNext] - What's planned next
+ * @param {string} [req.body.blockers] - Current blockers
+ * @param {string} [req.body.reflection] - Personal reflection
+ * @param {string} [req.body.visibility] - Visibility level
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with updated standup or error
+ */
 async function updateStandup(req, res) {
   const userId = req.session.user.id;
   const { standupId } = req.params;
@@ -98,6 +150,17 @@ async function updateStandup(req, res) {
   });
 }
 
+/**
+ * Delete a standup
+ * Only the standup owner can delete their own standup.
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.standupId - Standup UUID to delete
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with success message or error
+ */
 async function deleteStandup(req, res) {
   const userId = req.session.user.id;
   const { standupId } = req.params;
@@ -126,6 +189,20 @@ async function deleteStandup(req, res) {
   });
 }
 
+/**
+ * Get all standups for a team
+ * Requires team membership or course staff access.
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.teamId - Team UUID
+ * @param {Object} req.query - Query parameters
+ * @param {string} [req.query.startDate] - Filter from date (ISO string)
+ * @param {string} [req.query.endDate] - Filter to date (ISO string)
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with list of team standups or error
+ */
 async function getTeamStandups(req, res) {
   const userId = req.session.user.id;
   const { teamId } = req.params;
@@ -152,6 +229,19 @@ async function getTeamStandups(req, res) {
   });
 }
 
+/**
+ * Get TA/instructor overview of all standups for a course
+ * Requires course staff role (professor or TA).
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - User UUID
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.courseId - Course UUID (required)
+ * @param {string} [req.query.startDate] - Filter from date (ISO string)
+ * @param {string} [req.query.endDate] - Filter to date (ISO string)
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with list of course standups or error
+ */
 async function getTAOverview(req, res) {
   const userId = req.session.user.id;
   const { courseId, startDate, endDate } = req.query;
@@ -183,6 +273,21 @@ async function getTAOverview(req, res) {
   });
 }
 
+/**
+ * Get standups for a specific user (for staff or teammates)
+ * Requires course staff role or shared team membership with the target user.
+ * @param {Object} req - Express request object
+ * @param {Object} req.session.user - Authenticated user from session
+ * @param {string} req.session.user.id - Requester's user UUID
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.userUuid - Target user's UUID
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.courseId - Course UUID (required)
+ * @param {string} [req.query.startDate] - Filter from date (ISO string)
+ * @param {string} [req.query.endDate] - Filter to date (ISO string)
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with list of user's standups or error
+ */
 async function getStandupsByUser(req, res) {
   const requesterId = req.session.user.id;
   const { userUuid } = req.params;
