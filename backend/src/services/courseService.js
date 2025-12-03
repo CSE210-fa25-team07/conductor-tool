@@ -474,8 +474,7 @@ export {
   getCourseForEdit,
   createCourse,
   updateCourse,
-  getUserCourses, 
-  getUsersByCourseUUID, 
-  getTeamsByCourseUUID, 
+  getUsersByCourseUUID,
+  getTeamsByCourseUUID,
   getCourseByUUID
 };

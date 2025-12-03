@@ -200,14 +200,6 @@ async function getUsersByCourseUuid(courseUuid) {
     }));
 }
 
-export {
-  getCoursesByUserId,
-  getCoursesWithDetailsByUserId,
-  enrollUserToCourse,
-  getCourseByUuid,
-  getUsersByCourseUuid
-};
-
 /**
  * Get all active terms
  * @returns {Promise<Array>} Array of term objects
@@ -440,5 +432,7 @@ export {
   findCourseByCodeTermAndProfessor,
   getCourseWithVerificationCodes,
   createCourseWithVerificationCodes,
-  updateCourseWithVerificationCodes
+  updateCourseWithVerificationCodes,
+  getCourseByUuid,
+  getUsersByCourseUuid
 };
