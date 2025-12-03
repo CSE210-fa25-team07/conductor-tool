@@ -453,6 +453,31 @@ Potential improvements for the monitoring system:
    - End-to-end transaction tracing
    - Service dependency mapping
 
+## Frontend Dashboard
+
+A web-based metrics dashboard is available for visualizing performance data.
+
+### Access the Dashboard
+
+```
+http://localhost:8081/metrics
+```
+
+### Features
+
+- **System Status**: Total requests, uptime, memory usage, storage size
+- **RAIL Metrics**: Response and Load compliance with P50/P95/P99 percentiles
+- **Status Codes**: Distribution of HTTP status codes
+- **Top Endpoints**: Most frequently accessed endpoints with performance stats
+- **Time Series**: Response time trends over the last 24 hours
+- **Actions**: Refresh data and clear metrics
+
+### Files
+
+- **HTML**: `frontend/html/metrics/metrics.html`
+- **CSS**: `frontend/css/pages/metrics/metrics.css`
+- **JavaScript**: `frontend/js/pages/metrics/metrics.js`
+
 ## References
 
 - [Google RAIL Model](https://web.dev/rail/)
