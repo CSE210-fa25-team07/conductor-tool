@@ -2,11 +2,13 @@
  * Metrics Dashboard
  * Displays real-time performance metrics and RAIL compliance
  */
+import { initGlobalNavigation } from "../../components/navigation.js";
 
 const API_BASE = "/v1/api/metrics";
 
 // Initialize dashboard
 document.addEventListener("DOMContentLoaded", () => {
+  initGlobalNavigation("metrics");
   loadAllMetrics();
   setupEventListeners();
 });

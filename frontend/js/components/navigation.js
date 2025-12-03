@@ -16,8 +16,9 @@ function createNavigation(activePage = "") {
 
   nav.innerHTML = `
     <section class="top-nav-container">
-      <!-- Logo -->
-      <header class="top-nav-logo">Conductor</header>
+      <header class="top-nav-logo">
+        <a href="/dashboard" style="color: inherit; text-decoration: none; border: none;">Conductor</a>
+      </header>
 
       <!-- Navigation Links -->
       <nav class="top-nav-links">
