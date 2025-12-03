@@ -181,8 +181,8 @@ function createConfirmationCard(course) {
     <p>Type "Confirm" to remove <strong>${course.code}: ${course.name}</strong></p>
     <form class="confirmation-form">
       <input type="text" id="confirm-input-${course.courseUuid}" placeholder="Type 'Confirm'" required />
-      <button class="btn btn-secondary cancel-button">Cancel</button>
-      <button class="btn btn-primary remove-button">Remove</button>
+      <button type="button" class="btn btn-secondary cancel-button">Cancel</button>
+      <button type="submit" class="btn btn-primary remove-button">Remove</button>
     </form>
   `;
 
@@ -191,12 +191,33 @@ function createConfirmationCard(course) {
   const input = article.querySelector(`#confirm-input-${course.courseUuid}`);
 
   // Handle form submission
-  form.addEventListener("remove", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (input.value === "Confirm") {
-      // handle course removal
+      // backend call to remove user from course
+      try {
+        const response = await fetch(`/v1/api/courses/${course.courseUuid}/leave`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to remove from course");
+        }
+
+        // Successfully removed - refresh page
+        window.location.reload();
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+        // Restore the original card on error
+        const originalCard = createCourseCard(course);
+        article.replaceWith(originalCard);
+      }
     } else {
-      alert('Please type "Confirm" exactly to proceed.');
+      alert("Please type \"Confirm\" exactly to proceed.");
     }
   });
 

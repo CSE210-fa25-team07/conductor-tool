@@ -310,10 +310,50 @@ async function updateCourse(req, res) {
   }
 }
 
+/**
+ * Remove user from course (student leaving a course)
+ * @param {*} req Request object with courseUuid param
+ * @param {*} res Response object
+ */
+async function removeUserFromCourse(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUuid = req.params.courseUuid;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Remove the user from the course
+    const result = await courseRepository.removeUserFromCourse(userId, courseUuid);
+
+    if (result.count === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Enrollment not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully removed from course"
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to remove from course"
+    });
+  }
+}
+
 export {
   getUserCourses,
   getAvailableTerms,
   getCourseForEdit,
   createCourse,
-  updateCourse
+  updateCourse,
+  removeUserFromCourse
 };
