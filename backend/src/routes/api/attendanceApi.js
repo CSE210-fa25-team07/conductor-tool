@@ -1,5 +1,6 @@
 /**
  * @module attendance/api
+ * API endpoints for attendance management
  */
 import express from "express";
 import * as attendanceService from "../../services/attendanceService.js";
@@ -205,5 +206,59 @@ router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
   }
 });
 
+/**
+ * Get student attendance analytics
+ * @name GET /v1/api/attendance/analytics/student
+ * @param {string} req.query.courseUuid - Course UUID (required)
+ * @param {string} req.session.user.id - User UUID from session (required)
+ * @param {string} [req.query.startDate] - Start date filter (optional, format: YYYY-MM-DD)
+ * @param {string} [req.query.endDate] - End date filter (optional, format: YYYY-MM-DD)
+ * @param {Object} res - Response object
+ * @returns {Object} 200 - Student attendance analytics data
+ * @returns {Object} 400 - Bad request (missing/invalid parameters)
+ * @returns {Object} 403 - Not authorized
+ * @returns {Object} 500 - Server error
+ */
+router.get("/analytics/student", async (req, res) => {
+  try {
+    return await attendanceService.getStudentAnalytics(req, res);
+  } catch (error) {
+    const statusCode = error.message.includes("required") ||
+                      error.message.includes("must be") ||
+                      error.message.includes("Invalid") ? 400 : 500;
+    res.status(statusCode).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get instructor attendance analytics
+ * @name GET /v1/api/attendance/analytics/instructor
+ * @param {string} req.query.courseUuid - Course UUID (required)
+ * @param {string} [req.query.startDate] - Start date filter (optional, format: YYYY-MM-DD)
+ * @param {string} [req.query.endDate] - End date filter (optional, format: YYYY-MM-DD)
+ * @param {string} [req.query.meetingType] - Meeting type filter (optional, integer)
+ * @param {string} [req.query.teamUuid] - Team UUID filter (optional)
+ * @param {Object} res - Response object
+ * @returns {Object} 200 - Instructor attendance analytics data
+ * @returns {Object} 400 - Bad request (missing/invalid parameters)
+ * @returns {Object} 403 - Not authorized
+ * @returns {Object} 500 - Server error
+ */
+router.get("/analytics/instructor", async (req, res) => {
+  try {
+    return await attendanceService.getInstructorAnalytics(req, res);
+  } catch (error) {
+    const statusCode = error.message.includes("required") ||
+                      error.message.includes("must be") ||
+                      error.message.includes("Invalid") ? 400 : 500;
+    res.status(statusCode).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 export default router;

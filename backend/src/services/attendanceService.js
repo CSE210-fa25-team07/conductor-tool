@@ -966,6 +966,98 @@ async function recordAttendanceViaCode(req, res) {
   });
 }
 
+/** Get student attendance analytics
+ * @param {*} req Request object that contains query parameters
+ * @param {*} res Response object
+ * @returns Response status and JSON data
+ */
+async function getStudentAnalytics(req, res) {
+  const userId = req.session.user.id;
+  const { courseUuid, startDate, endDate } = req.query;
+
+  // Validate query params at service layer
+  attendanceValidator.validateStudentAnalyticsRequest(req.query);
+
+  if (!courseUuid) {
+    return res.status(400).json({
+      success: false,
+      error: "courseUuid is required"
+    });
+  }
+
+  // Authorization: Check if user is enrolled in course
+  const { enrollments } = await userContextRepository.getUserContext(userId);
+  const isEnrolled = enrollments.some(e => e.course.courseUuid === courseUuid);
+
+  if (!isEnrolled) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view this course's attendance"
+    });
+  }
+
+  // Can't view other students' data lol
+  if (req.query.userId && req.query.userId !== userId) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view other students' attendance"
+    });
+  }
+
+  // Get attendance data for the student
+  const analytics = await attendanceRepository.getStudentAttendanceByMeetingType(
+    userId,
+    courseUuid,
+    { startDate, endDate }
+  );
+
+  return res.status(200).json({
+    success: true,
+    data: attendanceDTO.toStudentAnalyticsDto(analytics)
+  });
+}
+
+/** Get instructor attendance analytics
+ * @param {*} req Request object that contains query parameters
+ * @param {*} res Response object
+ * @returns Response status and JSON data
+ */
+async function getInstructorAnalytics(req, res) {
+  const userId = req.session.user.id;
+  const { courseUuid, startDate, endDate, meetingType, teamUuid } = req.query;
+
+  // Validate query params at service layer
+  attendanceValidator.validateInstructorAnalyticsRequest(req.query);
+
+  if (!courseUuid) {
+    return res.status(400).json({
+      success: false,
+      error: "courseUuid is required"
+    });
+  }
+
+  // Authorization: Check if user is staff (Professor/TA)
+  const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseUuid);
+
+  if (!isStaff) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view instructor analytics"
+    });
+  }
+
+  // Get attendance data for the course
+  const analytics = await attendanceRepository.getInstructorAttendanceOverTime(
+    courseUuid,
+    { startDate, endDate, meetingType, teamUuid }
+  );
+
+  return res.status(200).json({
+    success: true,
+    data: attendanceDTO.toInstructorAnalyticsDto(analytics)
+  });
+}
+
 export {
   getMeetingByUUID,
   createMeeting,
@@ -978,5 +1070,7 @@ export {
   deleteParticipant,
   getParticipantListByParams,
   getMeetingCode,
-  recordAttendanceViaCode
+  recordAttendanceViaCode,
+  getStudentAnalytics,
+  getInstructorAnalytics
 };
