@@ -35,7 +35,7 @@ export async function checkUserFromSession(req, res, next) {
     return res.redirect("/logout");
   }
   const check = await userRepository.getUserByEmail(req.session.user.email);
-  if (!req.session.user || !check) {
+  if (!check) {
     return res.redirect("/logout");
   }
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
@@ -49,8 +49,12 @@ export async function checkUserFromSession(req, res, next) {
  * @param {Response} res
  * @param {NextFunction} next
  */
-export function checkApiSession(req, res, next) {
+export async function checkApiSession(req, res, next) {
   if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const check = await userRepository.getUserByEmail(req.session.user.email);
+  if (!check) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   next();

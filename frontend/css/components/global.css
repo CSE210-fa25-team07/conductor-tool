@@ -178,6 +178,57 @@ button:active, .btn:active {
   transform: translate(2px, 2px);
 }
 
+/* Primary Button */
+.btn-primary {
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+  border: var(--border-thin);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--color-forest-green);
+  color: var(--color-radioactive-lime);
+  border-color: var(--color-radioactive-lime);
+}
+
+.btn-primary:active {
+  transform: translate(2px, 2px);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: transparent;
+  color: var(--color-forest-green);
+  border: var(--border-thin);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--color-light-matcha);
+  border-width: 2px;
+}
+
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+}
+
 /* Input Fields - Brutalist style */
 input, textarea, select {
   font-family: var(--font-mono);
