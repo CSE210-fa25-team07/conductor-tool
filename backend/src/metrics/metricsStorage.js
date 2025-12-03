@@ -11,7 +11,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Default configuration
-const DEFAULT_MAX_ENTRIES = 1000; // Keep last N entries
+const DEFAULT_RETENTION_HOURS = 24; // Keep last 24 hours of data
+const DEFAULT_MAX_ENTRIES = 10000; // Safety limit to prevent memory overflow
 const METRICS_FILE_PATH = path.join(__dirname, "../../data/metrics.json");
 
 /**
@@ -19,10 +20,24 @@ const METRICS_FILE_PATH = path.join(__dirname, "../../data/metrics.json");
  * @description Manages storage and retrieval of performance metrics
  */
 class MetricsStorage {
-  constructor(maxEntries = DEFAULT_MAX_ENTRIES) {
+  constructor(retentionHours = DEFAULT_RETENTION_HOURS, maxEntries = DEFAULT_MAX_ENTRIES) {
     this.metrics = [];
+    this.retentionHours = retentionHours;
     this.maxEntries = maxEntries;
     this.loadFromFile();
+  }
+
+  /**
+   * Clean up old metrics beyond retention period
+   * Removes metrics older than retentionHours
+   */
+  cleanupOldMetrics() {
+    const cutoffTime = Date.now() - (this.retentionHours * 60 * 60 * 1000);
+
+    this.metrics = this.metrics.filter(metric => {
+      const metricTime = new Date(metric.timestamp).getTime();
+      return metricTime >= cutoffTime;
+    });
   }
 
   /**
@@ -49,9 +64,13 @@ class MetricsStorage {
   addMetric(metric) {
     this.metrics.push(metric);
 
-    // Maintain maximum entries (FIFO)
+    // Clean up old metrics based on time retention
+    this.cleanupOldMetrics();
+
+    // Safety check: enforce maximum entries to prevent memory overflow
     if (this.metrics.length > this.maxEntries) {
-      this.metrics.shift();
+      // Remove oldest entries if we somehow exceed max (shouldn't happen normally)
+      this.metrics = this.metrics.slice(-this.maxEntries);
     }
   }
 
@@ -130,6 +149,9 @@ class MetricsStorage {
    */
   async saveToFile() {
     try {
+      // Clean up old metrics before saving
+      this.cleanupOldMetrics();
+
       // Ensure directory exists
       const dir = path.dirname(METRICS_FILE_PATH);
       if (!fs.existsSync(dir)) {
@@ -140,6 +162,7 @@ class MetricsStorage {
       const data = JSON.stringify({
         lastUpdated: new Date().toISOString(),
         totalEntries: this.metrics.length,
+        retentionHours: this.retentionHours,
         maxEntries: this.maxEntries,
         metrics: this.metrics
       }, null, 2);
@@ -161,7 +184,11 @@ class MetricsStorage {
         const data = await fs.promises.readFile(METRICS_FILE_PATH, "utf8");
         const parsed = JSON.parse(data);
         this.metrics = parsed.metrics || [];
+        this.retentionHours = parsed.retentionHours || DEFAULT_RETENTION_HOURS;
         this.maxEntries = parsed.maxEntries || DEFAULT_MAX_ENTRIES;
+
+        // Clean up old metrics on load
+        this.cleanupOldMetrics();
       }
     } catch {
       // File doesn't exist or is invalid - start fresh

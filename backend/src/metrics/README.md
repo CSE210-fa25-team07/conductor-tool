@@ -46,7 +46,7 @@ Intercepts HTTP requests and responses to measure performance.
 **Features:**
 - High-precision timing using `process.hrtime.bigint()`
 - Non-blocking metric collection
-- Path exclusion support using `skipMetricsFor` (e.g., skip metrics endpoints)
+- Built-in path exclusions (static assets, metrics endpoints, navigation paths)
 - Automatic metadata capture (method, path, status, user agent)
 
 **Usage:**
@@ -55,30 +55,33 @@ import { metricsCollector } from './metrics/metricsMiddleware.js';
 
 // In server.js - Collect metrics for all requests globally
 app.use(metricsCollector);
-
-// In specific routers - Skip metrics for certain paths
-import { skipMetricsFor } from './metrics/metricsMiddleware.js';
-
-router.use(skipMetricsFor([
-  /^\/metrics/  // Don't track metrics API endpoints (prevents feedback loop)
-]));
 ```
+
+**Excluded paths (automatically skipped):**
+- `/v1/api/metrics/*` - Metrics API endpoints (prevents feedback loop)
+- `/js/*`, `/css/*`, `/images/*`, `/favicon.ico` - Static assets
+- `/metrics` - Metrics dashboard page
+- `/` - Navigation logo link
+- `/session`, `/photo`, `/v1/api/auth/session`, `/v1/api/user-context/photo` - When called from `/metrics` page (via referer check)
 
 ### 2. Metrics Storage (`backend/src/monitoring/metricsStorage.js`)
 
 In-memory storage with JSON file persistence.
 
 **Features:**
-- Configurable retention (default: last 1000 entries, FIFO)
+- Time-based retention (default: last 24 hours of data)
+- Safety limit (max 10,000 entries to prevent memory overflow)
 - Automatic file persistence (auto-save every 5 minutes)
 - Graceful shutdown handling (saves on SIGINT/SIGTERM)
+- Automatic cleanup on add, save, and load operations
 - Time-range and path filtering
 - Thread-safe singleton pattern
 
 **Configuration:**
 ```javascript
-// Default: keeps last 1000 entries
-const metricsStorage = new MetricsStorage(1000);
+// Default: keeps last 24 hours of data
+const DEFAULT_RETENTION_HOURS = 24;
+const DEFAULT_MAX_ENTRIES = 10000;  // Safety limit
 
 // Auto-saves to: backend/data/metrics.json
 ```
@@ -86,12 +89,13 @@ const metricsStorage = new MetricsStorage(1000);
 **Storage Format:**
 ```json
 {
-  "lastUpdated": "2025-12-01T12:00:00.000Z",
-  "totalEntries": 1000,
-  "maxEntries": 1000,
+  "lastUpdated": "2025-12-03T12:00:00.000Z",
+  "totalEntries": 543,
+  "retentionHours": 24,
+  "maxEntries": 10000,
   "metrics": [
     {
-      "timestamp": "2025-12-01T11:59:59.000Z",
+      "timestamp": "2025-12-03T11:59:59.000Z",
       "method": "GET",
       "path": "/v1/api/users",
       "statusCode": 200,
@@ -274,14 +278,17 @@ Pre-styled components with responsive design.
 
 ### Retention Settings
 
-Edit `backend/src/monitoring/metricsStorage.js`:
+Edit `backend/src/metrics/metricsStorage.js`:
 
 ```javascript
-// Keep last 1000 entries (default)
-const DEFAULT_MAX_ENTRIES = 1000;
+// Keep last 24 hours of data (default)
+const DEFAULT_RETENTION_HOURS = 24;
 
-// Change to keep more/fewer entries
-const metricsStorage = new MetricsStorage(5000);
+// Safety limit to prevent memory overflow (default)
+const DEFAULT_MAX_ENTRIES = 10000;
+
+// Change retention period
+// Note: Old metrics are automatically cleaned up based on timestamp
 ```
 
 ### Auto-Save Interval
@@ -303,7 +310,7 @@ const METRICS_FILE_PATH = path.join(__dirname, '../../data/metrics.json');
 
 ### Path Exclusions
 
-The metrics system uses a flag-based approach to skip collection for specific paths.
+The metrics system automatically excludes specific paths to prevent noise and feedback loops.
 
 **In `backend/src/server.js`:**
 ```javascript
@@ -313,17 +320,19 @@ import { metricsCollector } from './metrics/metricsMiddleware.js';
 app.use(metricsCollector);
 ```
 
-**In route files (e.g., `backend/src/routes/apiRoutes.js`):**
-```javascript
-import { skipMetricsFor } from '../metrics/metricsMiddleware.js';
+**Automatically excluded paths:**
+- `/v1/api/metrics/*` - Metrics API endpoints (prevents feedback loop)
+- `/js/*`, `/css/*`, `/images/*`, `/favicon.ico` - Static assets
+- `/metrics` - Metrics dashboard page
+- `/` - Navigation logo link (not meaningful for metrics)
+- `/.well-known/*` - Browser automated requests
 
-// Skip metrics for specific paths within this router
-router.use(skipMetricsFor([
-  /^\/metrics/  // Don't track metrics API endpoints (prevents feedback loop)
-]));
-```
+**Special case - Referer-based exclusions:**
+When requests come from the `/metrics` page (detected via referer header):
+- `/session`, `/photo`
+- `/v1/api/auth/session`, `/v1/api/user-context/photo`
 
-The `skipMetricsFor` middleware sets a `req._skipMetrics` flag that `metricsCollector` checks before collecting metrics.
+These are excluded only when called from the metrics page to avoid inflating counts during dashboard refreshes.
 
 ## Data Persistence
 
@@ -392,12 +401,9 @@ Metrics only store:
    app.use(metricsCollector);
    ```
 
-2. **Check if path is being skipped:**
-   ```javascript
-   // Check if skipMetricsFor is excluding your path
-   // Add logging to see if req._skipMetrics is being set
-   console.log('Skip metrics flag:', req._skipMetrics);
-   ```
+2. **Check if path is being excluded:**
+   - See "Path Exclusions" section for list of automatically excluded paths
+   - Verify your path isn't in the exclusion list
 
 3. **Check metrics count:**
    ```bash
@@ -424,14 +430,20 @@ Metrics only store:
 
 ### High memory usage
 
-1. **Reduce retention:**
+1. **Reduce retention period:**
    ```javascript
-   const metricsStorage = new MetricsStorage(500);  // Keep fewer entries
+   // In metricsStorage.js
+   const DEFAULT_RETENTION_HOURS = 12;  // Keep only 12 hours
    ```
 
-2. **Clear old metrics:**
+2. **Clear old metrics manually:**
    ```bash
    curl -X DELETE http://localhost:8081/v1/api/metrics
+   ```
+
+3. **Check current memory usage:**
+   ```bash
+   curl http://localhost:8081/v1/api/metrics/status
    ```
 
 ## Future Enhancements

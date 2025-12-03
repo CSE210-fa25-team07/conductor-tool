@@ -52,7 +52,7 @@ We will implement a **custom Express middleware-based metrics collection system*
 #### Backend
 
 - **`metricsMiddleware.js`**: Express middleware for request/response interception
-- **`metricsStorage.js`**: In-memory storage with circular buffer (max 1000 entries)
+- **`metricsStorage.js`**: In-memory storage with time-based retention (24 hours)
 - **`metricsService.js`**: Statistical calculations (percentiles, RAIL compliance)
 - **`metricsApi.js`**: REST API endpoints (`/v1/api/metrics/*`)
 
@@ -66,10 +66,12 @@ We will implement a **custom Express middleware-based metrics collection system*
 
 1. **High-precision timing**: `process.hrtime.bigint()` for nanosecond accuracy
 2. **Non-blocking collection**: Metrics captured after response completion
-3. **Circular buffer**: FIFO queue with 1000-entry limit to prevent memory leaks
-4. **Dual persistence**: In-memory for speed + JSON file for durability
-5. **Auto-save**: Every 5 minutes + graceful shutdown handlers (SIGINT/SIGTERM)
-6. **Path exclusions**: Skip static assets (`/js/`, `/css/`), metrics API (prevent feedback loop), and browser automated requests (`/.well-known/`)
+3. **Time-based retention**: Keep last 24 hours of data (automatic cleanup on add/save/load)
+4. **Safety limit**: Max 10,000 entries to prevent memory overflow (shouldn't be reached with 24hr retention)
+5. **Dual persistence**: In-memory for speed + JSON file for durability
+6. **Auto-save**: Every 5 minutes + graceful shutdown handlers (SIGINT/SIGTERM)
+7. **Path exclusions**: Skip static assets (`/js/`, `/css/`), metrics API (prevent feedback loop), navigation logo (`/`), and browser automated requests (`/.well-known/`)
+8. **Referer-based exclusions**: Skip navigation component API calls (`/session`, `/photo`, `/v1/api/auth/session`, `/v1/api/user-context/photo`) when called from `/metrics` page to avoid inflating counts during dashboard refreshes
 
 ---
 
@@ -155,7 +157,7 @@ We will implement a **custom Express middleware-based metrics collection system*
 
 **Cons:**
 
-- **Limited scalability:** In-memory storage bounded at 1000 entries
+- **Limited retention:** In-memory storage bounded at 24 hours (with 10,000 entry safety limit)
 - **Single-server only:** No distributed tracing across microservices
 - **Manual alerting:** No built-in anomaly detection or alerts
 - **Basic visualization:** Simple HTML/CSS dashboard, not as rich as Grafana
@@ -200,8 +202,8 @@ We will implement a **custom Express middleware-based metrics collection system*
 
 1. **Limited retention**
 
-   - Only 1000 most recent requests stored
-   - ~10-60 minutes of data depending on traffic
+   - Only last 24 hours of data stored
+   - Max 10,000 entries as safety limit (typically not reached)
    - **Mitigation:** Export to CSV/JSON periodically for long-term analysis
 
 2. **No distributed tracing**
@@ -227,8 +229,8 @@ We will implement a **custom Express middleware-based metrics collection system*
 ### System Impact
 
 - **Performance overhead:** ~0.5-2ms per request (negligible)
-- **Memory usage:** ~500KB - 2MB for 1000 entries
-- **Disk usage:** ~500KB JSON file
+- **Memory usage:** Varies based on traffic; max ~10MB for 10,000 entries (safety limit)
+- **Disk usage:** Varies based on metrics count; typically 500KB - 2MB JSON file
 - **Network impact:** None (all local)
 
 ---
@@ -265,7 +267,11 @@ Specific paths are excluded from tracking to prevent noise and feedback loops:
 - `/v1/api/metrics/*` - Prevents metrics API from tracking itself
 - `/js/*`, `/css/*`, `/images/*`, `/favicon.ico` - Static assets
 - `/metrics` - Dashboard page itself
+- `/` - Navigation logo link (not meaningful for metrics)
 - `/.well-known/*` - Browser automated requests (Chrome DevTools)
+
+**Referer-based exclusions** (when requests come from `/metrics` page):
+- `/session`, `/photo`, `/v1/api/auth/session`, `/v1/api/user-context/photo` - Navigation component API calls that happen on every page, excluded only when called from metrics page to avoid inflating counts during dashboard refreshes
 
 ### Data Persistence
 
@@ -279,7 +285,8 @@ Specific paths are excluded from tracking to prevent noise and feedback loops:
 Configurable parameters in `metricsStorage.js`:
 
 ```javascript
-const DEFAULT_MAX_ENTRIES = 1000; // Retention limit
+const DEFAULT_RETENTION_HOURS = 24; // Keep last 24 hours of data
+const DEFAULT_MAX_ENTRIES = 10000; // Safety limit to prevent memory overflow
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const METRICS_FILE_PATH = 'backend/data/metrics.json';
 ```

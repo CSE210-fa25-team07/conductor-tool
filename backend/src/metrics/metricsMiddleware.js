@@ -42,6 +42,27 @@ export function metricsCollector(req, res, next) {
     return next();
   }
 
+  // Skip navigation bar logo link (not meaningful for metrics)
+  if (path === "/") {
+    return next();
+  }
+
+  // Skip navigation component API calls ONLY when called from /metrics page
+  // Check Referer header to see if request is coming from /metrics
+  const referer = req.get("referer") || req.get("referrer") || "";
+  const isFromMetricsPage = referer.includes("/metrics");
+
+  // These paths are navigation component calls that happen on every page
+  // Only skip them when they're from the metrics page to avoid inflating metrics
+  if (isFromMetricsPage) {
+    if (path === "/session" ||
+        path === "/photo" ||
+        path.startsWith("/v1/api/auth/session") ||
+        path.startsWith("/v1/api/user-context/photo")) {
+      return next();
+    }
+  }
+
   // Skip Chrome DevTools and browser automated requests
   if (path.startsWith("/.well-known/")) {
     return next();
@@ -77,35 +98,4 @@ export function metricsCollector(req, res, next) {
   };
 
   next();
-}
-
-/**
- * Middleware to skip metrics collection for specific paths
- * Must be applied BEFORE metricsCollector in the middleware chain
- *
- * Sets req._skipMetrics flag which metricsCollector checks before collecting metrics
- *
- * @param {Array<string|RegExp>} excludePaths - Array of paths or patterns to exclude
- * @returns {Function} Express middleware function
- *
- * @example
- * // In a router, before the global metricsCollector runs:
- * router.use(skipMetricsFor(['/metrics', /^\/health/]));
- */
-export function skipMetricsFor(excludePaths = []) {
-  return function (req, _res, next) {
-    const shouldExclude = excludePaths.some(pattern => {
-      if (pattern instanceof RegExp) {
-        return pattern.test(req.path || req.url);
-      }
-      return (req.path || req.url) === pattern;
-    });
-
-    if (shouldExclude) {
-      // Set flag to skip metrics collection
-      req._skipMetrics = true;
-    }
-
-    next();
-  };
 }
