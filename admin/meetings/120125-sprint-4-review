@@ -1,0 +1,113 @@
+# Sprint 4 Review
+**Meeting Date:** 12/01/2025
+**Attendance:** Sree, Cole, Luting, Gaurav, Emma, Rhea, Jialuo, Yuri, Win, Wayne, Will
+
+## Sprint Review Agenda
+- Sprint 4 overview and deadlines/reminders
+- Feature team updates (Which issues were completed this week?)
+- Code monitoring updates
+- Action Items (goals to complete for upcoming sprint)
+- Sprint 4 feedbacks
+
+---
+
+## Review Notes
+
+Upcoming deadlines/reminders:
+- **Internal Project Demo** - Due Friday EOD (12/05/2025)
+- **Code freeze deadline** - Team should target Dec 5 for end of code changes
+- Code monitoring assignments
+- Testing all features end-to-end
+- Update ADRs/documentation
+
+**General project progress:**
+- Final sprint before code freeze
+- Focus on completing remaining features and integration
+- Emphasis on testing, documentation, and demo preparation
+
+---
+
+## Team Updates
+
+### Login/Auth Team
+**Completed This Sprint:**
+- Add new courses as professor functionality
+- Non-UCSD student login support (request form)
+- Database and backend implementation for above features
+
+**Action Items for Next Sprint:**
+- Code cleanup
+- Administrative work and documentation
+- Final testing of authentication flows
+
+---
+
+### Class Directory Team
+**Completed This Sprint:**
+- Almost completed all assigned features
+- Preparing PR for release today
+- Live demo preparation for team review
+
+**Action Items for Next Sprint:**
+- Release PR and gather feedback
+- Iterate based on team feedback
+- Integration with other team features
+- Final polish and testing
+
+---
+
+### Attendance Team
+**Completed This Sprint:**
+- Backend testing in progress
+- Developing endpoints for meeting creation
+- Developing endpoints for analytics functionality
+
+**Action Items for Next Sprint:**
+- Complete frontend-required endpoints
+- Integration testing for meeting creation flow
+- Complete analytics feature implementation
+- End-to-end testing
+
+---
+
+### Standup Team
+**Completed This Sprint:**
+- Completed basic standup features
+- Email bot implementation in progress
+- GitHub integration in progress
+
+**Action Items for Next Sprint:**
+- Complete email bot functionality
+- Complete GitHub Projects integration
+- Final testing and integration
+- Documentation updates
+
+---
+
+## Code Monitoring Updates
+
+**Status:** Should co-ordinate with Ethan.
+
+**Urgent Action Required:**
+- Assign code monitoring team immediately
+- Define monitoring requirements and metrics
+- Technology selection and implementation plan
+
+---
+
+## Sprint-Wide Action Items
+
+### **Critical Priority**
+| Task | Owner | Deadline |
+|------|-------|----------|
+| Assign code monitoring team | Leadership | ASAP |
+| Internal project demo video | All teams | Friday 12/05 EOD |
+| Code freeze preparation | All teams | 12/05/2025 |
+
+### **All Feature Teams**
+| Task | Details | Priority |
+|------|---------|----------|
+| Testing | End-to-end testing of all features | High |
+| Code cleanup | Remove debugging code, improve code quality | High |
+| Documentation | Update ADRs, README files, JSDoc comments | High |
+| Integration testing | Test interactions between features | High |
