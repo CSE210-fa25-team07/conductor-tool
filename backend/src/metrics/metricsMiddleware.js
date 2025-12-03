@@ -25,25 +25,25 @@ export function metricsCollector(req, res, next) {
   const path = req.path || req.url;
 
   // Skip metrics API endpoints (prevents feedback loop)
-  if (path.startsWith('/v1/api/metrics')) {
+  if (path.startsWith("/v1/api/metrics")) {
     return next();
   }
 
   // Skip static assets (CSS, JS, images, favicon)
-  if (path.startsWith('/js/') ||
-      path.startsWith('/css/') ||
-      path.startsWith('/images/') ||
-      path === '/favicon.ico') {
+  if (path.startsWith("/js/") ||
+      path.startsWith("/css/") ||
+      path.startsWith("/images/") ||
+      path === "/favicon.ico") {
     return next();
   }
 
   // Skip metrics dashboard page
-  if (path === '/metrics') {
+  if (path === "/metrics") {
     return next();
   }
 
   // Skip Chrome DevTools and browser automated requests
-  if (path.startsWith('/.well-known/')) {
+  if (path.startsWith("/.well-known/")) {
     return next();
   }
 

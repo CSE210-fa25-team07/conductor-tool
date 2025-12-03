@@ -235,6 +235,11 @@ export function getEndpointMetrics(path) {
 export function getMetricsByTimeBucket(bucketSize = "hour", bucketCount = 24) {
   const metrics = metricsStorage.getAllMetrics();
 
+  // Return empty array if no metrics
+  if (metrics.length === 0) {
+    return [];
+  }
+
   const bucketSizeMs = {
     hour: 60 * 60 * 1000,
     day: 24 * 60 * 60 * 1000,
@@ -254,14 +259,17 @@ export function getMetricsByTimeBucket(bucketSize = "hour", bucketCount = 24) {
       return timestamp >= bucketStart && timestamp < bucketEnd;
     });
 
-    const responseTimes = bucketMetrics.map(m => m.responseTime);
+    // Only include buckets with data
+    if (bucketMetrics.length > 0) {
+      const responseTimes = bucketMetrics.map(m => m.responseTime);
 
-    buckets.push({
-      start: new Date(bucketStart).toISOString(),
-      end: new Date(bucketEnd).toISOString(),
-      requestCount: bucketMetrics.length,
-      stats: calculateStats(responseTimes)
-    });
+      buckets.push({
+        start: new Date(bucketStart).toISOString(),
+        end: new Date(bucketEnd).toISOString(),
+        requestCount: bucketMetrics.length,
+        stats: calculateStats(responseTimes)
+      });
+    }
   }
 
   return buckets;
