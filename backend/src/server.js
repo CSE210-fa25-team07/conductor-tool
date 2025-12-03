@@ -46,7 +46,7 @@ app.get("/calendar", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
 });
 
-app.get("/metrics", (req, res) => {
+app.get("/metrics", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/metrics/metrics.html"));
 });
 
