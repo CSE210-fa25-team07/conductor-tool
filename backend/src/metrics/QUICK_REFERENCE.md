@@ -67,7 +67,7 @@ backend/data/
 | Max entries | `backend/src/metrics/metricsStorage.js` | 14 |
 | Auto-save interval | `backend/src/metrics/metricsStorage.js` | 196 |
 | Storage path | `metricsStorage.js` | 11 |
-| Excluded paths | `server.js` | 30-34 |
+| Skip metrics paths | `backend/src/routes/apiRoutes.js` | 20-22 |
 
 ## Common Tasks
 
@@ -78,17 +78,22 @@ Edit `backend/src/metrics/metricsStorage.js:14`:
 const DEFAULT_MAX_ENTRIES = 5000; // Keep 5000 entries
 ```
 
-### Exclude more paths
+### Skip metrics for more paths
 
-Edit `backend/src/server.js:30-34`:
+Edit `backend/src/routes/apiRoutes.js:20-22`:
 ```javascript
-app.use(excludeFromMetrics([
-  /^\/js\//,
-  /^\/css\//,
-  /^\/images\//,
-  '/health',           // Add this
-  /^\/static\//,       // Add this
+router.use(skipMetricsFor([
+  /^\/metrics/,        // Metrics API (already included)
+  /^\/health/,         // Add health check
+  /^\/static/,         // Add static endpoints
 ]));
+```
+
+Or add to other routers:
+```javascript
+import { skipMetricsFor } from '../metrics/metricsMiddleware.js';
+
+router.use(skipMetricsFor([/^\/admin/]));  // Skip admin routes
 ```
 
 ### Add metrics to dashboard

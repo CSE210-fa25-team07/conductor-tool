@@ -11,15 +11,11 @@ import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
 import courseApis from "./api/courseApi.js";
 import metricsApis from "../metrics/metricsApi.js";
-import { excludeFromMetrics } from "../metrics/metricsMiddleware.js";
 
 const router = express.Router();
 
-// Metrics collection middleware
-// Tracks all API routes except the metrics endpoints themselves
-router.use(excludeFromMetrics([
-  /^\/metrics/  // Don't track metrics API endpoints
-]));
+// Note: Metrics API endpoints are excluded from tracking in metricsMiddleware.js
+// to prevent feedback loop (metrics endpoints don't track themselves)
 
 // Auth routes don't require session (checking/verifying session)
 router.use("/auth", authApis);

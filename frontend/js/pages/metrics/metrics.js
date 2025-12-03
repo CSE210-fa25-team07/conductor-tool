@@ -45,8 +45,8 @@ async function loadSystemStatus() {
     if (result.success && result.data) {
       const data = result.data;
       document.getElementById("total-requests").textContent = (data.metricsCount || 0).toLocaleString();
-      document.getElementById("uptime").textContent = data.oldestEntry ? formatUptime(Math.floor((Date.now() - new Date(data.oldestEntry).getTime()) / 1000)) : "-";
-      document.getElementById("memory-usage").textContent = "-";
+      document.getElementById("uptime").textContent = data.oldestEntry && data.newestEntry ? formatUptime(Math.floor((new Date(data.newestEntry).getTime() - new Date(data.oldestEntry).getTime()) / 1000)) : "-";
+      document.getElementById("memory-usage").textContent = data.memoryUsage ? formatBytes(data.memoryUsage) : "-";
       document.getElementById("storage-size").textContent = data.maxEntries ? `${data.metricsCount}/${data.maxEntries}` : "-";
     }
   } catch (error) {

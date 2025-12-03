@@ -21,6 +21,32 @@ import { metricsStorage } from "./metricsStorage.js";
  * app.use(metricsCollector);
  */
 export function metricsCollector(req, res, next) {
+  // Skip metrics API endpoints, static assets, and metrics dashboard page
+  const path = req.path || req.url;
+
+  // Skip metrics API endpoints (prevents feedback loop)
+  if (path.startsWith('/v1/api/metrics')) {
+    return next();
+  }
+
+  // Skip static assets (CSS, JS, images, favicon)
+  if (path.startsWith('/js/') ||
+      path.startsWith('/css/') ||
+      path.startsWith('/images/') ||
+      path === '/favicon.ico') {
+    return next();
+  }
+
+  // Skip metrics dashboard page
+  if (path === '/metrics') {
+    return next();
+  }
+
+  // Skip Chrome DevTools and browser automated requests
+  if (path.startsWith('/.well-known/')) {
+    return next();
+  }
+
   const startTime = process.hrtime.bigint();
   const startDate = new Date();
 
@@ -54,16 +80,20 @@ export function metricsCollector(req, res, next) {
 }
 
 /**
- * Middleware to exclude specific paths from metrics collection
+ * Middleware to skip metrics collection for specific paths
+ * Must be applied BEFORE metricsCollector in the middleware chain
+ *
+ * Sets req._skipMetrics flag which metricsCollector checks before collecting metrics
  *
  * @param {Array<string|RegExp>} excludePaths - Array of paths or patterns to exclude
  * @returns {Function} Express middleware function
  *
  * @example
- * app.use(excludeFromMetrics(['/health', /^\/static/]));
+ * // In a router, before the global metricsCollector runs:
+ * router.use(skipMetricsFor(['/metrics', /^\/health/]));
  */
-export function excludeFromMetrics(excludePaths = []) {
-  return function (req, res, next) {
+export function skipMetricsFor(excludePaths = []) {
+  return function (req, _res, next) {
     const shouldExclude = excludePaths.some(pattern => {
       if (pattern instanceof RegExp) {
         return pattern.test(req.path || req.url);
@@ -72,11 +102,10 @@ export function excludeFromMetrics(excludePaths = []) {
     });
 
     if (shouldExclude) {
-      // Skip metrics collection
-      return next();
+      // Set flag to skip metrics collection
+      req._skipMetrics = true;
     }
 
-    // Apply metrics collector
-    metricsCollector(req, res, next);
+    next();
   };
 }

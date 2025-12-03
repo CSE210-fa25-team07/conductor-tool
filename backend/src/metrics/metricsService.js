@@ -145,13 +145,30 @@ export function getRailMetrics(options = {}) {
     statusCodes[m.statusCode] = (statusCodes[m.statusCode] || 0) + 1;
   });
 
-  // Top paths by request count
-  const pathCounts = {};
+  // Top paths by request count with avg response time and error rate
+  const pathStats = {};
   metrics.forEach(m => {
-    pathCounts[m.path] = (pathCounts[m.path] || 0) + 1;
+    if (!pathStats[m.path]) {
+      pathStats[m.path] = {
+        count: 0,
+        totalResponseTime: 0,
+        errors: 0
+      };
+    }
+    pathStats[m.path].count++;
+    pathStats[m.path].totalResponseTime += m.responseTime;
+    if (m.statusCode >= 400) {
+      pathStats[m.path].errors++;
+    }
   });
-  const topPaths = Object.entries(pathCounts)
-    .map(([path, count]) => ({ path, count }))
+
+  const topPaths = Object.entries(pathStats)
+    .map(([path, stats]) => ({
+      path,
+      count: stats.count,
+      avgResponseTime: stats.totalResponseTime / stats.count,
+      errorRate: (stats.errors / stats.count) * 100
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
@@ -256,11 +273,25 @@ export function getMetricsByTimeBucket(bucketSize = "hour", bucketCount = 24) {
  * @returns {Object} Monitoring status
  */
 export function getMonitoringStatus() {
+  const memUsage = process.memoryUsage();
+  const allMetrics = metricsStorage.getAllMetrics();
+
+  // Find actual oldest and newest timestamps (array may not be sorted)
+  let oldestTimestamp = null;
+  let newestTimestamp = null;
+
+  if (allMetrics.length > 0) {
+    const timestamps = allMetrics.map(m => new Date(m.timestamp).getTime());
+    oldestTimestamp = new Date(Math.min(...timestamps)).toISOString();
+    newestTimestamp = new Date(Math.max(...timestamps)).toISOString();
+  }
+
   return {
     isActive: true,
     metricsCount: metricsStorage.getMetricsCount(),
     maxEntries: metricsStorage.maxEntries,
-    oldestEntry: metricsStorage.getAllMetrics()[0]?.timestamp || null,
-    newestEntry: metricsStorage.getAllMetrics().slice(-1)[0]?.timestamp || null
+    oldestEntry: oldestTimestamp,
+    newestEntry: newestTimestamp,
+    memoryUsage: memUsage.heapUsed // Heap memory used in bytes
   };
 }

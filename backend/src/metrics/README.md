@@ -39,28 +39,28 @@ The code monitoring system automatically collects API-level performance metrics 
 
 ## Components
 
-### 1. Metrics Middleware (`backend/src/middleware/metricsMiddleware.js`)
+### 1. Metrics Middleware (`backend/src/metrics/metricsMiddleware.js`)
 
 Intercepts HTTP requests and responses to measure performance.
 
 **Features:**
 - High-precision timing using `process.hrtime.bigint()`
 - Non-blocking metric collection
-- Path exclusion support (e.g., skip static assets)
+- Path exclusion support using `skipMetricsFor` (e.g., skip metrics endpoints)
 - Automatic metadata capture (method, path, status, user agent)
 
 **Usage:**
 ```javascript
-import { metricsCollector, excludeFromMetrics } from './middleware/metricsMiddleware.js';
+import { metricsCollector } from './metrics/metricsMiddleware.js';
 
-// Collect metrics for all requests
+// In server.js - Collect metrics for all requests globally
 app.use(metricsCollector);
 
-// Or exclude specific paths
-app.use(excludeFromMetrics([
-  /^\/js\//,      // JavaScript files
-  /^\/css\//,     // CSS files
-  /^\/images\//,  // Images
+// In specific routers - Skip metrics for certain paths
+import { skipMetricsFor } from './metrics/metricsMiddleware.js';
+
+router.use(skipMetricsFor([
+  /^\/metrics/  // Don't track metrics API endpoints (prevents feedback loop)
 ]));
 ```
 
@@ -303,17 +303,27 @@ const METRICS_FILE_PATH = path.join(__dirname, '../../data/metrics.json');
 
 ### Path Exclusions
 
-Edit `backend/src/server.js`:
+The metrics system uses a flag-based approach to skip collection for specific paths.
 
+**In `backend/src/server.js`:**
 ```javascript
-app.use(excludeFromMetrics([
-  /^\/js\//,         // JavaScript files
-  /^\/css\//,        // CSS files
-  /^\/images\//,     // Images
-  '/health',         // Health check endpoint
-  /^\/metrics\//,    // Metrics endpoints themselves
+import { metricsCollector } from './metrics/metricsMiddleware.js';
+
+// Apply globally - collects metrics for all requests
+app.use(metricsCollector);
+```
+
+**In route files (e.g., `backend/src/routes/apiRoutes.js`):**
+```javascript
+import { skipMetricsFor } from '../metrics/metricsMiddleware.js';
+
+// Skip metrics for specific paths within this router
+router.use(skipMetricsFor([
+  /^\/metrics/  // Don't track metrics API endpoints (prevents feedback loop)
 ]));
 ```
+
+The `skipMetricsFor` middleware sets a `req._skipMetrics` flag that `metricsCollector` checks before collecting metrics.
 
 ## Data Persistence
 
@@ -379,13 +389,14 @@ Metrics only store:
 1. **Check middleware is installed:**
    ```javascript
    // In server.js, should appear BEFORE routes
-   app.use(excludeFromMetrics([...]));
+   app.use(metricsCollector);
    ```
 
-2. **Check path exclusions:**
+2. **Check if path is being skipped:**
    ```javascript
-   // Ensure your paths aren't excluded
-   console.log('Excluded paths:', excludePaths);
+   // Check if skipMetricsFor is excluding your path
+   // Add logging to see if req._skipMetrics is being set
+   console.log('Skip metrics flag:', req._skipMetrics);
    ```
 
 3. **Check metrics count:**
