@@ -4,7 +4,6 @@ import profileRoutes from "./routes/web/profileRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
-import metricsApiRoutes from "./metrics/metricsApi.js";
 import { metricsCollector } from "./metrics/metricsMiddleware.js";
 import { checkSession, checkUserFromSession } from "./utils/auth.js";
 import session from "express-session";
@@ -74,7 +73,5 @@ app.use("/google", googleRoutes);
 app.use("/courses", checkUserFromSession, courseRoutes);
 
 app.use("/v1/api/", apiRoutes);
-
-app.use("/v1/api/metrics", metricsApiRoutes);
 
 app.listen(PORT);

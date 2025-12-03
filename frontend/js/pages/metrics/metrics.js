@@ -45,10 +45,10 @@ async function loadSystemStatus() {
 
     if (result.success && result.data) {
       const data = result.data;
-      document.getElementById('total-requests').textContent = (data.totalMetrics || 0).toLocaleString();
-      document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
-      document.getElementById('memory-usage').textContent = formatBytes(data.memoryUsage?.heapUsed || 0);
-      document.getElementById('storage-size').textContent = formatBytes(data.storageSize || 0);
+      document.getElementById('total-requests').textContent = (data.metricsCount || 0).toLocaleString();
+      document.getElementById('uptime').textContent = data.oldestEntry ? formatUptime(Math.floor((Date.now() - new Date(data.oldestEntry).getTime()) / 1000)) : '-';
+      document.getElementById('memory-usage').textContent = '-';
+      document.getElementById('storage-size').textContent = data.maxEntries ? `${data.metricsCount}/${data.maxEntries}` : '-';
     }
   } catch (error) {
     console.error('Error loading system status:', error);
@@ -205,9 +205,9 @@ function renderTimeseriesChart(buckets) {
   // Simple text representation
   let chartHTML = '<div style="padding: 1rem; font-family: monospace;">';
   buckets.forEach(bucket => {
-    const label = new Date(bucket.bucket).toLocaleTimeString();
-    const avgTime = (bucket.avgResponseTime ?? 0).toFixed(1);
-    const count = bucket.count ?? 0;
+    const label = new Date(bucket.start).toLocaleTimeString();
+    const avgTime = (bucket.stats?.mean ?? 0).toFixed(1);
+    const count = bucket.requestCount ?? 0;
     chartHTML += `<div>${label}: ${avgTime}ms (${count} requests)</div>`;
   });
   chartHTML += '</div>';
