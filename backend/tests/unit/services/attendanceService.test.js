@@ -11,7 +11,7 @@
  * Note: Uses Jest mock testing patterns without jest.mock() to support ES modules
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 // Mock response and request helpers
 const createMockRequest = () => ({
@@ -25,8 +25,8 @@ const createMockRequest = () => ({
 });
 
 const createMockResponse = () => ({
-  status: jest.fn(function() { return this; }),
-  json: jest.fn(function(data) { this.data = data; return this; })
+  status: vi.fn(function() { return this; }),
+  json: vi.fn(function(data) { this.data = data; return this; })
 });
 
 describe("Attendance Service - Unit Tests", () => {
@@ -38,7 +38,7 @@ describe("Attendance Service - Unit Tests", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ============================================================

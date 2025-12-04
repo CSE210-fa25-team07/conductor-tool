@@ -442,11 +442,10 @@ END $$;
 -- 15. FORM REQUESTS
 -- ============================================
 INSERT INTO form_request (first_name, last_name, email, related_institution, verification_code, created_at) VALUES
-    ('Nathan', 'Newman', 'nathan.newman@stanford.edu', 'Stanford University', 'STAN-REQ-2025-001', NOW() - INTERVAL '2 days'),
-    ('Olivia', 'Owens', 'olivia.owens@berkeley.edu', 'UC Berkeley', 'BERK-REQ-2025-002', NOW() - INTERVAL '1 day'),
-    ('Peter', 'Parker', 'peter.parker@mit.edu', 'MIT', 'MIT-REQ-2025-003', NOW() - INTERVAL '5 days'),
-    ('Quinn', 'Quinn', 'quinn@caltech.edu', 'Caltech', 'CALT-REQ-2025-004', NOW() - INTERVAL '7 days'),
-    ('Rachel', 'Roberts', 'rachel.roberts@ucsd.edu', 'UC San Diego', 'UCSD-REQ-2025-005', NOW() - INTERVAL '3 hours');
+    ('Nathan', 'Newman', 'nathan.newman@stanford.edu', 'Stanford University', 'CSE110-TA-WINTER25', NOW() - INTERVAL '2 days'),
+    ('Olivia', 'Owens', 'olivia.owens@berkeley.edu', 'UC Berkeley', 'CSE210-STU-WINTER25', NOW() - INTERVAL '1 day'),
+    ('Peter', 'Parker', 'peter.parker@mit.edu', 'MIT', 'CSE210-TA-WINTER25', NOW() - INTERVAL '5 days'),
+    ('Quinn', 'Quinn', 'quinn@caltech.edu', 'Caltech', 'CSE110-STU-WINTER25', NOW() - INTERVAL '7 days');
 
 -- ============================================
 -- SUCCESS MESSAGE
