@@ -10,8 +10,12 @@ import attendanceApis from "./api/attendanceApi.js";
 import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
 import courseApis from "./api/courseApi.js";
+import metricsApis from "../metrics/metricsApi.js";
 
 const router = express.Router();
+
+// Note: Metrics API endpoints are excluded from tracking in metricsMiddleware.js
+// to prevent feedback loop (metrics endpoints don't track themselves)
 
 // Auth routes don't require session (checking/verifying session)
 router.use("/auth", authApis);
@@ -26,5 +30,7 @@ router.use("/standups", checkApiSession, standupApis);
 router.use("/attendance", checkApiSession, attendanceApis);
 
 router.use("/user-context", checkApiSession, userContextApis);
+
+router.use("/metrics", checkApiSession, metricsApis);
 
 export default router;
