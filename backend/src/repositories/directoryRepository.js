@@ -580,6 +580,25 @@ export async function getUserRoleInCourse(userUuid, courseUuid) {
   return enrollment ? enrollment.role.role : null;
 }
 
+/**
+ * Update team links by team UUID
+ * @param {string} teamUuid - Team UUID
+ * @param {Object} linksData - Links data to update (teamPageUrl, repoUrl)
+ * @returns {Promise<Object>} Updated team object
+ */
+export async function updateTeamLinks(teamUuid, linksData) {
+  // Always update both fields explicitly (even if null, to clear old values)
+  const updatedTeam = await prisma.team.update({
+    where: { teamUuid: teamUuid },
+    data: {
+      teamPageUrl: linksData.teamPageUrl,
+      repoUrl: linksData.repoUrl
+    }
+  });
+
+  return updatedTeam;
+}
+
 
 
 

@@ -198,3 +198,24 @@ export async function updateCourseLinks(courseUuid, linksData) {
 
   return handleResponse(response);
 }
+
+/**
+ * Update team links (team leader only)
+ * @param {string} teamUuid - Team UUID
+ * @param {Object} linksData - Links data to update
+ * @param {string} linksData.teamPageUrl - Team page URL
+ * @param {string} linksData.repoUrl - Repository URL
+ * @returns {Promise<Object>} Updated team data
+ */
+export async function updateTeamLinks(teamUuid, linksData) {
+  const response = await fetch(API_BASE + "/teams/" + teamUuid + "/links", {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(linksData)
+  });
+
+  return handleResponse(response);
+}

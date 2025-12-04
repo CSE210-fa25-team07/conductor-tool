@@ -7,11 +7,16 @@ import * as directoryApi from "../../api/directoryApi.js";
 import * as userContextApi from "../../api/userContextApi.js";
 import { navigateToGroup, navigateToUser } from "./main.js";
 
+let currentTeamUuid = null;
+let currentTeam = null;
+let isTeamLeader = false;
+
 /**
  * Initialize the team profile page
  * @param {string} teamUuid - Team UUID
  */
 export async function init(teamUuid) {
+  currentTeamUuid = teamUuid;
   await loadTeamProfile(teamUuid);
 }
 
@@ -23,9 +28,13 @@ async function loadTeamProfile(teamUuid) {
   try {
     showLoading();
     const team = await directoryApi.getTeamProfile(teamUuid);
+    currentTeam = team;
 
     // Setup back button visibility based on user role
     await setupBackButton(team.course.courseUuid);
+
+    // Check if current user is team leader
+    await checkTeamLeaderStatus(teamUuid, team.course.courseUuid);
 
     // Render the team profile
     renderTeamProfile(team);
@@ -70,6 +79,67 @@ async function setupBackButton(courseUuid) {
 }
 
 /**
+ * Check if current user is a team leader for this team
+ * @param {string} teamUuid - Team UUID
+ * @param {string} courseUuid - Course UUID
+ */
+async function checkTeamLeaderStatus(teamUuid, courseUuid) {
+  try {
+    // Get current user from session
+    const sessionResponse = await fetch("/v1/api/auth/session", {
+      credentials: "include"
+    });
+    
+    if (!sessionResponse.ok) {
+      isTeamLeader = false;
+      return;
+    }
+    
+    const sessionData = await sessionResponse.json();
+    const currentUserId = sessionData.user?.id;
+    
+    if (!currentUserId) {
+      isTeamLeader = false;
+      return;
+    }
+    
+    // Get user context to check roles
+    const userContext = await userContextApi.getUserContext(courseUuid);
+    
+    // Check ALL enrolled courses - users can have multiple roles for the same course
+    // (e.g., both "Student" and "Team Leader" enrollments)
+    // enrolledCourses should contain ALL enrollments, so check all entries
+    const hasTeamLeaderRole = userContext.enrolledCourses?.some(
+      course => String(course.courseUuid) === String(courseUuid) && course.role === "Team Leader"
+    ) || false;
+    
+    // Check if current user is a member of this team (using team data we already loaded)
+    const isTeamMember = currentTeam?.members?.some(
+      member => String(member.userUuid) === String(currentUserId)
+    ) || false;
+    
+    // User is team leader if they have "Team Leader" role AND are a member of this team
+    // Backend will do the final verification to ensure they're actually the team leader
+    isTeamLeader = hasTeamLeaderRole && isTeamMember;
+    
+    console.log("🔍 Team Leader Status Check:", {
+      teamUuid,
+      courseUuid,
+      currentUserId,
+      hasTeamLeaderRole,
+      isTeamMember,
+      isTeamLeader,
+      enrolledCourses: userContext.enrolledCourses,
+      teamMemberIds: currentTeam?.members?.map(m => m.userUuid),
+      allRoles: userContext.enrolledCourses?.filter(c => String(c.courseUuid) === String(courseUuid)).map(c => c.role)
+    });
+  } catch (error) {
+    console.error("Error checking team leader status:", error);
+    isTeamLeader = false;
+  }
+}
+
+/**
  * Render team profile
  * @param {Object} team - Team data
  */
@@ -99,6 +169,11 @@ function renderTeamProfile(team) {
   }
 
   if (teamLinks) {
+    console.log("Rendering team links:", {
+      teamPageUrl: team.teamPageUrl,
+      repoUrl: team.repoUrl
+    });
+
     const links = [];
     if (team.teamPageUrl) {
       links.push("<a href=\"" + team.teamPageUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Team Page →</a>");
@@ -106,7 +181,22 @@ function renderTeamProfile(team) {
     if (team.repoUrl) {
       links.push("<a href=\"" + team.repoUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Repository →</a>");
     }
-    teamLinks.innerHTML = links.length > 0 ? links.join(" | ") : "";
+    
+    let linksHtml = links.length > 0 ? links.join(" | ") : "";
+    
+    // Add edit button if user is team leader
+    if (isTeamLeader) {
+      const buttonHtml = "<button id=\"edit-team-links-btn\" style=\"margin-left: " + (linksHtml ? "var(--space-md)" : "0") + "; font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;\">Edit Links</button>";
+      linksHtml += buttonHtml;
+    }
+    
+    teamLinks.innerHTML = linksHtml || (isTeamLeader ? "" : "<span style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No links set</span>");
+    
+    // Setup edit button event listener if it exists
+    const editBtn = document.getElementById("edit-team-links-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => enterEditMode());
+    }
   }
 
   if (memberCount) {
@@ -151,6 +241,106 @@ function renderTeamProfile(team) {
         });
       });
     }
+  }
+}
+
+/**
+ * Enter edit mode for team links
+ */
+function enterEditMode() {
+  if (!currentTeam) return;
+
+  const teamLinks = document.getElementById("team-links");
+  if (!teamLinks) return;
+
+  // Create edit form
+  const formHtml = `
+    <form id="team-links-form" style="display: flex; flex-direction: column; gap: var(--space-md);">
+      <div>
+        <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Team Page URL:</label>
+        <input type="url" id="edit-teamPageUrl" value="${currentTeam.teamPageUrl || ""}" 
+               style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green);"
+               placeholder="https://example.com/team-page">
+      </div>
+      <div>
+        <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Repository URL:</label>
+        <input type="url" id="edit-repoUrl" value="${currentTeam.repoUrl || ""}" 
+               style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green);"
+               placeholder="https://github.com/username/repo">
+      </div>
+      <div style="display: flex; gap: var(--space-sm);">
+        <button type="submit" id="save-team-links-btn" 
+                style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
+          Save Changes
+        </button>
+        <button type="button" id="cancel-edit-team-links-btn" 
+                style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: white; border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
+          Cancel
+        </button>
+      </div>
+    </form>
+  `;
+
+  teamLinks.innerHTML = formHtml;
+
+  // Setup form event listeners
+  const form = document.getElementById("team-links-form");
+  const cancelBtn = document.getElementById("cancel-edit-team-links-btn");
+
+  if (form) {
+    form.addEventListener("submit", saveTeamLinks);
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", exitEditMode);
+  }
+}
+
+/**
+ * Exit edit mode and restore view
+ */
+function exitEditMode() {
+  if (!currentTeam) return;
+  renderTeamProfile(currentTeam);
+}
+
+/**
+ * Save team links
+ * @param {Event} event - Form submit event
+ */
+async function saveTeamLinks(event) {
+  event.preventDefault();
+
+  const saveBtn = document.getElementById("save-team-links-btn");
+  if (!saveBtn) return;
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+
+  try {
+    const teamPageUrl = document.getElementById("edit-teamPageUrl").value.trim() || null;
+    const repoUrl = document.getElementById("edit-repoUrl").value.trim() || null;
+
+    const updatedTeam = await directoryApi.updateTeamLinks(currentTeamUuid, {
+      teamPageUrl,
+      repoUrl
+    });
+
+    console.log("Team links updated successfully:", {
+      teamPageUrl: updatedTeam.teamPageUrl,
+      repoUrl: updatedTeam.repoUrl
+    });
+
+    // Update current team data
+    currentTeam = updatedTeam;
+
+    // Reload team profile to show updated links
+    await loadTeamProfile(currentTeamUuid);
+
+  } catch (error) {
+    alert("Failed to update team links: " + error.message);
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Changes";
   }
 }
 
