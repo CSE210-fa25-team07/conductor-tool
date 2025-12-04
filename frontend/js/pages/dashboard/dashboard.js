@@ -81,6 +81,7 @@ function createCourseCard(course) {
   // Create main card article
   const article = document.createElement("article");
   article.className = "course-card";
+  article.id = `course-card-${course.courseUuid}`;
 
   // Extract department code (first part of course code)
   const deptCode = course.code.split(" ")[0];
@@ -148,7 +149,84 @@ function createCourseCard(course) {
     }
   });
 
+  // Handle leave course button click
+  const leaveButton = article.querySelector(".leave-course-button");
+  if (leaveButton) {
+    leaveButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const confirmCard = createConfirmationCard(course);
+      article.replaceWith(confirmCard);
+    });
+  }
+
   article.style.cursor = "pointer";
+
+  return article;
+}
+
+/**
+ * Create a confirmation card to confirm course removal
+ * @param {Object} course - Course data object
+ * @param {string} course.courseUuid - Course UUID
+ * @param {string} course.code - Course code
+ * @param {string} course.name - Course name
+ * @returns {HTMLElement} Confirmation card article element
+ */
+function createConfirmationCard(course) {
+  const article = document.createElement("article");
+  article.className = "course-card";
+  article.id = `course-card-${course.courseUuid}`;
+
+  article.innerHTML = `
+    <p>Type "Confirm" to remove <strong>${course.code}: ${course.name}</strong></p>
+    <form class="confirmation-form">
+      <input type="text" id="confirm-input-${course.courseUuid}" placeholder="Type 'Confirm'" required />
+      <button type="button" class="btn btn-secondary cancel-button">Cancel</button>
+      <button type="submit" class="btn btn-primary remove-button">Remove</button>
+    </form>
+  `;
+
+  const form = article.querySelector(".confirmation-form");
+  const cancelButton = article.querySelector(".cancel-button");
+  const input = article.querySelector(`#confirm-input-${course.courseUuid}`);
+
+  // Handle form submission
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (input.value === "Confirm") {
+      // backend call to remove user from course
+      try {
+        const response = await fetch(`/v1/api/courses/${course.courseUuid}/leave`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to remove from course");
+        }
+
+        // Successfully removed - refresh page
+        window.location.reload();
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+        // Restore the original card on error
+        const originalCard = createCourseCard(course);
+        article.replaceWith(originalCard);
+      }
+    } else {
+      alert("Please type \"Confirm\" exactly to proceed.");
+    }
+  });
+
+  // Handle cancel button
+  cancelButton.addEventListener("click", () => {
+    // Replace confirmation card back with original course card
+    const originalCard = createCourseCard(course);
+    article.replaceWith(originalCard);
+  });
 
   return article;
 }
@@ -170,9 +248,9 @@ function createMenuItems(course) {
   } else {
     // Student menu items
     return `
-      <a href="/courses/${course.courseUuid}/leave" class="menu-item">
+      <button class="menu-item leave-course-button" data-course-uuid="${course.courseUuid}">
         <span>Leave</span>
-      </a>
+      </button>
     `;
   }
 }
@@ -212,8 +290,7 @@ function createEmptyStateCard() {
     if (!isProf()) {
       article.replaceWith(handleAddCourse());
     } else {
-      // TODO: Create course for professors is not implemented yet
-      window.location.href = "/courses/create"; // Placeholder redirect
+      window.location.href = "/courses/create";
     }
   });
 
