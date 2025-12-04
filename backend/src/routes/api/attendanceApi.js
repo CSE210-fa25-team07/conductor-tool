@@ -194,6 +194,17 @@ router.get("/meeting_code/:id", async (req, res) => {
   }
 });
 
+router.post("/meeting_code/:id", async (req, res) => {
+  try {
+    return await attendanceService.createMeetingCode(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
   try {
     return await attendanceService.recordAttendanceViaCode(req, res);

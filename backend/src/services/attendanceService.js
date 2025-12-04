@@ -820,7 +820,10 @@ async function createMeetingCode(req, res) {
 
   const createdCode = await attendanceRepository.createMeetingCode(codeData);
 
-  return createdCode;
+  return res.status(201).json({
+    success: true,
+    data: createdCode
+  });
 }
 
 /**
@@ -978,5 +981,6 @@ export {
   deleteParticipant,
   getParticipantListByParams,
   getMeetingCode,
+  createMeetingCode,
   recordAttendanceViaCode
 };
