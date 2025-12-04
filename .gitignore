@@ -7,3 +7,4 @@ node_modules/
 users.json
 *.drawio
 backend/data/
+package-lock.json

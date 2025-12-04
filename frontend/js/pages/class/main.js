@@ -189,6 +189,7 @@ function updateFeatureNavigation(feature) {
  */
 function updateSidebar(feature) {
   const sidebarNav = document.getElementById("sidebar-nav");
+  const mobileBottomNav = document.getElementById("mobile-bottom-nav");
   if (!sidebarNav) return;
 
   const featureConfig = FEATURES[feature];
@@ -196,6 +197,7 @@ function updateSidebar(feature) {
 
   // Clear existing sidebar content
   sidebarNav.innerHTML = "";
+  if (mobileBottomNav) mobileBottomNav.innerHTML = "";
 
   // Filter views based on user role for standup feature
   let views = featureConfig.views;
@@ -229,6 +231,22 @@ function updateSidebar(feature) {
     });
 
     sidebarNav.appendChild(button);
+
+    // Mirror into mobile bottom nav if present
+    if (mobileBottomNav) {
+      const mBtn = document.createElement("button");
+      mBtn.className = "mobile-bottom-item";
+      mBtn.textContent = view.label;
+      mBtn.setAttribute("data-view", view.id);
+      if (view.id === currentView) {
+        mBtn.classList.add("active");
+      }
+      mBtn.addEventListener("click", () => {
+        loadContent(feature, view.id);
+        updateSidebarActive(view.id);
+      });
+      mobileBottomNav.appendChild(mBtn);
+    }
   });
 }
 
@@ -238,6 +256,7 @@ function updateSidebar(feature) {
  */
 function updateSidebarActive(viewId) {
   const sidebarItems = document.querySelectorAll(".sidebar-nav-item");
+  const mobileBottomItems = document.querySelectorAll(".mobile-bottom-item");
 
   sidebarItems.forEach(item => {
     const itemView = item.getAttribute("data-view");
@@ -249,6 +268,16 @@ function updateSidebarActive(viewId) {
   });
 
   currentView = viewId;
+
+  // Sync active state to mobile bottom nav
+  mobileBottomItems.forEach(item => {
+    const itemView = item.getAttribute("data-view");
+    if (itemView === viewId) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
 }
 
 /**

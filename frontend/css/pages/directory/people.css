@@ -92,8 +92,14 @@
   background: white;
   border: 2px solid var(--color-forest-green);
   border-radius: var(--radius-card);
-  overflow: hidden;
   box-shadow: var(--shadow-card);
+}
+
+.roster-table-section {
+  /* Enable horizontal scroll for narrow screens while preserving card look */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .roster-table {
@@ -296,5 +302,21 @@
   .roster-table th,
   .roster-table td {
     padding: 1rem;
+  }
+}
+
+/* Extra-small devices: ensure table scrolls instead of breaking layout */
+@media (max-width: 480px) {
+  .filter-section {
+    padding: 1rem;
+  }
+
+  .roster-table {
+    /* Force scroll container to appear when columns don't fit */
+    min-width: 640px;
+  }
+
+  .role-filter-select {
+    width: 100%;
   }
 }
