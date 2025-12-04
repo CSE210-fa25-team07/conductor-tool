@@ -583,19 +583,11 @@ async function updateTeamLinks(req, res) {
     repoUrl: (repoUrl && typeof repoUrl === "string" && repoUrl.trim()) ? repoUrl.trim() : null
   };
 
-  console.log("Updating team links:", { teamUuid, linksData });
-
   // Update team in database
   await directoryRepository.updateTeamLinks(teamUuid, linksData);
 
   // Fetch updated team profile to ensure we return the latest data
   const updatedTeam = await directoryRepository.getTeamProfile(teamUuid);
-
-  console.log("Updated team links:", { 
-    teamUuid, 
-    teamPageUrl: updatedTeam.teamPageUrl, 
-    repoUrl: updatedTeam.repoUrl 
-  });
 
   return res.status(200).json({
     success: true,

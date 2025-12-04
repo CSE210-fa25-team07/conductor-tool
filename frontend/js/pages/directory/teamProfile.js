@@ -89,52 +89,39 @@ async function checkTeamLeaderStatus(teamUuid, courseUuid) {
     const sessionResponse = await fetch("/v1/api/auth/session", {
       credentials: "include"
     });
-    
+
     if (!sessionResponse.ok) {
       isTeamLeader = false;
       return;
     }
-    
+
     const sessionData = await sessionResponse.json();
     const currentUserId = sessionData.user?.id;
-    
+
     if (!currentUserId) {
       isTeamLeader = false;
       return;
     }
-    
+
     // Get user context to check roles
     const userContext = await userContextApi.getUserContext(courseUuid);
-    
+
     // Check ALL enrolled courses - users can have multiple roles for the same course
     // (e.g., both "Student" and "Team Leader" enrollments)
     // enrolledCourses should contain ALL enrollments, so check all entries
     const hasTeamLeaderRole = userContext.enrolledCourses?.some(
       course => String(course.courseUuid) === String(courseUuid) && course.role === "Team Leader"
     ) || false;
-    
+
     // Check if current user is a member of this team (using team data we already loaded)
     const isTeamMember = currentTeam?.members?.some(
       member => String(member.userUuid) === String(currentUserId)
     ) || false;
-    
+
     // User is team leader if they have "Team Leader" role AND are a member of this team
     // Backend will do the final verification to ensure they're actually the team leader
     isTeamLeader = hasTeamLeaderRole && isTeamMember;
-    
-    console.log("🔍 Team Leader Status Check:", {
-      teamUuid,
-      courseUuid,
-      currentUserId,
-      hasTeamLeaderRole,
-      isTeamMember,
-      isTeamLeader,
-      enrolledCourses: userContext.enrolledCourses,
-      teamMemberIds: currentTeam?.members?.map(m => m.userUuid),
-      allRoles: userContext.enrolledCourses?.filter(c => String(c.courseUuid) === String(courseUuid)).map(c => c.role)
-    });
   } catch (error) {
-    console.error("Error checking team leader status:", error);
     isTeamLeader = false;
   }
 }
@@ -169,11 +156,6 @@ function renderTeamProfile(team) {
   }
 
   if (teamLinks) {
-    console.log("Rendering team links:", {
-      teamPageUrl: team.teamPageUrl,
-      repoUrl: team.repoUrl
-    });
-
     const links = [];
     if (team.teamPageUrl) {
       links.push("<a href=\"" + team.teamPageUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Team Page →</a>");
@@ -181,17 +163,17 @@ function renderTeamProfile(team) {
     if (team.repoUrl) {
       links.push("<a href=\"" + team.repoUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Repository →</a>");
     }
-    
+
     let linksHtml = links.length > 0 ? links.join(" | ") : "";
-    
+
     // Add edit button if user is team leader
     if (isTeamLeader) {
       const buttonHtml = "<button id=\"edit-team-links-btn\" style=\"margin-left: " + (linksHtml ? "var(--space-md)" : "0") + "; font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;\">Edit Links</button>";
       linksHtml += buttonHtml;
     }
-    
+
     teamLinks.innerHTML = linksHtml || (isTeamLeader ? "" : "<span style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No links set</span>");
-    
+
     // Setup edit button event listener if it exists
     const editBtn = document.getElementById("edit-team-links-btn");
     if (editBtn) {
@@ -324,11 +306,6 @@ async function saveTeamLinks(event) {
     const updatedTeam = await directoryApi.updateTeamLinks(currentTeamUuid, {
       teamPageUrl,
       repoUrl
-    });
-
-    console.log("Team links updated successfully:", {
-      teamPageUrl: updatedTeam.teamPageUrl,
-      repoUrl: updatedTeam.repoUrl
     });
 
     // Update current team data
