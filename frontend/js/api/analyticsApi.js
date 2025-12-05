@@ -17,7 +17,6 @@ async function handleResponse(response) {
   let result;
   const text = await response.text();
   try {
-    // console.log("analyticsApi.js raw response:", text); 
     if (!text || text.trim() === "") {
       if (response.ok) {
         return { success: true };

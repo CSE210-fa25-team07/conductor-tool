@@ -1737,12 +1737,9 @@ export async function renderGroupanalysis(container) {
   }
 
   const courseUUID = getCourseId();
-  // console.log("Course UUID for group analytics:", courseUUID);
   const userUuid = getCurrentUser().userUuid;
   const usercontext = await loadUserContext(courseUUID);
   const teamUuid = usercontext.teams[0]?.teamUuid || null;
-  // console.log("User's team UUIDs for group analytics:", teamUuid);
-  // console.log("User context for group analytics:", usercontext);
   showGroupAnalytics(courseUUID, userUuid, teamUuid);
 }
 
@@ -1765,7 +1762,6 @@ export async function renderAnalysisView(container) {
     await loadChartJs();
     const courseUUID = getCourseId();
     const role = getUserRoleInCourse(courseUUID); 
-    // console.log("User role:", role);
 
     const baseHTML = await loadTemplate("attendance", "analysis"); 
     container.innerHTML = baseHTML;
