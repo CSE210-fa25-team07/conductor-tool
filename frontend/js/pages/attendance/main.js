@@ -1,6 +1,12 @@
+/**
+ * @fileoverview Attendance Feature Main Entry Point
+ * Handles calendar and meeting creation on Attendance tab
+ * @module pages/attendance/main
+ */
+
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
-import { loadUserContext, isProfessorOrTA, getCurrentUser } from "../../utils/userContext.js";
+import { loadUserContext, isProfessorOrTA, getCurrentUser, getUserRoleInCourse } from "../../utils/userContext.js";
 
 const meetings = {};
 let currentDate = new Date();
@@ -45,6 +51,12 @@ function parseMeetingDate(date) {
   return parseLocalDate(date);
 }
 
+/**
+ * Render the attendance calendar and meeting management interface
+ * @param {HTMLElement} container - Container element to render into
+ * @param {string} view - View name (default: "dashboard")
+ * @returns {Promise<void>}
+ */
 export async function render(container, view = "dashboard") {
   try {
     container.innerHTML = await loadTemplate("attendance", view);
@@ -89,7 +101,10 @@ export async function render(container, view = "dashboard") {
       startCameraBtn: container.querySelector("#start-camera-btn"),
       stopCameraBtn: container.querySelector("#stop-camera-btn"),
       submitAttendanceBtn: container.querySelector("#submit-attendance"),
-      attendancePasscodeInput: container.querySelector("#attendance-passcode")
+      attendancePasscodeInput: container.querySelector("#attendance-passcode"),
+      professorToggleContainer: container.querySelector("#professor-meetings-toggle-container"),
+      showAllMeetingsToggle: container.querySelector("#show-all-meetings-toggle"),
+      creatorMarkAttendanceBtn: container.querySelector("#creator-mark-attendance-btn")
     };
 
     let selectedCalendarDate = "";
@@ -98,6 +113,9 @@ export async function render(container, view = "dashboard") {
     let activeMeetingContext = { date: null, index: null, chainId: null };
     let cameraStream = null;
     let qrScanningInterval = null;
+    const allMeetings = {};
+    let showAllMeetings = true;
+    let currentMeetingCode = null;
 
     function setupMeetingTypeOptions() {
       const courseUUID = getCourseIdFromUrl();
@@ -258,20 +276,27 @@ export async function render(container, view = "dashboard") {
       els.selectByTeamDropdown.value = "";
     }
 
+    /**
+     * Load meetings from the backend and populate the calendar
+     * @returns {Promise<void>}
+     */
     async function loadMeetingsFromBackend() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) return;
 
       try {
         const meetingList = await getMeetingList(courseUUID);
-        Object.keys(meetings).forEach(key => delete meetings[key]);
+        Object.keys(allMeetings).forEach(key => delete allMeetings[key]);
+
+        const currentUser = getCurrentUser();
+        const userUuid = currentUser?.userUuid;
 
         meetingList.forEach(meeting => {
           const meetingDateObj = parseMeetingDate(meeting.meetingDate);
           if (!meetingDateObj || isNaN(meetingDateObj.getTime())) return;
 
           const dateStr = formatDate(meetingDateObj);
-          if (!meetings[dateStr]) meetings[dateStr] = [];
+          if (!allMeetings[dateStr]) allMeetings[dateStr] = [];
 
           const startTime = meeting.meetingStartTime instanceof Date
             ? meeting.meetingStartTime
@@ -281,25 +306,52 @@ export async function render(container, view = "dashboard") {
 
           const timeStr = `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`;
 
-          meetings[dateStr].push({
+          const creatorUUID = meeting.creatorUUID || meeting.creatorUuid || null;
+          const isCreator = userUuid && creatorUUID === userUuid;
+
+          allMeetings[dateStr].push({
             title: meeting.meetingTitle,
             time: timeStr,
             type: mapMeetingTypeToString(meeting.meetingType),
             desc: meeting.meetingDescription || "",
-            participants: [],
+            participants: meeting.participants || [],
             chainId: meeting.parentMeetingUUID || meeting.parentMeetingUuid || null,
             meetingUUID: meeting.meetingUUID || meeting.meetingUuid,
             isRecurring: meeting.isRecurring,
-            creatorUUID: meeting.creatorUUID || meeting.creatorUuid || null,
+            creatorUUID: creatorUUID,
             meetingStartTime: meeting.meetingStartTime,
-            meetingEndTime: meeting.meetingEndTime
+            meetingEndTime: meeting.meetingEndTime,
+            isCreator: isCreator,
+            isParticipant: isParticipant
           });
         });
 
-        renderCalendar();
+        filterAndRenderMeetings();
       } catch (error) {
         // Continue with empty meetings if load fails
       }
+    }
+
+    function filterAndRenderMeetings() {
+      const courseUUID = getCourseIdFromUrl();
+      const role = getUserRoleInCourse(courseUUID);
+      const isProfessor = role === "Professor";
+
+      Object.keys(meetings).forEach(key => delete meetings[key]);
+
+      if (isProfessor && !showAllMeetings) {
+        const userUuid = getCurrentUser()?.userUuid;
+        Object.keys(allMeetings).forEach(dateStr => {
+          const filtered = allMeetings[dateStr].filter(m => m.isCreator);
+          if (filtered.length > 0) meetings[dateStr] = filtered;
+        });
+      } else {
+        Object.keys(allMeetings).forEach(dateStr => {
+          meetings[dateStr] = [...allMeetings[dateStr]];
+        });
+      }
+
+      renderCalendar();
     }
 
     async function loadCourseDates() {
@@ -506,11 +558,20 @@ export async function render(container, view = "dashboard") {
       updateNavigationButtons();
     }
 
+    /**
+     * Open meeting attendance modal with meeting details
+     * @param {string} date - Date string (YYYY-MM-DD)
+     * @param {number} index - Index of meeting in the date's meetings array
+     * @returns {Promise<void>}
+     */
     async function openMeetingAttendance(date, index) {
       const meeting = meetings[date][index];
       const currentUser = getCurrentUser();
       const creatorUUID = meeting.creatorUUID || meeting.creatorUuid;
       const isCreator = currentUser && creatorUUID && creatorUUID === currentUser.userUuid;
+      const courseUUID = getCourseIdFromUrl();
+      const role = getUserRoleInCourse(courseUUID);
+      const isProfessor = role === "Professor";
 
       container.querySelector("#attendance-meeting-title").textContent = meeting.title;
       container.querySelector("#attendance-meeting-date").textContent = date;
@@ -522,7 +583,6 @@ export async function render(container, view = "dashboard") {
       let participantNames = [];
       if (meeting.meetingUUID) {
         try {
-          const courseUUID = getCourseIdFromUrl();
           const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
 
           participantNames = participants
@@ -566,16 +626,23 @@ export async function render(container, view = "dashboard") {
       if (isCreator) {
         if (els.creatorView) els.creatorView.classList.remove("hidden");
         if (els.participantView) els.participantView.classList.add("hidden");
+        currentMeetingCode = null;
         await loadMeetingCode(meeting.meetingUUID);
       } else {
         if (els.creatorView) els.creatorView.classList.add("hidden");
         if (els.participantView) els.participantView.classList.remove("hidden");
         if (els.attendancePasscodeInput) els.attendancePasscodeInput.value = "";
+        currentMeetingCode = null;
       }
 
       els.meetingContentModalWrapper.classList.remove("hidden");
     }
 
+    /**
+     * Load meeting code and QR code for creator view
+     * @param {string} meetingUUID - Meeting UUID
+     * @returns {Promise<void>}
+     */
     async function loadMeetingCode(meetingUUID) {
       if (!meetingUUID) return;
 
@@ -599,6 +666,7 @@ export async function render(container, view = "dashboard") {
         if (els.meetingCodeDisplay) {
           els.meetingCodeDisplay.textContent = meetingCode || "No code generated yet";
         }
+        currentMeetingCode = meetingCode || null;
       } catch (error) {
         if (error.message?.includes("404") || error.message?.includes("not found")) {
           try {
@@ -619,6 +687,7 @@ export async function render(container, view = "dashboard") {
               if (els.meetingCodeDisplay && createdCode.meetingCode) {
                 els.meetingCodeDisplay.textContent = createdCode.meetingCode;
               }
+              currentMeetingCode = createdCode.meetingCode || null;
               return;
             }
           } catch (createError) {
@@ -632,6 +701,7 @@ export async function render(container, view = "dashboard") {
           els.qrCodeImage.alt = "QR code not available";
           els.qrCodeImage.style.display = "none";
         }
+        currentMeetingCode = null;
       }
     }
 
@@ -777,6 +847,12 @@ export async function render(container, view = "dashboard") {
       }, 100);
     }
 
+    /**
+     * Validate if current time is within meeting time window
+     * @param {string|Date} startTime - Meeting start time
+     * @param {string|Date} endTime - Meeting end time
+     * @returns {{isValid: boolean, message: string}}
+     */
     function validateMeetingTimeWindow(startTime, endTime) {
       if (!startTime || !endTime) {
         return { isValid: false, message: "Meeting time information not available" };
@@ -790,19 +866,30 @@ export async function render(container, view = "dashboard") {
         return { isValid: false, message: "Invalid meeting time format" };
       }
 
+      const formatTime = (date) => date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short"
+      });
+
       if (now < start) {
-        const startStr = start.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-        return { isValid: false, message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${startStr}` };
+        return { isValid: false, message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${formatTime(start)}` };
       }
 
       if (now > end) {
-        const endStr = end.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-        return { isValid: false, message: `Attendance submission window has closed.\n\nMeeting ended at: ${endStr}` };
+        return { isValid: false, message: `Attendance submission window has closed.\n\nMeeting ended at: ${formatTime(end)}` };
       }
 
       return { isValid: true, message: "" };
     }
 
+    /**
+     * Submit attendance using code (manual entry)
+     * @returns {Promise<void>}
+     */
     async function submitAttendance() {
       const code = els.attendancePasscodeInput?.value.trim().toUpperCase() || "";
       const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
@@ -837,6 +924,11 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Handle QR code scan result
+     * @param {string} code - Scanned QR code
+     * @returns {Promise<void>}
+     */
     async function handleQRCodeScan(code) {
       if (!code?.trim()) return;
 
@@ -854,6 +946,40 @@ export async function render(container, view = "dashboard") {
         alert("Attendance recorded successfully from QR code!");
         els.meetingContentModalWrapper.classList.add("hidden");
         stopCamera();
+      } catch (error) {
+        const isTimeError = error.message?.includes("not valid at this time") || error.message?.includes("time");
+        alert(isTimeError
+          ? `Cannot submit attendance: ${error.message}\n\nPlease ensure you are submitting during the meeting's scheduled time.`
+          : `Failed to submit attendance: ${error.message}`);
+      }
+    }
+
+    /**
+     * Submit attendance for meeting creator
+     * @returns {Promise<void>}
+     */
+    async function submitCreatorAttendance() {
+      const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
+
+      if (!meetingUUID) {
+        alert("Meeting information not available");
+        return;
+      }
+
+      if (!currentMeetingCode) {
+        alert("Meeting code not available. Please wait for the code to load.");
+        return;
+      }
+
+      const timeValidation = validateMeetingTimeWindow(meetingStartTime, meetingEndTime);
+      if (!timeValidation.isValid) {
+        alert(timeValidation.message);
+        return;
+      }
+
+      try {
+        await recordAttendanceByCode(meetingUUID, currentMeetingCode);
+        alert("Your attendance has been recorded successfully!");
       } catch (error) {
         const isTimeError = error.message?.includes("not valid at this time") || error.message?.includes("time");
         alert(isTimeError
@@ -925,6 +1051,7 @@ export async function render(container, view = "dashboard") {
     if (els.stopCameraBtn) els.stopCameraBtn.onclick = stopCamera;
     if (els.submitAttendanceBtn) els.submitAttendanceBtn.onclick = submitAttendance;
     if (els.copyCodeBtn) els.copyCodeBtn.addEventListener("click", copyMeetingCode);
+    if (els.creatorMarkAttendanceBtn) els.creatorMarkAttendanceBtn.addEventListener("click", submitCreatorAttendance);
 
     els.meetingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -948,7 +1075,10 @@ export async function render(container, view = "dashboard") {
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const participants = [...new Set(allParticipants.filter(p => uuidRegex.test(p)))];
 
-      const meetingDateTime = new Date(`${date}T${time}`);
+      // Create meeting datetime in local timezone for validation
+      const [dateYear, dateMonth, dateDay] = date.split("-").map(Number);
+      const [timeHours, timeMinutes] = time.split(":").map(Number);
+      const meetingDateTime = new Date(dateYear, dateMonth - 1, dateDay, timeHours, timeMinutes, 0, 0);
       const now = new Date();
 
       if (meetingDateTime < now) {
@@ -969,20 +1099,27 @@ export async function render(container, view = "dashboard") {
       }
 
       const createMeetingData = (dateStr, timeStr) => {
-        const meetingStart = new Date(`${dateStr}T${timeStr}`);
+        // Parse date and time components
+        const [dateYear, dateMonth, dateDay] = dateStr.split("-").map(Number);
+        const [timeHours, timeMinutes] = timeStr.split(":").map(Number);
+
+        // Create Date objects in LOCAL timezone (user's timezone)
+        // This ensures the meeting time represents the actual local time the user selected
+        const meetingStart = new Date(dateYear, dateMonth - 1, dateDay, timeHours, timeMinutes, 0, 0);
         const meetingEnd = new Date(meetingStart);
         meetingEnd.setHours(meetingStart.getHours() + 1);
 
-        const [dateYear, dateMonth, dateDay] = dateStr.split("-").map(Number);
-        const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
-        const meetingDateISO = dateWithNoon.toISOString();
+        // Create meeting date at noon local time
+        const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0, 0);
 
+        // Convert to ISO strings (UTC) for storage in database
+        // The database stores UTC, but these represent the local times selected by the user
         return {
           creatorUUID: currentUser.userUuid,
           courseUUID: courseUUID,
           meetingStartTime: meetingStart.toISOString(),
           meetingEndTime: meetingEnd.toISOString(),
-          meetingDate: meetingDateISO,
+          meetingDate: dateWithNoon.toISOString(),
           meetingTitle: title,
           meetingDescription: desc || null,
           meetingLocation: null,
@@ -1113,6 +1250,23 @@ export async function render(container, view = "dashboard") {
     if (courseUUID) {
       await loadUserContext(courseUUID);
       setupMeetingTypeOptions();
+
+      // Show toggle for professors
+      const role = getUserRoleInCourse(courseUUID);
+      const isProfessor = role === "Professor";
+      if (isProfessor && els.professorToggleContainer) {
+        els.professorToggleContainer.classList.remove("hidden");
+      } else if (els.professorToggleContainer) {
+        els.professorToggleContainer.classList.add("hidden");
+      }
+    }
+
+    // Toggle event listener for showing/hiding all meetings
+    if (els.showAllMeetingsToggle) {
+      els.showAllMeetingsToggle.addEventListener("change", (e) => {
+        showAllMeetings = e.target.checked;
+        filterAndRenderMeetings();
+      });
     }
 
     if (els.selectAllBtn) els.selectAllBtn.addEventListener("click", selectAllParticipants);

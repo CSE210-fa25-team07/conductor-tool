@@ -13,6 +13,15 @@
       <button id="today-btn">Today</button>
     </div>
 
+    <!-- Professor toggle for showing all meetings -->
+    <div id="professor-meetings-toggle-container" class="professor-toggle-container hidden">
+      <label class="toggle-label">
+        <input type="checkbox" id="show-all-meetings-toggle" checked />
+        <span>Show all course meetings</span>
+      </label>
+      <p class="toggle-hint">Toggle to hide meetings you are not invited to</p>
+    </div>
+
     <div class="calendar-grid" id="calendar-grid"></div>
   </div>
 
@@ -122,6 +131,9 @@
                 <div id="meeting-code-display" class="code-display"></div>
                 <button id="copy-code-btn" class="btn-copy-code">Copy Code</button>
               </div>
+            </div>
+            <div class="creator-attendance-section">
+              <button id="creator-mark-attendance-btn" class="btn-creator-attendance">Mark My Attendance</button>
             </div>
           </div>
 
