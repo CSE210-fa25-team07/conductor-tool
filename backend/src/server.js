@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
 import profileRoutes from "./routes/web/profileRoutes.js";
+import adminRoutes from "./routes/web/adminRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
@@ -67,6 +68,8 @@ app.get("/dev-login", (req, res) => {
 app.use("/auth", checkSession, authRoutes);
 
 app.use("/profile", checkUserFromSession, profileRoutes);
+
+app.use("/admin", checkUserFromSession, adminRoutes);
 
 app.use("/google", googleRoutes);
 

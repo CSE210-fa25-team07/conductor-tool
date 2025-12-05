@@ -1,0 +1,155 @@
+/**
+ * Admin Dashboard Styles
+ * Layout for admin pages without feature navigation
+ */
+
+/* Main Admin Layout (Sidebar + Content) */
+.course-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: calc(100vh - 84px);
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 84px; /* Only account for top-nav (no feature-nav) */
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--color-pale-mint);
+  border-right: var(--border-thick);
+  padding: var(--space-lg) 0;
+  position: sticky;
+  top: 84px;
+  height: calc(100vh - 84px);
+  overflow-y: auto;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-nav-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 500;
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  color: var(--color-forest-green-medium);
+  border: none;
+  border-left: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-radioactive-lime);
+}
+
+.sidebar-nav-item.active {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-forest-green);
+  font-weight: 700;
+}
+
+/* Content Area */
+.content-area {
+  background: var(--color-bg-light);
+  padding: var(--space-xl);
+  overflow-y: auto;
+}
+
+/* Loading Message */
+.loading-message {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  color: var(--color-forest-green-medium);
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 84px;
+  left: 0;
+  z-index: 1001;
+  background: var(--color-radioactive-lime);
+  border: var(--border-thin);
+  border-left: none;
+  border-top: none;
+  padding: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--text-lg);
+  line-height: 1;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-base);
+}
+
+.mobile-menu-toggle:hover {
+  background: var(--color-forest-green);
+  color: var(--color-radioactive-lime);
+}
+
+.mobile-menu-toggle.shifted {
+  transform: translateX(250px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .course-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 84px;
+    width: 250px;
+    height: calc(100vh - 84px);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .course-title-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  /* Overlay for mobile menu */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 84px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(5, 43, 8, 0.5);
+    z-index: 999;
+  }
+
+  .sidebar-overlay.show {
+    display: block;
+  }
+}
