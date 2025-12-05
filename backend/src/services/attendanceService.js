@@ -306,9 +306,18 @@ async function deleteMeeting(req, res) {
       enrollment.course.courseUuid === courseUUID && enrollment.course.term.isActive
     )
   );
+  
+  // Check if user is staff (Professor or TA) in the course
+  const courseEnrollment = userContext.enrollments.find(
+    enrollment => enrollment.course.courseUuid === courseUUID
+  );
+  const userRole = courseEnrollment?.role?.role;
+  const isStaff = userRole === RoleEnum.PROFESSOR || userRole === RoleEnum.TA;
+  const isCreator = existingMeeting.creatorUuid === userUUID;
+  
   const canDelete = (
     isInActiveCourse
-        && existingMeeting.creatorUuid === userUUID
+        && (isCreator || isStaff)
         && existingMeeting.meetingEndTime > new Date()
   );
   if (!canDelete) {
@@ -686,13 +695,12 @@ async function getParticipantListByParams(req, res) {
 
   const userUUID = req.session.user.id;
 
-  const isStaff = await userContextRepository.checkCourseStaffAccess(
-    userUUID,
-    courseUUID
-  );
   const userContext = await userContextRepository.getUserContext(userUUID);
   const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
-  const course = courseUUID ? await courseRepository.getCourseByUuid(courseUUID) : null;
+
+  // Determine the courseUUID - prefer from request, fallback to meeting's course
+  const effectiveCourseUUID = courseUUID || (meeting ? meeting.courseUuid : null);
+  const course = effectiveCourseUUID ? await courseRepository.getCourseByUuid(effectiveCourseUUID) : null;
 
   if (meetingUUID && !meeting) {
     return res.status(404).json({
@@ -701,16 +709,22 @@ async function getParticipantListByParams(req, res) {
     });
   }
 
-  if (courseUUID && !course) {
+  if (effectiveCourseUUID && !course) {
     return res.status(404).json({
       success: false,
       error: "Course not found"
     });
   }
 
-  if (courseUUID) {
+  // Check if user is staff (Professor or TA) for the course
+  const isStaff = effectiveCourseUUID ? await userContextRepository.checkCourseStaffRole(
+    userUUID,
+    effectiveCourseUUID
+  ) : false;
+
+  if (effectiveCourseUUID) {
     const isInCourse = userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUuid === courseUUID
+      enrollment.course.courseUuid === effectiveCourseUUID
     );
     if (!isInCourse && !isStaff) {
       return res.status(403).json({
@@ -948,7 +962,10 @@ async function recordAttendanceViaCode(req, res) {
     });
   }
 
-  const now = new Date();
+  // Compare times in UTC - both Date objects represent absolute moments in time
+  // meetingCodeData.validStartDatetime and validEndDatetime are stored in UTC (from database)
+  // and represent the local time the user selected, converted to UTC
+  const now = new Date(); // Current UTC time
   if (now < meetingCodeData.validStartDatetime || now > meetingCodeData.validEndDatetime) {
     return res.status(403).json({
       success: false,

@@ -13,6 +13,15 @@
       <button id="today-btn">Today</button>
     </div>
 
+    <!-- Staff toggle for showing all meetings (Professors and TAs) -->
+    <div id="professor-meetings-toggle-container" class="professor-toggle-container hidden">
+      <label class="toggle-label">
+        <input type="checkbox" id="show-all-meetings-toggle" checked />
+        <span>Show all course meetings</span>
+      </label>
+      <p class="toggle-hint">Toggle to hide meetings you are not invited to</p>
+    </div>
+
     <div class="calendar-grid" id="calendar-grid"></div>
   </div>
 
@@ -105,9 +114,13 @@
           <p><strong>Date:</strong> <span id="attendance-meeting-date"></span></p>
           <p><strong>Time:</strong> <span id="attendance-meeting-time"></span></p>
           <p><strong>Type:</strong> <span id="attendance-meeting-type"></span></p>
-          <p><strong>Description:</strong></p>
-          <p id="attendance-meeting-desc"></p>
-          <p><strong>Participants:</strong> <span id="attendance-meeting-participants"></span></p>
+          <p id="attendance-meeting-desc-label" style="display: none;"><strong>Description:</strong></p>
+          <div id="attendance-meeting-desc" class="meeting-desc-scrollable" style="display: none;"></div>
+          <p><strong>Participants:</strong></p>
+          <div id="attendance-meeting-participants" class="meeting-participants-container">
+            <!-- Participants will be loaded dynamically, organized by team -->
+            <p style="padding: 10px; color: #666; text-align: center;">Loading participants...</p>
+          </div>
           <div class="meeting-metadata-actions" id="meeting-actions">
             <button id="delete-meeting" class="danger">Delete Meeting</button>
             <button id="delete-future-meetings" class="danger secondary" disabled>Delete This & Future</button>
@@ -129,6 +142,9 @@
                 <div id="meeting-code-display" class="code-display"></div>
                 <button id="copy-code-btn" class="btn-copy-code">Copy Code</button>
               </div>
+            </div>
+            <div class="creator-attendance-section">
+              <button id="creator-mark-attendance-btn" class="btn-creator-attendance">Mark My Attendance</button>
             </div>
           </div>
 

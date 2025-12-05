@@ -149,6 +149,11 @@ async function getUsersByCourseUuid(courseUuid) {
           lastName: true,
           email: true
         }
+      },
+      role: {
+        select: {
+          role: true
+        }
       }
     }
   });
@@ -186,7 +191,7 @@ async function getUsersByCourseUuid(courseUuid) {
     };
   });
 
-  // Map enrollments to user objects with team info
+  // Map enrollments to user objects with team info and role
   // Filter out any enrollments where user is null (shouldn't happen, but safety check)
   return enrollments
     .filter(enrollment => enrollment.user !== null)
@@ -196,7 +201,8 @@ async function getUsersByCourseUuid(courseUuid) {
       lastName: enrollment.user.lastName,
       email: enrollment.user.email,
       teamUuid: userTeamMap[enrollment.userUuid]?.teamUuid || null,
-      teamName: userTeamMap[enrollment.userUuid]?.teamName || null
+      teamName: userTeamMap[enrollment.userUuid]?.teamName || null,
+      role: enrollment.role?.role || null
     }));
 }
 

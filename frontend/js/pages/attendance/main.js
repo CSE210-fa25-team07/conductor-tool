@@ -60,6 +60,21 @@ function formatDate(date) {
 }
 
 /**
+ * Format time string (HH:MM) to 12-hour format with AM/PM
+ * @param {string} timeStr - Time string in HH:MM format (24-hour)
+ * @returns {string} Formatted time string (12-hour format)
+ */
+function formatTimeForDisplay(timeStr) {
+  if (!timeStr) return "";
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  if (isNaN(hours) || isNaN(minutes)) return timeStr;
+  
+  const hour12 = hours % 12 || 12;
+  const ampm = hours >= 12 ? "PM" : "AM";
+  return `${hour12}:${String(minutes).padStart(2, "0")} ${ampm}`;
+}
+
+/**
  * Parse meeting date from various formats (Date object, ISO string, or date string)
  * @param {Date|string} date - Date in various formats
  * @returns {Date|null} Parsed date or null if invalid
@@ -162,7 +177,10 @@ export async function render(container, view = "dashboard") {
       startCameraBtn: container.querySelector("#start-camera-btn"),
       stopCameraBtn: container.querySelector("#stop-camera-btn"),
       submitAttendanceBtn: container.querySelector("#submit-attendance"),
-      attendancePasscodeInput: container.querySelector("#attendance-passcode")
+      attendancePasscodeInput: container.querySelector("#attendance-passcode"),
+      professorToggleContainer: container.querySelector("#professor-meetings-toggle-container"),
+      showAllMeetingsToggle: container.querySelector("#show-all-meetings-toggle"),
+      creatorMarkAttendanceBtn: container.querySelector("#creator-mark-attendance-btn")
     };
 
     let selectedCalendarDate = "";
@@ -171,6 +189,9 @@ export async function render(container, view = "dashboard") {
     let activeMeetingContext = { date: null, index: null, chainId: null };
     let cameraStream = null;
     let qrScanningInterval = null;
+    const allMeetings = {};
+    let showAllMeetings = true;
+    let currentMeetingCode = null;
 
     /**
      * Setup meeting type options based on user role
@@ -255,8 +276,26 @@ export async function render(container, view = "dashboard") {
     }
 
     /**
+     * Format user name with role indicator
+     * @param {Object} user - User object with firstName, lastName, and optional role
+     * @returns {string} Formatted name with role indicator
+     */
+    function formatUserNameWithRole(user) {
+      const name = `${user.firstName} ${user.lastName}`;
+      const role = user.role;
+      
+      if (role === "Professor") {
+        return `${name} (Prof)`;
+      } else if (role === "TA") {
+        return `${name} (TA)`;
+      }
+      
+      return name;
+    }
+
+    /**
      * Create a participant checkbox element
-     * @param {Object} user - User object with userUuid, firstName, lastName
+     * @param {Object} user - User object with userUuid, firstName, lastName, and optional role
      * @returns {HTMLElement} Label element with checkbox
      */
     function createParticipantCheckbox(user) {
@@ -270,7 +309,7 @@ export async function render(container, view = "dashboard") {
 
       const nameSpan = document.createElement("span");
       nameSpan.classList.add("participant-name");
-      nameSpan.textContent = `${user.firstName} ${user.lastName}`;
+      nameSpan.textContent = formatUserNameWithRole(user);
 
       label.appendChild(checkbox);
       label.appendChild(nameSpan);
@@ -279,6 +318,7 @@ export async function render(container, view = "dashboard") {
 
     /**
      * Populate the participants container with user data, organized by team
+     * Excludes the current user (creator) since they are automatically added as a participant
      */
     function populateParticipantsContainer() {
       els.participantsContainer.innerHTML = "";
@@ -288,10 +328,24 @@ export async function render(container, view = "dashboard") {
         return;
       }
 
+      // Get current user UUID to exclude them from the participant list
+      const currentUser = getCurrentUser();
+      const creatorUuid = currentUser?.userUuid;
+
+      // Filter out the creator from the users list
+      const availableUsers = creatorUuid 
+        ? allUsers.filter(user => user.userUuid !== creatorUuid)
+        : allUsers;
+
+      if (!availableUsers?.length) {
+        els.participantsContainer.innerHTML = "<p style='padding: 10px; color: #666;'>No other users found for this course.</p>";
+        return;
+      }
+
       const usersByTeam = {};
       const usersWithoutTeam = [];
 
-      allUsers.forEach(user => {
+      availableUsers.forEach(user => {
         if (user.teamUuid?.trim()) {
           if (!usersByTeam[user.teamUuid]) usersByTeam[user.teamUuid] = [];
           usersByTeam[user.teamUuid].push(user);
@@ -376,8 +430,112 @@ export async function render(container, view = "dashboard") {
     }
 
     /**
+     * Populate meeting participants display (read-only, organized by team)
+     * Matches the format of the create meeting modal
+     * @param {HTMLElement} container - Container element to populate
+     * @param {Array} participantUsers - Array of user objects
+     */
+    function populateMeetingParticipantsDisplay(container, participantUsers) {
+      container.innerHTML = "";
+
+      if (!participantUsers?.length) {
+        container.innerHTML = "<p style='padding: 10px; color: #666; text-align: center;'>No participants</p>";
+        return;
+      }
+
+      const usersByTeam = {};
+      const usersWithoutTeam = [];
+
+      participantUsers.forEach(user => {
+        const teamUuid = user.teamUuid?.trim();
+        if (teamUuid) {
+          if (!usersByTeam[teamUuid]) usersByTeam[teamUuid] = [];
+          usersByTeam[teamUuid].push(user);
+        } else {
+          usersWithoutTeam.push(user);
+        }
+      });
+
+      // Display participants organized by team
+      // First, display teams that are in allTeams
+      const displayedTeamUuids = new Set();
+      allTeams.forEach(team => {
+        const teamUuid = team.teamUuid?.trim();
+        if (teamUuid && usersByTeam[teamUuid]?.length) {
+          displayedTeamUuids.add(teamUuid);
+          const teamSection = document.createElement("div");
+          teamSection.classList.add("team-section");
+
+          const teamHeader = document.createElement("div");
+          teamHeader.classList.add("team-header");
+          teamHeader.textContent = team.teamName || `Team ${teamUuid.substring(0, 8)}`;
+          teamSection.appendChild(teamHeader);
+
+          usersByTeam[teamUuid].forEach(user => {
+            const participantItem = document.createElement("div");
+            participantItem.classList.add("meeting-participant-item");
+            const nameSpan = document.createElement("span");
+            nameSpan.classList.add("meeting-participant-name");
+            nameSpan.textContent = formatUserNameWithRole(user);
+            participantItem.appendChild(nameSpan);
+            teamSection.appendChild(participantItem);
+          });
+
+          container.appendChild(teamSection);
+        }
+      });
+
+      // Display participants whose teams are not in allTeams (orphaned teams)
+      Object.keys(usersByTeam).forEach(teamUuid => {
+        if (!displayedTeamUuids.has(teamUuid) && usersByTeam[teamUuid]?.length) {
+          const teamSection = document.createElement("div");
+          teamSection.classList.add("team-section");
+
+          const teamHeader = document.createElement("div");
+          teamHeader.classList.add("team-header");
+          teamHeader.textContent = `Team ${teamUuid.substring(0, 8)}`;
+          teamSection.appendChild(teamHeader);
+
+          usersByTeam[teamUuid].forEach(user => {
+            const participantItem = document.createElement("div");
+            participantItem.classList.add("meeting-participant-item");
+            const nameSpan = document.createElement("span");
+            nameSpan.classList.add("meeting-participant-name");
+            nameSpan.textContent = formatUserNameWithRole(user);
+            participantItem.appendChild(nameSpan);
+            teamSection.appendChild(participantItem);
+          });
+
+          container.appendChild(teamSection);
+        }
+      });
+
+      // Display participants without a team
+      if (usersWithoutTeam.length > 0) {
+        const noTeamSection = document.createElement("div");
+        noTeamSection.classList.add("team-section");
+
+        const noTeamHeader = document.createElement("div");
+        noTeamHeader.classList.add("team-header");
+        noTeamHeader.textContent = "No Team";
+        noTeamSection.appendChild(noTeamHeader);
+
+        usersWithoutTeam.forEach(user => {
+          const participantItem = document.createElement("div");
+          participantItem.classList.add("meeting-participant-item");
+          const nameSpan = document.createElement("span");
+          nameSpan.classList.add("meeting-participant-name");
+          nameSpan.textContent = formatUserNameWithRole(user);
+          participantItem.appendChild(nameSpan);
+          noTeamSection.appendChild(participantItem);
+        });
+
+        container.appendChild(noTeamSection);
+      }
+    }
+
+    /**
      * Load meetings from the backend and populate the calendar
-     * Filters meetings where user is creator or participant
      * @returns {Promise<void>}
      */
     async function loadMeetingsFromBackend() {
@@ -386,14 +544,17 @@ export async function render(container, view = "dashboard") {
 
       try {
         const meetingList = await getMeetingList(courseUUID);
-        Object.keys(meetings).forEach(key => delete meetings[key]);
+        Object.keys(allMeetings).forEach(key => delete allMeetings[key]);
+
+        const currentUser = getCurrentUser();
+        const userUuid = currentUser?.userUuid;
 
         meetingList.forEach(meeting => {
           const meetingDateObj = parseMeetingDate(meeting.meetingDate);
           if (!meetingDateObj || isNaN(meetingDateObj.getTime())) return;
 
           const dateStr = formatDate(meetingDateObj);
-          if (!meetings[dateStr]) meetings[dateStr] = [];
+          if (!allMeetings[dateStr]) allMeetings[dateStr] = [];
 
           const startTime = meeting.meetingStartTime instanceof Date
             ? meeting.meetingStartTime
@@ -403,34 +564,70 @@ export async function render(container, view = "dashboard") {
 
           const timeStr = `${String(startTime.getHours()).padStart(2, "0")}:${String(startTime.getMinutes()).padStart(2, "0")}`;
 
-          meetings[dateStr].push({
+          const creatorUUID = meeting.creatorUUID || meeting.creatorUuid || null;
+          const isCreator = userUuid && creatorUUID === userUuid;
+          const participantList = meeting.participants || [];
+          const isParticipant = userUuid && participantList.some(p => {
+            const participantUuid = p.userUuid || p.participantUuid || p.participantUUID || (typeof p === "string" ? p : null);
+            return participantUuid === userUuid;
+          });
+
+          allMeetings[dateStr].push({
             title: meeting.meetingTitle,
             time: timeStr,
             type: mapMeetingTypeToString(meeting.meetingType),
             desc: meeting.meetingDescription || "",
-            participants: [],
+            participants: participantList,
             chainId: meeting.parentMeetingUUID || meeting.parentMeetingUuid || null,
             meetingUUID: meeting.meetingUUID || meeting.meetingUuid,
             isRecurring: meeting.isRecurring,
-            creatorUUID: meeting.creatorUUID || meeting.creatorUuid || null,
+            creatorUUID: creatorUUID,
             meetingStartTime: meeting.meetingStartTime,
-            meetingEndTime: meeting.meetingEndTime
+            meetingEndTime: meeting.meetingEndTime,
+            isCreator: isCreator,
+            isParticipant: isParticipant
           });
         });
 
-        // Sort meetings by start time for each date
-        Object.keys(meetings).forEach(dateKey => {
-          meetings[dateKey].sort((a, b) => {
-            const timeA = a.meetingStartTime instanceof Date ? a.meetingStartTime : new Date(a.meetingStartTime);
-            const timeB = b.meetingStartTime instanceof Date ? b.meetingStartTime : new Date(b.meetingStartTime);
-            return timeA - timeB;
-          });
-        });
-
-        renderCalendar();
+        filterAndRenderMeetings();
       } catch (error) {
         // Continue with empty meetings if load fails
       }
+    }
+
+    /**
+     * Filter and render meetings based on user role and preferences
+     * Also sorts meetings by start time for each date
+     */
+    function filterAndRenderMeetings() {
+      const courseUUID = getCourseIdFromUrl();
+      const role = getUserRoleInCourse(courseUUID);
+      const isStaff = role === "Professor" || role === "TA";
+
+      Object.keys(meetings).forEach(key => delete meetings[key]);
+
+      if (isStaff && !showAllMeetings) {
+        const userUuid = getCurrentUser()?.userUuid;
+        Object.keys(allMeetings).forEach(dateStr => {
+          const filtered = allMeetings[dateStr].filter(m => m.isCreator);
+          if (filtered.length > 0) meetings[dateStr] = filtered;
+        });
+      } else {
+        Object.keys(allMeetings).forEach(dateStr => {
+          meetings[dateStr] = [...allMeetings[dateStr]];
+        });
+      }
+
+      // Sort meetings by start time for each date
+      Object.keys(meetings).forEach(dateKey => {
+        meetings[dateKey].sort((a, b) => {
+          const timeA = a.meetingStartTime instanceof Date ? a.meetingStartTime : new Date(a.meetingStartTime);
+          const timeB = b.meetingStartTime instanceof Date ? b.meetingStartTime : new Date(b.meetingStartTime);
+          return timeA - timeB;
+        });
+      });
+
+      renderCalendar();
     }
 
     /**
@@ -645,7 +842,8 @@ export async function render(container, view = "dashboard") {
           meetings[fullDate].forEach((m, idx) => {
             const meetDiv = document.createElement("div");
             meetDiv.classList.add("meeting-tag", `type-${m.type.toLowerCase().replace(/\s+/g, "")}`);
-            meetDiv.textContent = m.title;
+            const timeDisplay = m.time ? formatTimeForDisplay(m.time) : "";
+            meetDiv.textContent = timeDisplay ? `${timeDisplay} - ${m.title}` : m.title;
             meetDiv.addEventListener("click", async (e) => {
               e.stopPropagation();
               await openMeetingAttendance(fullDate, idx);
@@ -701,39 +899,71 @@ export async function render(container, view = "dashboard") {
       const currentUser = getCurrentUser();
       const creatorUUID = meeting.creatorUUID || meeting.creatorUuid;
       const isCreator = currentUser && creatorUUID && creatorUUID === currentUser.userUuid;
+      const courseUUID = getCourseIdFromUrl();
+      const role = getUserRoleInCourse(courseUUID);
+      const isStaff = role === "Professor" || role === "TA";
 
       container.querySelector("#attendance-meeting-title").textContent = meeting.title;
       container.querySelector("#attendance-meeting-date").textContent = date;
       container.querySelector("#attendance-meeting-time").textContent = meeting.time;
       container.querySelector("#attendance-meeting-type").textContent = meeting.type;
-      container.querySelector("#attendance-meeting-desc").textContent = meeting.desc || "";
-      container.querySelector("#attendance-meeting-participants").textContent = "Loading...";
+      
+      // Show/hide description section based on content
+      const descContainer = container.querySelector("#attendance-meeting-desc");
+      const descLabel = container.querySelector("#attendance-meeting-desc-label");
+      const descText = meeting.desc?.trim() || "";
+      
+      if (descText) {
+        descContainer.textContent = descText;
+        descContainer.style.display = "block";
+        descLabel.style.display = "block";
+      } else {
+        descContainer.textContent = "";
+        descContainer.style.display = "none";
+        descLabel.style.display = "none";
+      }
+      
+      const participantsContainer = container.querySelector("#attendance-meeting-participants");
+      participantsContainer.innerHTML = "<p style='padding: 10px; color: #666; text-align: center;'>Loading participants...</p>";
 
-      let participantNames = [];
-      if (meeting.meetingUUID) {
-        try {
-          const courseUUID = getCourseIdFromUrl();
-          const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
-
-          participantNames = participants
-            .map(p => {
-              if (p.user) return `${p.user.firstName} ${p.user.lastName}`;
-              const participantUuid = p.participantUuid || p.participantUUID;
-              const user = allUsers.find(u => u.userUuid === participantUuid);
-              if (user) return `${user.firstName} ${user.lastName}`;
-              return participantUuid ? `User ${participantUuid.substring(0, 8)}...` : "Unknown";
-            })
-            .filter(name => name);
-
-          if (participantNames.length === 0) participantNames = ["No participants"];
-        } catch (error) {
-          participantNames = ["Unable to load participants"];
-        }
+      // Ensure allUsers and allTeams are loaded for team organization
+      if (allUsers.length === 0 || allTeams.length === 0) {
+        await loadAllUsersAndTeams();
       }
 
-      container.querySelector("#attendance-meeting-participants").textContent = participantNames.length > 0
-        ? participantNames.join(", ")
-        : "No participants";
+      if (meeting.meetingUUID) {
+        try {
+          const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
+
+          // Get participant user objects - always use allUsers to get complete user data including team info
+          const participantUsers = participants.map(p => {
+            // Get UUID from either the user object or participant fields
+            let userUuid = null;
+            if (p.user && p.user.userUuid) {
+              userUuid = p.user.userUuid;
+            } else {
+              userUuid = p.participantUuid || p.participantUUID || (p.user ? p.user.id : null);
+            }
+            
+            if (!userUuid) return null;
+            
+            // Always look up in allUsers to get complete user data with team information
+            const user = allUsers.find(u => u.userUuid === userUuid);
+            return user || null;
+          }).filter(u => u !== null);
+
+          if (participantUsers.length === 0) {
+            participantsContainer.innerHTML = "<p style='padding: 10px; color: #666; text-align: center;'>No participants</p>";
+          } else {
+            // Organize participants by team (same format as create meeting modal)
+            populateMeetingParticipantsDisplay(participantsContainer, participantUsers);
+          }
+        } catch (error) {
+          participantsContainer.innerHTML = `<p style='padding: 10px; color: #d32f2f; text-align: center;'>Unable to load participants: ${error.message}</p>`;
+        }
+      } else {
+        participantsContainer.innerHTML = "<p style='padding: 10px; color: #666; text-align: center;'>No participants</p>";
+      }
 
       activeMeetingContext = {
         date, index, chainId: meeting.chainId || null,
@@ -749,18 +979,21 @@ export async function render(container, view = "dashboard") {
         els.deleteAllFutureBtn.disabled = !(meeting.isRecurring || meeting.chainId);
       }
 
-      const showDelete = isCreator ? "block" : "none";
+      // Show delete button for creator or staff (professors and TAs)
+      const showDelete = (isCreator || isStaff) ? "block" : "none";
       if (els.deleteMeetingBtn) els.deleteMeetingBtn.style.display = showDelete;
       if (els.deleteAllFutureBtn) els.deleteAllFutureBtn.style.display = showDelete;
 
       if (isCreator) {
         if (els.creatorView) els.creatorView.classList.remove("hidden");
         if (els.participantView) els.participantView.classList.add("hidden");
+        currentMeetingCode = null;
         await loadMeetingCode(meeting.meetingUUID);
       } else {
         if (els.creatorView) els.creatorView.classList.add("hidden");
         if (els.participantView) els.participantView.classList.remove("hidden");
         if (els.attendancePasscodeInput) els.attendancePasscodeInput.value = "";
+        currentMeetingCode = null;
       }
 
       els.meetingContentModalWrapper.classList.remove("hidden");
@@ -795,6 +1028,7 @@ export async function render(container, view = "dashboard") {
         if (els.meetingCodeDisplay) {
           els.meetingCodeDisplay.textContent = meetingCode || "No code generated yet";
         }
+        currentMeetingCode = meetingCode || null;
       } catch (error) {
         if (error.message?.includes("404") || error.message?.includes("not found")) {
           try {
@@ -815,6 +1049,7 @@ export async function render(container, view = "dashboard") {
               if (els.meetingCodeDisplay && createdCode.meetingCode) {
                 els.meetingCodeDisplay.textContent = createdCode.meetingCode;
               }
+              currentMeetingCode = createdCode.meetingCode || null;
               return;
             }
           } catch (createError) {
@@ -828,6 +1063,7 @@ export async function render(container, view = "dashboard") {
           els.qrCodeImage.alt = "QR code not available";
           els.qrCodeImage.style.display = "none";
         }
+        currentMeetingCode = null;
       }
     }
 
@@ -1013,14 +1249,21 @@ export async function render(container, view = "dashboard") {
         return { isValid: false, message: "Invalid meeting time format" };
       }
 
+      const formatTime = (date) => date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short"
+      });
+
       if (now < start) {
-        const startStr = start.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-        return { isValid: false, message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${startStr}` };
+        return { isValid: false, message: `Attendance can only be submitted during the meeting time.\n\nMeeting starts at: ${formatTime(start)}` };
       }
 
       if (now > end) {
-        const endStr = end.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-        return { isValid: false, message: `Attendance submission window has closed.\n\nMeeting ended at: ${endStr}` };
+        return { isValid: false, message: `Attendance submission window has closed.\n\nMeeting ended at: ${formatTime(end)}` };
       }
 
       return { isValid: true, message: "" };
@@ -1094,6 +1337,40 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Submit attendance for meeting creator
+     * @returns {Promise<void>}
+     */
+    async function submitCreatorAttendance() {
+      const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
+
+      if (!meetingUUID) {
+        alert("Meeting information not available");
+        return;
+      }
+
+      if (!currentMeetingCode) {
+        alert("Meeting code not available. Please wait for the code to load.");
+        return;
+      }
+
+      const timeValidation = validateMeetingTimeWindow(meetingStartTime, meetingEndTime);
+      if (!timeValidation.isValid) {
+        alert(timeValidation.message);
+        return;
+      }
+
+      try {
+        await recordAttendanceByCode(meetingUUID, currentMeetingCode);
+        alert("Your attendance has been recorded successfully!");
+      } catch (error) {
+        const isTimeError = error.message?.includes("not valid at this time") || error.message?.includes("time");
+        alert(isTimeError
+          ? `Cannot submit attendance: ${error.message}\n\nPlease ensure you are submitting during the meeting's scheduled time.`
+          : `Failed to submit attendance: ${error.message}`);
+      }
+    }
+
     els.deleteMeetingBtn?.addEventListener("click", async () => {
       const { date, index, meetingUUID } = activeMeetingContext;
 
@@ -1157,6 +1434,7 @@ export async function render(container, view = "dashboard") {
     if (els.stopCameraBtn) els.stopCameraBtn.onclick = stopCamera;
     if (els.submitAttendanceBtn) els.submitAttendanceBtn.onclick = submitAttendance;
     if (els.copyCodeBtn) els.copyCodeBtn.addEventListener("click", copyMeetingCode);
+    if (els.creatorMarkAttendanceBtn) els.creatorMarkAttendanceBtn.addEventListener("click", submitCreatorAttendance);
 
     els.meetingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1222,7 +1500,10 @@ export async function render(container, view = "dashboard") {
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const participants = [...new Set(allParticipants.filter(p => uuidRegex.test(p)))];
 
-      const meetingDateTime = new Date(`${date}T${time}`);
+      // Create meeting datetime in local timezone for validation
+      const [dateYear, dateMonth, dateDay] = date.split("-").map(Number);
+      const [timeHours, timeMinutes] = time.split(":").map(Number);
+      const meetingDateTime = new Date(dateYear, dateMonth - 1, dateDay, timeHours, timeMinutes, 0, 0);
       const now = new Date();
 
       if (meetingDateTime < now) {
@@ -1247,19 +1528,21 @@ export async function render(container, view = "dashboard") {
         const meetingEnd = new Date(`${dateStr}T${endTimeStr}`);
 
         const [dateYear, dateMonth, dateDay] = dateStr.split("-").map(Number);
-          const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
-          const meetingDateISO = dateWithNoon.toISOString();
+        const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
+        const meetingDateISO = dateWithNoon.toISOString();
 
+        // Convert to ISO strings (UTC) for storage in database
+        // The database stores UTC, but these represent the local times selected by the user
         return {
-            creatorUUID: currentUser.userUuid,
-            courseUUID: courseUUID,
-            meetingStartTime: meetingStart.toISOString(),
-            meetingEndTime: meetingEnd.toISOString(),
+          creatorUUID: currentUser.userUuid,
+          courseUUID: courseUUID,
+          meetingStartTime: meetingStart.toISOString(),
+          meetingEndTime: meetingEnd.toISOString(),
           meetingDate: meetingDateISO,
-            meetingTitle: title,
-            meetingDescription: desc || null,
+          meetingTitle: title,
+          meetingDescription: desc || null,
           meetingLocation: location || null,
-            meetingType: meetingTypeInt,
+          meetingType: meetingTypeInt,
           isRecurring: false,
           participants
         };
@@ -1386,6 +1669,23 @@ export async function render(container, view = "dashboard") {
     if (courseUUID) {
       await loadUserContext(courseUUID);
       setupMeetingTypeOptions();
+
+      // Show toggle for professors and TAs
+      const role = getUserRoleInCourse(courseUUID);
+      const isStaff = role === "Professor" || role === "TA";
+      if (isStaff && els.professorToggleContainer) {
+        els.professorToggleContainer.classList.remove("hidden");
+      } else if (els.professorToggleContainer) {
+        els.professorToggleContainer.classList.add("hidden");
+      }
+    }
+
+    // Toggle event listener for showing/hiding all meetings
+    if (els.showAllMeetingsToggle) {
+      els.showAllMeetingsToggle.addEventListener("change", (e) => {
+        showAllMeetings = e.target.checked;
+        filterAndRenderMeetings();
+      });
     }
 
     if (els.selectAllBtn) els.selectAllBtn.addEventListener("click", selectAllParticipants);
