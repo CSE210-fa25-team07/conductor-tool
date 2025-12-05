@@ -45,7 +45,7 @@ function mapMeetingTypeToString(typeInt) {
 }
 
 export async function render(container, view = "dashboard") {
-  if (view == "analysis") {
+  if (view === "analysis") {
       await renderAnalysisView(container);
       return;
     }
@@ -1765,7 +1765,7 @@ export async function renderAnalysisView(container) {
     await loadChartJs();
     const courseUUID = getCourseId();
     const role = getUserRoleInCourse(courseUUID); 
-    console.log("User role:", role);
+    // console.log("User role:", role);
 
     const baseHTML = await loadTemplate("attendance", "analysis"); 
     container.innerHTML = baseHTML;
@@ -1792,7 +1792,7 @@ export async function renderAnalysisView(container) {
     }
 
   } catch (err) {
-    console.error("Error rendering analysis view:", err);
+    // console.error("Error rendering analysis view:", err);
   }
 }
 

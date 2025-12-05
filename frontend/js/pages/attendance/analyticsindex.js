@@ -72,7 +72,7 @@ export async function showIndividualAnalytics(courseUuid, userUuid) {
   const res = await getUserAnalytics({ courseUuid, userUuid });
 
   if (!res || !res.attendanceByType) {
-    console.warn("No user analytics found");
+    // console.warn("No user analytics found");
     return;
   }
 
@@ -137,7 +137,7 @@ async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
   try {
     teams = await getCourseTeams(courseUuid);
   } catch (err) {
-    console.error("Team load fail:", err);
+    // console.error("Team load fail:", err);
   }
   if (teamUuid) {
     teams = teams.filter(t => t.teamUuid === teamUuid);
@@ -170,7 +170,7 @@ async function loadAnalytics(courseUuid, teamUuid = null) {
       value: i.attendancePercentage
     }));
   } catch (e) {
-    console.error("Instructor analytics load fail:", e);
+    // console.error("Instructor analytics load fail:", e);
     return null;
   }
 }
@@ -261,7 +261,7 @@ function buildTimelineDatasets(timeline, filters) {
       map[key].data.push(val);
     }
   });
-  console.log("datasetMap", map);
+  // console.log("datasetMap", map);
   return { labels, datasetMap: map };
   
 }
