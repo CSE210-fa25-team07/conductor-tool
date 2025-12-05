@@ -5,6 +5,7 @@ import googleRoutes from "./routes/googleRoutes.js";
 import githubAuthRoutes from "./routes/githubAuthRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
+import { metricsCollector } from "./metrics/metricsMiddleware.js";
 import { checkSession, checkUserFromSession } from "./utils/auth.js";
 import session from "express-session";
 import path from "path";
@@ -17,6 +18,9 @@ const app = express();
 const PORT = 8081;
 
 app.use(express.json());
+
+// Metrics collection middleware (collect metrics for all requests)
+app.use(metricsCollector);
 
 app.use(session({
   secret: process.env.SESSION_SECRET,  // signs the session ID cookie (for dev: you can change this to any random string to bypass)
@@ -41,6 +45,10 @@ app.get("/dashboard", checkUserFromSession, (req, res) => {
 
 app.get("/calendar", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
+});
+
+app.get("/metrics", checkUserFromSession, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/html/metrics/metrics.html"));
 });
 
 app.get("/logout", (req, res) => {

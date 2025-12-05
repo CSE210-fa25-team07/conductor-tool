@@ -50,6 +50,7 @@
   display: flex;
   flex-direction: column;
   height: 100%; /* Ensures all cards stretch to same height */
+  box-sizing: border-box;
 }
 
 .course-card:hover {
@@ -365,20 +366,6 @@
   border-top: var(--border-thin);
 }
 
-@media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .form-actions button {
-    width: 100%;
-  }
-}
-
 /* Course Card Menu (Three-dot menu) */
 .course-menu-container {
   margin-left: auto;
@@ -446,7 +433,7 @@
   transition: background-color var(--transition-fast);
   border: none;
   width: 100%;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -457,4 +444,53 @@
 .menu-item-icon {
   font-size: 1rem;
   color: var(--color-forest-green-medium);
+}
+
+/* Confirmation Form */
+.confirmation-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.confirmation-form input {
+  margin-bottom: 0;
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-md);
+}
+
+.confirmation-form .remove-button,
+.confirmation-form .cancel-button {
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-md);
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
 }

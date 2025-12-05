@@ -11,8 +11,9 @@
 -- ============================================
 INSERT INTO class_term (year, season, start_date, end_date, is_active) VALUES
     (2024, 'Fall', '2024-09-23', '2024-12-14', false),
-    (2025, 'Winter', '2025-01-06', '2025-03-21', true),
-    (2025, 'Spring', '2025-03-31', '2025-06-13', false)
+    (2025, 'Winter', '2025-01-06', '2025-03-21', false),
+    (2025, 'Spring', '2025-03-31', '2025-06-13', false),
+    (2025, 'Fall', '2025-09-25', '2025-12-13', true)
 ON CONFLICT (year, season) DO NOTHING;
 
 -- ============================================
@@ -87,15 +88,18 @@ DECLARE
     v_fall_2024 UUID;
     v_winter_2025 UUID;
     v_spring_2025 UUID;
+    v_fall_2025 UUID;
 BEGIN
     SELECT term_uuid INTO v_fall_2024 FROM class_term WHERE year = 2024 AND season = 'Fall';
     SELECT term_uuid INTO v_winter_2025 FROM class_term WHERE year = 2025 AND season = 'Winter';
     SELECT term_uuid INTO v_spring_2025 FROM class_term WHERE year = 2025 AND season = 'Spring';
-    
+    SELECT term_uuid INTO v_fall_2025 FROM class_term WHERE year = 2025 AND season = 'Fall';
+
     INSERT INTO courses (course_code, course_name, term_uuid, description, syllabus_url, canvas_url) VALUES
         ('CSE210', 'Software Engineering', v_winter_2025, 'Principles and practices of large-scale software development', 'https://syllabus.ucsd.edu/cse210', 'https://canvas.ucsd.edu/courses/50001'),
         ('CSE110', 'Software Engineering', v_winter_2025, 'Introduction to software development and team collaboration', 'https://syllabus.ucsd.edu/cse110', 'https://canvas.ucsd.edu/courses/50002'),
-        ('CSE210', 'Software Engineering', v_fall_2024, 'Principles and practices of large-scale software development', 'https://syllabus.ucsd.edu/cse210-f24', 'https://canvas.ucsd.edu/courses/49001')
+        ('CSE210', 'Software Engineering', v_fall_2024, 'Principles and practices of large-scale software development', 'https://syllabus.ucsd.edu/cse210-f24', 'https://canvas.ucsd.edu/courses/49001'),
+        ('CSE210', 'Software Engineering', v_fall_2025, 'Principles and practices of large-scale software development', 'https://syllabus.ucsd.edu/cse210-f25', 'https://canvas.ucsd.edu/courses/49002')
     ON CONFLICT (course_code, term_uuid) DO NOTHING;
 END $$;
 
@@ -125,6 +129,26 @@ BEGIN
         (v_cse110_w25, v_role_ta, 'CSE110-TA-WINTER25', true),
         (v_cse110_w25, v_role_student, 'CSE110-STU-WINTER25', true),
         (v_cse110_w25, v_role_tutor, 'CSE110-TUTOR-WINTER25', true)
+    ON CONFLICT (course_uuid, role_uuid) DO NOTHING;
+END $$;
+
+DO $$
+DECLARE
+    v_cse210_f25 UUID;
+    v_role_ta UUID;
+    v_role_student UUID;
+    v_role_tutor UUID;
+BEGIN
+    SELECT course_uuid INTO v_cse210_f25 FROM courses c JOIN class_term t ON c.term_uuid = t.term_uuid 
+        WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Fall';
+    
+    SELECT role_uuid INTO v_role_ta FROM role WHERE role = 'TA';
+    SELECT role_uuid INTO v_role_student FROM role WHERE role = 'Student';
+    SELECT role_uuid INTO v_role_tutor FROM role WHERE role = 'Tutor';
+    
+    INSERT INTO verification_codes (course_uuid, role_uuid, veri_code, is_active) VALUES
+        (v_cse210_f25, v_role_ta, 'CSE210-TA-FALL25', true),
+        (v_cse210_f25, v_role_student, 'CSE210-STU-FALL25', true)
     ON CONFLICT (course_uuid, role_uuid) DO NOTHING;
 END $$;
 
@@ -177,6 +201,38 @@ BEGIN
     ON CONFLICT (user_uuid, course_uuid, role_uuid) DO NOTHING;
 END $$;
 
+DO $$
+DECLARE
+    v_cse210_f25 UUID;
+    v_role_prof UUID;
+    v_role_ta UUID;
+    v_role_student UUID;
+    v_role_lead UUID;
+BEGIN
+    SELECT course_uuid INTO v_cse210_f25 FROM courses c JOIN class_term t ON c.term_uuid = t.term_uuid 
+        WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Fall';
+    
+    SELECT role_uuid INTO v_role_prof FROM role WHERE role = 'Professor';
+    SELECT role_uuid INTO v_role_ta FROM role WHERE role = 'TA';
+    SELECT role_uuid INTO v_role_student FROM role WHERE role = 'Student';
+    SELECT role_uuid INTO v_role_lead FROM role WHERE role = 'Team Leader';
+    
+    INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status, enrolled_at) VALUES
+        ((SELECT user_uuid FROM users WHERE email = 'powell@ucsd.edu'), v_cse210_f25, v_role_prof, 'active', '2025-09-25'),
+        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
+        ((SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
+        ((SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
+        ((SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
+        ((SELECT user_uuid FROM users WHERE email = 'frank@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
+        ((SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
+        ((SELECT user_uuid FROM users WHERE email = 'henry@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-27'),
+        ((SELECT user_uuid FROM users WHERE email = 'iris@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-27'),
+        -- Team leaders
+        ((SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'), v_cse210_f25, v_role_lead, 'active', '2025-10-01'),
+        ((SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'), v_cse210_f25, v_role_lead, 'active', '2025-10-01')
+    ON CONFLICT (user_uuid, course_uuid, role_uuid) DO NOTHING;
+END $$;
+
 -- ============================================
 -- 7. TEAMS
 -- ============================================
@@ -221,6 +277,51 @@ BEGIN
         (v_team_beta, (SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'), '2025-01-15'),
         (v_team_beta, (SELECT user_uuid FROM users WHERE email = 'henry@ucsd.edu'), '2025-01-15'),
         (v_team_beta, (SELECT user_uuid FROM users WHERE email = 'iris@ucsd.edu'), '2025-01-15')
+    ON CONFLICT (team_uuid, user_uuid) DO NOTHING;
+END $$;
+
+ 
+DO $$
+DECLARE
+    v_cse210_f25 UUID;
+    v_team_gamma UUID;
+    v_team_delta UUID;
+BEGIN
+    SELECT course_uuid INTO v_cse210_f25 FROM courses c JOIN class_term t ON c.term_uuid = t.term_uuid 
+        WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Fall';
+    
+    INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
+        (v_cse210_f25, 'Team Gamma', 'https://github.com/cse210-gamma', 'https://github.com/cse210-gamma/project', 
+         (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'))
+    ON CONFLICT (course_uuid, team_name) DO NOTHING
+    RETURNING team_uuid INTO v_team_gamma;
+    
+    IF v_team_gamma IS NULL THEN
+        SELECT team_uuid INTO v_team_gamma FROM teams WHERE course_uuid = v_cse210_f25 AND team_name = 'Team Gamma';
+    END IF;
+    
+    INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
+        (v_cse210_f25, 'Team Delta', 'https://github.com/cse210-delta', 'https://github.com/cse210-delta/project', 
+         (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'))
+    ON CONFLICT (course_uuid, team_name) DO NOTHING
+    RETURNING team_uuid INTO v_team_delta;
+    
+    IF v_team_delta IS NULL THEN
+        SELECT team_uuid INTO v_team_delta FROM teams WHERE course_uuid = v_cse210_f25 AND team_name = 'Team Delta';
+    END IF;
+    
+    -- Team Gamma members
+    INSERT INTO team_members (team_uuid, user_uuid, joined_at) VALUES
+        (v_team_gamma, (SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'), '2025-09-30'),
+        (v_team_gamma, (SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'), '2025-09-30'),
+        (v_team_gamma, (SELECT user_uuid FROM users WHERE email = 'frank@ucsd.edu'), '2025-09-30')
+    ON CONFLICT (team_uuid, user_uuid) DO NOTHING;
+    
+    -- Team Delta members
+    INSERT INTO team_members (team_uuid, user_uuid, joined_at) VALUES
+        (v_team_delta, (SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'), '2025-09-30'),
+        (v_team_delta, (SELECT user_uuid FROM users WHERE email = 'henry@ucsd.edu'), '2025-09-30'),
+        (v_team_delta, (SELECT user_uuid FROM users WHERE email = 'iris@ucsd.edu'), '2025-09-30')
     ON CONFLICT (team_uuid, user_uuid) DO NOTHING;
 END $$;
 
@@ -389,6 +490,41 @@ BEGIN
          CURRENT_DATE + INTERVAL '2 days',
          'Agile Methodologies Introduction', 'Overview of Scrum and Kanban', 'CSE 1001', TRUE, 1)
     RETURNING meeting_uuid INTO v_lecture2;
+END $$;
+
+DO $$
+DECLARE
+    v_cse210_f25 UUID;
+    v_f_lecture1 UUID;
+    v_f_team_meeting UUID;
+BEGIN
+    SELECT course_uuid INTO v_cse210_f25 FROM courses c JOIN class_term t ON c.term_uuid = t.term_uuid 
+        WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Fall';
+    
+    INSERT INTO meeting (creator_uuid, course_uuid, meeting_start_time, meeting_end_time, meeting_date, 
+                        meeting_title, meeting_description, meeting_location, is_recurring, meeting_type) VALUES
+        ((SELECT user_uuid FROM users WHERE email = 'powell@ucsd.edu'), v_cse210_f25,
+         (DATE '2025-09-29' + INTERVAL '10 hours')::timestamptz, (DATE '2025-09-29' + INTERVAL '11.5 hours')::timestamptz, DATE '2025-09-29',
+         'Software Architecture Patterns', 'Fall quarter: discussion of architecture and design', 'CSE 1202', TRUE, 1)
+    RETURNING meeting_uuid INTO v_f_lecture1;
+    
+    INSERT INTO meeting (creator_uuid, course_uuid, meeting_start_time, meeting_end_time, meeting_date,
+                        meeting_title, meeting_description, meeting_location, is_recurring, parent_meeting_uuid, meeting_type) VALUES
+        ((SELECT user_uuid FROM users WHERE email = 'powell@ucsd.edu'), v_cse210_f25,
+         (DATE '2025-10-02' + INTERVAL '10 hours')::timestamptz, 
+         (DATE '2025-10-02' + INTERVAL '11.5 hours')::timestamptz, 
+         DATE '2025-10-02',
+         'Software Architecture Patterns', 'Continuation: Microservices and Event-Driven Architecture', 
+         'CSE 1202', FALSE, v_f_lecture1, 1);
+    
+    INSERT INTO meeting (creator_uuid, course_uuid, meeting_start_time, meeting_end_time, meeting_date,
+                        meeting_title, meeting_description, meeting_location, is_recurring, meeting_type) VALUES
+        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_f25,
+         (DATE '2025-10-01' + INTERVAL '14 hours')::timestamptz,
+         (DATE '2025-10-01' + INTERVAL '15 hours')::timestamptz,
+         DATE '2025-10-01',
+         'Team Gamma Sprint Planning', 'Plan sprint tasks and assign work', 'CSE 3140', FALSE, 2)
+    RETURNING meeting_uuid INTO v_f_team_meeting;
 END $$;
 
 -- ============================================
