@@ -462,6 +462,7 @@ export async function render(container, view = "dashboard") {
             time: timeStr,
             type: mapMeetingTypeToString(meeting.meetingType),
             desc: meeting.meetingDescription || "",
+            location: meeting.meetingLocation || meeting.meeting_location || meeting.location || "",
             participants: participantList,
             chainId: meeting.parentMeetingUUID || meeting.parentMeetingUuid || null,
             meetingUUID: meeting.meetingUUID || meeting.meetingUuid,
@@ -746,6 +747,17 @@ export async function render(container, view = "dashboard") {
       container.querySelector("#attendance-meeting-date").textContent = date;
       container.querySelector("#attendance-meeting-time").textContent = meeting.time;
       container.querySelector("#attendance-meeting-type").textContent = meeting.type;
+
+      const locationLabel = container.querySelector("#attendance-meeting-location-label");
+      const locationValue = container.querySelector("#attendance-meeting-location");
+      const locText = meeting.location?.trim() || "";
+      if (locText) {
+        if (locationValue) locationValue.textContent = locText;
+        if (locationLabel) locationLabel.style.display = "block";
+      } else {
+        if (locationValue) locationValue.textContent = "";
+        if (locationLabel) locationLabel.style.display = "none";
+      }
 
       const descContainer = container.querySelector("#attendance-meeting-desc");
       const descLabel = container.querySelector("#attendance-meeting-desc-label");

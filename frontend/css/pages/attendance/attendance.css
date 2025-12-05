@@ -816,6 +816,33 @@
   background: #555;
 }
 
+.meeting-location-value {
+  display: inline-block;
+  max-height: 80px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 2px 0;
+}
+
+.meeting-location-value::-webkit-scrollbar {
+  width: 6px;
+}
+
+.meeting-location-value::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.meeting-location-value::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.meeting-location-value::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* Meeting participants container - matches create meeting modal format */
 .meeting-participants-container {
   border: 1px solid #ccc;
