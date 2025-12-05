@@ -174,4 +174,4 @@ async function getUsersByUuids(userUuids) {
   return users;
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid, getUserStatusByUuid, getUsersByUuids };
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid, getUsersByUuids };
