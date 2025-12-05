@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Metrics - Conductor Tool</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/metrics/metrics.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="container">
+
+      <!-- Metrics Header -->
+      <header class="metrics-header">
+        <h1 class="metrics-title">Performance Metrics</h1>
+        <p class="metrics-subtitle">Real-time API performance and RAIL metrics monitoring</p>
+        <div class="header-actions">
+          <button id="refresh-btn" class="btn btn-primary">Refresh</button>
+          <button id="clear-btn" class="btn btn-secondary">Clear Metrics</button>
+        </div>
+      </header>
+
+      <!-- System Status -->
+      <section class="metrics-section">
+        <h2 class="section-title">System Status</h2>
+        <div id="system-status" class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Total Requests</div>
+            <div class="status-value" id="total-requests">-</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Uptime</div>
+            <div class="status-value" id="uptime">-</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Memory Usage</div>
+            <div class="status-value" id="memory-usage">-</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Storage Size</div>
+            <div class="status-value" id="storage-size">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RAIL Metrics -->
+      <section class="metrics-section">
+        <h2 class="section-title">RAIL Performance Metrics</h2>
+        <div id="rail-metrics" class="rail-grid">
+          <!-- Response -->
+          <div class="rail-card">
+            <h3 class="rail-title">Response (&lt;100ms)</h3>
+            <div class="rail-stats">
+              <div class="stat-row">
+                <span class="stat-label">P50:</span>
+                <span class="stat-value" id="response-p50">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">P95:</span>
+                <span class="stat-value" id="response-p95">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">P99:</span>
+                <span class="stat-value" id="response-p99">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Compliance:</span>
+                <span class="stat-value compliance" id="response-compliance">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Load -->
+          <div class="rail-card">
+            <h3 class="rail-title">Load (&lt;5s)</h3>
+            <div class="rail-stats">
+              <div class="stat-row">
+                <span class="stat-label">P50:</span>
+                <span class="stat-value" id="load-p50">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">P95:</span>
+                <span class="stat-value" id="load-p95">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">P99:</span>
+                <span class="stat-value" id="load-p99">-</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Compliance:</span>
+                <span class="stat-value compliance" id="load-compliance">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Codes -->
+      <section class="metrics-section">
+        <h2 class="section-title">Status Code Distribution</h2>
+        <div id="status-codes" class="status-codes-grid">
+          <!-- Will be populated dynamically -->
+        </div>
+      </section>
+
+      <!-- Top Endpoints -->
+      <section class="metrics-section">
+        <h2 class="section-title">Top 10 Endpoints</h2>
+        <div id="top-endpoints" class="endpoints-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Requests</th>
+                <th>Avg Response Time</th>
+                <th>Error Rate</th>
+              </tr>
+            </thead>
+            <tbody id="endpoints-tbody">
+              <!-- Will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Time Series Chart (Placeholder) -->
+      <section class="metrics-section">
+        <h2 class="section-title">Response Time Over Last 24 Hours</h2>
+        <div id="timeseries-chart" class="chart-container">
+          <canvas id="timeseriesCanvas"></canvas>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="../../js/pages/metrics/metrics.js"></script>
+
+</body>
+</html>
