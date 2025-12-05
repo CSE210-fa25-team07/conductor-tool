@@ -159,6 +159,21 @@ router.get("/teams/:teamUuid", async (req, res) => {
 });
 
 /**
+ * Update team links (team leader only)
+ * @name PUT /v1/api/directory/teams/:teamUuid/links
+ */
+router.put("/teams/:teamUuid/links", async (req, res) => {
+  try {
+    return await directoryService.updateTeamLinks(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * Update course links (professor only)
  * @name PUT /v1/api/directory/courses/:courseUuid/links
  */

@@ -513,6 +513,88 @@ async function updateCourseLinks(req, res) {
   });
 }
 
+/**
+ * Update team links (team leader only)
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @returns {Object} Updated team data
+ */
+async function updateTeamLinks(req, res) {
+  const userUuid = req.session.user.id;
+  const { teamUuid } = req.params;
+  const { teamPageUrl, repoUrl } = req.body;
+
+  if (!teamUuid) {
+    return res.status(400).json({
+      success: false,
+      error: "teamUuid is required"
+    });
+  }
+
+  // Check if user is a team leader for this team
+  const isTeamLeader = await directoryRepository.checkTeamLeaderRole(userUuid, teamUuid);
+
+  if (!isTeamLeader) {
+    return res.status(403).json({
+      success: false,
+      error: "Only team leaders can update team links"
+    });
+  }
+
+  // Validate URLs if provided
+  if (teamPageUrl !== null && teamPageUrl !== undefined && teamPageUrl !== "") {
+    if (typeof teamPageUrl !== "string") {
+      return res.status(400).json({
+        success: false,
+        error: "Team page URL must be a string"
+      });
+    }
+    try {
+      new URL(teamPageUrl.trim());
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid team page URL format"
+      });
+    }
+  }
+
+  if (repoUrl !== null && repoUrl !== undefined && repoUrl !== "") {
+    if (typeof repoUrl !== "string") {
+      return res.status(400).json({
+        success: false,
+        error: "Repository URL must be a string"
+      });
+    }
+    try {
+      new URL(repoUrl.trim());
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid repository URL format"
+      });
+    }
+  }
+
+  // Normalize the data - empty strings become null
+  // Always set both fields to ensure old values are cleared if needed
+  const linksData = {
+    teamPageUrl: (teamPageUrl && typeof teamPageUrl === "string" && teamPageUrl.trim()) ? teamPageUrl.trim() : null,
+    repoUrl: (repoUrl && typeof repoUrl === "string" && repoUrl.trim()) ? repoUrl.trim() : null
+  };
+
+  // Update team in database
+  await directoryRepository.updateTeamLinks(teamUuid, linksData);
+
+  // Fetch updated team profile to ensure we return the latest data
+  const updatedTeam = await directoryRepository.getTeamProfile(teamUuid);
+
+  return res.status(200).json({
+    success: true,
+    data: directoryDto.toTeamProfileDto(updatedTeam)
+  });
+}
+
 export {
   getCourseOverview,
   getCourseStaff,
@@ -524,5 +606,6 @@ export {
   getCourseTeams,
   getCurrentUserProfile,
   updateCurrentUserProfile,
-  updateCourseLinks
+  updateCourseLinks,
+  updateTeamLinks
 };

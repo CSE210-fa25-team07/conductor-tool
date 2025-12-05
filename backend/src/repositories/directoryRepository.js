@@ -580,6 +580,71 @@ export async function getUserRoleInCourse(userUuid, courseUuid) {
   return enrollment ? enrollment.role.role : null;
 }
 
+/**
+ * Update team links by team UUID
+ * @param {string} teamUuid - Team UUID
+ * @param {Object} linksData - Links data to update (teamPageUrl, repoUrl)
+ * @returns {Promise<Object>} Updated team object
+ */
+export async function updateTeamLinks(teamUuid, linksData) {
+  // Always update both fields explicitly (even if null, to clear old values)
+  const updatedTeam = await prisma.team.update({
+    where: { teamUuid: teamUuid },
+    data: {
+      teamPageUrl: linksData.teamPageUrl,
+      repoUrl: linksData.repoUrl
+    }
+  });
+
+  return updatedTeam;
+}
+
+/**
+ * Check if a user is a Team Leader for a specific team
+ * User must be: 1) a member of the team, 2) have "Team Leader" role in the course
+ * @param {string} userUuid - User UUID
+ * @param {string} teamUuid - Team UUID
+ * @returns {Promise<boolean>} True if user is team leader
+ */
+export async function checkTeamLeaderRole(userUuid, teamUuid) {
+  // First check if user is a member of the team
+  const team = await prisma.team.findUnique({
+    where: { teamUuid },
+    include: {
+      course: true
+    }
+  });
+
+  if (!team) {
+    return false;
+  }
+
+  // Check team membership
+  const isMember = await prisma.teamMember.findFirst({
+    where: {
+      userUuid,
+      teamUuid,
+      leftAt: null
+    }
+  });
+
+  if (!isMember) {
+    return false;
+  }
+
+  // Check if user has Team Leader role in this course
+  const enrollment = await prisma.courseEnrollment.findFirst({
+    where: {
+      userUuid,
+      courseUuid: team.courseUuid,
+      enrollmentStatus: "active",
+      role: { role: "Team Leader" }
+    }
+  });
+
+  return !!enrollment;
+}
+
 
 
 
