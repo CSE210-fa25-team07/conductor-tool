@@ -1,6 +1,12 @@
+/**
+ * @fileoverview Attendance Feature Main Entry Point
+ * Handles calendar and meeting creation on Attendance tab
+ * @module pages/attendance/main
+ */
+
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
-import { loadUserContext, isProfessorOrTA, getCurrentUser } from "../../utils/userContext.js";
+import { loadUserContext, isProfessorOrTA, getCurrentUser, getUserRoleInCourse } from "../../utils/userContext.js";
 
 const meetings = {};
 let currentDate = new Date();
@@ -13,14 +19,29 @@ const MEETING_TYPES = {
 
 const MEETING_TYPE_NAMES = { 0: "Lecture", 1: "OH", 2: "TA Check-In", 3: "Team Meeting" };
 
+/**
+ * Map meeting type string to integer (0-3)
+ * @param {string} typeString - Meeting type as string
+ * @returns {number} Meeting type as integer
+ */
 function mapMeetingTypeToInt(typeString) {
   return MEETING_TYPES[typeString] ?? 0;
 }
 
+/**
+ * Map meeting type integer to string (0-3)
+ * @param {number} typeInt - Meeting type as integer
+ * @returns {string} Meeting type as string
+ */
 function mapMeetingTypeToString(typeInt) {
   return MEETING_TYPE_NAMES[typeInt] || "Lecture";
 }
 
+/**
+ * Parse a local date string (YYYY-MM-DD) to Date object
+ * @param {string} dateStr - Date string in YYYY-MM-DD format
+ * @returns {Date|null} Parsed date or null if invalid
+ */
 function parseLocalDate(dateStr) {
   if (!dateStr) return null;
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -29,10 +50,20 @@ function parseLocalDate(dateStr) {
   return isNaN(date.getTime()) ? null : date;
 }
 
+/**
+ * Format a Date object to YYYY-MM-DD string
+ * @param {Date} date - Date object to format
+ * @returns {string} Formatted date string
+ */
 function formatDate(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+/**
+ * Parse meeting date from various formats (Date object, ISO string, or date string)
+ * @param {Date|string} date - Date in various formats
+ * @returns {Date|null} Parsed date or null if invalid
+ */
 function parseMeetingDate(date) {
   if (date instanceof Date) return date;
   if (typeof date !== "string") return null;
@@ -45,6 +76,46 @@ function parseMeetingDate(date) {
   return parseLocalDate(date);
 }
 
+/**
+ * Validate meeting location input
+ * Accepts Zoom links, Google Meet links, or plain text
+ * @param {string} location - Location string (URL or plain text)
+ * @returns {boolean} True if valid or empty, false if invalid URL format
+ */
+function isValidMeetingLocation(location) {
+  if (!location || location.trim() === "") return true; // Empty is valid (optional field)
+  
+  const trimmedLocation = location.trim();
+  
+  // If it's a URL, validate it's Zoom or Google Meet
+  if (trimmedLocation.startsWith("http://") || trimmedLocation.startsWith("https://")) {
+    // Zoom link patterns:
+    // - https://zoom.us/j/123456789
+    // - https://us02web.zoom.us/j/123456789
+    // - https://zoom.us/s/123456789
+    // - https://us02web.zoom.us/s/123456789
+    // - Can have query params like ?pwd=xxx
+    const zoomPattern = /^https?:\/\/([a-z0-9-]+\.)?zoom\.us\/(j|s)\/[0-9]+(\?.*)?$/i;
+    
+    // Google Meet link patterns:
+    // - https://meet.google.com/abc-defg-hij
+    // - https://meet.google.com/abc-defg-hij?authuser=...
+    // - https://meet.google.com/abc-defg-hij?pli=1&authuser=0
+    const googleMeetPattern = /^https?:\/\/(meet\.)?google\.(com|co\.[a-z]{2})\/[a-z]+(-[a-z]+)+(\?.*)?$/i;
+    
+    return zoomPattern.test(trimmedLocation) || googleMeetPattern.test(trimmedLocation);
+  }
+  
+  // If it's not a URL, accept any text (like "CSE Building, Room 202")
+  return true;
+}
+
+/**
+ * Render the attendance calendar and meeting management interface
+ * @param {HTMLElement} container - Container element to render into
+ * @param {string} view - View name (default: "dashboard")
+ * @returns {Promise<void>}
+ */
 export async function render(container, view = "dashboard") {
   try {
     container.innerHTML = await loadTemplate("attendance", view);
@@ -68,8 +139,10 @@ export async function render(container, view = "dashboard") {
       meetingTitleInput: container.querySelector("#meeting-title"),
       meetingDateInput: container.querySelector("#meeting-date"),
       meetingTimeInput: container.querySelector("#meeting-time"),
+      meetingEndTimeInput: container.querySelector("#meeting-end-time"),
       meetingTypeSelect: container.querySelector("#meeting-type"),
       meetingDescTextarea: container.querySelector("#meeting-description"),
+      meetingLocationInput: container.querySelector("#meeting-location"),
       participantsContainer: container.querySelector("#meeting-participants"),
       selectAllBtn: container.querySelector("#select-all-participants"),
       deselectAllBtn: container.querySelector("#deselect-all-participants"),
@@ -99,16 +172,35 @@ export async function render(container, view = "dashboard") {
     let cameraStream = null;
     let qrScanningInterval = null;
 
+    /**
+     * Setup meeting type options based on user role
+     * Professors can create: Lecture, OH, TA Check-In, Team Meeting
+     * TAs can create: OH, TA Check-In, Team Meeting
+     * Students can only create: Team Meeting
+     */
     function setupMeetingTypeOptions() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) return;
 
-      const canCreateStaffMeetings = isProfessorOrTA(courseUUID);
+      const role = getUserRoleInCourse(courseUUID);
       els.meetingTypeSelect.innerHTML = "";
 
-      const options = canCreateStaffMeetings
-        ? ["Lecture", "OH", "TA Check-In", "Team Meeting"]
-        : ["Team Meeting"];
+      let options;
+      let defaultType;
+
+      if (role === "Professor") {
+        // Professor can create any type
+        options = ["Lecture", "OH", "TA Check-In", "Team Meeting"];
+        defaultType = "Lecture";
+      } else if (role === "TA") {
+        // TA can create any type except Lecture
+        options = ["OH", "TA Check-In", "Team Meeting"];
+        defaultType = "OH";
+      } else {
+        // Students can only create Team Meeting
+        options = ["Team Meeting"];
+        defaultType = "Team Meeting";
+      }
 
       options.forEach(type => {
         const option = document.createElement("option");
@@ -117,31 +209,38 @@ export async function render(container, view = "dashboard") {
         els.meetingTypeSelect.appendChild(option);
       });
 
-      els.meetingTypeSelect.value = options[0];
+      els.meetingTypeSelect.value = defaultType;
     }
 
+    /**
+     * Load all users and teams for the course
+     * @returns {Promise<void>}
+     */
     async function loadAllUsersAndTeams() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) return;
 
       try {
         allUsers = await getAllCourseUsers(courseUUID) || [];
-      } catch (error) {
-        allUsers = [];
+        } catch (error) {
+          allUsers = [];
         els.participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants: ${error.message}</p>`;
-        return;
-      }
+          return;
+        }
 
-      try {
+        try {
         allTeams = await getCourseTeams(courseUUID) || [];
       } catch {
-        allTeams = [];
-      }
+          allTeams = [];
+        }
 
-      populateParticipantsContainer();
-      populateTeamSelector();
+        populateParticipantsContainer();
+        populateTeamSelector();
     }
 
+    /**
+     * Populate the team selector dropdown with course teams
+     */
     function populateTeamSelector() {
       if (!els.selectByTeamDropdown) return;
       els.selectByTeamDropdown.innerHTML = "<option value=\"\">Add by Team...</option>";
@@ -155,6 +254,11 @@ export async function render(container, view = "dashboard") {
       });
     }
 
+    /**
+     * Create a participant checkbox element
+     * @param {Object} user - User object with userUuid, firstName, lastName
+     * @returns {HTMLElement} Label element with checkbox
+     */
     function createParticipantCheckbox(user) {
       const label = document.createElement("label");
       label.classList.add("participant");
@@ -173,6 +277,9 @@ export async function render(container, view = "dashboard") {
       return label;
     }
 
+    /**
+     * Populate the participants container with user data, organized by team
+     */
     function populateParticipantsContainer() {
       els.participantsContainer.innerHTML = "";
 
@@ -228,14 +335,24 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Select all participants in the participants container
+     */
     function selectAllParticipants() {
       els.participantsContainer.querySelectorAll("input[type=\"checkbox\"]").forEach(cb => cb.checked = true);
     }
 
+    /**
+     * Deselect all participants in the participants container
+     */
     function deselectAllParticipants() {
       els.participantsContainer.querySelectorAll("input[type=\"checkbox\"]").forEach(cb => cb.checked = false);
     }
 
+    /**
+     * Select participants by team
+     * @param {string} teamUuid - Team UUID to select
+     */
     function selectParticipantsByTeam(teamUuid) {
       if (!teamUuid) return;
 
@@ -258,6 +375,11 @@ export async function render(container, view = "dashboard") {
       els.selectByTeamDropdown.value = "";
     }
 
+    /**
+     * Load meetings from the backend and populate the calendar
+     * Filters meetings where user is creator or participant
+     * @returns {Promise<void>}
+     */
     async function loadMeetingsFromBackend() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) return;
@@ -296,12 +418,25 @@ export async function render(container, view = "dashboard") {
           });
         });
 
+        // Sort meetings by start time for each date
+        Object.keys(meetings).forEach(dateKey => {
+          meetings[dateKey].sort((a, b) => {
+            const timeA = a.meetingStartTime instanceof Date ? a.meetingStartTime : new Date(a.meetingStartTime);
+            const timeB = b.meetingStartTime instanceof Date ? b.meetingStartTime : new Date(b.meetingStartTime);
+            return timeA - timeB;
+          });
+        });
+
         renderCalendar();
       } catch (error) {
         // Continue with empty meetings if load fails
       }
     }
 
+    /**
+     * Load course dates to restrict calendar navigation
+     * @returns {Promise<void>}
+     */
     async function loadCourseDates() {
       const courseUUID = getCourseIdFromUrl();
       if (!courseUUID) return;
@@ -325,6 +460,11 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Check if a date is within the course date range
+     * @param {Date} date - Date to check
+     * @returns {boolean} True if date is within course dates
+     */
     function isDateWithinCourseRange(date) {
       if (!courseStartDate || !courseEndDate) return false;
       const checkDate = new Date(date);
@@ -332,6 +472,11 @@ export async function render(container, view = "dashboard") {
       return checkDate >= courseStartDate && checkDate <= courseEndDate;
     }
 
+    /**
+     * Check if a month is within the course date range
+     * @param {Date} date - Date representing the month to check
+     * @returns {boolean} True if any day in the month is within course dates
+     */
     function isMonthWithinCourseRange(date) {
       if (!courseStartDate || !courseEndDate) return false;
       const year = date.getFullYear();
@@ -341,6 +486,9 @@ export async function render(container, view = "dashboard") {
       return firstDayOfMonth <= courseEndDate && lastDayOfMonth >= courseStartDate;
     }
 
+    /**
+     * Update navigation button states based on course dates
+     */
     function updateNavigationButtons() {
       if (!els.prevBtn || !els.nextBtn || !els.todayBtn) return;
 
@@ -358,6 +506,9 @@ export async function render(container, view = "dashboard") {
       els.todayBtn.title = canGoToToday ? "Go to today" : "Today is outside the course date range";
     }
 
+    /**
+     * Update the recurring meeting summary text based on selected dates
+     */
     function updateRecurringSummary() {
       if (!els.recurringSummaryEl) return;
 
@@ -382,7 +533,7 @@ export async function render(container, view = "dashboard") {
       }
 
       if (!endValue) {
-        const startLabel = anchorDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const startLabel = anchorDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
         els.recurringSummaryEl.textContent = `Repeats weekly beginning on the selected date, ${startLabel}. Pick an end date to finish the series.`;
         return;
       }
@@ -405,6 +556,9 @@ export async function render(container, view = "dashboard") {
       els.recurringSummaryEl.textContent = `Creates ${totalMeetings} weekly meetings through ${endLabel}.`;
     }
 
+    /**
+     * Sync recurring control state and update summary
+     */
     function syncRecurringControlState() {
       if (els.recurringEndInput) {
         els.recurringEndInput.disabled = !els.recurringCheckbox?.checked;
@@ -419,6 +573,24 @@ export async function render(container, view = "dashboard") {
     els.recurringEndInput?.addEventListener("change", updateRecurringSummary);
     els.recurringCheckbox?.addEventListener("change", syncRecurringControlState);
 
+    // Auto-set end time to 1 hour after start time when start time changes
+    els.meetingTimeInput?.addEventListener("change", () => {
+      if (!els.meetingEndTimeInput) return;
+      const startTime = els.meetingTimeInput.value;
+      if (!startTime) return;
+
+      // Only auto-set if end time is empty
+      if (!els.meetingEndTimeInput.value) {
+        const [hours, minutes] = startTime.split(":").map(Number);
+        const endHours = (hours + 1) % 24;
+        const endTimeStr = `${String(endHours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+        els.meetingEndTimeInput.value = endTimeStr;
+      }
+    });
+
+    /**
+     * Render the calendar grid with meetings for the current month
+     */
     function renderCalendar() {
       els.calendarGrid.innerHTML = "";
 
@@ -488,8 +660,19 @@ export async function render(container, view = "dashboard") {
             els.meetingDateInput.value = fullDate;
             selectedCalendarDate = fullDate;
             els.meetingTimeInput.value = "";
-            els.meetingTypeSelect.value = isProfessorOrTA(getCourseIdFromUrl()) ? "Lecture" : "Team Meeting";
+            if (els.meetingEndTimeInput) els.meetingEndTimeInput.value = "";
+            // Set default meeting type based on user role
+            const courseUUID = getCourseIdFromUrl();
+            const role = getUserRoleInCourse(courseUUID);
+            if (role === "Professor") {
+              els.meetingTypeSelect.value = "Lecture";
+            } else if (role === "TA") {
+              els.meetingTypeSelect.value = "OH";
+            } else {
+              els.meetingTypeSelect.value = "Team Meeting";
+            }
             els.meetingDescTextarea.value = "";
+            if (els.meetingLocationInput) els.meetingLocationInput.value = "";
             els.recurringCheckbox.checked = false;
             if (els.recurringEndInput) els.recurringEndInput.value = "";
             syncRecurringControlState();
@@ -506,6 +689,13 @@ export async function render(container, view = "dashboard") {
       updateNavigationButtons();
     }
 
+    /**
+     * Open meeting attendance modal with meeting details
+     * Shows different views for creator vs participant
+     * @param {string} date - Date string (YYYY-MM-DD)
+     * @param {number} index - Index of meeting in the date's meetings array
+     * @returns {Promise<void>}
+     */
     async function openMeetingAttendance(date, index) {
       const meeting = meetings[date][index];
       const currentUser = getCurrentUser();
@@ -576,6 +766,12 @@ export async function render(container, view = "dashboard") {
       els.meetingContentModalWrapper.classList.remove("hidden");
     }
 
+    /**
+     * Load meeting code and QR code for creator view
+     * Creates code on-demand if it doesn't exist
+     * @param {string} meetingUUID - Meeting UUID
+     * @returns {Promise<void>}
+     */
     async function loadMeetingCode(meetingUUID) {
       if (!meetingUUID) return;
 
@@ -635,6 +831,9 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Copy meeting code to clipboard
+     */
     function copyMeetingCode() {
       if (!els.meetingCodeDisplay) return;
 
@@ -685,6 +884,10 @@ export async function render(container, view = "dashboard") {
         });
     }
 
+    /**
+     * Start camera for QR code scanning
+     * @returns {Promise<void>}
+     */
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -701,6 +904,9 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Stop camera and QR scanning
+     */
     function stopCamera() {
       if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
@@ -717,6 +923,10 @@ export async function render(container, view = "dashboard") {
       if (els.stopCameraBtn) els.stopCameraBtn.classList.add("hidden");
     }
 
+    /**
+     * Load jsQR library dynamically for QR code scanning
+     * @returns {Promise<void>}
+     */
     function loadQRCodeLibrary() {
       return new Promise((resolve, reject) => {
         if (typeof jsQR !== "undefined") {
@@ -731,6 +941,10 @@ export async function render(container, view = "dashboard") {
       });
     }
 
+    /**
+     * Start QR code scanning using camera
+     * Uses jsQR library if available
+     */
     function startQRScanning() {
       if (!els.qrScannerVideo || !els.qrScannerCanvas) return;
 
@@ -746,6 +960,9 @@ export async function render(container, view = "dashboard") {
       startQRScanningWithLibrary();
     }
 
+    /**
+     * Start QR code scanning with jsQR library
+     */
     function startQRScanningWithLibrary() {
       if (!els.qrScannerVideo || !els.qrScannerCanvas || typeof jsQR === "undefined") return;
 
@@ -777,6 +994,12 @@ export async function render(container, view = "dashboard") {
       }, 100);
     }
 
+    /**
+     * Check if current time is within meeting time window
+     * @param {string|Date} startTime - Meeting start time
+     * @param {string|Date} endTime - Meeting end time
+     * @returns {Object} { isValid: boolean, message: string }
+     */
     function validateMeetingTimeWindow(startTime, endTime) {
       if (!startTime || !endTime) {
         return { isValid: false, message: "Meeting time information not available" };
@@ -803,6 +1026,10 @@ export async function render(container, view = "dashboard") {
       return { isValid: true, message: "" };
     }
 
+    /**
+     * Submit attendance using code (manual entry)
+     * @returns {Promise<void>}
+     */
     async function submitAttendance() {
       const code = els.attendancePasscodeInput?.value.trim().toUpperCase() || "";
       const { meetingUUID, meetingStartTime, meetingEndTime } = activeMeetingContext;
@@ -837,6 +1064,11 @@ export async function render(container, view = "dashboard") {
       }
     }
 
+    /**
+     * Handle QR code scan result
+     * @param {string} code - Scanned QR code
+     * @returns {Promise<void>}
+     */
     async function handleQRCodeScan(code) {
       if (!code?.trim()) return;
 
@@ -938,9 +1170,51 @@ export async function render(container, view = "dashboard") {
       const title = els.meetingTitleInput.value.trim();
       const date = els.meetingDateInput.value;
       const time = els.meetingTimeInput.value;
+      const endTime = els.meetingEndTimeInput?.value || "";
       const type = els.meetingTypeSelect.value;
       const desc = els.meetingDescTextarea.value.trim();
+      const location = els.meetingLocationInput?.value.trim() || "";
       const recurring = els.recurringCheckbox.checked;
+
+      // Validate end time is provided
+      if (!endTime) {
+        alert("Please enter an end time for the meeting.");
+        return;
+      }
+
+      // Validate time constraints
+      const meetingStart = new Date(`${date}T${time}`);
+      const meetingEnd = new Date(`${date}T${endTime}`);
+
+      if (isNaN(meetingStart.getTime()) || isNaN(meetingEnd.getTime())) {
+        alert("Please enter valid start and end times.");
+        return;
+      }
+
+      if (meetingEnd <= meetingStart) {
+        alert("End time must be after start time.");
+          return;
+        }
+
+      const durationMs = meetingEnd - meetingStart;
+      const durationMinutes = durationMs / (1000 * 60);
+      const durationHours = durationMinutes / 60;
+
+      if (durationMinutes < 15) {
+        alert("Meeting must be at least 15 minutes long.");
+        return;
+      }
+
+      if (durationHours > 12) {
+        alert("Meeting cannot be longer than 12 hours.");
+          return;
+        }
+
+      // Validate location if provided (must be Zoom link, Google Meet link, or plain text)
+      if (location && !isValidMeetingLocation(location)) {
+        alert("If entering a URL, please use a valid Zoom link (e.g., https://zoom.us/j/123456789) or Google Meet link (e.g., https://meet.google.com/abc-defg-hij). Otherwise, enter plain text like 'CSE Building, Room 202'.");
+          return;
+        }
 
       const allParticipants = Array.from(els.participantsContainer.querySelectorAll("input[type=\"checkbox\"]:checked"))
         .map(cb => cb.value);
@@ -956,37 +1230,36 @@ export async function render(container, view = "dashboard") {
         return;
       }
 
-      const currentUser = getCurrentUser();
+          const currentUser = getCurrentUser();
       if (!currentUser?.userUuid) {
-        alert("User information not available. Please refresh the page.");
-        return;
-      }
+            alert("User information not available. Please refresh the page.");
+            return;
+          }
 
-      const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
-      if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
-        alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
-        return;
-      }
+          const meetingTypeInt = parseInt(mapMeetingTypeToInt(type), 10);
+          if (!Number.isInteger(meetingTypeInt) || meetingTypeInt < 0 || meetingTypeInt > 3) {
+            alert(`Invalid meeting type: ${type}. Please select a valid meeting type.`);
+            return;
+          }
 
-      const createMeetingData = (dateStr, timeStr) => {
+      const createMeetingData = (dateStr, timeStr, endTimeStr) => {
         const meetingStart = new Date(`${dateStr}T${timeStr}`);
-        const meetingEnd = new Date(meetingStart);
-        meetingEnd.setHours(meetingStart.getHours() + 1);
+        const meetingEnd = new Date(`${dateStr}T${endTimeStr}`);
 
         const [dateYear, dateMonth, dateDay] = dateStr.split("-").map(Number);
-        const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
-        const meetingDateISO = dateWithNoon.toISOString();
+          const dateWithNoon = new Date(dateYear, dateMonth - 1, dateDay, 12, 0, 0);
+          const meetingDateISO = dateWithNoon.toISOString();
 
         return {
-          creatorUUID: currentUser.userUuid,
-          courseUUID: courseUUID,
-          meetingStartTime: meetingStart.toISOString(),
-          meetingEndTime: meetingEnd.toISOString(),
+            creatorUUID: currentUser.userUuid,
+            courseUUID: courseUUID,
+            meetingStartTime: meetingStart.toISOString(),
+            meetingEndTime: meetingEnd.toISOString(),
           meetingDate: meetingDateISO,
-          meetingTitle: title,
-          meetingDescription: desc || null,
-          meetingLocation: null,
-          meetingType: meetingTypeInt,
+            meetingTitle: title,
+            meetingDescription: desc || null,
+          meetingLocation: location || null,
+            meetingType: meetingTypeInt,
           isRecurring: false,
           participants
         };
@@ -1014,7 +1287,7 @@ export async function render(container, view = "dashboard") {
 
         while (nextDate <= endDate) {
           const nextDateStr = formatDate(nextDate);
-          const meetingData = createMeetingData(nextDateStr, time);
+          const meetingData = createMeetingData(nextDateStr, time, endTime);
 
           if (parentMeetingUUID) {
             meetingData.parentMeetingUUID = parentMeetingUUID;
@@ -1037,7 +1310,7 @@ export async function render(container, view = "dashboard") {
         }
       } else {
         try {
-          await createMeeting(createMeetingData(date, time));
+          await createMeeting(createMeetingData(date, time, endTime));
         } catch (error) {
           if (!error.message.includes("201") && !error.message.includes("Created") && !error.message.includes("Failed to fetch")) {
             alert(`Failed to create meeting: ${error.message}`);

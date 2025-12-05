@@ -30,8 +30,11 @@
         <label>Date</label>
         <input type="date" id="meeting-date" required />
 
-        <label>Time</label>
+        <label>Start Time</label>
         <input type="time" id="meeting-time" required />
+
+        <label>End Time</label>
+        <input type="time" id="meeting-end-time" required />
 
         <label>Meeting Type</label>
         <select id="meeting-type" required>
@@ -56,6 +59,10 @@
 
         <label>Description</label>
         <textarea id="meeting-description"></textarea>
+
+        <label>Meeting Location</label>
+        <input type="text" id="meeting-location" />
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.25rem;">Enter a location (Building and room, Zoom link, or Google Meet link) - optional</p>
 
         <!-- set up meeting recurrence -->
         <div class="recurring-card">
