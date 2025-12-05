@@ -38,7 +38,7 @@ async function loadTeamProfile(teamUuid) {
 
     // Render the team profile
     renderTeamProfile(team);
-  } catch (error) {
+  } catch {
     // Error loading team profile
     showError("Failed to load team profile. Please try again.");
   }
@@ -67,7 +67,7 @@ async function setupBackButton(courseUuid) {
         });
       }
       // For students, button stays hidden (default CSS)
-    } catch (error) {
+    } catch {
       // If error, show the button by default
       backBtnContainer.style.display = "block";
       backBtn.addEventListener("click", (e) => {
@@ -121,7 +121,7 @@ async function checkTeamLeaderStatus(teamUuid, courseUuid) {
     // User is team leader if they have "Team Leader" role AND are a member of this team
     // Backend will do the final verification to ensure they're actually the team leader
     isTeamLeader = hasTeamLeaderRole && isTeamMember;
-  } catch (error) {
+  } catch {
     isTeamLeader = false;
   }
 }
