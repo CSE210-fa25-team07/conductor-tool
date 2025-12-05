@@ -11,13 +11,13 @@ import { initManageUsers } from "./adminManageUsers.js";
 import { initAddUser } from "./adminAddUser.js";
 
 // State management
-let currentView = "adminRequestForms"; // default view (Request Forms)
+let currentView = "adminManageUsers"; // default view (Manage Users)
 
 // Admin view configurations
 const ADMIN_VIEWS = [
-  { id: "adminRequestForms", label: "Request Forms" },
+  { id: "adminManageUsers", label: "Manage Users" },
   { id: "adminAddUser", label: "Add User" },
-  { id: "adminManageUsers", label: "Manage Users" }
+  { id: "adminRequestForms", label: "Request Forms" }
 ];
 
 /**
@@ -66,7 +66,7 @@ async function init() {
     setupMobileMenu();
 
     // Default initial view
-    const initialView = "adminRequestForms";
+    const initialView = "adminManageUsers";
 
     // Load initial view
     await loadContent(initialView);
@@ -166,7 +166,7 @@ function setupMobileMenu() {
  * @param {HTMLElement} container - Container to render into
  * @param {string} view - View name (adminRequestForms, adminAddUser, adminManageUsers)
  */
-async function render(container, view = "adminRequestForms") {
+async function render(container, view = "adminManageUsers") {
   try {
     // Clear container
     container.innerHTML = "";
