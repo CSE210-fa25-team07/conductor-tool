@@ -111,23 +111,16 @@ async function handleAccessRequest() {
   codeInput.addEventListener("input", () => {
     codeInput.setCustomValidity("");
   });
-<<<<<<< HEAD
   const emailInput = document.getElementById("email");
   emailInput.addEventListener("input", () => {
     emailInput.setCustomValidity("");
   });
-=======
->>>>>>> 591d865 (clean code)
 
   // Get form data
   const formData = {
     firstName: document.getElementById("first-name").value.trim(),
     lastName: document.getElementById("last-name").value.trim(),
-<<<<<<< HEAD
     email: emailInput.value.trim(),
-=======
-    email: document.getElementById("email").value.trim(),
->>>>>>> 591d865 (clean code)
     institution: document.getElementById("institution").value.trim(),
     verificationCode: codeInput.value.trim()
   };
@@ -153,12 +146,8 @@ async function handleAccessRequest() {
     if (requestData.success) {
       showSuccessMessage();
     } else {
-<<<<<<< HEAD
       emailInput.setCustomValidity(requestData.error || "Failed to submit access request.");
       return;
-=======
-      alert("Error submitting access request: " + requestData.error);
->>>>>>> 591d865 (clean code)
     }
   } else {
     // Verification failed
