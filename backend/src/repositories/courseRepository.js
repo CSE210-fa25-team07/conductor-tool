@@ -442,6 +442,26 @@ async function removeUserFromCourse(userUuid, courseUuid) {
   });
 }
 
+/**
+ * Delete a course and all related data
+ * Database CASCADE constraints automatically delete:
+ * - Course enrollments
+ * - Verification codes
+ * - Teams (and team members)
+ * - Standups (and comments, notifications, sentiment logs)
+ * - Meetings (and participants, meeting codes)
+ * @param {string} courseUuid - The UUID of the course to delete
+ * @returns {Promise<Object>} Deleted course object
+ * @throws {Error} If database query fails
+ */
+async function deleteCourse(courseUuid) {
+  return await prisma.course.delete({
+    where: {
+      courseUuid: courseUuid
+    }
+  });
+}
+
 export {
   getCoursesByUserId,
   getCoursesWithDetailsByUserId,
@@ -454,5 +474,6 @@ export {
   updateCourseWithVerificationCodes,
   getCourseByUuid,
   getUsersByCourseUuid,
-  removeUserFromCourse
+  removeUserFromCourse,
+  deleteCourse
 };
