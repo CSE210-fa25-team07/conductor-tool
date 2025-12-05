@@ -147,15 +147,52 @@ function renderTeamProfile(team) {
     teamCourse.textContent = team.course.courseCode + ": " + team.course.courseName;
   }
 
+  // Combine TA info and links in one container, with links below TA
   if (teamTaInfo) {
-    if (team.teamTa) {
-      teamTaInfo.innerHTML = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green);\"><strong>Team TA:</strong> " + team.teamTa.firstName + " " + team.teamTa.lastName + "<br><a href=\"mailto:" + team.teamTa.email + "\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + team.teamTa.email + "</a></div>";
-    } else {
-      teamTaInfo.innerHTML = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No TA assigned</div>";
-    }
-  }
+    let taInfoHtml = "";
 
-  if (teamLinks) {
+    if (team.teamTa) {
+      // TA name and email on same line
+      taInfoHtml = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green);\"><strong>Team TA:</strong> " + team.teamTa.firstName + " " + team.teamTa.lastName + " <a href=\"mailto:" + team.teamTa.email + "\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + team.teamTa.email + "</a></div>";
+    } else {
+      taInfoHtml = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No TA assigned</div>";
+    }
+
+    // Add links below TA info
+    if (teamLinks) {
+      const links = [];
+      if (team.teamPageUrl) {
+        links.push("<a href=\"" + team.teamPageUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Team Page →</a>");
+      }
+      if (team.repoUrl) {
+        links.push("<a href=\"" + team.repoUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Repository →</a>");
+      }
+
+      const linksHtml = links.length > 0 ? links.join(" | ") : "";
+
+      // Add links below TA info
+      if (linksHtml) {
+        taInfoHtml += "<div style=\"margin-top: var(--space-sm); font-family: var(--font-mono); color: var(--color-forest-green);\">" + linksHtml + "</div>";
+      }
+
+      // Add edit button if user is team leader - below links
+      if (isTeamLeader) {
+        const buttonHtml = "<button id=\"edit-team-links-btn\" style=\"margin-top: var(--space-sm); font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;\">Edit Links</button>";
+        taInfoHtml += "<div>" + buttonHtml + "</div>";
+      }
+
+      teamTaInfo.innerHTML = taInfoHtml;
+
+      // Setup edit button event listener if it exists
+      const editBtn = document.getElementById("edit-team-links-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => enterEditMode());
+      }
+    } else {
+      teamTaInfo.innerHTML = taInfoHtml;
+    }
+  } else if (teamLinks) {
+    // Fallback if teamTaInfo doesn't exist, render links in teamLinks
     const links = [];
     if (team.teamPageUrl) {
       links.push("<a href=\"" + team.teamPageUrl + "\" target=\"_blank\" style=\"font-family: var(--font-mono); color: var(--color-forest-green); text-decoration: underline;\">Team Page →</a>");
@@ -166,15 +203,16 @@ function renderTeamProfile(team) {
 
     let linksHtml = links.length > 0 ? links.join(" | ") : "";
 
-    // Add edit button if user is team leader
     if (isTeamLeader) {
-      const buttonHtml = "<button id=\"edit-team-links-btn\" style=\"margin-left: " + (linksHtml ? "var(--space-md)" : "0") + "; font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;\">Edit Links</button>";
+      if (linksHtml) {
+        linksHtml += "<br>";
+      }
+      const buttonHtml = "<button id=\"edit-team-links-btn\" style=\"margin-top: var(--space-sm); font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;\">Edit Links</button>";
       linksHtml += buttonHtml;
     }
 
     teamLinks.innerHTML = linksHtml || (isTeamLeader ? "" : "<span style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No links set</span>");
 
-    // Setup edit button event listener if it exists
     const editBtn = document.getElementById("edit-team-links-btn");
     if (editBtn) {
       editBtn.addEventListener("click", () => enterEditMode());
@@ -232,38 +270,57 @@ function renderTeamProfile(team) {
 function enterEditMode() {
   if (!currentTeam) return;
 
-  const teamLinks = document.getElementById("team-links");
-  if (!teamLinks) return;
+  // Use team-ta-info container since we're now rendering links there
+  const teamTaInfo = document.getElementById("team-ta-info");
+  if (!teamTaInfo) return;
 
-  // Create edit form
+  // Keep TA info and add form below it
+  let taInfoHtml = "";
+
+  if (currentTeam.teamTa) {
+    // TA name and email on same line
+    taInfoHtml = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green);\"><strong>Team TA:</strong> " + currentTeam.teamTa.firstName + " " + currentTeam.teamTa.lastName + " <a href=\"mailto:" + currentTeam.teamTa.email + "\" style=\"color: var(--color-forest-green); text-decoration: underline;\">" + currentTeam.teamTa.email + "</a></div>";
+  } else {
+    taInfoHtml = "<div style=\"font-family: var(--font-mono); color: var(--color-forest-green-medium);\">No TA assigned</div>";
+  }
+
+  // Create edit form - ensure it's wide enough and properly aligned for long URLs
   const formHtml = `
-    <form id="team-links-form" style="display: flex; flex-direction: column; gap: var(--space-md);">
-      <div>
-        <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Team Page URL:</label>
-        <input type="url" id="edit-teamPageUrl" value="${currentTeam.teamPageUrl || ""}" 
-               style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green);"
-               placeholder="https://example.com/team-page">
-      </div>
-      <div>
-        <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Repository URL:</label>
-        <input type="url" id="edit-repoUrl" value="${currentTeam.repoUrl || ""}" 
-               style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green);"
-               placeholder="https://github.com/username/repo">
-      </div>
-      <div style="display: flex; gap: var(--space-sm);">
-        <button type="submit" id="save-team-links-btn" 
-                style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
-          Save Changes
-        </button>
-        <button type="button" id="cancel-edit-team-links-btn" 
-                style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: white; border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
-          Cancel
-        </button>
-      </div>
-    </form>
+    <div style="width: 100%; flex-basis: 100%; margin-top: var(--space-md);">
+      <form id="team-links-form" style="display: flex; flex-direction: column; gap: var(--space-md); width: 100%; min-width: 800px; max-width: 100%;">
+        <div style="width: 100%;">
+          <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Team Page URL:</label>
+          <input type="url" id="edit-teamPageUrl" value="${currentTeam.teamPageUrl || ""}" 
+                 style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green); box-sizing: border-box; background: white;"
+                 placeholder="https://example.com/team-page">
+        </div>
+        <div style="width: 100%;">
+          <label style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-forest-green); display: block; margin-bottom: var(--space-xs);">Repository URL:</label>
+          <input type="url" id="edit-repoUrl" value="${currentTeam.repoUrl || ""}" 
+                 style="width: 100%; padding: var(--space-sm); font-family: var(--font-mono); border: var(--border-thick); color: var(--color-forest-green); box-sizing: border-box; background: white;"
+                 placeholder="https://github.com/username/repo">
+        </div>
+        <div style="display: flex; gap: var(--space-sm);">
+          <button type="submit" id="save-team-links-btn" 
+                  style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: var(--color-radioactive-lime); border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
+            Save Changes
+          </button>
+          <button type="button" id="cancel-edit-team-links-btn" 
+                  style="font-family: var(--font-mono); font-size: var(--text-sm); padding: var(--space-sm) var(--space-md); background: white; border: var(--border-thick); color: var(--color-forest-green); cursor: pointer;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   `;
 
-  teamLinks.innerHTML = formHtml;
+  teamTaInfo.innerHTML = taInfoHtml + formHtml;
+
+  // Ensure the container expands to full width in edit mode
+  if (teamTaInfo.parentElement) {
+    teamTaInfo.parentElement.style.width = "100%";
+    teamTaInfo.parentElement.style.flexBasis = "100%";
+  }
 
   // Setup form event listeners
   const form = document.getElementById("team-links-form");
