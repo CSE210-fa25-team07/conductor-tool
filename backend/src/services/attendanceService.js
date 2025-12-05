@@ -966,6 +966,136 @@ async function recordAttendanceViaCode(req, res) {
   });
 }
 
+async function getInstructorAnalytics({ courseUuid, startDate, endDate, meetingType, teamUuid }) {
+  if (!courseUuid) {
+    throw new Error("courseUuid is required");
+  }
+
+  let meetings = await attendanceRepository.getMeetingListByParams({
+    courseUUID: courseUuid,
+    isStaff: true
+  });
+
+  if (meetingType) {
+    meetings = meetings.filter(m => String(m.meetingType) === String(meetingType));
+  }
+
+  if (startDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
+  }
+  if (endDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
+  }
+
+  const meetingUuids = meetings.map(m => m.meetingUuid);
+
+  const allParticipants = await attendanceRepository.getParticipantListByParams({
+    courseUUID: courseUuid
+  });
+
+  // { meetingUuid: [participant, participant...] }
+  const participantsByMeeting = {};
+  for (const p of allParticipants) {
+    if (!participantsByMeeting[p.meetingUuid]) {
+      participantsByMeeting[p.meetingUuid] = [];
+    }
+    participantsByMeeting[p.meetingUuid].push(p);
+  }
+
+  const timeline = [];
+
+  for (const meeting of meetings) {
+    const participants = participantsByMeeting[meeting.meetingUuid] || [];
+
+    let filteredParticipants = participants;
+    if (teamUuid) {
+      filteredParticipants = [];
+
+      for (const p of participants) {
+        const inTeam = await userContextRepository.checkTeamMembership(p.participantUuid, teamUuid);
+
+        if (inTeam) {
+          filteredParticipants.push(p);
+        }
+      }
+    }
+
+    const totalParticipants = filteredParticipants.length;
+    const attended = filteredParticipants.filter(p => p.present).length;
+
+    const attendancePercentage = totalParticipants > 0
+      ? Math.round((attended / totalParticipants) * 100)
+      : 0;
+
+    timeline.push({
+      date: meeting.meetingDate,
+      meetingType: meeting.meetingType,
+      meetingTitle: meeting.meetingTitle,
+      totalParticipants,
+      attended,
+      attendancePercentage
+    });
+  }
+
+  return {
+    courseUuid,
+    timeline
+  };
+}
+
+async function getStudentAnalytics({ userUuid, courseUuid, startDate, endDate }) {
+  if (!userUuid || !courseUuid) {
+    throw new Error("userUuid and courseUuid are required");
+  }
+
+  // Get all meetings for the course
+  let meetings = await attendanceRepository.getMeetingListByParams({
+    courseUUID: courseUuid
+  });
+
+  // Filter by date range if provided
+  if (startDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
+  }
+  if (endDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
+  }
+
+  // Get all participation records for this user in these meetings
+  const meetingUuids = meetings.map(m => m.meetingUuid);
+  const userParticipants = await attendanceRepository.getParticipantListByParams({
+    participantUUID: userUuid,
+    meetingUUIDs: meetingUuids
+  });
+
+  // Aggregate attendance by meeting type
+  const byMeetingType = [];
+  const typeMap = {};
+
+  meetings.forEach(meeting => {
+    const type = meeting.meetingType;
+    if (!typeMap[type]) {
+      typeMap[type] = { meetingType: type, totalMeetings: 0, attended: 0 };
+    }
+    typeMap[type].totalMeetings += 1;
+    const participant = userParticipants.find(p => p.meetingUuid === meeting.meetingUuid);
+    if (participant && participant.present) {
+      typeMap[type].attended += 1;
+    }
+  });
+
+  Object.values(typeMap).forEach(t => {
+    t.percentage = t.totalMeetings > 0 ? (t.attended / t.totalMeetings) * 100 : 0;
+    byMeetingType.push(t);
+  });
+
+  return {
+    userUuid,
+    courseUuid,
+    byMeetingType
+  };
+}
+
 export {
   getMeetingByUUID,
   createMeeting,
@@ -978,5 +1108,7 @@ export {
   deleteParticipant,
   getParticipantListByParams,
   getMeetingCode,
-  recordAttendanceViaCode
+  recordAttendanceViaCode,
+  getInstructorAnalytics,
+  getStudentAnalytics
 };

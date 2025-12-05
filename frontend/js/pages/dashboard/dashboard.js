@@ -149,6 +149,7 @@ function createCourseCard(course) {
     }
   });
 
+<<<<<<< HEAD
   // Handle leave course button click
   const leaveButton = article.querySelector(".leave-course-button");
   if (leaveButton) {
@@ -159,12 +160,15 @@ function createCourseCard(course) {
     });
   }
 
+=======
+>>>>>>> 591d865 (clean code)
   article.style.cursor = "pointer";
 
   return article;
 }
 
 /**
+<<<<<<< HEAD
  * Create a confirmation card to confirm course removal
  * @param {Object} course - Course data object
  * @param {string} course.courseUuid - Course UUID
@@ -232,6 +236,8 @@ function createConfirmationCard(course) {
 }
 
 /**
+=======
+>>>>>>> 591d865 (clean code)
  * Create role-specific menu items for course card
  * @param {Object} course - Course data object
  * @param {string} course.courseUuid - Course UUID
@@ -248,9 +254,15 @@ function createMenuItems(course) {
   } else {
     // Student menu items
     return `
+<<<<<<< HEAD
       <button class="menu-item leave-course-button" data-course-uuid="${course.courseUuid}">
         <span>Leave</span>
       </button>
+=======
+      <a href="/courses/${course.courseUuid}/leave" class="menu-item">
+        <span>Leave</span>
+      </a>
+>>>>>>> 591d865 (clean code)
     `;
   }
 }

@@ -144,3 +144,18 @@ export {
   validateParticipantData,
   validateParticipantListData
 };
+
+function validateInstructorAnalyticsRequest(query) {
+  if (!query.courseUuid) throw new Error("courseUuid is required");
+  // Add more validation as needed
+}
+
+function validateStudentAnalyticsRequest(query) {
+  if (!query.courseUuid) throw new Error("courseUuid is required");
+  // Add more validation as needed
+}
+
+export {
+  // validateInstructorAnalyticsRequest,
+  validateStudentAnalyticsRequest
+};

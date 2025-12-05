@@ -5,7 +5,8 @@
 
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
-import { loadUserContext, isProfessorOrTA, getUserRoleInCourse, getCurrentUser } from "../../utils/userContext.js";
+import { loadUserContext, isProfessorOrTA, getUserRoleInCourse, getCurrentUser, getUserTeams } from "../../utils/userContext.js";
+import { showClassAnalytics, showIndividualAnalytics, showGroupAnalytics} from "./analyticsindex.js";
 
 const meetings = {};
 let currentDate = new Date();
@@ -44,6 +45,10 @@ function mapMeetingTypeToString(typeInt) {
 }
 
 export async function render(container, view = "dashboard") {
+  if (view == "analysis") {
+      await renderAnalysisView(container);
+      return;
+    }
   try {
     const templateHTML = await loadTemplate("attendance", view);
     container.innerHTML = templateHTML;
@@ -1662,4 +1667,159 @@ export async function render(container, view = "dashboard") {
   } catch (error) {
     container.innerHTML = `<div class='error'>Failed to load calendar: ${error.message}</div>`;
   }
+}
+
+/** Extract course ID from URL path
+ * Assumes URL structure: /courses/{courseId}/...
+ * @returns {string|null} Course ID or null if not found
+ */
+function getCourseId() {
+      const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
+      return match ? match[1] : null;
+}
+
+/** Render class analytics (Professor/TA only)
+ * @param {HTMLElement} container - Container to render into
+ */
+export async function renderClassAnalytics(container) {
+  const html = await loadTemplate("attendance", "analysisclass");
+
+  // Append instead of overwrite
+  container.insertAdjacentHTML("beforeend", html);
+
+  // Find the inserted template
+  const template = container.querySelector('template:last-of-type');
+  if (template) {
+    const content = template.content.cloneNode(true);
+    template.replaceWith(content);
+  }
+
+  const courseUUID = getCourseId();
+  showClassAnalytics(courseUUID);
+}
+
+/** Render class analytics (Professor/TA only)
+ * @param {HTMLElement} container - Container to render into
+ */
+export async function renderIndividualAnalytics(container) {
+  const html = await loadTemplate("attendance", "analysisuser");
+
+  // Append instead of overwrite
+  container.insertAdjacentHTML("beforeend", html);
+
+  // Find the inserted template
+  const template = container.querySelector('template:last-of-type');
+  if (template) {
+    const content = template.content.cloneNode(true);
+    template.replaceWith(content);
+  }
+
+  const courseUUID = getCourseId();
+  const userUuid = getCurrentUser().userUuid;
+  showIndividualAnalytics(courseUUID, userUuid);
+}
+
+
+/** Render group analytics (Team Leader and above)
+ * @param {HTMLElement} container - Container to render into
+ */
+export async function renderGroupanalysis(container) {
+  const html = await loadTemplate("attendance", "analysisgroup");
+
+  // Append instead of overwrite
+  container.insertAdjacentHTML("beforeend", html);
+
+  // Find the inserted template
+  const template = container.querySelector('template:last-of-type');
+  if (template) {
+    const content = template.content.cloneNode(true);
+    template.replaceWith(content);
+  }
+
+  const courseUUID = getCourseId();
+  // console.log("Course UUID for group analytics:", courseUUID);
+  const userUuid = getCurrentUser().userUuid;
+  const usercontext = await loadUserContext(courseUUID);
+  const teamUuid = usercontext.teams[0]?.teamUuid || null;
+  // console.log("User's team UUIDs for group analytics:", teamUuid);
+  // console.log("User context for group analytics:", usercontext);
+  showGroupAnalytics(courseUUID, userUuid, teamUuid);
+}
+
+
+
+
+/**
+ * Render the Attendance Analytics view.
+ *
+ * Loads Chart.js, analytics-related scripts, user context,
+ * and the corresponding HTML template before initializing
+ * the analytics dashboard.
+ *
+ * @async
+ * @param {HTMLElement} container - container where the analytics UI will be rendered.
+ * @returns {Promise<void>} Resolves when the analytics view is fully loaded.
+ */
+export async function renderAnalysisView(container) {
+  try {
+    await loadChartJs();
+    const courseUUID = getCourseId();
+    const role = getUserRoleInCourse(courseUUID); 
+    console.log("User role:", role);
+
+    const baseHTML = await loadTemplate("attendance", "analysis"); 
+    container.innerHTML = baseHTML;
+
+    const template = container.querySelector("template");
+    if (template) {
+      const content = template.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(content);
+    }
+
+    await new Promise(r => setTimeout(r, 50));
+
+    if (role === "Student") {
+      await renderIndividualAnalytics(container);
+    }
+    else if (role === "Team Leader") {
+      await renderIndividualAnalytics(container);
+      await renderGroupanalysis(container);
+    }
+    else {
+      await renderClassAnalytics(container);
+      await renderGroupanalysis(container);
+    }
+
+  } catch (err) {
+    console.error("Error rendering analysis view:", err);
+  }
+}
+
+/**
+ * Load Chart.js before rendering any analytics charts.
+ * @async
+ * @returns {Promise<void>} 
+ * Resolves when Chart.js is successfully loaded and available globally.
+ * Rejects if the CDN script fails to load or if Chart.js does not initialize.
+ */
+function loadChartJs() {
+  return new Promise((resolve, reject) => {
+    if (typeof Chart !== 'undefined') {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+    script.onload = () => {
+      if (typeof Chart === 'undefined') {
+        reject(new Error('Chart.js failed to load'));
+      } else {
+        resolve();
+      }
+    };
+    script.onerror = () => reject(new Error('Failed to load Chart.js CDN'));
+    document.head.appendChild(script);
+  });
 }

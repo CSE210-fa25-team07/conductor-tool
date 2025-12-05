@@ -366,6 +366,23 @@
   border-top: var(--border-thin);
 }
 
+<<<<<<< HEAD
+=======
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+>>>>>>> 591d865 (clean code)
 /* Course Card Menu (Three-dot menu) */
 .course-menu-container {
   margin-left: auto;
@@ -433,7 +450,11 @@
   transition: background-color var(--transition-fast);
   border: none;
   width: 100%;
+<<<<<<< HEAD
   text-align: center;
+=======
+  text-align: left;
+>>>>>>> 591d865 (clean code)
   cursor: pointer;
 }
 
@@ -444,6 +465,7 @@
 .menu-item-icon {
   font-size: 1rem;
   color: var(--color-forest-green-medium);
+<<<<<<< HEAD
 }
 
 /* Confirmation Form */
@@ -493,4 +515,6 @@
   .form-actions button {
     width: 100%;
   }
+=======
+>>>>>>> 591d865 (clean code)
 }

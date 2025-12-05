@@ -24,16 +24,16 @@
       <form id="meeting-form">
 
         <!-- Meeting attributes -->
-        <label>Meeting Title</label>
+        <label for="meeting-title">Meeting Title</label>
         <input type="text" id="meeting-title" required />
 
-        <label>Date</label>
+        <label for="meeting-date">Date</label>
         <input type="date" id="meeting-date" required />
 
-        <label>Time</label>
+        <label for="meeting-time">Time</label>
         <input type="time" id="meeting-time" required />
 
-        <label>Meeting Type</label>
+        <label for="meeting-type">Meeting Type</label>
         <select id="meeting-type" required>
           <option>Lecture</option>
           <option>OH</option>
@@ -41,7 +41,7 @@
           <option>Team Meeting</option>
         </select>
 
-        <label>Participants</label>
+        <label for="meeting-participants">Participants</label>
         <div class="participants-controls">
           <button type="button" id="select-all-participants" class="btn-select-all">Select All</button>
           <button type="button" id="deselect-all-participants" class="btn-deselect-all">Deselect All</button>
@@ -54,7 +54,7 @@
           <p style="padding: 10px; color: #666; text-align: center;">Loading participants...</p>
         </div>
 
-        <label>Description</label>
+        <label for="meeting-description">Description</label>
         <textarea id="meeting-description"></textarea>
 
         <!-- set up meeting recurrence -->
