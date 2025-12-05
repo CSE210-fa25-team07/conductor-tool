@@ -423,6 +423,25 @@ async function updateCourseWithVerificationCodes(courseUuid, courseData) {
   return result;
 }
 
+/**
+ * Remove user from course by deleting their enrollment
+ * Deletes all enrollments for the user in the course (regardless of role)
+ * @param {string} userUuid - The UUID of the user to remove
+ * @param {string} courseUuid - The UUID of the course
+ * @returns {Promise<Object>} Object with count of deleted enrollments
+ * @throws {Error} If database query fails
+ */
+async function removeUserFromCourse(userUuid, courseUuid) {
+  // Use deleteMany because a user might have multiple roles in the same course
+  // and the primary key is (user_uuid, course_uuid, role_uuid)
+  return await prisma.courseEnrollment.deleteMany({
+    where: {
+      userUuid: userUuid,
+      courseUuid: courseUuid
+    }
+  });
+}
+
 export {
   getCoursesByUserId,
   getCoursesWithDetailsByUserId,
@@ -434,5 +453,6 @@ export {
   createCourseWithVerificationCodes,
   updateCourseWithVerificationCodes,
   getCourseByUuid,
-  getUsersByCourseUuid
+  getUsersByCourseUuid,
+  removeUserFromCourse
 };
