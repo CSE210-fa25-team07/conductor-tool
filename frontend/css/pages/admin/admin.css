@@ -274,7 +274,7 @@
   display: none;
   padding: var(--space-md);
   margin-bottom: var(--space-md);
-  color: var(--color-red);
+  color: red;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: 1.6;

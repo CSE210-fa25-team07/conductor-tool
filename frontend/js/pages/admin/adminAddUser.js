@@ -118,7 +118,7 @@ async function submitUserData(formData) {
     // Reload page after a short delay
     setTimeout(() => {
       window.location.reload();
-    }, 1500);
+    }, 2000);
   } catch (error) {
     // Re-enable form if there's an error
     enableForm();

@@ -247,8 +247,9 @@ function showError(message) {
   if (contentArea) {
     contentArea.innerHTML = `
       <div class="error-message" style="
+        display: block;
         font-family: var(--font-mono);
-        color: var(--color-forest-green);
+        color: red;
         background: var(--color-light-matcha);
         border: var(--border-thick);
         padding: var(--space-xl);
