@@ -3,7 +3,7 @@
  * APIs are wired from /v1/api/
  */
 import express from "express";
-import { checkApiSession } from "../utils/auth.js";
+import { checkApiSession, checkSystemAdmin } from "../utils/auth.js";
 import directoryApis from "./api/directoryApi.js";
 import standupApis from "./api/standupApi.js";
 import attendanceApis from "./api/attendanceApi.js";
@@ -11,6 +11,7 @@ import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
 import courseApis from "./api/courseApi.js";
 import metricsApis from "../metrics/metricsApi.js";
+import adminApis from "./api/adminApi.js";
 
 const router = express.Router();
 
@@ -32,5 +33,7 @@ router.use("/attendance", checkApiSession, attendanceApis);
 router.use("/user-context", checkApiSession, userContextApis);
 
 router.use("/metrics", checkApiSession, metricsApis);
+
+router.use("/admin", checkApiSession, checkSystemAdmin, adminApis);
 
 export default router;

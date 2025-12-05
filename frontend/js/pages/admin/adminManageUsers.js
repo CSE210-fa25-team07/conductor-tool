@@ -4,6 +4,6 @@
  */
 
 export async function initManageUsers() {
-    // Add your functionality here
+  // Add your functionality here
 
 }

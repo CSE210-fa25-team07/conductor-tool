@@ -65,9 +65,8 @@ async function init() {
     // Set up mobile menu toggle
     setupMobileMenu();
 
-    // Get initial view from URL query params
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialView = urlParams.get("view") || "adminRequestForms";
+    // Default initial view
+    const initialView = "adminRequestForms";
 
     // Load initial view
     await loadContent(initialView);
@@ -208,17 +207,17 @@ async function loadContent(view) {
 
     // Initialize view-specific functionality
     switch (view) {
-      case "adminRequestForms":
-        await initRequestForms();
-        break;
+    case "adminRequestForms":
+      await initRequestForms();
+      break;
 
-      case "adminManageUsers":
-        await initManageUsers();
-        break;
+    case "adminManageUsers":
+      await initManageUsers();
+      break;
 
-      case "adminAddUser":
-        await initAddUser();
-        break;
+    case "adminAddUser":
+      await initAddUser();
+      break;
     }
 
     // Update current view state
