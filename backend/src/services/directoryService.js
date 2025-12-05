@@ -532,7 +532,7 @@ async function updateTeamLinks(req, res) {
   }
 
   // Check if user is a team leader for this team
-  const isTeamLeader = await userContextRepository.checkTeamLeaderRole(userUuid, teamUuid);
+  const isTeamLeader = await directoryRepository.checkTeamLeaderRole(userUuid, teamUuid);
 
   if (!isTeamLeader) {
     return res.status(403).json({
