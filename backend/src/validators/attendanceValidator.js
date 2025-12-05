@@ -138,24 +138,68 @@ function validateParticipantListData(participants) {
   return true;
 }
 
+/**
+ * Validate student analytics request
+ * @param {Object} query - Request query parameters
+ * @throws {Error} If validation fails
+ */
+function validateStudentAnalyticsRequest(query) {
+  const { courseUuid, startDate, endDate } = query;
+
+  if (!courseUuid || typeof courseUuid !== "string" || courseUuid.trim().length === 0) {
+    throw new Error("courseUuid is required and must be a non-empty string");
+  }
+
+  // Validate dates if provided
+  if (startDate && isNaN(Date.parse(startDate))) {
+    throw new Error("startDate must be a valid date string (YYYY-MM-DD)");
+  }
+
+  if (endDate && isNaN(Date.parse(endDate))) {
+    throw new Error("endDate must be a valid date string (YYYY-MM-DD)");
+  }
+
+  // Validate date range if both provided
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (start > end) {
+      throw new Error("startDate must be before or equal to endDate");
+    }
+  }
+}
+
+/**
+ * Validate instructor analytics request
+ * @param {Object} query - Request query parameters
+ * @throws {Error} If validation fails
+ */
+function validateInstructorAnalyticsRequest(query) {
+  const { courseUuid, startDate, endDate, meetingType, teamUuid } = query;
+
+  // Use student validation as base
+  validateStudentAnalyticsRequest({ courseUuid, startDate, endDate });
+
+  // Additional validation for instructor-specific fields
+  if (meetingType !== undefined) {
+    const type = parseInt(meetingType);
+    if (isNaN(type) || type < 0) {
+      throw new Error("meetingType must be a positive integer");
+    }
+  }
+
+  if (teamUuid !== undefined) {
+    if (typeof teamUuid !== "string" || teamUuid.trim().length === 0) {
+      throw new Error("teamUuid must be a non-empty string");
+    }
+  }
+}
+
 export {
   validateCreateMeetingData,
   validateUpdateMeetingData,
   validateParticipantData,
-  validateParticipantListData
-};
-
-function validateInstructorAnalyticsRequest(query) {
-  if (!query.courseUuid) throw new Error("courseUuid is required");
-  // Add more validation as needed
-}
-
-function validateStudentAnalyticsRequest(query) {
-  if (!query.courseUuid) throw new Error("courseUuid is required");
-  // Add more validation as needed
-}
-
-export {
-  // validateInstructorAnalyticsRequest,
-  validateStudentAnalyticsRequest
+  validateParticipantListData,
+  validateStudentAnalyticsRequest,
+  validateInstructorAnalyticsRequest
 };
