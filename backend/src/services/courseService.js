@@ -468,13 +468,103 @@ async function updateCourse(req, res) {
   }
 }
 
+/**
+ * Remove user from course (student leaving a course)
+ * @param {*} req Request object with courseUuid param
+ * @param {*} res Response object
+ */
+async function removeUserFromCourse(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUuid = req.params.courseUuid;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Remove the user from the course
+    const result = await courseRepository.removeUserFromCourse(userId, courseUuid);
+
+    if (result.count === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Enrollment not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully removed from course"
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      error: "Failed to remove from course"
+    });
+  }
+}
+
+/**
+ * Delete a course (professor deleting their course)
+ * @param {*} req Request object with courseUuid param
+ * @param {*} res Response object
+ */
+async function deleteCourse(req, res) {
+  try {
+    const userId = req.session.user?.id;
+    const courseUuid = req.params.courseUuid;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "Not authenticated"
+      });
+    }
+
+    // Check if user has permission to delete this course
+    const userStatus = await userRepository.getUserStatusByUuid(userId);
+    const isProfessor = await courseRepository.isUserCourseProfessor(userId, courseUuid);
+
+    // Allow deletion if user is the course professor OR is an admin
+    if (!isProfessor && !userStatus.isLeadAdmin && !userStatus.isSystemAdmin) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to delete this course"
+      });
+    }
+
+    // Delete the course and all related data
+    await courseRepository.deleteCourse(courseUuid);
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully deleted course"
+    });
+  } catch (error) {
+    // Check if course was not found; Prisma error code P2025 indicates record not found
+    if (error.code === "P2025") {
+      return res.status(404).json({
+        success: false,
+        error: "Course not found"
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete course"
+    });
+  }
+}
+
 export {
   getUserCourses,
   getAvailableTerms,
   getCourseForEdit,
   createCourse,
   updateCourse,
-  getUsersByCourseUUID,
-  getTeamsByCourseUUID,
-  getCourseByUUID
+  removeUserFromCourse,
+  deleteCourse
 };

@@ -150,4 +150,48 @@ router.put("/:courseUuid", async (req, res) => {
   }
 });
 
+/**
+ * Remove current user from a course (leave course)
+ *
+ * @name DELETE /v1/api/courses/:courseUuid/leave
+ * @param {string} courseUuid - The course UUID
+ * @returns {Object} 200 - Successfully removed from course
+ * @returns {Object} 401 - Not authenticated
+ * @returns {Object} 403 - Not authorized (professors cannot leave their own courses)
+ * @returns {Object} 404 - Enrollment not found
+ * @returns {Object} 500 - Server error
+ */
+router.delete("/:courseUuid/leave", async (req, res) => {
+  try {
+    return await courseService.removeUserFromCourse(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Delete a course (professor/admin deleting entire course)
+ *
+ * @name DELETE /v1/api/courses/:courseUuid/delete
+ * @param {string} courseUuid - The course UUID
+ * @returns {Object} 200 - Successfully deleted course
+ * @returns {Object} 401 - Not authenticated
+ * @returns {Object} 403 - Not authorized (only professors/admins can delete courses)
+ * @returns {Object} 404 - Course not found
+ * @returns {Object} 500 - Server error
+ */
+router.delete("/:courseUuid/delete", async (req, res) => {
+  try {
+    return await courseService.deleteCourse(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;
