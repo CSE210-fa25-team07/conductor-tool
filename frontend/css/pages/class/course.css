@@ -85,52 +85,6 @@
   background: var(--color-radioactive-lime);
 }
 
-/* Mobile Bottom Navigation */
-.mobile-bottom-nav {
-  display: none;
-}
-
-.mobile-bottom-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  gap: 0;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-}
-
-.mobile-bottom-item {
-  flex: 1 1 0;              /* even distribution */
-  min-width: 0;             /* allow shrinking evenly */
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs); /* smaller font to fit labels */
-  font-weight: 600;
-  letter-spacing: 0;        /* tighter for small screens */
-  padding: var(--space-xs); /* reduce padding */
-  background: transparent;
-  color: var(--color-forest-green-medium);
-  border: none;
-  border-top: var(--border-thin);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;      /* keep on one line */
-  overflow: hidden;         /* prevent overflow */
-  text-overflow: ellipsis;  /* ellipsis if extremely tight */
-}
-
-.mobile-bottom-item:hover {
-  background: var(--color-light-matcha);
-  color: var(--color-forest-green);
-}
-
-.mobile-bottom-item.active {
-  background: var(--color-forest-green);
-  color: var(--color-radioactive-lime);
-  border-top-color: var(--color-forest-green);
-}
-
 /* Main Course Layout (Sidebar + Content) */
 .course-layout {
   display: grid;
@@ -226,22 +180,5 @@
   .feature-nav-btn {
     border-right: none;
     border-bottom: var(--border-thin);
-  }
-
-  /* Show fixed bottom nav on mobile and add safe area for content */
-  .mobile-bottom-nav {
-    display: block;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--color-pale-mint);
-    border-top: var(--border-thick);
-    z-index: 999;
-  padding: 0;
-  }
-
-  .content-area {
-    padding-bottom: calc(var(--space-2xl) + 64px);
   }
 }
