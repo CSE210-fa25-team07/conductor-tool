@@ -38,6 +38,51 @@ async function addUser(user) {
 }
 
 /**
+ * Add a new user with staff status to the database
+ * @param {Object} user - User object with firstName, lastName, email
+ * @param {Object} staffStatus - Staff status with isProf and isSystemAdmin flags
+ * @returns {Promise<Object>} The added user with staff record
+ * @status IN USE
+ */
+async function addUserWithStaffStatus(user, staffStatus) {
+  // Check if user with email already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email: user.email }
+  });
+
+  if (existingUser) {
+    throw new Error("User with this email already exists");
+  }
+
+  // Create user and staff record in a transaction
+  const result = await prisma.$transaction(async (tx) => {
+    const newUser = await tx.user.create({
+      data: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      }
+    });
+
+    // Only create staff record if user is a professor or system admin
+    if (staffStatus.isProf || staffStatus.isSystemAdmin) {
+      await tx.staff.create({
+        data: {
+          userUuid: newUser.userUuid,
+          isProf: staffStatus.isProf || false,
+          isSystemAdmin: staffStatus.isSystemAdmin || false,
+          isLeadAdmin: false
+        }
+      });
+    }
+
+    return newUser;
+  });
+
+  return result;
+}
+
+/**
  * Get a user by email address
  * @param {string} email - Email address to search for
  * @returns {Promise<Object|null>} User object or null if not found
@@ -160,4 +205,4 @@ async function getUserStatusByUuid(userUuid) {
   };
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid };
+export { addUser, addUserWithStaffStatus, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid };

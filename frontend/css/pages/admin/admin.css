@@ -106,6 +106,193 @@
   transform: translateX(250px);
 }
 
+/* ==================== Add User Form ==================== */
+.add-user-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--space-2xl);
+  text-align: left;
+  padding: var(--space-xl) 0;
+  border-bottom: var(--border-thin);
+}
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-sm);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-description {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green-medium);
+  margin: 0;
+}
+
+.form-card {
+  background: var(--color-light-matcha);
+  border: var(--border-thin);
+  padding: var(--space-lg);
+  border-radius: 0;
+}
+
+.add-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-label .required {
+  color: red;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  background-color: var(--color-white);
+  color: var(--color-forest-green);
+  border: var(--border-thin);
+  border-radius: 0;
+  transition: border-color var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-radioactive-lime);
+  border-width: 2px;
+}
+
+.form-input::placeholder {
+  color: var(--color-forest-green-medium);
+  opacity: 0.7;
+}
+
+.checkbox-group {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.checkbox-group .form-label {
+  margin-bottom: var(--space-xs);
+}
+
+.checkbox-group-inner {
+  border: var(--border-thin);
+  background: var(--color-white);
+  padding: var(--space-md);
+  border-radius: 0;
+}
+
+.form-legend {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  float: none;
+  width: 100%;
+  padding: 0;
+}
+
+.form-legend .required {
+  color: red;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-forest-green);
+  margin-bottom: var(--space-sm);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+  transition: none;
+}
+
+.checkbox-label:last-child {
+  margin-bottom: 0;
+}
+
+.checkbox-label:hover {
+  opacity: 0.8;
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-forest-green);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  margin-top: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: var(--border-thin);
+}
+
+.error-message {
+  display: none;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  color: red;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.success-message {
+  display: none;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: var(--color-forest-green);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  line-height: 1.6;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .mobile-menu-toggle {
@@ -151,5 +338,18 @@
 
   .sidebar-overlay.show {
     display: block;
+  }
+
+  /* Add User Form Responsive */
+  .form-card {
+    padding: var(--space-lg);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
   }
 }

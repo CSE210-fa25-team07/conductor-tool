@@ -11,13 +11,13 @@ import { initManageUsers } from "./adminManageUsers.js";
 import { initAddUser } from "./adminAddUser.js";
 
 // State management
-let currentView = "adminRequestForms"; // default view (Request Forms)
+let currentView = "adminManageUsers"; // default view (Manage Users)
 
 // Admin view configurations
 const ADMIN_VIEWS = [
-  { id: "adminRequestForms", label: "Request Forms" },
+  { id: "adminManageUsers", label: "Manage Users" },
   { id: "adminAddUser", label: "Add User" },
-  { id: "adminManageUsers", label: "Manage Users" }
+  { id: "adminRequestForms", label: "Request Forms" }
 ];
 
 /**
@@ -65,9 +65,8 @@ async function init() {
     // Set up mobile menu toggle
     setupMobileMenu();
 
-    // Get initial view from URL query params
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialView = urlParams.get("view") || "adminRequestForms";
+    // Default initial view
+    const initialView = "adminManageUsers";
 
     // Load initial view
     await loadContent(initialView);
@@ -167,7 +166,7 @@ function setupMobileMenu() {
  * @param {HTMLElement} container - Container to render into
  * @param {string} view - View name (adminRequestForms, adminAddUser, adminManageUsers)
  */
-async function render(container, view = "adminRequestForms") {
+async function render(container, view = "adminManageUsers") {
   try {
     // Clear container
     container.innerHTML = "";
@@ -208,17 +207,17 @@ async function loadContent(view) {
 
     // Initialize view-specific functionality
     switch (view) {
-      case "adminRequestForms":
-        await initRequestForms();
-        break;
+    case "adminRequestForms":
+      await initRequestForms();
+      break;
 
-      case "adminManageUsers":
-        await initManageUsers();
-        break;
+    case "adminManageUsers":
+      await initManageUsers();
+      break;
 
-      case "adminAddUser":
-        await initAddUser();
-        break;
+    case "adminAddUser":
+      await initAddUser();
+      break;
     }
 
     // Update current view state
@@ -248,8 +247,9 @@ function showError(message) {
   if (contentArea) {
     contentArea.innerHTML = `
       <div class="error-message" style="
+        display: block;
         font-family: var(--font-mono);
-        color: var(--color-forest-green);
+        color: red;
         background: var(--color-light-matcha);
         border: var(--border-thick);
         padding: var(--space-xl);
