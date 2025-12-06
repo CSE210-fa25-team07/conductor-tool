@@ -6,6 +6,18 @@ import * as directoryRepository from "../repositories/directoryRepository.js";
 import * as directoryDto from "../dtos/directoryDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
 
+/**
+ * Validate and normalize pagination parameters
+ * @param {number|string} page - Page number
+ * @param {number|string} limit - Items per page
+ * @returns {Object} Validated page and limit values
+ */
+function validatePagination(page, limit) {
+  const validPage = Math.max(1, parseInt(page) || 1);
+  const validLimit = Math.min(Math.max(1, parseInt(limit) || 20), 100);
+  return { page: validPage, limit: validLimit };
+}
+
 async function getCourseOverview(req, res) {
   const userId = req.session.user.id;
   const { courseUuid } = req.params;
@@ -39,12 +51,23 @@ async function getCourseOverview(req, res) {
 }
 
 async function getCourseStaff(req, res) {
+  const userId = req.session.user.id;
   const { courseUuid } = req.params;
 
   if (!courseUuid) {
     return res.status(400).json({
       success: false,
       error: "courseUuid is required"
+    });
+  }
+
+  // Check if user is enrolled in this course
+  const isEnrolled = await directoryRepository.checkCourseEnrollment(userId, courseUuid);
+
+  if (!isEnrolled) {
+    return res.status(403).json({
+      success: false,
+      error: "Not authorized to view course staff"
     });
   }
 
@@ -114,6 +137,7 @@ async function getRecentEnrollments(req, res) {
 }
 
 async function getUserProfile(req, res) {
+  const requesterId = req.session.user.id;
   const { userUuid } = req.params;
 
   if (!userUuid) {
@@ -121,6 +145,18 @@ async function getUserProfile(req, res) {
       success: false,
       error: "userUuid is required"
     });
+  }
+
+  // Allow viewing own profile without course check
+  if (requesterId !== userUuid) {
+    // Check if requester shares a course with the target user
+    const sharesCourse = await directoryRepository.checkSharedCourseEnrollment(requesterId, userUuid);
+    if (!sharesCourse) {
+      return res.status(403).json({
+        success: false,
+        error: "Not authorized to view this profile"
+      });
+    }
   }
 
   const user = await directoryRepository.getUserProfile(userUuid);
@@ -159,10 +195,13 @@ async function getCourseRoster(req, res) {
     });
   }
 
+  // Validate pagination parameters
+  const pagination = validatePagination(page, limit);
+
   const rosterData = await directoryRepository.getCourseRoster(
     courseUuid,
-    parseInt(page),
-    parseInt(limit),
+    pagination.page,
+    pagination.limit,
     filter
   );
 
@@ -233,10 +272,13 @@ async function getCourseTeams(req, res) {
   // Check if user is staff (can see all teams) or student (can only see their own team)
   const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseUuid);
 
+  // Validate pagination parameters
+  const pagination = validatePagination(page, limit);
+
   const teamsData = await directoryRepository.getCourseTeams(
     courseUuid,
-    parseInt(page),
-    parseInt(limit),
+    pagination.page,
+    pagination.limit,
     isStaff ? null : userId  // Pass userId to filter to user's team only if not staff
   );
 
@@ -255,14 +297,8 @@ async function getCourseTeams(req, res) {
 async function getCurrentUserProfile(req, res) {
   const userUuid = req.session.user.id;
 
-  // Get user with staff relationship
-  const prisma = (await import("../utils/db.js")).getPrisma();
-  const user = await prisma.user.findUnique({
-    where: { userUuid: userUuid },
-    include: {
-      staff: true
-    }
-  });
+  // Use repository for consistent data retrieval
+  const user = await directoryRepository.getUserProfile(userUuid);
 
   if (!user) {
     return res.status(404).json({
@@ -273,7 +309,7 @@ async function getCurrentUserProfile(req, res) {
 
   return res.status(200).json({
     success: true,
-    data: user
+    data: directoryDto.toUserProfileDto(user)
   });
 }
 

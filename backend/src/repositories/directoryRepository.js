@@ -258,7 +258,11 @@ export async function getCourseRoster(courseUuid, page = 1, limit = 20, filter =
     enrollmentStatus: "active"
   };
 
-  if (filter !== "all") {
+  // Validate and normalize filter parameter
+  const allowedFilters = ["all", "student", "instructor", "ta"];
+  const normalizedFilter = allowedFilters.includes(filter?.toLowerCase()) ? filter.toLowerCase() : "all";
+
+  if (normalizedFilter !== "all") {
     // Map filter values to actual database role names
     const roleMap = {
       "student": "Student",
@@ -266,7 +270,7 @@ export async function getCourseRoster(courseUuid, page = 1, limit = 20, filter =
       "ta": "TA"
     };
 
-    const roleName = roleMap[filter.toLowerCase()] || filter;
+    const roleName = roleMap[normalizedFilter];
 
     whereClause.role = {
       role: roleName
@@ -608,6 +612,40 @@ export async function updateTeamLinks(teamUuid, linksData) {
   });
 
   return updatedTeam;
+}
+
+/**
+ * Check if two users share at least one course enrollment
+ * @param {string} userUuid1 - First user UUID
+ * @param {string} userUuid2 - Second user UUID
+ * @returns {Promise<boolean>} True if users share at least one course
+ */
+export async function checkSharedCourseEnrollment(userUuid1, userUuid2) {
+  // Get all active courses for user1
+  const user1Courses = await prisma.courseEnrollment.findMany({
+    where: {
+      userUuid: userUuid1,
+      enrollmentStatus: "active"
+    },
+    select: { courseUuid: true }
+  });
+
+  const user1CourseUuids = user1Courses.map(c => c.courseUuid);
+
+  if (user1CourseUuids.length === 0) {
+    return false;
+  }
+
+  // Check if user2 is enrolled in any of those courses
+  const sharedEnrollment = await prisma.courseEnrollment.findFirst({
+    where: {
+      userUuid: userUuid2,
+      courseUuid: { in: user1CourseUuids },
+      enrollmentStatus: "active"
+    }
+  });
+
+  return !!sharedEnrollment;
 }
 
 /**

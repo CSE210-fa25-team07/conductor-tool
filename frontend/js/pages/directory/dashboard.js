@@ -105,7 +105,7 @@ function renderStaff(staff) {
   }
 
   container.innerHTML = "<div class=\"staff-grid\">" + staff.map(member => {
-    const initials = (member.firstName[0] + member.lastName[0]).toUpperCase();
+    const initials = ((member.firstName?.[0] || "") + (member.lastName?.[0] || "")).toUpperCase() || "?";
     const photoHtml = member.photoUrl
       ? "<div class=\"staff-avatar\"><img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\"></div>"
       : "<div class=\"staff-avatar-initials\">" + initials + "</div>";

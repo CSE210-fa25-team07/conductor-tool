@@ -95,7 +95,7 @@ function renderUserProfile(user) {
   }
 
   if (userAvatar) {
-    const initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
+    const initials = ((user.firstName?.[0] || "") + (user.lastName?.[0] || "")).toUpperCase() || "?";
     if (user.photoUrl) {
       userAvatar.innerHTML = "<img src=\"" + user.photoUrl + "\" alt=\"" + user.firstName + " " + user.lastName + "\" style=\"width: 100%; height: 100%; object-fit: cover; border-radius: 50%;\">";
     } else {
@@ -158,7 +158,8 @@ function renderUserProfile(user) {
   if (teamsList) {
     if (user.teams && user.teams.length > 0) {
       // Get active course UUID from session storage to filter teams
-      const activeCourse = JSON.parse(sessionStorage.getItem("activeCourse"));
+      const activeCourseJson = sessionStorage.getItem("activeCourse");
+      const activeCourse = activeCourseJson ? JSON.parse(activeCourseJson) : null;
       const activeCourseUuid = activeCourse?.courseUuid;
 
       // Filter teams to only show teams for the active course

@@ -75,7 +75,7 @@ function renderRoster(data) {
   }
 
   tbody.innerHTML = data.students.map(student => {
-    const initials = (student.firstName[0] + student.lastName[0]).toUpperCase();
+    const initials = ((student.firstName?.[0] || "") + (student.lastName?.[0] || "")).toUpperCase() || "?";
     const photoHtml = student.photoUrl
       ? "<img src=\"" + student.photoUrl + "\" alt=\"" + student.firstName + " " + student.lastName + "\" class=\"user-avatar\">"
       : "<div class=\"user-avatar-initials\">" + initials + "</div>";

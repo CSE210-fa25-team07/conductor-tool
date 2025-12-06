@@ -232,7 +232,7 @@ function renderTeamProfile(team) {
       membersGrid.innerHTML = "<div class=\"loading-message\" style=\"grid-column: 1 / -1;\"><p>No team members</p></div>";
     } else {
       membersGrid.innerHTML = team.members.map(member => {
-        const initials = (member.firstName[0] + member.lastName[0]).toUpperCase();
+        const initials = ((member.firstName?.[0] || "") + (member.lastName?.[0] || "")).toUpperCase() || "?";
         const photoHtml = member.photoUrl
           ? "<div class=\"member-avatar\"><img src=\"" + member.photoUrl + "\" alt=\"" + member.firstName + " " + member.lastName + "\"></div>"
           : "<div class=\"member-avatar-initials\">" + initials + "</div>";
