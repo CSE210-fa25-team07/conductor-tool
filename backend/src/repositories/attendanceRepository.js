@@ -90,15 +90,40 @@ async function updateMeeting(meetingUUID, updateData) {
 }
 
 /**
- * Delete meeting by UUID
+ * Delete meeting by UUID and repair linked list chain
  * @param {string} meetingUUID to delete
  * @returns {Promise<boolean>} true if deleted
  * @throws {Error} on database error
  */
 async function deleteMeeting(meetingUUID) {
+  const meetingToDelete = await prisma.meeting.findUnique({
+    where: { meetingUuid: meetingUUID },
+    select: { parentMeetingUuid: true }
+  });
+
+  if (!meetingToDelete) {
+    return false;
+  }
+
+  // Find the child meeting (next in chain) that points to this meeting as its parent
+  const childMeeting = await prisma.meeting.findFirst({
+    where: { parentMeetingUuid: meetingUUID },
+    select: { meetingUuid: true }
+  });
+
+  // If there's a child, update it to point to this meeting's parent (repair the chain)
+  if (childMeeting) {
+    await prisma.meeting.update({
+      where: { meetingUuid: childMeeting.meetingUuid },
+      data: { parentMeetingUuid: meetingToDelete.parentMeetingUuid }
+    });
+  }
+
+  // Now delete the meeting
   await prisma.meeting.delete({
     where: { meetingUuid: meetingUUID }
   });
+
   return true;
 }
 
