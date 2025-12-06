@@ -997,7 +997,7 @@ async function getStudentAnalytics(req, res) {
   }
 
   // Can't view other students' data lol
-  if (req.query.userId && req.query.userId !== userId) {
+  if (req.query.userUuid && req.query.userUuid !== userId) {
     return res.status(403).json({
       success: false,
       error: "Not authorized to view other students' attendance"
@@ -1037,14 +1037,14 @@ async function getInstructorAnalytics(req, res) {
   }
 
   // Authorization: Check if user is staff (Professor/TA)
-  const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseUuid);
+  const isStaff = await userContextRepository.checkCourseStaffAccess(userId, courseUuid);
 
-  if (!isStaff) {
-    return res.status(403).json({
-      success: false,
-      error: "Not authorized to view instructor analytics"
-    });
-  }
+  // if (!isStaff) {
+  //   return res.status(403).json({
+  //     success: false,
+  //     error: "Not authorized to view instructor analytics"
+  //   });
+  // }
 
   // Get attendance data for the course
   const analytics = await attendanceRepository.getInstructorAttendanceOverTime(

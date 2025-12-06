@@ -8,8 +8,6 @@
  */
 import express from "express";
 import * as attendanceService from "../../services/attendanceService.js";
-import { toInstructorAnalyticsDto, toStudentAnalyticsDto } from "../../dtos/attendanceDto.js";
-import { validateStudentAnalyticsRequest, validateInstructorAnalyticsRequest } from "../../validators/attendanceValidator.js";
 
 const router = express.Router();
 
@@ -226,29 +224,9 @@ router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
  */
 router.get("/analytics/student", async (req, res) => {
   try {
-    // Validate request parameters
-    validateStudentAnalyticsRequest(req.query);
-
-    // Get analytics from service
-    const analytics = await attendanceService.getStudentAnalytics({
-      userUuid: req.session.user?.id,
-      courseUuid: req.query.courseUuid,
-      startDate: req.query.startDate,
-      endDate: req.query.endDate
-    });
-
-    // Format output
-    const dto = toStudentAnalyticsDto(analytics);
-
-    res.status(200).json({
-      success: true,
-      data: dto
-    });
+    return await attendanceService.getStudentAnalytics(req, res);
   } catch (error) {
-    const statusCode = error.message.includes("required") ||
-                      error.message.includes("must be") ||
-                      error.message.includes("Invalid") ? 400 : 500;
-    res.status(statusCode).json({
+    res.status(400).json({
       success: false,
       error: error.message
     });
@@ -270,33 +248,9 @@ router.get("/analytics/student", async (req, res) => {
  */
 router.get("/analytics/instructor", async (req, res) => {
   try {
-    // Validate request parameters
-    validateInstructorAnalyticsRequest(req.query);
-
-    // Get analytics from service
-    if (typeof attendanceService.getInstructorAnalytics !== "function") {
-      throw new Error("attendanceService.getInstructorAnalytics is not a function");
-    }
-
-    const analytics = await attendanceService.getInstructorAnalytics({
-      courseUuid: req.query.courseUuid,
-      startDate: req.query.startDate,
-      endDate: req.query.endDate,
-      meetingType: req.query.meetingType,
-      teamUuid: req.query.teamUuid
-    });
-
-    const dto = toInstructorAnalyticsDto(analytics);
-
-    res.status(200).json({
-      success: true,
-      data: dto
-    });
+    return await attendanceService.getInstructorAnalytics(req, res);
   } catch (error) {
-    const statusCode = error.message.includes("required") ||
-                      error.message.includes("must be") ||
-                      error.message.includes("Invalid") ? 400 : 500;
-    res.status(statusCode).json({
+    res.status(400).json({
       success: false,
       error: error.message
     });
