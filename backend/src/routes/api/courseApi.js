@@ -27,6 +27,40 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:courseUUID", async (req, res) => {
+  try {
+    return await courseService.getCourseByUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.get("/:courseUUID/users", async (req, res) => {
+  try {
+    return await courseService.getUsersByCourseUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Might be deprecated -- get course by UUID already includes teams
+router.get("/:courseUUID/teams", async (req, res) => {
+  try {
+    return await courseService.getTeamsByCourseUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 /**
  * Get available terms (current and next term)
  *
