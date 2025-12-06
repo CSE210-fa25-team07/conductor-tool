@@ -64,4 +64,105 @@ router.post("/users", async (req, res) => {
   }
 });
 
+/**
+ * Get all pending form requests
+ *
+ * @name GET /v1/api/admin/requests
+ * @returns {Object} 200 - Success with list of requests
+ * @returns {Object} 403 - Forbidden (not a system admin)
+ * @returns {Object} 500 - Server error
+ * @status IN USE - Admin can view all pending access requests
+ */
+router.get("/requests", async (req, res) => {
+  try {
+    const requests = await adminService.getAllFormRequests();
+
+    res.status(200).json({
+      success: true,
+      requests
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Approve a form request
+ *
+ * @name POST /v1/api/admin/requests/:id/approve
+ * @param {string} req.params.id - Request UUID
+ * @returns {Object} 200 - Success with created user and course info
+ * @returns {Object} 400 - Request not found or validation error
+ * @returns {Object} 403 - Forbidden (not a system admin)
+ * @returns {Object} 500 - Server error
+ * @status IN USE - Admin can approve access requests
+ */
+router.post("/requests/:id/approve", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await adminService.approveFormRequest(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Request approved successfully",
+      user: result.user,
+      course: result.course
+    });
+  } catch (error) {
+    if (error.message.includes("not found") ||
+        error.message.includes("already exists") ||
+        error.message.includes("Invalid")) {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Deny a form request
+ *
+ * @name DELETE /v1/api/admin/requests/:id
+ * @param {string} req.params.id - Request UUID
+ * @returns {Object} 200 - Success
+ * @returns {Object} 400 - Request not found
+ * @returns {Object} 403 - Forbidden (not a system admin)
+ * @returns {Object} 500 - Server error
+ * @status IN USE - Admin can deny access requests
+ */
+router.delete("/requests/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await adminService.denyFormRequest(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Request denied successfully"
+    });
+  } catch (error) {
+    if (error.message.includes("not found")) {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

@@ -1,16 +1,39 @@
 <template>
-  <div class="container">
-    <header class="mb-xl">
-      <h1>Request Forms</h1>
-      <p>Manage user access requests and approvals</p>
+  <main class="container request-forms-container">
+    <header class="page-header mb-xl">
+      <h1 class="page-title">Request Forms</h1>
+      <p class="page-description">Manage user access requests and approvals</p>
     </header>
 
-    <section class="card text-center">
-      <h3 class="mb-md">Request Forms Management</h3>
-      <p>
-        View and manage user access requests,<br>
-        approve or deny pending requests.
-      </p>
+    <!-- Success/Error Messages at the top -->
+    <div id="errorMessage" class="error-message" style="display: none;" role="alert"></div>
+    <div id="successMessage" class="success-message" style="display: none;" role="status"></div>
+
+    <!-- Search Bar -->
+    <div class="search-container" style="margin-bottom: var(--space-lg);">
+      <input
+        type="text"
+        id="searchInput"
+        class="form-input search-input"
+        placeholder="Search by name..."
+        aria-label="Search requests by name"
+      />
+    </div>
+
+    <section class="card">
+      <div id="loadingMessage" class="text-center" style="padding: 2rem;">
+        Loading requests...
+      </div>
+
+      <div id="requestsContainer" style="display: none;">
+        <div id="noRequestsMessage" class="text-center" style="padding: 2rem; display: none;">
+          No pending requests at this time.
+        </div>
+
+        <div id="requestsList">
+          <!-- Request items will be populated here -->
+        </div>
+      </div>
     </section>
-  </div>
+  </main>
 </template>
