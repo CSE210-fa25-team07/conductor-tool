@@ -1,5 +1,13 @@
 /**
  * Unit tests for Attendance Service
+ *
+ * Tests validation logic and business rules for attendance service methods:
+ * - Meeting CRUD operations
+ * - Participant management
+ * - Meeting code generation and validation
+ * - Attendance recording
+ *
+ * Note: Uses Jest mock testing patterns without jest.mock() to support ES modules
  * @module tests/unit/services/attendanceService
  */
 

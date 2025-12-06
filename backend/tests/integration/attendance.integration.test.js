@@ -1,9 +1,9 @@
 /**
  * Integration tests for Attendance Service
- * @module tests/integration/attendance.integration
  *
  * Tests request flows for meeting creation and retrieval
  * with mocked database layer to focus on business logic
+ * @module tests/integration/attendance.integration
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";

@@ -1,0 +1,2768 @@
+{
+  "lastUpdated": "2025-12-06T18:13:17.921Z",
+  "totalEntries": 345,
+  "retentionHours": 24,
+  "maxEntries": 10000,
+  "metrics": [
+    {
+      "timestamp": "2025-12-05T22:01:08.197Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 28.861585,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:08.405Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 275.36449,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.103Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 10.12458,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.133Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 19.306527,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.239Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 2.180559,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.253Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 33.50547,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.240Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 56.6416,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.302Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 12.902506,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.299Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 34.592594,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.902Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 6.971989,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.974Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 17.421542,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:12.997Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 0.893057,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:13.003Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 6.749648,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:13.005Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 14.809079,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:13.041Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 6.502398,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:13.978Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 5.961966,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.025Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 16.77627,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.048Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 36.323066,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.091Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 30.273383,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.128Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 28.704497,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.162Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 22.501919,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.490Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 6.559106,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.547Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 5.417583,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.557Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 6.618187,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.558Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 18.090792,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.569Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 17.596454,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:14.638Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 24.001333,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:28.900Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 29.690421,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.115Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 6.516947,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.143Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 5.426988,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.223Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 2.35027,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.235Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 9.148187,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.225Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 24.358672,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.256Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 12.078276,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.253Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 28.758494,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.684Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 5.128493,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.745Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 15.729647,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.769Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 0.974851,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.776Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 5.676084,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.777Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 15.747817,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:58.816Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 5.259252,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.133Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 4.867447,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.146Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 17.835163,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.180Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 29.68298,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.221Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 37.126201,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.272Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 35.318328,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.314Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 25.737726,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.550Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 5.062218,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.609Z",
+      "method": "GET",
+      "path": "/pages/analysisuser",
+      "statusCode": 200,
+      "responseTime": 6.685391,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-05T22:01:59.620Z",
+      "method": "GET",
+      "path": "/analytics/student",
+      "statusCode": 304,
+      "responseTime": 15.72171,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:40:50.105Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 30.89235,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:40:50.286Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 260.86264,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.371Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 19.511958,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.481Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 21.805806,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.732Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 9.867229,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.728Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 81.072106,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.765Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 64.47397,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.813Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 34.487135,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:00.818Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 62.068293,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.550Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 8.056357,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.766Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 35.496604,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.830Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.573546,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.848Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 11.307674,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.851Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 29.923699,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:01.931Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 11.674357,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.111Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 6.813193,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.192Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 25.200655,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.255Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 9.134333,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.317Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 82.222433,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.429Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 7.212654,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.560Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 17.708007,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.630Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 11.265267,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.656Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 500,
+      "responseTime": 11.37119,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.653Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 20.289544,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.685Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 29.962651,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:41:02.732Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 7.938327,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:10.147Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 302,
+      "responseTime": 11.886977,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:13.954Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 5.237506,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:14.068Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 116.263462,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:20.867Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 9.891964,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:20.906Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 16.426767,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.136Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 2.901619,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.139Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 54.41242,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.155Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 38.892336,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.197Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 26.905075,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.204Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 30.068073,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:21.724Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 12.116849,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.069Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 31.996463,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.136Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.692491,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.145Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 10.063469,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.157Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 23.240038,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.222Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 8.603558,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.509Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 9.469106,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.543Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 26.983237,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.670Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 7.69033,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.748Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 54.543578,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.805Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 9.836706,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.831Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 7.138947,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.888Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 9.627899,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.916Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 403,
+      "responseTime": 14.46317,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.936Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 6.723128,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.960Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 22.484119,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:49:22.998Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 5.815483,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:46.292Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 12.433619,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:46.398Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 8.709613,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:46.433Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 17.873528,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:46.429Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 26.517256,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:47.432Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 5.998243,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:47.748Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.241612,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:47.926Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 0.920074,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:47.943Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 8.657155,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:47.944Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 20.910051,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:48.026Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 8.319932,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.096Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.044033,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.118Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 24.436226,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.177Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 7.359769,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.206Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 52.395288,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.348Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 4.520417,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.687Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 8.142773,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.757Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 5.11302,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.783Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 9.226932,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.785Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 403,
+      "responseTime": 11.623384,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.819Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 20.353415,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T15:53:49.898Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 5.038349,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:41.539Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 302,
+      "responseTime": 11.709869,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:45.078Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 4.688123,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:45.179Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 118.475521,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.348Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 10.889071,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.383Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 14.967662,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.559Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 2.463719,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.574Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 33.565447,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.562Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 48.666746,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.614Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 16.859992,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:49.617Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 20.447664,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.198Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 10.57522,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.466Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 29.468364,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.512Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.761265,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.520Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 8.15313,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.522Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 23.146347,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.577Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 6.146335,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.883Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 13.587922,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.921Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 28.220917,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.976Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 6.023764,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:50.991Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 51.435126,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.106Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 6.468076,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.224Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 7.042742,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.287Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 9.67571,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.305Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 8.601114,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.322Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.79522,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.307Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 200,
+      "responseTime": 39.183882,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:05:51.352Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 4.821468,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:33.589Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 30.765536,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:33.634Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 5.386455,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:33.652Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 43.453934,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:33.709Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 4.251453,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:36.558Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 28.92003,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:36.559Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 27.882273,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:36.608Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 4.382306,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:38.904Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 19.513656,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:38.932Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 4.343956,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:38.951Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 46.682844,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:39.010Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 5.503607,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:40.915Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 16.16607,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:40.914Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 32.92349,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:06:40.939Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 8.202114,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:09:20.140Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.094686,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:09:20.137Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 27.304592,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:09:20.170Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 500,
+      "responseTime": 4.720052,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:16.137Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 91.088092,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:16.241Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 4.49989,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:16.253Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 43.783291,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:16.314Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 5.721037,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:16.788Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 5.423553,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:18.658Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 3.58639,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:16:21.070Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 4.015453,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:20.491Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 9.221259,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:20.631Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 10.582844,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:20.643Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 23.499925,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:20.655Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 88.816251,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.600Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 4.372158,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.658Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 4.882578,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.838Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 1.83609,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.869Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 8.962723,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.857Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 34.892028,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.896Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 19.163323,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:24.940Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 10.696555,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.356Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 5.367308,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.588Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 20.210621,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.616Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 0.739433,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.622Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 8.467174,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.624Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.412758,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.681Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 8.58133,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:25.995Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 5.585656,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.013Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 20.521969,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.074Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 7.521879,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.109Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 56.8403,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.191Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 5.225807,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.425Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 6.038915,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.486Z",
+      "method": "GET",
+      "path": "/pages/analysisuser",
+      "statusCode": 200,
+      "responseTime": 5.716638,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:26.499Z",
+      "method": "GET",
+      "path": "/analytics/student",
+      "statusCode": 304,
+      "responseTime": 29.981493,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:29.625Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 23.23935,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:29.693Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 500,
+      "responseTime": 5.906345,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:29.731Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 38.9961,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:29.801Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 500,
+      "responseTime": 5.819901,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T16:17:30.386Z",
+      "method": "GET",
+      "path": "/analytics/student",
+      "statusCode": 304,
+      "responseTime": 25.596952,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:34.664Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 11.032714,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:34.827Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 326.289646,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:38.731Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 23.256624,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:38.828Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 20.150322,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.054Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 2.7584,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.070Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 52.409909,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.056Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 71.293904,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.131Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 23.019226,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.170Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.596584,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.687Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 8.161945,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.929Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 32.899364,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:39.998Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.537514,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.010Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 14.881982,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.013Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 25.766389,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.107Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.613795,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.501Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 9.741828,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.566Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 22.048419,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.599Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 52.670614,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.660Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 37.175083,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.706Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 36.372525,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:40.748Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 25.718711,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.114Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 9.111444,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.174Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 6.905714,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.187Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 8.158121,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.198Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 44.522578,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.210Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 42.861228,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:50.307Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 37.884052,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:52.769Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 31.006325,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:54.036Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 22.335275,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:55.809Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 27.835525,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:55.883Z",
+      "method": "GET",
+      "path": "/pages/taDashboard",
+      "statusCode": 200,
+      "responseTime": 8.856668,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:55.905Z",
+      "method": "GET",
+      "path": "/ta/overview",
+      "statusCode": 200,
+      "responseTime": 46.480561,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:56.033Z",
+      "method": "GET",
+      "path": "/pages/components/feedItem",
+      "statusCode": 200,
+      "responseTime": 9.15738,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:58.551Z",
+      "method": "GET",
+      "path": "/pages/my",
+      "statusCode": 200,
+      "responseTime": 9.898008,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:59.094Z",
+      "method": "GET",
+      "path": "/pages/group",
+      "statusCode": 200,
+      "responseTime": 9.227807,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:59.897Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 26.797538,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:06:59.933Z",
+      "method": "GET",
+      "path": "/ta/overview",
+      "statusCode": 304,
+      "responseTime": 28.63128,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:13.668Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 27.457285,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:13.727Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 51.566882,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:13.796Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 62.35643,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:13.873Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 33.231866,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:13.912Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 31.280294,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:14.748Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 26.60063,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:14.800Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 34.891844,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:14.904Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 47.16326,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:14.964Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 36.170553,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:14.994Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 41.638373,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:15.016Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 51.716636,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:15.013Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 101.660531,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:15.123Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 38.304215,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:17.974Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 45.605882,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:19.354Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 27.867654,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.127Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 12.069079,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.184Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.990631,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.508Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 2.021888,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.521Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 32.821816,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.545Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 13.811584,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.569Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.71494,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:26.556Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 38.394671,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.035Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 6.986462,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.252Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 27.437845,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.308Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.746261,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.334Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 9.974658,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.337Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 30.368793,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.412Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 8.096062,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.733Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 8.466086,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.767Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 37.664949,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.830Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 65.254891,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.935Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 50.833702,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:27.996Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 36.381301,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:28.039Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 35.748202,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:28.211Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 13.187362,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:28.278Z",
+      "method": "GET",
+      "path": "/pages/analysisuser",
+      "statusCode": 200,
+      "responseTime": 8.545898,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T17:07:28.295Z",
+      "method": "GET",
+      "path": "/analytics/student",
+      "statusCode": 304,
+      "responseTime": 39.016827,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:06:47.024Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 20.651617,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:06:47.128Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 500,
+      "responseTime": 117.425278,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:06.287Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 11.42486,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:06.401Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 200,
+      "responseTime": 161.615348,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.248Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 11.956529,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.280Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 20.819289,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.427Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 200,
+      "responseTime": 2.342961,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.429Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 53.332456,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.445Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 43.577376,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.491Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 15.528605,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:10.483Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 37.66758,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.131Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 9.067658,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.244Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 22.049747,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.299Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.317301,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.307Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 9.297748,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.309Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.171953,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.365Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.931785,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.728Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.880969,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.804Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 18.1275,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.836Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 44.00111,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.892Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 200,
+      "responseTime": 36.376594,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.941Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 39.139242,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:11.995Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 37.793094,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.674Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 5.457183,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.734Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 5.413759,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.744Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 6.929706,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.757Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 17.820484,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.749Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 42.541771,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:08:14.782Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 30.997605,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:32.265Z",
+      "method": "GET",
+      "path": "/dev-login",
+      "statusCode": 304,
+      "responseTime": 11.809396,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:32.362Z",
+      "method": "GET",
+      "path": "/dev-users",
+      "statusCode": 304,
+      "responseTime": 104.235309,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.183Z",
+      "method": "POST",
+      "path": "/dev-login",
+      "statusCode": 200,
+      "responseTime": 10.695442,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.214Z",
+      "method": "GET",
+      "path": "/dashboard",
+      "statusCode": 200,
+      "responseTime": 16.340622,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.352Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.880312,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.353Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 42.005698,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.378Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 50.682672,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.399Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 35.739907,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:54.407Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 57.197361,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.089Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 200,
+      "responseTime": 6.043805,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.168Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 27.535487,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.202Z",
+      "method": "GET",
+      "path": "/session",
+      "statusCode": 304,
+      "responseTime": 1.538049,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.209Z",
+      "method": "GET",
+      "path": "/photo",
+      "statusCode": 304,
+      "responseTime": 7.759575,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.211Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 31.23478,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.278Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 7.730053,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.573Z",
+      "method": "GET",
+      "path": "/pages/dashboard",
+      "statusCode": 200,
+      "responseTime": 5.876868,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.611Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 18.068185,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.637Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 34.793768,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.686Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 34.425539,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.729Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 200,
+      "responseTime": 36.5535,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:55.770Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 26.678513,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.166Z",
+      "method": "GET",
+      "path": "/pages/analysis",
+      "statusCode": 200,
+      "responseTime": 4.973407,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.225Z",
+      "method": "GET",
+      "path": "/pages/analysisclass",
+      "statusCode": 200,
+      "responseTime": 7.158159,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.237Z",
+      "method": "GET",
+      "path": "/pages/analysisgroup",
+      "statusCode": 200,
+      "responseTime": 8.323821,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.238Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 30.803402,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.251Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 21.070114,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.332Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 37.53299,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.624Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 16.756152,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.665Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 28.287354,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.704Z",
+      "method": "GET",
+      "path": "/meeting/list/ed1497fc-9d4b-4f85-b897-cccbfebb5f99",
+      "statusCode": 304,
+      "responseTime": 40.261957,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.766Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/users",
+      "statusCode": 304,
+      "responseTime": 40.690723,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:12:56.814Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 23.947378,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:13:03.352Z",
+      "method": "GET",
+      "path": "/",
+      "statusCode": 304,
+      "responseTime": 17.759996,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:13:03.350Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 27.804028,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:13:03.376Z",
+      "method": "GET",
+      "path": "/ed1497fc-9d4b-4f85-b897-cccbfebb5f99/teams",
+      "statusCode": 304,
+      "responseTime": 25.955831,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:13:05.547Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 19.992659,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    {
+      "timestamp": "2025-12-06T18:13:06.404Z",
+      "method": "GET",
+      "path": "/analytics/instructor",
+      "statusCode": 304,
+      "responseTime": 16.352267,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    }
+  ]
+}
