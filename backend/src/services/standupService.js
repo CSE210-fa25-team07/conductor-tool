@@ -42,7 +42,9 @@ async function createStandup(req, res) {
 
   if (blockers && blockers.trim().length > 0) {
     try {
+      const taEmail = await standupRepository.getTAEmailByTeam(teamUuid);
       await emailService.sendBlockerNotification({
+        taEmail: taEmail,
         studentName: `${standup.user.firstName} ${standup.user.lastName}`,
         studentEmail: standup.user.email,
         teamName: standup.team.teamName,
@@ -52,7 +54,6 @@ async function createStandup(req, res) {
     } catch (emailError) {
     }
   }
-
 
   return res.status(201).json({
     success: true,

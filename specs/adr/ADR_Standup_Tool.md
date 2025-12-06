@@ -14,7 +14,7 @@ Large software engineering courses (500+ students across 80+ teams) face critica
 **Requirements:**
 - Daily standup under 2 minutes
 - Auto-populate from GitHub to reduce manual entry
-- Role-specific dashboards (Student, TA, Professor)
+- Role-based dashboards (Student, TA, Professor)
 - Auto-escalate unresolved blockers to TAs
 - Early warning system by week 3
 - FERPA-compliant storage
@@ -46,6 +46,12 @@ Build a role-based daily standup system with GitHub integration and automated es
 3. Blocker reported → Slack webhook fires → background job starts 4h timer
 4. After 4h unresolved → SendGrid email + Twilio SMS to TA
 
+**Email Notification System:**
+- SendGrid integration for blocker notifications
+- Immediate email to assigned TA when blocker is reported
+- Email includes student details, team context, and blocker description
+- Fallback logging if TA is not assigned to team
+
 ---
 
 ## 3. Alternatives Considered
@@ -67,6 +73,7 @@ Build a role-based daily standup system with GitHub integration and automated es
 - TAs get single dashboard vs 5+ Slack channels
 - Proactive alerts catch at-risk students by week 3
 - Objective grading data (commits + participation)
+- Immediate TA notification via email when blockers are reported
 
 **Negative & Mitigations:**
 - GitHub OAuth complexity → Use Passport.js
@@ -74,6 +81,7 @@ Build a role-based daily standup system with GitHub integration and automated es
 - API rate limits (5000/hr) → Redis caching (15min TTL)
 - FERPA compliance → Role-based access control, encrypt sensitive fields
 - External service dependencies → Graceful degradation (manual entry if GitHub down)
+- SendGrid email delivery failures → Non-blocking error handling
 
 ---
 
@@ -95,9 +103,11 @@ Build a role-based daily standup system with GitHub integration and automated es
 - Slack webhooks, SendGrid emails, Twilio SMS
 - Socket.io for real-time updates
 - BullMQ job queue for 4-hour escalation timers
+- Immediate email notifications via SendGrid when blockers reported
 
 **Key Patterns:** Repository pattern for data access, service layer for business logic, middleware for RBAC.
 
+**Email Service Layer:** Dedicated emailService module handles all SendGrid integration, queries team TA from database, includes full student/team context in notifications.
 
 ---
 
@@ -105,7 +115,7 @@ Build a role-based daily standup system with GitHub integration and automated es
 
 **Design Documents:** Conductor Pitch Document (Feature 4), Interactive demo wireframes
 
-**Technical:** GitHub REST API v3, OAuth 2.0 RFC 8252, FERPA Guidelines, Socket.io docs
+**Technical:** GitHub REST API v3, OAuth 2.0 RFC 8252, FERPA Guidelines, Socket.io docs, SendGrid API
 
 **Related ADRs:** ADR-002 (Authentication), ADR-003 (Database Selection), ADR-004 (Real-time Communication)
 
@@ -113,3 +123,4 @@ Build a role-based daily standup system with GitHub integration and automated es
 
 ## Revision History
 - **2025-11-05:** Initial draft
+- **2025-12-05:** Added SendGrid email notification system for blockers
