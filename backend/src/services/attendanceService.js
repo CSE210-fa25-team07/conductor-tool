@@ -97,7 +97,8 @@ async function createMeeting(req, res) {
     meetingLocation,
     meetingType,
     isRecurring,
-    participants
+    participants,
+    parentMeetingUUID
   } = req.body;
 
   const userContext = await userContextRepository.getUserContext(userUUID);
@@ -154,7 +155,7 @@ async function createMeeting(req, res) {
     }
   }
 
-  const meeting = await attendanceRepository.createMeeting({
+  const meetingDataForRepository = {
     creatorUUID: userUUID,
     courseUUID,
     meetingStartTime,
@@ -165,7 +166,13 @@ async function createMeeting(req, res) {
     meetingLocation,
     meetingType,
     isRecurring: isRecurring || false
-  });
+  };
+
+  if (parentMeetingUUID?.trim()) {
+    meetingDataForRepository.parentMeetingUUID = parentMeetingUUID;
+  }
+
+  const meeting = await attendanceRepository.createMeeting(meetingDataForRepository);
 
   // Add creator as a participant (they should also see the meeting on their calendar)
   const allParticipants = [...new Set([userUUID, ...uniqueParticipants])];
@@ -265,7 +272,8 @@ async function updateMeeting(req, res) {
 async function deleteMeeting(req, res) {
   const userUUID = req.session.user.id;
   const meetingUUID = req.params.id;
-  const { deleteFuture } = req.body;
+  const deleteFutureRaw = (req.body && req.body.deleteFuture !== undefined) ? req.body.deleteFuture : req.query?.deleteFuture;
+  const deleteFuture = deleteFutureRaw === true || deleteFutureRaw === "true";
 
   const existingMeeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
   if (!existingMeeting) {
@@ -291,22 +299,31 @@ async function deleteMeeting(req, res) {
   const isStaff = userRole === RoleEnum.PROFESSOR || userRole === RoleEnum.TA;
   const isCreator = existingMeeting.creatorUuid === userUUID;
 
+  // Authorization check: allow deleting past meetings if deleteFuture is true
+  // (user wants to delete future meetings, so allow deleting the past one too)
   const canDelete = (
     isInActiveCourse
         && (isCreator || isStaff)
-        && existingMeeting.meetingEndTime > new Date()
+        && (deleteFuture || existingMeeting.meetingEndTime > new Date())
   );
   if (!canDelete) {
     return res.status(403).json({
       success: false,
-      error: "Not authroized to delete meeting for this course"
+      error: "Not authorized to delete meeting for this course"
     });
   }
 
-  await attendanceRepository.deleteMeeting(meetingUUID);
-
-  if (existingMeeting.isRecurring && deleteFuture) {
-    await attendanceRepository.deleteMeetingByParentUUID(existingMeeting.meetingUuid);
+  if (deleteFuture) {
+    const meetingDateObj = new Date(existingMeeting.meetingDate);
+    const fromDate = new Date(Date.UTC(
+      meetingDateObj.getUTCFullYear(),
+      meetingDateObj.getUTCMonth(),
+      meetingDateObj.getUTCDate(),
+      0, 0, 0, 0
+    ));
+    await attendanceRepository.deleteFutureMeetingsByParentUUID(meetingUUID, fromDate);
+  } else {
+    await attendanceRepository.deleteMeeting(meetingUUID);
   }
 
   return res.status(200).json({

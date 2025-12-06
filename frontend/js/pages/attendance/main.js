@@ -810,7 +810,12 @@ export async function render(container, view = "dashboard") {
       }
 
       activeMeetingContext = {
-        date, index, chainId: meeting.chainId || null,
+        date,
+        index,
+        chainId: meeting.chainId
+          || meeting.parentMeetingUUID
+          || meeting.parentMeetingUuid
+          || (meeting.isRecurring ? meeting.meetingUUID : null),
         meetingUUID: meeting.meetingUUID || null,
         creatorUUID: meeting.creatorUUID || null,
         isRecurring: meeting.isRecurring || false,
@@ -820,7 +825,11 @@ export async function render(container, view = "dashboard") {
       };
 
       if (els.deleteAllFutureBtn) {
-        els.deleteAllFutureBtn.disabled = !(meeting.isRecurring || meeting.chainId);
+        const isPartOfRecurringChain = meeting.isRecurring
+          || meeting.parentMeetingUUID
+          || meeting.parentMeetingUuid
+          || meeting.chainId;
+        els.deleteAllFutureBtn.disabled = !isPartOfRecurringChain;
       }
 
       const showDelete = (isCreator || isStaff) ? "block" : "none";
@@ -1199,15 +1208,19 @@ export async function render(container, view = "dashboard") {
     });
 
     els.deleteAllFutureBtn?.addEventListener("click", async () => {
-      const { chainId, date, meetingUUID } = activeMeetingContext;
+      const { date, meetingUUID } = activeMeetingContext;
 
-      if (!chainId || !date || !meetingUUID) {
+      if (!date || !meetingUUID) {
         alert("Cannot delete future meetings: Meeting information not available.");
         return;
       }
 
       const meeting = meetings[date]?.[activeMeetingContext.index];
-      if (!meeting?.isRecurring) {
+      const isPartOfRecurringChain = meeting?.isRecurring
+        || meeting?.parentMeetingUUID
+        || meeting?.parentMeetingUuid
+        || meeting?.chainId;
+      if (!isPartOfRecurringChain) {
         alert("This meeting is not part of a recurring series.");
         return;
       }
@@ -1216,6 +1229,23 @@ export async function render(container, view = "dashboard") {
 
       try {
         await deleteMeeting(meetingUUID, true);
+
+        // Optimistically remove future occurrences from in-memory calendar
+        const meeting = meetings[date]?.[activeMeetingContext.index];
+        if (meeting) {
+          const parentId = meeting.chainId || meeting.meetingUUID;
+          const clickedDate = new Date(date);
+          Object.keys(allMeetings).forEach(d => {
+            const current = new Date(d);
+            if (current >= clickedDate) {
+              allMeetings[d] = (allMeetings[d] || []).filter(m => {
+                const mParent = m.chainId || m.meetingUUID;
+                return mParent !== parentId;
+              });
+              if (allMeetings[d].length === 0) delete allMeetings[d];
+            }
+          });
+        }
       } catch (error) {
         alert(`Failed to delete future meetings: ${error.message}\n\nThe meetings may have already been deleted or you may not have permission.`);
         return;
@@ -1318,11 +1348,12 @@ export async function render(container, view = "dashboard") {
         return;
       }
 
-      const createMeetingData = (dateStr, timeStr, endTimeStr) => {
+      const createMeetingData = (dateStr, timeStr, endTimeStr, isRecurringFlag = false, parentMeetingUUIDValue = null) => {
         const meetingStart = new Date(`${dateStr}T${timeStr}`);
         const meetingEnd = new Date(`${dateStr}T${endTimeStr}`);
         const [dy, dm, dd] = dateStr.split("-").map(Number);
         const dateWithNoon = new Date(dy, dm - 1, dd, 12, 0, 0);
+
         return {
           creatorUUID: currentUser.userUuid,
           courseUUID: courseUUID,
@@ -1333,7 +1364,8 @@ export async function render(container, view = "dashboard") {
           meetingDescription: desc || null,
           meetingLocation: location || null,
           meetingType: meetingTypeInt,
-          isRecurring: false,
+          isRecurring: isRecurringFlag,
+          parentMeetingUUID: parentMeetingUUIDValue || null,
           participants
         };
       };
@@ -1356,21 +1388,16 @@ export async function render(container, view = "dashboard") {
         }
 
         const nextDate = new Date(startDate);
-        let parentMeetingUUID = null;
+        let previousMeetingUUID = null;
 
         while (nextDate <= endDate) {
           const nextDateStr = formatDate(nextDate);
-          const meetingData = createMeetingData(nextDateStr, time, endTime);
-
-          if (parentMeetingUUID) {
-            meetingData.parentMeetingUUID = parentMeetingUUID;
-            meetingData.isRecurring = true;
-          }
+          const meetingData = createMeetingData(nextDateStr, time, endTime, true, previousMeetingUUID);
 
           try {
             const response = await createMeeting(meetingData);
-            if (response?.meeting && !parentMeetingUUID) {
-              parentMeetingUUID = response.meeting.meetingUUID;
+            if (response?.meeting) {
+              previousMeetingUUID = response.meeting.meetingUUID || response.meeting.meetingUuid;
             }
           } catch (error) {
             if (!error.message.includes("201") && !error.message.includes("Created") && !error.message.includes("Failed to fetch")) {
@@ -1383,7 +1410,7 @@ export async function render(container, view = "dashboard") {
         }
       } else {
         try {
-          await createMeeting(createMeetingData(date, time, endTime));
+          await createMeeting(createMeetingData(date, time, endTime, false, null));
         } catch (error) {
           if (!error.message.includes("201") && !error.message.includes("Created") && !error.message.includes("Failed to fetch")) {
             alert(`Failed to create meeting: ${error.message}`);
