@@ -224,7 +224,18 @@ export async function getUserProfile(userUuid) {
             select: {
               teamUuid: true,
               teamName: true,
-              courseUuid: true
+              courseUuid: true,
+              course: {
+                select: {
+                  courseCode: true,
+                  term: {
+                    select: {
+                      season: true,
+                      year: true
+                    }
+                  }
+                }
+              }
             }
           }
         }

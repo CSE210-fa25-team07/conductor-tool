@@ -106,6 +106,10 @@ function toUserProfileDto(user) {
       teamUuid: membership.team.teamUuid,
       teamName: membership.team.teamName,
       courseUuid: membership.team.courseUuid,
+      courseCode: membership.team.course?.courseCode,
+      term: membership.team.course?.term
+        ? `${membership.team.course.term.season} ${membership.team.course.term.year}`
+        : null,
       joinedAt: membership.joinedAt
     })) || []
   };

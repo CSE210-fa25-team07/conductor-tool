@@ -157,6 +157,15 @@ function renderUserProfile(user) {
 
   if (teamsList) {
     if (user.teams && user.teams.length > 0) {
+      // Get active course UUID from session storage to filter teams
+      const activeCourse = JSON.parse(sessionStorage.getItem("activeCourse"));
+      const activeCourseUuid = activeCourse?.courseUuid;
+
+      // Filter teams to only show teams for the active course
+      const filteredTeams = activeCourseUuid
+        ? user.teams.filter(team => team.courseUuid === activeCourseUuid)
+        : user.teams;
+
       // Get current user context to check team membership
       const currentUser = getCurrentUser();
       const currentUserTeams = getUserTeams();
@@ -164,33 +173,37 @@ function renderUserProfile(user) {
       // Build a set of team UUIDs the current user belongs to
       const currentUserTeamUuids = new Set(currentUserTeams.map(t => t.teamUuid));
 
-      teamsList.innerHTML = user.teams.map(team => {
-        const joinedDate = new Date(team.joinedAt).toLocaleDateString();
+      if (filteredTeams.length === 0) {
+        teamsList.innerHTML = "<p class=\"no-items-message\">No team in this course</p>";
+      } else {
+        teamsList.innerHTML = filteredTeams.map(team => {
+          const joinedDate = new Date(team.joinedAt).toLocaleDateString();
 
-        // Show "View Team" button if:
-        // 1. Viewing own profile, OR
-        // 2. Current user is in the same team (teammate), OR
-        // 3. Current user is staff (can view all teams)
-        const isOwnProfile = currentUser && currentUser.userUuid === user.userUuid;
-        const isTeammate = currentUserTeamUuids.has(team.teamUuid);
-        const isStaff = currentUser && currentUser.isStaff;
-        const canViewTeam = isOwnProfile || isTeammate || isStaff;
+          // Show "View Team" button if:
+          // 1. Viewing own profile, OR
+          // 2. Current user is in the same team (teammate), OR
+          // 3. Current user is staff (can view all teams)
+          const isOwnProfile = currentUser && currentUser.userUuid === user.userUuid;
+          const isTeammate = currentUserTeamUuids.has(team.teamUuid);
+          const isStaff = currentUser && currentUser.isStaff;
+          const canViewTeam = isOwnProfile || isTeammate || isStaff;
 
-        const viewTeamButton = canViewTeam
-          ? "<button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-btn\">View Team →</button>"
-          : "";
+          const viewTeamButton = canViewTeam
+            ? "<button data-team-uuid=\"" + team.teamUuid + "\" class=\"view-team-btn\">View Team →</button>"
+            : "";
 
-        return "<div class=\"team-card\"><div class=\"team-card-name\">" + team.teamName + "</div><div class=\"team-card-date\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
-      }).join("");
+          return "<div class=\"team-card\"><div class=\"team-card-name\">" + team.teamName + "</div><div class=\"team-card-date\">Joined: " + joinedDate + "</div>" + viewTeamButton + "</div>";
+        }).join("");
 
-      // Add click handlers for view team links
-      const viewTeamButtons = teamsList.querySelectorAll(".view-team-btn");
-      viewTeamButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          const teamUuid = button.getAttribute("data-team-uuid");
-          navigateToTeam(teamUuid);
+        // Add click handlers for view team links
+        const viewTeamButtons = teamsList.querySelectorAll(".view-team-btn");
+        viewTeamButtons.forEach(button => {
+          button.addEventListener("click", () => {
+            const teamUuid = button.getAttribute("data-team-uuid");
+            navigateToTeam(teamUuid);
+          });
         });
-      });
+      }
     } else {
       teamsList.innerHTML = "<p class=\"no-items-message\">No team memberships</p>";
     }
