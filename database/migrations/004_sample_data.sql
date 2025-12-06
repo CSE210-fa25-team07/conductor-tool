@@ -25,9 +25,9 @@ INSERT INTO users (email, first_name, last_name, github_username, bio, pronouns,
     ('jones@ucsd.edu', 'Sarah', 'Jones', 'sjones', 'Associate Professor, HCI Research', 'she/her', '858-534-1002', NOW() - INTERVAL '1 day'),
     
     -- TAs
-    ('ta_alice@ucsd.edu', 'Alice', 'Anderson', 'alice-ta', 'PhD student researching Software Testing', 'she/her', '858-534-2001', NOW() - INTERVAL '3 hours'),
-    ('ta_bob@ucsd.edu', 'Bob', 'Brown', 'bob-ta', 'MS student, Systems and Architecture', 'he/him', '858-534-2002', NOW() - INTERVAL '5 hours'),
-    ('ta_carol@ucsd.edu', 'Carol', 'Chen', 'carol-ta', 'PhD student in HCI and Accessibility', 'she/her', '858-534-2003', NOW() - INTERVAL '1 day'),
+    ('waw009@ucsd.edu', 'Alice', 'Anderson', 'alice-ta', 'PhD student researching Software Testing', 'she/her', '858-534-2001', NOW() - INTERVAL '3 hours'),
+    ('waw009@ucsd.edu', 'Bob', 'Brown', 'bob-ta', 'MS student, Systems and Architecture', 'he/him', '858-534-2002', NOW() - INTERVAL '5 hours'),
+    ('waw009@ucsd.edu', 'Carol', 'Chen', 'carol-ta', 'PhD student in HCI and Accessibility', 'she/her', '858-534-2003', NOW() - INTERVAL '1 day'),
     
     -- Students
     ('david@ucsd.edu', 'David', 'Davis', 'ddavis', 'CS Senior, interested in full-stack dev', 'he/him', '858-555-0001', NOW() - INTERVAL '4 hours'),
@@ -62,19 +62,19 @@ BEGIN
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Alice
-    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu';
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'waw009@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2140', 'Automated Testing, CI/CD', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Bob
-    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu';
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'waw009@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2145', 'Software Architecture, Design Patterns', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
     
     -- TA Carol
-    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_carol@ucsd.edu';
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'waw009@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2150', 'User Experience, Interaction Design', 'https://cchen.me')
     ON CONFLICT (user_uuid) DO NOTHING;
@@ -177,8 +177,8 @@ BEGIN
     -- CSE210 Winter 2025
     INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status, enrolled_at) VALUES
         ((SELECT user_uuid FROM users WHERE email = 'powell@ucsd.edu'), v_cse210_w25, v_role_prof, 'active', '2025-01-06'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_w25, v_role_ta, 'active', '2025-01-06'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'), v_cse210_w25, v_role_ta, 'active', '2025-01-06'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_w25, v_role_ta, 'active', '2025-01-06'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_w25, v_role_ta, 'active', '2025-01-06'),
         ((SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'), v_cse210_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'), v_cse210_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'frank@ucsd.edu'), v_cse210_w25, v_role_student, 'active', '2025-01-07'),
@@ -193,7 +193,7 @@ BEGIN
     -- CSE110 Winter 2025
     INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status, enrolled_at) VALUES
         ((SELECT user_uuid FROM users WHERE email = 'jones@ucsd.edu'), v_cse110_w25, v_role_prof, 'active', '2025-01-06'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_carol@ucsd.edu'), v_cse110_w25, v_role_ta, 'active', '2025-01-06'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse110_w25, v_role_ta, 'active', '2025-01-06'),
         ((SELECT user_uuid FROM users WHERE email = 'jack@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'kelly@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'leo@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
@@ -219,8 +219,8 @@ BEGIN
     
     INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status, enrolled_at) VALUES
         ((SELECT user_uuid FROM users WHERE email = 'powell@ucsd.edu'), v_cse210_f25, v_role_prof, 'active', '2025-09-25'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_f25, v_role_ta, 'active', '2025-09-25'),
         ((SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
         ((SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
         ((SELECT user_uuid FROM users WHERE email = 'frank@ucsd.edu'), v_cse210_f25, v_role_student, 'active', '2025-09-26'),
@@ -247,7 +247,7 @@ BEGIN
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
         (v_cse210_w25, 'Team Alpha', 'https://github.com/cse210-alpha', 'https://github.com/cse210-alpha/project', 
-         (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'))
+         (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_alpha;
     
@@ -257,7 +257,7 @@ BEGIN
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
         (v_cse210_w25, 'Team Beta', 'https://github.com/cse210-beta', 'https://github.com/cse210-beta/project', 
-         (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'))
+         (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_beta;
     
@@ -292,7 +292,7 @@ BEGIN
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
         (v_cse210_f25, 'Team Gamma', 'https://github.com/cse210-gamma', 'https://github.com/cse210-gamma/project', 
-         (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'))
+         (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_gamma;
     
@@ -302,7 +302,7 @@ BEGIN
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
         (v_cse210_f25, 'Team Delta', 'https://github.com/cse210-delta', 'https://github.com/cse210-delta/project', 
-         (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'))
+         (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_delta;
     
@@ -392,11 +392,11 @@ BEGIN
         ORDER BY created_at DESC LIMIT 1;
     
     INSERT INTO standup_comments (standup_uuid, commenter_uuid, comment_text) VALUES
-        (v_standup1, (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), 
+        (v_standup1, (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), 
          'Great work on the authentication! Make sure to add rate limiting.'),
         (v_standup1, (SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'),
          'Can you share the auth documentation so I can integrate it with the frontend?'),
-        (v_standup2, (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'),
+        (v_standup2, (SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'),
          'Good progress! Let me know if you need help with the authorization logic.'),
         (v_standup2, (SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'),
          'Looking good! We should sync on the API contract.');
@@ -419,13 +419,13 @@ BEGIN
         ORDER BY created_at DESC LIMIT 1;
     
     INSERT INTO standup_notifications (sender_uuid, receiver_uuid, standup_uuid, message, status) VALUES
-        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'),
          (SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'),
          v_standup1, 'Your TA commented on your standup', 'read'),
         ((SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'),
          (SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'),
          v_standup1, 'Emma commented on your standup', 'unread'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'),
          (SELECT user_uuid FROM users WHERE email = 'henry@ucsd.edu'),
          v_standup2, 'Your TA commented on your standup', 'unread');
 END $$;
@@ -474,7 +474,7 @@ BEGIN
     -- CSE210 Team Meeting
     INSERT INTO meeting (creator_uuid, course_uuid, meeting_start_time, meeting_end_time, meeting_date,
                         meeting_title, meeting_description, meeting_location, is_recurring, meeting_type) VALUES
-        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_w25,
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_w25,
          (CURRENT_DATE + INTERVAL '1 day' + INTERVAL '14 hours')::timestamptz,
          (CURRENT_DATE + INTERVAL '1 day' + INTERVAL '15 hours')::timestamptz,
          CURRENT_DATE + INTERVAL '1 day',
@@ -519,7 +519,7 @@ BEGIN
     
     INSERT INTO meeting (creator_uuid, course_uuid, meeting_start_time, meeting_end_time, meeting_date,
                         meeting_title, meeting_description, meeting_location, is_recurring, meeting_type) VALUES
-        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), v_cse210_f25,
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse210_f25,
          (DATE '2025-10-01' + INTERVAL '14 hours')::timestamptz,
          (DATE '2025-10-01' + INTERVAL '15 hours')::timestamptz,
          DATE '2025-10-01',

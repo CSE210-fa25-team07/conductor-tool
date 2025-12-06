@@ -9,6 +9,8 @@
 import * as standupRepository from "../repositories/standupRepository.js";
 import * as standupDto from "../dtos/standupDto.js";
 import * as userContextRepository from "../repositories/userContextRepository.js";
+import * as emailService from "./emailService.js";
+
 
 /**
  * Create a new standup entry
@@ -59,6 +61,21 @@ async function createStandup(req, res) {
     reflection,
     visibility: visibility || "team"
   });
+
+  if (blockers && blockers.trim().length > 0) {
+    try {
+      const taEmail = await standupRepository.getTAEmailByTeam(teamUuid);
+      await emailService.sendBlockerNotification({
+        taEmail: taEmail,
+        studentName: `${standup.user.firstName} ${standup.user.lastName}`,
+        studentEmail: standup.user.email,
+        teamName: standup.team.teamName,
+        courseName: standup.course.courseName,
+        blockerContent: blockers
+      });
+    } catch (emailError) {
+    }
+  }
 
   return res.status(201).json({
     success: true,
