@@ -201,7 +201,7 @@ async function createParticipants(participantsData) {
  * Get multiple participants by parameters.
  * meetingUUID and courseUUID are required -- all participants for that meeting
  * @param {Object} params -- meetingUUID, courseUUID, participantUUID, present
- * @returns
+ * @returns {Promise<Array>} List of participant objects
  */
 async function getParticipantListByParams(params) {
   const { meetingUUID, courseUUID, participantUUID, present } = params;
