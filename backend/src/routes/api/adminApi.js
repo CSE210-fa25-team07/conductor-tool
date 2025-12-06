@@ -4,7 +4,7 @@
  * @module admin/api
  */
 import express from "express";
-import * as userService from "../../services/userService.js";
+import * as adminService from "../../services/adminService.js";
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.post("/users", async (req, res) => {
   try {
     const { firstName, lastName, email, isProf, isSystemAdmin } = req.body;
 
-    const newUser = await userService.addUserWithStaffStatus({
+    const newUser = await adminService.addUserWithStaffStatus({
       firstName,
       lastName,
       email,

@@ -60,35 +60,8 @@ async function getUserPhotoUrl(userUuid) {
   return user?.photoUrl || null;
 }
 
-/**
- * Add a new user with staff status (admin function)
- * @param {Object} userData - User data with firstName, lastName, email, isProf, isSystemAdmin
- * @returns {Promise<Object>} The created user object
- * @status IN USE
- */
-async function addUserWithStaffStatus(userData) {
-  // Validate input
-  userValidator.validateUserData(userData);
-
-  // Normalize data
-  const normalizedUser = {
-    firstName: userData.firstName.trim(),
-    lastName: userData.lastName.trim(),
-    email: userData.email.trim().toLowerCase()
-  };
-
-  const staffStatus = {
-    isProf: userData.isProf || false,
-    isSystemAdmin: userData.isSystemAdmin || false
-  };
-
-  // Delegate to repository
-  return await userRepository.addUserWithStaffStatus(normalizedUser, staffStatus);
-}
-
 export {
   addUser,
   getUserByEmail,
-  getUserPhotoUrl,
-  addUserWithStaffStatus
+  getUserPhotoUrl
 };

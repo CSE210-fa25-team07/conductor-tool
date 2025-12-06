@@ -71,9 +71,7 @@ async function addUserWithStaffStatus(user, staffStatus) {
           userUuid: newUser.userUuid,
           isProf: staffStatus.isProf || false,
           isSystemAdmin: staffStatus.isSystemAdmin || false,
-          // database field is_lead_admin
-          // eslint-disable-next-line camelcase
-          is_lead_admin: false
+          isLeadAdmin: false
         }
       });
     }
