@@ -26,7 +26,6 @@ app.use("/directory", checkApiSession, directoryApi);
 describe("Directory API", () => {
   let testStudent;
   let testProfessor;
-  let testTA;
   let testCourse;
   let testTeam;
 
@@ -65,18 +64,6 @@ describe("Directory API", () => {
     });
     testProfessor = profEnrollment?.user;
 
-    // Find a TA in this course
-    const taEnrollment = await prisma.courseEnrollment.findFirst({
-      where: {
-        courseUuid: testCourse.courseUuid,
-        role: { role: "TA" },
-        enrollmentStatus: "active"
-      },
-      include: {
-        user: true
-      }
-    });
-    testTA = taEnrollment?.user;
 
     // Find a student in this course
     const studentEnrollment = await prisma.courseEnrollment.findFirst({
@@ -193,131 +180,6 @@ describe("Directory API", () => {
         expect(staffMember).toHaveProperty("role");
         expect(["Professor", "TA"]).toContain(staffMember.role);
       }
-    });
-  });
-
-  describe("GET /directory/courses/:courseUuid/stats", () => {
-    it("should return 401 without session", async () => {
-      const response = await request(app)
-        .get(`/directory/courses/${testCourse.courseUuid}/stats`);
-
-      expect(response.status).toBe(401);
-    });
-
-    it("should return 403 for non-staff user", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testStudent.userUuid,
-          email: testStudent.email,
-          name: `${testStudent.firstName} ${testStudent.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/stats`);
-
-      expect(response.status).toBe(403);
-      expect(response.body.success).toBe(false);
-      expect(response.body.error).toBe("Not authorized to view enrollment statistics");
-    });
-
-    it("should return enrollment stats for staff", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testProfessor.userUuid,
-          email: testProfessor.email,
-          name: `${testProfessor.firstName} ${testProfessor.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/stats`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty("total");
-      expect(response.body.data).toHaveProperty("active");
-      expect(response.body.data).toHaveProperty("dropped");
-    });
-
-    it("should return enrollment stats for TA", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testTA.userUuid,
-          email: testTA.email,
-          name: `${testTA.firstName} ${testTA.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/stats`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-    });
-  });
-
-  describe("GET /directory/courses/:courseUuid/enrollments/recent", () => {
-    it("should return 401 without session", async () => {
-      const response = await request(app)
-        .get(`/directory/courses/${testCourse.courseUuid}/enrollments/recent`);
-
-      expect(response.status).toBe(401);
-    });
-
-    it("should return 403 for non-staff user", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testStudent.userUuid,
-          email: testStudent.email,
-          name: `${testStudent.firstName} ${testStudent.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/enrollments/recent`);
-
-      expect(response.status).toBe(403);
-      expect(response.body.error).toBe("Not authorized to view recent enrollments");
-    });
-
-    it("should return recent enrollments for staff", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testProfessor.userUuid,
-          email: testProfessor.email,
-          name: `${testProfessor.firstName} ${testProfessor.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/enrollments/recent`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(Array.isArray(response.body.data)).toBe(true);
-    });
-
-    it("should respect limit parameter", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testProfessor.userUuid,
-          email: testProfessor.email,
-          name: `${testProfessor.firstName} ${testProfessor.lastName}`
-        }
-      });
-
-      const response = await agent.get(`/directory/courses/${testCourse.courseUuid}/enrollments/recent?limit=5`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.data.length).toBeLessThanOrEqual(5);
     });
   });
 
@@ -582,95 +444,6 @@ describe("Directory API", () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data.userUuid).toBe(testStudent.userUuid);
-    });
-  });
-
-  describe("PUT /directory/profile", () => {
-    it("should return 401 without session", async () => {
-      const response = await request(app)
-        .put("/directory/profile")
-        .send({
-          firstName: "Test",
-          lastName: "User"
-        });
-
-      expect(response.status).toBe(401);
-    });
-
-    it("should update current user's profile", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testStudent.userUuid,
-          email: testStudent.email,
-          name: `${testStudent.firstName} ${testStudent.lastName}`
-        }
-      });
-
-      // Get original data
-      const originalUser = await prisma.user.findUnique({
-        where: { userUuid: testStudent.userUuid }
-      });
-
-      const response = await agent.put("/directory/profile").send({
-        bio: "Updated test bio",
-        pronouns: "they/them"
-      });
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.bio).toBe("Updated test bio");
-      expect(response.body.data.pronouns).toBe("they/them");
-
-      // Restore original data
-      await prisma.user.update({
-        where: { userUuid: testStudent.userUuid },
-        data: {
-          bio: originalUser.bio,
-          pronouns: originalUser.pronouns
-        }
-      });
-    });
-
-    it("should validate required fields", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testStudent.userUuid,
-          email: testStudent.email,
-          name: `${testStudent.firstName} ${testStudent.lastName}`
-        }
-      });
-
-      const response = await agent.put("/directory/profile").send({
-        firstName: ""
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body.success).toBe(false);
-      expect(response.body.error).toContain("First name");
-    });
-
-    it("should validate email format", async () => {
-      const agent = request.agent(app);
-
-      await agent.post("/test/setup-session").send({
-        user: {
-          id: testStudent.userUuid,
-          email: testStudent.email,
-          name: `${testStudent.firstName} ${testStudent.lastName}`
-        }
-      });
-
-      const response = await agent.put("/directory/profile").send({
-        email: "invalid-email"
-      });
-
-      expect(response.status).toBe(400);
-      expect(response.body.success).toBe(false);
-      expect(response.body.error).toContain("email");
     });
   });
 

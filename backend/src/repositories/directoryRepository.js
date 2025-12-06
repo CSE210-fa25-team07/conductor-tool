@@ -112,81 +112,6 @@ export async function getCourseStaff(courseUuid) {
 }
 
 /**
- * Get enrollment statistics for a course (instructor only)
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Object>} Enrollment stats (total, active, dropped)
- */
-export async function getEnrollmentStats(courseUuid) {
-  // Get all enrollments and count unique users
-  const [allEnrollments, activeEnrollments, droppedEnrollments] = await Promise.all([
-    prisma.courseEnrollment.findMany({
-      where: { courseUuid },
-      select: { userUuid: true }
-    }),
-    prisma.courseEnrollment.findMany({
-      where: {
-        courseUuid,
-        enrollmentStatus: "active"
-      },
-      select: { userUuid: true }
-    }),
-    prisma.courseEnrollment.findMany({
-      where: {
-        courseUuid,
-        enrollmentStatus: "dropped"
-      },
-      select: { userUuid: true }
-    })
-  ]);
-
-  // Count unique users (since users may have multiple roles like Student + Team Leader)
-  const total = new Set(allEnrollments.map(e => e.userUuid)).size;
-  const active = new Set(activeEnrollments.map(e => e.userUuid)).size;
-  const dropped = new Set(droppedEnrollments.map(e => e.userUuid)).size;
-
-  return {
-    total,
-    active,
-    dropped
-  };
-}
-
-/**
- * Get recent student enrollments (instructor only)
- * @param {string} courseUuid - Course UUID
- * @param {number} limit - Number of recent enrollments to fetch (default 10)
- * @returns {Promise<Array>} List of recent enrollments
- */
-export async function getRecentEnrollments(courseUuid, limit = 10) {
-  return await prisma.courseEnrollment.findMany({
-    where: {
-      courseUuid,
-      enrollmentStatus: "active"
-    },
-    include: {
-      user: {
-        select: {
-          userUuid: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          photoUrl: true
-        }
-      },
-      role: {
-        select: {
-          role: true
-        }
-      }
-    },
-    orderBy: {
-      enrolledAt: "desc"
-    },
-    take: limit
-  });
-}
-
-/**
  * Get user profile by UUID
  * @param {string} userUuid - User UUID
  * @returns {Promise<Object>} User profile information
@@ -513,45 +438,6 @@ export async function checkCourseEnrollment(userUuid, courseUuid) {
 }
 
 /**
- * Update user information by UUID
- * @param {string} userUuid - User UUID to update
- * @param {Object} userData - User data to update
- * @returns {Promise<Object>} Updated user object
- */
-export async function updateUser(userUuid, userData) {
-  const updatedUser = await prisma.user.update({
-    where: { userUuid: userUuid },
-    data: userData
-  });
-
-  return updatedUser;
-}
-
-/**
- * Update staff information by user UUID
- * @param {string} userUuid - User UUID to update staff info for
- * @param {Object} staffData - Staff data to update (officeLocation, researchInterest, personalWebsite)
- * @returns {Promise<Object>} Updated staff object
- */
-export async function updateStaff(userUuid, staffData) {
-  // Check if staff record exists
-  const existingStaff = await prisma.staff.findUnique({
-    where: { userUuid: userUuid }
-  });
-
-  if (!existingStaff) {
-    throw new Error("Staff record not found for this user");
-  }
-
-  const updatedStaff = await prisma.staff.update({
-    where: { userUuid: userUuid },
-    data: staffData
-  });
-
-  return updatedStaff;
-}
-
-/**
  * Update course links by course UUID
  * @param {string} courseUuid - Course UUID
  * @param {Object} linksData - Links data to update (syllabusUrl, canvasUrl)
@@ -612,6 +498,44 @@ export async function updateTeamLinks(teamUuid, linksData) {
   });
 
   return updatedTeam;
+}
+
+/**
+ * Update user profile data
+ * @param {string} userUuid - User UUID
+ * @param {Object} userData - User data to update
+ * @returns {Promise<Object>} Updated user object
+ */
+export async function updateUser(userUuid, userData) {
+  return await prisma.user.update({
+    where: { userUuid },
+    data: {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      pronouns: userData.pronouns,
+      bio: userData.bio,
+      phoneNumber: userData.phoneNumber,
+      githubUsername: userData.githubUsername
+    }
+  });
+}
+
+/**
+ * Update staff profile data
+ * @param {string} userUuid - User UUID (staff is linked via userUuid)
+ * @param {Object} staffData - Staff data to update
+ * @returns {Promise<Object>} Updated staff object
+ */
+export async function updateStaff(userUuid, staffData) {
+  return await prisma.staff.update({
+    where: { userUuid },
+    data: {
+      officeLocation: staffData.officeLocation,
+      researchInterest: staffData.researchInterest,
+      personalWebsite: staffData.personalWebsite
+    }
+  });
 }
 
 /**

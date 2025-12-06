@@ -49,32 +49,6 @@ function toStaffListDto(enrollments) {
   return enrollments.map(toStaffDto);
 }
 
-function toEnrollmentStatsDto(stats) {
-  return {
-    total: stats.total,
-    active: stats.active,
-    dropped: stats.dropped
-  };
-}
-
-function toEnrollmentDto(enrollment) {
-  if (!enrollment) return null;
-
-  return {
-    userUuid: enrollment.user.userUuid,
-    firstName: enrollment.user.firstName,
-    lastName: enrollment.user.lastName,
-    email: enrollment.user.email,
-    photoUrl: enrollment.user.photoUrl,
-    role: enrollment.role.role,
-    enrolledAt: enrollment.enrolledAt
-  };
-}
-
-function toEnrollmentListDto(enrollments) {
-  return enrollments.map(toEnrollmentDto);
-}
-
 function toUserProfileDto(user) {
   if (!user) return null;
 
@@ -200,9 +174,6 @@ export {
   toCourseOverviewDto,
   toStaffDto,
   toStaffListDto,
-  toEnrollmentStatsDto,
-  toEnrollmentDto,
-  toEnrollmentListDto,
   toUserProfileDto,
   toRosterDto,
   toTeamProfileDto,

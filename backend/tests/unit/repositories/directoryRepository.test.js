@@ -2,15 +2,11 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   getCourseOverview,
   getCourseStaff,
-  getEnrollmentStats,
-  getRecentEnrollments,
   getUserProfile,
   getCourseRoster,
   getTeamProfile,
   getCourseTeams,
   checkCourseEnrollment,
-  updateUser,
-  updateStaff,
   updateCourseLinks,
   getUserRoleInCourse
 } from "../../../src/repositories/directoryRepository.js";
@@ -22,7 +18,6 @@ describe("directoryRepository", () => {
   let testUser;
   let testCourse;
   let testTeam;
-  let testStaff;
 
   beforeAll(async () => {
     // Find test data from the database
@@ -50,15 +45,6 @@ describe("directoryRepository", () => {
         members: {
           where: { leftAt: null }
         }
-      }
-    });
-
-    testStaff = await prisma.user.findFirst({
-      where: {
-        staff: { isNot: null }
-      },
-      include: {
-        staff: true
       }
     });
   });
@@ -144,61 +130,6 @@ describe("directoryRepository", () => {
     });
   });
 
-  describe("getEnrollmentStats", () => {
-    it("should return enrollment statistics", async () => {
-      const stats = await getEnrollmentStats(testCourse.courseUuid);
-
-      expect(stats).toHaveProperty("total");
-      expect(stats).toHaveProperty("active");
-      expect(stats).toHaveProperty("dropped");
-      expect(typeof stats.total).toBe("number");
-      expect(typeof stats.active).toBe("number");
-      expect(typeof stats.dropped).toBe("number");
-      expect(stats.total).toBeGreaterThanOrEqual(stats.active + stats.dropped);
-    });
-
-    it("should count unique users not enrollment records", async () => {
-      const stats = await getEnrollmentStats(testCourse.courseUuid);
-
-      // Verify that total equals active + dropped
-      expect(stats.total).toBe(stats.active + stats.dropped);
-    });
-  });
-
-  describe("getRecentEnrollments", () => {
-    it("should return recent enrollments with default limit", async () => {
-      const enrollments = await getRecentEnrollments(testCourse.courseUuid);
-
-      expect(Array.isArray(enrollments)).toBe(true);
-      expect(enrollments.length).toBeLessThanOrEqual(10);
-      enrollments.forEach(enrollment => {
-        expect(enrollment).toHaveProperty("user");
-        expect(enrollment).toHaveProperty("role");
-        expect(enrollment).toHaveProperty("enrolledAt");
-      });
-    });
-
-    it("should respect custom limit parameter", async () => {
-      const limit = 5;
-      const enrollments = await getRecentEnrollments(testCourse.courseUuid, limit);
-
-      expect(Array.isArray(enrollments)).toBe(true);
-      expect(enrollments.length).toBeLessThanOrEqual(limit);
-    });
-
-    it("should order by enrolledAt descending", async () => {
-      const enrollments = await getRecentEnrollments(testCourse.courseUuid);
-
-      if (enrollments.length > 1) {
-        for (let i = 0; i < enrollments.length - 1; i++) {
-          const current = new Date(enrollments[i].enrolledAt);
-          const next = new Date(enrollments[i + 1].enrolledAt);
-          expect(current.getTime()).toBeGreaterThanOrEqual(next.getTime());
-        }
-      }
-    });
-  });
-
   describe("getUserProfile", () => {
     it("should return complete user profile", async () => {
       const profile = await getUserProfile(testUser.userUuid);
@@ -215,8 +146,14 @@ describe("directoryRepository", () => {
     });
 
     it("should include staff information for staff users", async () => {
-      if (testStaff) {
-        const profile = await getUserProfile(testStaff.userUuid);
+      const staffUser = await prisma.user.findFirst({
+        where: {
+          staff: { isNot: null }
+        }
+      });
+
+      if (staffUser) {
+        const profile = await getUserProfile(staffUser.userUuid);
         expect(profile.staff).not.toBeNull();
         expect(profile.staff).toHaveProperty("isProf");
       }
@@ -381,88 +318,6 @@ describe("directoryRepository", () => {
     it("should return false for non-enrolled user", async () => {
       const isEnrolled = await checkCourseEnrollment("00000000-0000-0000-0000-000000000000", testCourse.courseUuid);
       expect(isEnrolled).toBe(false);
-    });
-  });
-
-  describe("updateUser", () => {
-    it("should update user information", async () => {
-      const originalUser = await prisma.user.findUnique({
-        where: { userUuid: testUser.userUuid }
-      });
-
-      const updatedData = {
-        bio: "Test bio update"
-      };
-
-      const updated = await updateUser(testUser.userUuid, updatedData);
-
-      expect(updated.userUuid).toBe(testUser.userUuid);
-      expect(updated.bio).toBe("Test bio update");
-
-      // Restore original data
-      await updateUser(testUser.userUuid, {
-        bio: originalUser.bio
-      });
-    });
-
-    it("should update multiple fields", async () => {
-      const originalUser = await prisma.user.findUnique({
-        where: { userUuid: testUser.userUuid }
-      });
-
-      const updatedData = {
-        pronouns: "they/them",
-        phoneNumber: "123-456-7890"
-      };
-
-      const updated = await updateUser(testUser.userUuid, updatedData);
-
-      expect(updated.pronouns).toBe("they/them");
-      expect(updated.phoneNumber).toBe("123-456-7890");
-
-      // Restore original data
-      await updateUser(testUser.userUuid, {
-        pronouns: originalUser.pronouns,
-        phoneNumber: originalUser.phoneNumber
-      });
-    });
-  });
-
-  describe("updateStaff", () => {
-    it("should update staff information", async () => {
-      if (testStaff) {
-        const originalStaff = await prisma.staff.findUnique({
-          where: { userUuid: testStaff.userUuid }
-        });
-
-        const updatedData = {
-          officeLocation: "CSE 1234"
-        };
-
-        const updated = await updateStaff(testStaff.userUuid, updatedData);
-
-        expect(updated.userUuid).toBe(testStaff.userUuid);
-        expect(updated.officeLocation).toBe("CSE 1234");
-
-        // Restore original data
-        await updateStaff(testStaff.userUuid, {
-          officeLocation: originalStaff.officeLocation
-        });
-      }
-    });
-
-    it("should throw error for non-staff user", async () => {
-      const nonStaffUser = await prisma.user.findFirst({
-        where: {
-          staff: null
-        }
-      });
-
-      if (nonStaffUser) {
-        await expect(
-          updateStaff(nonStaffUser.userUuid, { officeLocation: "Test" })
-        ).rejects.toThrow("Staff record not found for this user");
-      }
     });
   });
 

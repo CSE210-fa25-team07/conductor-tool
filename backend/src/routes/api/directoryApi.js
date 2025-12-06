@@ -39,36 +39,6 @@ router.get("/courses/:courseUuid/staff", async (req, res) => {
 });
 
 /**
- * Get enrollment statistics (staff only)
- * @name GET /v1/api/directory/courses/:courseUuid/stats
- */
-router.get("/courses/:courseUuid/stats", async (req, res) => {
-  try {
-    return await directoryService.getEnrollmentStats(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-/**
- * Get recent enrollments (staff only)
- * @name GET /v1/api/directory/courses/:courseUuid/enrollments/recent
- */
-router.get("/courses/:courseUuid/enrollments/recent", async (req, res) => {
-  try {
-    return await directoryService.getRecentEnrollments(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-/**
  * Get course roster with pagination
  * @name GET /v1/api/directory/courses/:courseUuid/roster
  */

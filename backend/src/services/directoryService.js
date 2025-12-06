@@ -79,63 +79,6 @@ async function getCourseStaff(req, res) {
   });
 }
 
-async function getEnrollmentStats(req, res) {
-  const userId = req.session.user.id;
-  const { courseUuid } = req.params;
-
-  if (!courseUuid) {
-    return res.status(400).json({
-      success: false,
-      error: "courseUuid is required"
-    });
-  }
-
-  const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseUuid);
-
-  if (!isStaff) {
-    return res.status(403).json({
-      success: false,
-      error: "Not authorized to view enrollment statistics"
-    });
-  }
-
-  const stats = await directoryRepository.getEnrollmentStats(courseUuid);
-
-  return res.status(200).json({
-    success: true,
-    data: directoryDto.toEnrollmentStatsDto(stats)
-  });
-}
-
-async function getRecentEnrollments(req, res) {
-  const userId = req.session.user.id;
-  const { courseUuid } = req.params;
-  const { limit = 10 } = req.query;
-
-  if (!courseUuid) {
-    return res.status(400).json({
-      success: false,
-      error: "courseUuid is required"
-    });
-  }
-
-  const isStaff = await userContextRepository.checkCourseStaffRole(userId, courseUuid);
-
-  if (!isStaff) {
-    return res.status(403).json({
-      success: false,
-      error: "Not authorized to view recent enrollments"
-    });
-  }
-
-  const enrollments = await directoryRepository.getRecentEnrollments(courseUuid, parseInt(limit));
-
-  return res.status(200).json({
-    success: true,
-    data: directoryDto.toEnrollmentListDto(enrollments)
-  });
-}
-
 async function getUserProfile(req, res) {
   const requesterId = req.session.user.id;
   const { userUuid } = req.params;
@@ -289,6 +232,156 @@ async function getCourseTeams(req, res) {
 }
 
 /**
+ * Validate profile data for updates
+ * @param {Object} profileData - Profile data to validate
+ * @throws {Error} If validation fails
+ */
+function validateProfileData(profileData) {
+  const { firstName, lastName, email, pronouns, bio, phoneNumber, githubUsername } = profileData;
+
+  // firstName is required
+  if (firstName !== undefined) {
+    if (typeof firstName !== "string" || firstName.trim().length === 0) {
+      throw new Error("First name must be a non-empty string");
+    }
+    if (firstName.trim().length > 100) {
+      throw new Error("First name must be 100 characters or less");
+    }
+  }
+
+  // lastName is required
+  if (lastName !== undefined) {
+    if (typeof lastName !== "string" || lastName.trim().length === 0) {
+      throw new Error("Last name must be a non-empty string");
+    }
+    if (lastName.trim().length > 100) {
+      throw new Error("Last name must be 100 characters or less");
+    }
+  }
+
+  // email is required
+  if (email !== undefined) {
+    if (typeof email !== "string" || email.trim().length === 0) {
+      throw new Error("Email must be a non-empty string");
+    }
+    if (email.trim().length > 255) {
+      throw new Error("Email must be 255 characters or less");
+    }
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      throw new Error("Invalid email format");
+    }
+  }
+
+  // Optional fields validation
+  if (pronouns !== undefined && pronouns !== null && pronouns !== "") {
+    if (typeof pronouns !== "string") {
+      throw new Error("Pronouns must be a string");
+    }
+    if (pronouns.length > 50) {
+      throw new Error("Pronouns must be 50 characters or less");
+    }
+  }
+
+  if (bio !== undefined && bio !== null && bio !== "") {
+    if (typeof bio !== "string") {
+      throw new Error("Bio must be a string");
+    }
+    if (bio.length > 500) {
+      throw new Error("Bio must be 500 characters or less");
+    }
+  }
+
+  if (phoneNumber !== undefined && phoneNumber !== null && phoneNumber !== "") {
+    if (typeof phoneNumber !== "string") {
+      throw new Error("Phone number must be a string");
+    }
+    // Basic phone validation - allows digits, spaces, dashes, parentheses, plus
+    const phoneRegex = /^[0-9\s\-\(\)\+]+$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      throw new Error("Invalid phone number format");
+    }
+  }
+
+  if (githubUsername !== undefined && githubUsername !== null && githubUsername !== "") {
+    if (typeof githubUsername !== "string") {
+      throw new Error("GitHub username must be a string");
+    }
+    // GitHub username rules: alphanumeric and hyphens, max 39 chars
+    const githubRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/;
+    if (!githubRegex.test(githubUsername)) {
+      throw new Error("Invalid GitHub username format");
+    }
+  }
+}
+
+/**
+ * Update current user's profile
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @returns {Object} Updated profile data
+ */
+async function updateCurrentUserProfile(req, res) {
+  const userUuid = req.session.user.id;
+  const profileData = req.body;
+
+  // Validate input
+  validateProfileData(profileData);
+
+  // Normalize user data
+  const normalizedUserData = {
+    firstName: profileData.firstName?.trim(),
+    lastName: profileData.lastName?.trim(),
+    email: profileData.email?.trim(),
+    pronouns: profileData.pronouns?.trim() || null,
+    bio: profileData.bio?.trim() || null,
+    phoneNumber: profileData.phoneNumber?.trim() || null,
+    githubUsername: profileData.githubUsername?.trim() || null
+  };
+
+  // Update user basic info
+  const updatedUser = await directoryRepository.updateUser(userUuid, normalizedUserData);
+
+  // If staff data is provided, update staff record
+  if (profileData.staff) {
+    const normalizedStaffData = {
+      officeLocation: profileData.staff.officeLocation?.trim() || null,
+      researchInterest: profileData.staff.researchInterest?.trim() || null,
+      personalWebsite: profileData.staff.personalWebsite?.trim() || null
+    };
+
+    // Validate website URL if provided
+    if (normalizedStaffData.personalWebsite) {
+      try {
+        new URL(normalizedStaffData.personalWebsite);
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid personal website URL format"
+        });
+      }
+    }
+
+    await directoryRepository.updateStaff(userUuid, normalizedStaffData);
+  }
+
+  // Fetch updated user profile
+  const user = await directoryRepository.getUserProfile(userUuid);
+
+  // Update session with new name and email so sidebar reflects the change
+  if (req.session.user) {
+    req.session.user.name = `${user.firstName} ${user.lastName}`;
+    req.session.user.email = user.email;
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: directoryDto.toUserProfileDto(user)
+  });
+}
+
+/**
  * Get current user's own profile
  * @param {Object} req - Express request
  * @param {Object} res - Express response
@@ -311,164 +404,6 @@ async function getCurrentUserProfile(req, res) {
     success: true,
     data: directoryDto.toUserProfileDto(user)
   });
-}
-
-/**
- * Update current user's profile
- * @param {Object} req - Express request
- * @param {Object} res - Express response
- * @returns {Object} Updated profile data
- */
-async function updateCurrentUserProfile(req, res) {
-  const userUuid = req.session.user.id;
-  const profileData = req.body;
-
-  // Validate profile data
-  validateProfileData(profileData);
-
-  // Normalize user data
-  const normalizedUserData = {
-    firstName: profileData.firstName?.trim(),
-    lastName: profileData.lastName?.trim(),
-    email: profileData.email?.trim(),
-    pronouns: profileData.pronouns?.trim() || null,
-    bio: profileData.bio?.trim() || null,
-    phoneNumber: profileData.phoneNumber?.trim() || null,
-    githubUsername: profileData.githubUsername?.trim() || null
-  };
-
-  // Remove undefined fields from user data
-  Object.keys(normalizedUserData).forEach(key => {
-    if (normalizedUserData[key] === undefined) {
-      delete normalizedUserData[key];
-    }
-  });
-
-  // Update user
-  const updatedUser = await directoryRepository.updateUser(userUuid, normalizedUserData);
-
-  // Update staff information if provided
-  if (profileData.staff) {
-    const normalizedStaffData = {
-      officeLocation: profileData.staff.officeLocation?.trim() || null,
-      researchInterest: profileData.staff.researchInterest?.trim() || null,
-      personalWebsite: profileData.staff.personalWebsite?.trim() || null
-    };
-
-    // Remove undefined fields from staff data
-    Object.keys(normalizedStaffData).forEach(key => {
-      if (normalizedStaffData[key] === undefined) {
-        delete normalizedStaffData[key];
-      }
-    });
-
-    // Only update if there are staff fields to update
-    if (Object.keys(normalizedStaffData).length > 0) {
-      try {
-        await directoryRepository.updateStaff(userUuid, normalizedStaffData);
-      } catch (error) {
-        // If staff record doesn't exist, user is not staff - ignore error
-        if (error.message !== "Staff record not found for this user") {
-          throw error;
-        }
-      }
-    }
-  }
-
-  // Update session with new name if changed
-  if (profileData.firstName || profileData.lastName) {
-    req.session.user.name = `${updatedUser.firstName} ${updatedUser.lastName}`;
-  }
-
-  return res.status(200).json({
-    success: true,
-    data: updatedUser
-  });
-}
-
-/**
- * Validate profile data for updates (inline validator for Directory team)
- * @param {Object} profileData - Profile data to validate
- * @throws {Error} If validation fails
- */
-function validateProfileData(profileData) {
-  if (!profileData || typeof profileData !== "object") {
-    throw new Error("Profile data is required and must be an object");
-  }
-
-  // Validate firstName if provided
-  if (profileData.firstName !== undefined) {
-    if (typeof profileData.firstName !== "string" || profileData.firstName.trim().length === 0) {
-      throw new Error("First name must be a non-empty string");
-    }
-    if (profileData.firstName.trim().length > 100) {
-      throw new Error("First name must not exceed 100 characters");
-    }
-  }
-
-  // Validate lastName if provided
-  if (profileData.lastName !== undefined) {
-    if (typeof profileData.lastName !== "string" || profileData.lastName.trim().length === 0) {
-      throw new Error("Last name must be a non-empty string");
-    }
-    if (profileData.lastName.trim().length > 100) {
-      throw new Error("Last name must not exceed 100 characters");
-    }
-  }
-
-  // Validate email if provided
-  if (profileData.email !== undefined) {
-    if (typeof profileData.email !== "string" || profileData.email.trim().length === 0) {
-      throw new Error("Email must be a non-empty string");
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(profileData.email.trim())) {
-      throw new Error("Invalid email format");
-    }
-    if (profileData.email.trim().length > 255) {
-      throw new Error("Email must not exceed 255 characters");
-    }
-  }
-
-  // Validate pronouns if provided
-  if (profileData.pronouns !== undefined && profileData.pronouns !== null && profileData.pronouns !== "") {
-    if (typeof profileData.pronouns !== "string") {
-      throw new Error("Pronouns must be a string");
-    }
-    if (profileData.pronouns.trim().length > 50) {
-      throw new Error("Pronouns must not exceed 50 characters");
-    }
-  }
-
-  // Validate bio if provided
-  if (profileData.bio !== undefined && profileData.bio !== null && profileData.bio !== "") {
-    if (typeof profileData.bio !== "string") {
-      throw new Error("Bio must be a string");
-    }
-    if (profileData.bio.trim().length > 1000) {
-      throw new Error("Bio must not exceed 1000 characters");
-    }
-  }
-
-  // Validate phoneNumber if provided
-  if (profileData.phoneNumber !== undefined && profileData.phoneNumber !== null && profileData.phoneNumber !== "") {
-    if (typeof profileData.phoneNumber !== "string") {
-      throw new Error("Phone number must be a string");
-    }
-    if (profileData.phoneNumber.trim().length > 20) {
-      throw new Error("Phone number must not exceed 20 characters");
-    }
-  }
-
-  // Validate githubUsername if provided
-  if (profileData.githubUsername !== undefined && profileData.githubUsername !== null && profileData.githubUsername !== "") {
-    if (typeof profileData.githubUsername !== "string") {
-      throw new Error("GitHub username must be a string");
-    }
-    if (profileData.githubUsername.trim().length > 100) {
-      throw new Error("GitHub username must not exceed 100 characters");
-    }
-  }
 }
 
 /**
@@ -634,8 +569,6 @@ async function updateTeamLinks(req, res) {
 export {
   getCourseOverview,
   getCourseStaff,
-  getEnrollmentStats,
-  getRecentEnrollments,
   getUserProfile,
   getCourseRoster,
   getTeamProfile,

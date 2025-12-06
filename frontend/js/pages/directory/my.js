@@ -131,25 +131,39 @@ function renderUserProfile(user) {
 
   if (coursesList) {
     if (user.courses && user.courses.length > 0) {
-      // Group courses by courseUuid to combine multiple roles
-      const courseMap = {};
-      user.courses.forEach(course => {
-        const key = course.courseUuid;
-        if (!courseMap[key]) {
-          courseMap[key] = {
-            courseCode: course.courseCode,
-            courseName: course.courseName,
-            roles: []
-          };
-        }
-        courseMap[key].roles.push(course.role);
-      });
+      // Get active course UUID from session storage to filter courses
+      const activeCourseJson = sessionStorage.getItem("activeCourse");
+      const activeCourse = activeCourseJson ? JSON.parse(activeCourseJson) : null;
+      const activeCourseUuid = activeCourse?.courseUuid;
 
-      // Render grouped courses with combined roles
-      coursesList.innerHTML = Object.values(courseMap).map(course => {
-        const rolesText = course.roles.join(", ");
-        return "<div class=\"course-card\"><div class=\"course-card-title\">" + course.courseCode + ": " + course.courseName + "</div><div class=\"course-card-role\">" + rolesText + "</div></div>";
-      }).join("");
+      // Filter courses to only show the active course
+      const filteredCourses = activeCourseUuid
+        ? user.courses.filter(course => course.courseUuid === activeCourseUuid)
+        : user.courses;
+
+      if (filteredCourses.length > 0) {
+        // Group courses by courseUuid to combine multiple roles
+        const courseMap = {};
+        filteredCourses.forEach(course => {
+          const key = course.courseUuid;
+          if (!courseMap[key]) {
+            courseMap[key] = {
+              courseCode: course.courseCode,
+              courseName: course.courseName,
+              roles: []
+            };
+          }
+          courseMap[key].roles.push(course.role);
+        });
+
+        // Render grouped courses with combined roles
+        coursesList.innerHTML = Object.values(courseMap).map(course => {
+          const rolesText = course.roles.join(", ");
+          return "<div class=\"course-card\"><div class=\"course-card-title\">" + course.courseCode + ": " + course.courseName + "</div><div class=\"course-card-role\">" + rolesText + "</div></div>";
+        }).join("");
+      } else {
+        coursesList.innerHTML = "<p class=\"no-items-message\">No enrolled courses in this term</p>";
+      }
     } else {
       coursesList.innerHTML = "<p class=\"no-items-message\">No enrolled courses</p>";
     }

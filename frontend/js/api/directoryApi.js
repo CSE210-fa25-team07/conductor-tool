@@ -43,37 +43,6 @@ export async function getCourseStaff(courseUuid) {
   return handleResponse(response);
 }
 
-/**
- * Get enrollment statistics (staff only)
- * @param {string} courseUuid - Course UUID
- * @returns {Promise<Object>} Enrollment statistics
- */
-export async function getEnrollmentStats(courseUuid) {
-  const response = await fetch(API_BASE + "/courses/" + courseUuid + "/stats", {
-    method: "GET",
-    credentials: "include"
-  });
-
-  return handleResponse(response);
-}
-
-/**
- * Get recent enrollments (staff only)
- * @param {string} courseUuid - Course UUID
- * @param {number} limit - Number of recent enrollments (default 10)
- * @returns {Promise<Array>} List of recent enrollments
- */
-export async function getRecentEnrollments(courseUuid, limit = 10) {
-  const params = new URLSearchParams();
-  params.append("limit", limit);
-
-  const response = await fetch(API_BASE + "/courses/" + courseUuid + "/enrollments/recent?" + params.toString(), {
-    method: "GET",
-    credentials: "include"
-  });
-
-  return handleResponse(response);
-}
 
 /**
  * Get course roster with pagination
@@ -149,34 +118,6 @@ export async function getTeamProfile(teamUuid) {
   return handleResponse(response);
 }
 
-/**
- * Update current user's profile
- * @param {Object} profileData - Profile data to update
- * @param {string} profileData.firstName - First name
- * @param {string} profileData.lastName - Last name
- * @param {string} profileData.email - Email address
- * @param {string} profileData.pronouns - Pronouns
- * @param {string} profileData.bio - Biography
- * @param {string} profileData.phoneNumber - Phone number
- * @param {string} profileData.githubUsername - GitHub username
- * @param {Object} profileData.staff - Staff information (for staff members only)
- * @param {string} profileData.staff.officeLocation - Office location
- * @param {string} profileData.staff.researchInterest - Research interests
- * @param {string} profileData.staff.personalWebsite - Personal website URL
- * @returns {Promise<Object>} Updated user profile
- */
-export async function updateProfile(profileData) {
-  const response = await fetch(API_BASE + "/profile", {
-    method: "PUT",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(profileData)
-  });
-
-  return handleResponse(response);
-}
 
 /**
  * Update course links (professor only)
