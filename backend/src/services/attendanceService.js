@@ -761,10 +761,7 @@ async function createMeetingCode(req, res) {
 
   const meetingCode = Math.random().toString(36).substring(2).substring(0, 6).toUpperCase();
 
-  // TODO(bukhradze): replace hostname
-  const HOSTNAME = "conductor-tool.ucsd.edu";
-  const redirectURL = `https://${HOSTNAME}/attendance/record/${meetingUUID}/${meetingCode}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${redirectURL}&size=200x200`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${meetingCode}&size=200x200`;
 
   const validStartDatetime = meeting.meetingStartTime;
   const validEndDatetime = meeting.meetingEndTime;
