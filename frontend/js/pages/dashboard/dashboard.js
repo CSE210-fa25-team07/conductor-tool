@@ -194,9 +194,14 @@ function createConfirmationCard(course) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (input.value === "Confirm") {
-      // backend call to remove user from course
+      // backend call to remove user from course or delete course
       try {
-        const response = await fetch(`/v1/api/courses/${course.courseUuid}/leave`, {
+        // Use different endpoint based on user role
+        const endpoint = (isProf() || isLeadAdmin() || isSystemAdmin())
+          ? `/v1/api/courses/${course.courseUuid}/delete`  // Delete course endpoint for professors
+          : `/v1/api/courses/${course.courseUuid}/leave`;  // Leave course endpoint for students
+
+        const response = await fetch(endpoint, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json"
@@ -244,6 +249,9 @@ function createMenuItems(course) {
       <a href="/courses/${course.courseUuid}/edit" class="menu-item">
         <span>Edit</span>
       </a>
+      <button class="menu-item leave-course-button" data-course-uuid="${course.courseUuid}">
+        <span>Delete</span>
+      </button>
     `;
   } else {
     // Student menu items

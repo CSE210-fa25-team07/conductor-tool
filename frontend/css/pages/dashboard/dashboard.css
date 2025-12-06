@@ -425,16 +425,24 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm);
   color: var(--color-forest-green);
   text-decoration: none;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+  font-weight: 400;
+  text-transform: none;
   transition: background-color var(--transition-fast);
   border: none;
+  border-bottom: var(--border-thin);
   width: 100%;
   text-align: center;
   cursor: pointer;
+  box-sizing: border-box;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
 }
 
 .menu-item:hover {

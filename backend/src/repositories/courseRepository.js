@@ -175,35 +175,69 @@ async function getUsersByCourseUuid(courseUuid) {
         }
       }
     });
-  }
 
-  // Create a map of userUuid -> team info
-  const userTeamMap = {};
-  teamMemberships.forEach(membership => {
-    userTeamMap[membership.userUuid] = {
-      teamUuid: membership.team.teamUuid,
-      teamName: membership.team.teamName
-    };
+    // Update verification codes using the verification code repository
+    await verificationCodeRepository.updateVerificationCodes(tx, courseUuid, {
+      taCode,
+      tutorCode,
+      studentCode
+    });
+
+    return updatedCourse;
   });
 
-  // Map enrollments to user objects with team info
-  // Filter out any enrollments where user is null (shouldn't happen, but safety check)
-  return enrollments
-    .filter(enrollment => enrollment.user !== null)
-    .map(enrollment => ({
-      userUuid: enrollment.user.userUuid,
-      firstName: enrollment.user.firstName,
-      lastName: enrollment.user.lastName,
-      email: enrollment.user.email,
-      teamUuid: userTeamMap[enrollment.userUuid]?.teamUuid || null,
-      teamName: userTeamMap[enrollment.userUuid]?.teamName || null
-    }));
+  return result;
+}
+
+/**
+ * Remove user from course by deleting their enrollment
+ * Deletes all enrollments for the user in the course (regardless of role)
+ * @param {string} userUuid - The UUID of the user to remove
+ * @param {string} courseUuid - The UUID of the course
+ * @returns {Promise<Object>} Object with count of deleted enrollments
+ * @throws {Error} If database query fails
+ */
+async function removeUserFromCourse(userUuid, courseUuid) {
+  // Use deleteMany because a user might have multiple roles in the same course
+  // and the primary key is (user_uuid, course_uuid, role_uuid)
+  return await prisma.courseEnrollment.deleteMany({
+    where: {
+      userUuid: userUuid,
+      courseUuid: courseUuid
+    }
+  });
+}
+
+/**
+ * Delete a course and all related data
+ * Database CASCADE constraints automatically delete:
+ * - Course enrollments
+ * - Verification codes
+ * - Teams (and team members)
+ * - Standups (and comments, notifications, sentiment logs)
+ * - Meetings (and participants, meeting codes)
+ * @param {string} courseUuid - The UUID of the course to delete
+ * @returns {Promise<Object>} Deleted course object
+ * @throws {Error} If database query fails
+ */
+async function deleteCourse(courseUuid) {
+  return await prisma.course.delete({
+    where: {
+      courseUuid: courseUuid
+    }
+  });
 }
 
 export {
   getCoursesByUserId,
   getCoursesWithDetailsByUserId,
   enrollUserToCourse,
-  getCourseByUuid,
-  getUsersByCourseUuid
+  getAllActiveTerms,
+  isUserCourseProfessor,
+  findCourseByCodeTermAndProfessor,
+  getCourseWithVerificationCodes,
+  createCourseWithVerificationCodes,
+  updateCourseWithVerificationCodes,
+  removeUserFromCourse,
+  deleteCourse
 };
