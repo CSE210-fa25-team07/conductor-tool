@@ -27,40 +27,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:courseUUID", async (req, res) => {
-  try {
-    return await courseService.getCourseByUUID(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-router.get("/:courseUUID/users", async (req, res) => {
-  try {
-    return await courseService.getUsersByCourseUUID(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// Might be deprecated -- get course by UUID already includes teams
-router.get("/:courseUUID/teams", async (req, res) => {
-  try {
-    return await courseService.getTeamsByCourseUUID(req, res);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
 /**
  * Get available terms (current and next term)
  *
@@ -104,17 +70,83 @@ router.post("/create", async (req, res) => {
 });
 
 /**
- * Get course details for editing
+ * Get course by UUID
  *
  * @name GET /v1/api/courses/:courseUuid
  * @param {string} courseUuid - The course UUID
  * @returns {Object} 200 - Course details
  * @returns {Object} 401 - Not authenticated
+ * @returns {Object} 404 - Course not found
+ * @returns {Object} 500 - Server error
+ */
+router.get("/:courseUUID", async (req, res) => {
+  try {
+    return await courseService.getCourseByUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get all users enrolled in a course
+ *
+ * @name GET /v1/api/courses/:courseUuid/users
+ * @param {string} courseUuid - The course UUID
+ * @returns {Object} 200 - Array of users in the course
+ * @returns {Object} 401 - Not authenticated
+ * @returns {Object} 403 - Not authorized (must be enrolled in course)
+ * @returns {Object} 404 - Course not found
+ * @returns {Object} 500 - Server error
+ */
+router.get("/:courseUUID/users", async (req, res) => {
+  try {
+    return await courseService.getUsersByCourseUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get all teams in a course
+ *
+ * @name GET /v1/api/courses/:courseUuid/teams
+ * @param {string} courseUuid - The course UUID
+ * @returns {Object} 200 - Array of teams in the course
+ * @returns {Object} 401 - Not authenticated
+ * @returns {Object} 403 - Not authorized (must be enrolled in course)
+ * @returns {Object} 404 - Course not found
+ * @returns {Object} 500 - Server error
+ * @deprecated Might be deprecated - get course by UUID already includes teams
+ */
+router.get("/:courseUUID/teams", async (req, res) => {
+  try {
+    return await courseService.getTeamsByCourseUUID(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get course details for editing
+ *
+ * @name GET /v1/api/courses/:courseUuid/edit
+ * @param {string} courseUuid - The course UUID
+ * @returns {Object} 200 - Course details for editing
+ * @returns {Object} 401 - Not authenticated
  * @returns {Object} 403 - Not authorized (not instructor)
  * @returns {Object} 404 - Course not found
  * @returns {Object} 500 - Server error
  */
-router.get("/:courseUuid", async (req, res) => {
+router.get("/:courseUuid/edit", async (req, res) => {
   try {
     return await courseService.getCourseForEdit(req, res);
   } catch (error) {
@@ -128,7 +160,7 @@ router.get("/:courseUuid", async (req, res) => {
 /**
  * Update an existing course
  *
- * @name PUT /v1/api/courses/:courseUuid
+ * @name PUT /v1/api/courses/:courseUuid/update
  * @param {string} courseUuid - The course UUID
  * @param {Object} body - Updated course data
  * @returns {Object} 200 - Course updated successfully
@@ -139,7 +171,7 @@ router.get("/:courseUuid", async (req, res) => {
  * @returns {Object} 409 - Verification code already used
  * @returns {Object} 500 - Server error
  */
-router.put("/:courseUuid", async (req, res) => {
+router.put("/:courseUuid/update", async (req, res) => {
   try {
     return await courseService.updateCourse(req, res);
   } catch (error) {
