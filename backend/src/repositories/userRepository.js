@@ -201,8 +201,116 @@ async function getUserStatusByUuid(userUuid) {
   return {
     isProf: staff.isProf || false,
     isSystemAdmin: staff.isSystemAdmin || false,
-    isLeadAdmin: staff.is_lead_admin || false
+    isLeadAdmin: staff.isLeadAdmin || false
   };
 }
 
-export { addUser, addUserWithStaffStatus, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid };
+/**
+ * Get all users with their staff status
+ * @returns {Promise<Array>} Array of all users with staff information
+ * @status IN USE
+ */
+async function getAllUsersWithStaffStatus() {
+  const users = await prisma.user.findMany({
+    select: {
+      userUuid: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      staff: {
+        select: {
+          isProf: true,
+          isSystemAdmin: true,
+          isLeadAdmin: true
+        }
+      }
+    },
+    orderBy: {
+      lastName: "asc"
+    }
+  });
+
+  // Transform the data to flatten staff status
+  return users.map(user => ({
+    userUuid: user.userUuid,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isProf: user.staff?.isProf || false,
+    isSystemAdmin: user.staff?.isSystemAdmin || false,
+    isLeadAdmin: user.staff?.isLeadAdmin || false
+  }));
+}
+
+/**
+ * Update staff status for a user
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} statusUpdates - Object with isProf, isSystemAdmin, or isLeadAdmin flags to update
+ * @returns {Promise<Object>} Updated staff record
+ * @status IN USE
+ */
+async function updateStaffStatus(userUuid, statusUpdates) {
+  // Check if staff record exists
+  const existingStaff = await prisma.staff.findUnique({
+    where: { userUuid: userUuid }
+  });
+
+  if (!existingStaff) {
+    // Create new staff record if it doesn't exist
+    return await prisma.staff.create({
+      data: {
+        userUuid: userUuid,
+        isProf: statusUpdates.isProf !== undefined ? statusUpdates.isProf : false,
+        isSystemAdmin: statusUpdates.isSystemAdmin !== undefined ? statusUpdates.isSystemAdmin : false,
+        isLeadAdmin: statusUpdates.isLeadAdmin !== undefined ? statusUpdates.isLeadAdmin : false
+      }
+    });
+  }
+
+  // Update existing staff record
+  return await prisma.staff.update({
+    where: { userUuid: userUuid },
+    data: statusUpdates
+  });
+}
+
+/**
+ * Transfer lead admin status from one admin to another
+ * @param {string} currentLeadAdminUuid - UUID of current lead admin
+ * @param {string} newLeadAdminUuid - UUID of new lead admin
+ * @returns {Promise<Object>} Result with both updated records
+ * @status IN USE
+ */
+async function transferLeadAdmin(currentLeadAdminUuid, newLeadAdminUuid) {
+  return await prisma.$transaction(async (tx) => {
+    // Remove lead admin status from current lead
+    const oldLead = await tx.staff.update({
+      where: { userUuid: currentLeadAdminUuid },
+      data: { isLeadAdmin: false }
+    });
+
+    // Add lead admin status to new lead
+    const newLead = await tx.staff.update({
+      where: { userUuid: newLeadAdminUuid },
+      data: { isLeadAdmin: true }
+    });
+
+    return {
+      oldLead,
+      newLead
+    };
+  });
+}
+
+export {
+  addUser,
+  addUserWithStaffStatus,
+  getUserByEmail,
+  getAllUsers,
+  getUserByUuid,
+  deleteUserByUuid,
+  getUserStatusByUuid,
+  getAllUsersWithStaffStatus,
+  updateStaffStatus,
+  transferLeadAdmin
+};

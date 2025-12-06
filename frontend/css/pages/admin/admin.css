@@ -112,8 +112,15 @@
   margin: 0 auto;
 }
 
+/* ==================== Manage Users ==================== */
+.manage-users-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .search-container {
   width: 100%;
+  margin-bottom: var(--space-lg);
 }
 
 .search-input {
@@ -124,6 +131,54 @@
 .search-input::placeholder {
   color: var(--color-forest-green-medium);
   opacity: 0.6;
+}
+
+.user-section {
+  margin-bottom: var(--space-xl);
+}
+
+.user-section-header {
+  padding: var(--space-lg);
+  border-bottom: var(--border-thin);
+  background: var(--color-light-matcha);
+}
+
+.user-section-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-forest-green);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.user-list {
+  /* Container for user cards */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.no-users-message {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-style: italic;
+}
+
+/* User card action button spacing */
+.request-item .request-actions {
+  gap: var(--space-sm);
+}
+
+/* Disabled button styling */
+.request-item button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 #requestsList {
