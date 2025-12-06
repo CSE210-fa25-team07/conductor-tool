@@ -565,6 +565,9 @@ export {
   getCourseForEdit,
   createCourse,
   updateCourse,
+  getUsersByCourseUUID,
+  getTeamsByCourseUUID,
+  getCourseByUUID,
   removeUserFromCourse,
   deleteCourse
 };
