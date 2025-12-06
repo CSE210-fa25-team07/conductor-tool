@@ -2,10 +2,10 @@
 
 export const ChartHelper = {
   colors: {
-    lecture: "#2196F3",        
-    "office-hours": "#FF9800", 
-    "ta-checkin": "#4CAF50",   
-    "team-meeting": "#9C27B0", 
+    lecture: "#2196F3",
+    "office-hours": "#FF9800",
+    "ta-checkin": "#4CAF50",
+    "team-meeting": "#9C27B0"
   },
 
   // --------- Bar dataset builder ----------
@@ -16,7 +16,7 @@ export const ChartHelper = {
       backgroundColor: color + "aa",
       borderColor: color,
       borderWidth: 2,
-      borderRadius: 6,
+      borderRadius: 6
     };
   },
 
@@ -68,7 +68,7 @@ export const ChartHelper = {
       pointRadius: 3,
       pointBackgroundColor: "#fff",
       pointBorderColor: color,
-      spanGaps: true,
+      spanGaps: true
     };
   },
 

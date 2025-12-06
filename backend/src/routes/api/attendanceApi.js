@@ -229,7 +229,7 @@ router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
  * @returns {Object} 200 - Student attendance analytics data
  * @returns {Object} 400 - Bad request (missing/invalid parameters)
  * @returns {Object} 403 - Not authorized
- * @returns {Object} 500 - Server error 
+ * @returns {Object} 500 - Server error
  */
 router.get("/analytics/student", async (req, res) => {
   try {
@@ -273,7 +273,7 @@ router.get("/analytics/student", async (req, res) => {
  * @returns {Object} 200 - Instructor attendance analytics data
  * @returns {Object} 400 - Bad request (missing/invalid parameters)
  * @returns {Object} 403 - Not authorized
- * @returns {Object} 500 - Server error 
+ * @returns {Object} 500 - Server error
  */
 router.get("/analytics/instructor", async (req, res) => {
   try {

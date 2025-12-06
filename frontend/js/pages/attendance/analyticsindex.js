@@ -45,8 +45,8 @@ const $$ = sel => Array.from(document.querySelectorAll(sel));
 
 /**
  * showClassAnalytics
- * @param {*} courseUuid 
- * 
+ * @param {*} courseUuid
+ *
  */
 export async function showClassAnalytics(courseUuid) {
   await renderOverallChart(courseUuid);
@@ -54,9 +54,9 @@ export async function showClassAnalytics(courseUuid) {
 
 /**
  * showGroupAnalytics
- * @param {*} courseUuid 
- * @param {*} userUuid 
- * @param {*} teamUuid 
+ * @param {*} courseUuid
+ * @param {*} userUuid
+ * @param {*} teamUuid
  */
 export async function showGroupAnalytics(courseUuid, userUuid, teamUuid = null) {
   await loadTeamDropdown(courseUuid, userUuid, teamUuid);
@@ -65,8 +65,8 @@ export async function showGroupAnalytics(courseUuid, userUuid, teamUuid = null) 
 
 
 /** * showIndividualAnalytics
- * @param {*} courseUuid 
- * @param {*} userUuid 
+ * @param {*} courseUuid
+ * @param {*} userUuid
  */
 export async function showIndividualAnalytics(courseUuid, userUuid) {
   const res = await getUserAnalytics({ courseUuid, userUuid });
@@ -98,9 +98,9 @@ export async function showIndividualAnalytics(courseUuid, userUuid) {
 
 /**
  * buildIndividualDataset
- * @param {*} attendanceByType 
- * @param {*} filters 
- * @returns 
+ * @param {*} attendanceByType
+ * @param {*} filters
+ * @returns
  */
 function buildIndividualDataset(attendanceByType, filters) {
   const labels = Object.values(TYPE_LABEL); // ["Lecture", "Office Hours", ...]
@@ -124,9 +124,9 @@ function buildIndividualDataset(attendanceByType, filters) {
 
 
 /** * loadTeamDropdown
- * @param {*} courseUuid 
- * @param {*} userUuid 
- * @param {*} teamUuid 
+ * @param {*} courseUuid
+ * @param {*} userUuid
+ * @param {*} teamUuid
  */
 async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
   const select = document.getElementById("groupTeamSelect");
@@ -141,7 +141,7 @@ async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
     teams = teams.filter(t => t.teamUuid === teamUuid);
   }
   select.innerHTML =
-    `<option value="">Select Team…</option>` +
+    "<option value=\"\">Select Team…</option>" +
     teams.map(t => `<option value="${t.teamUuid}">${t.teamName}</option>`).join("");
 
   select.addEventListener("change", () => renderTeamChart(courseUuid));
@@ -151,9 +151,9 @@ async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
 
 /**
  * loadAnalytics
- * @param {*} courseUuid 
- * @param {*} teamUuid 
- * @returns 
+ * @param {*} courseUuid
+ * @param {*} teamUuid
+ * @returns
  */
 async function loadAnalytics(courseUuid, teamUuid = null) {
   try {
@@ -176,8 +176,8 @@ async function loadAnalytics(courseUuid, teamUuid = null) {
 
 /**
  * loadOverallChart
- * @param {*} courseUuid 
- * @returns 
+ * @param {*} courseUuid
+ * @returns
  */
 async function renderOverallChart(courseUuid) {
   const filters = getOverallFilters();
@@ -204,7 +204,7 @@ async function renderOverallChart(courseUuid) {
 
 
 /** * renderTeamChart
- * @param {*} courseUuid 
+ * @param {*} courseUuid
  */
 async function renderTeamChart(courseUuid) {
   const teamUuid = document.getElementById("groupTeamSelect")?.value;
@@ -234,9 +234,9 @@ async function renderTeamChart(courseUuid) {
 
 
 /** * buildTimelineDatasets
- * @param {*} timeline 
- * @param {*} filters 
- * @returns 
+ * @param {*} timeline
+ * @param {*} filters
+ * @returns
  */
 function buildTimelineDatasets(timeline, filters) {
   const labels = [...new Set(timeline.map(i => i.date))].sort();
@@ -259,14 +259,14 @@ function buildTimelineDatasets(timeline, filters) {
     }
   });
   return { labels, datasetMap: map };
-  
+
 }
 
 
 
 
 /** * getOverallFilters
- * @returns 
+ * @returns
  */
 function getOverallFilters() {
   const filters = {};
@@ -276,7 +276,7 @@ function getOverallFilters() {
 
 
 /** * getTeamFilters
- * @returns 
+ * @returns
  */
 function getTeamFilters() {
   const filters = {};
@@ -285,7 +285,7 @@ function getTeamFilters() {
 }
 
 /** * getIndividualFilters
- * @returns 
+ * @returns
  */
 function getIndividualFilters() {
   const filters = {};

@@ -1538,8 +1538,8 @@ export async function render(container, view = "dashboard") {
  * @returns {string|null} Course ID or null if not found
  */
 function getCourseId() {
-      const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
-      return match ? match[1] : null;
+  const match = window.location.pathname.match(/^\/courses\/([^/]+)/);
+  return match ? match[1] : null;
 }
 
 /** Render class analytics (Professor/TA only)
@@ -1552,7 +1552,7 @@ export async function renderClassAnalytics(container) {
   container.insertAdjacentHTML("beforeend", html);
 
   // Find the inserted template
-  const template = container.querySelector('template:last-of-type');
+  const template = container.querySelector("template:last-of-type");
   if (template) {
     const content = template.content.cloneNode(true);
     template.replaceWith(content);
@@ -1572,7 +1572,7 @@ export async function renderIndividualAnalytics(container) {
   container.insertAdjacentHTML("beforeend", html);
 
   // Find the inserted template
-  const template = container.querySelector('template:last-of-type');
+  const template = container.querySelector("template:last-of-type");
   if (template) {
     const content = template.content.cloneNode(true);
     template.replaceWith(content);
@@ -1594,7 +1594,7 @@ export async function renderGroupanalysis(container) {
   container.insertAdjacentHTML("beforeend", html);
 
   // Find the inserted template
-  const template = container.querySelector('template:last-of-type');
+  const template = container.querySelector("template:last-of-type");
   if (template) {
     const content = template.content.cloneNode(true);
     template.replaceWith(content);
@@ -1625,9 +1625,9 @@ export async function renderAnalysisView(container) {
   try {
     await loadChartJs();
     const courseUUID = getCourseId();
-    const role = getUserRoleInCourse(courseUUID); 
+    const role = getUserRoleInCourse(courseUUID);
 
-    const baseHTML = await loadTemplate("attendance", "analysis"); 
+    const baseHTML = await loadTemplate("attendance", "analysis");
     container.innerHTML = baseHTML;
 
     const template = container.querySelector("template");
@@ -1659,27 +1659,27 @@ export async function renderAnalysisView(container) {
 /**
  * Load Chart.js before rendering any analytics charts.
  * @async
- * @returns {Promise<void>} 
+ * @returns {Promise<void>}
  * Resolves when Chart.js is successfully loaded and available globally.
  * Rejects if the CDN script fails to load or if Chart.js does not initialize.
  */
 function loadChartJs() {
   return new Promise((resolve, reject) => {
-    if (typeof Chart !== 'undefined') {
+    if (typeof Chart !== "undefined") {
       resolve();
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js";
     script.onload = () => {
-      if (typeof Chart === 'undefined') {
-        reject(new Error('Chart.js failed to load'));
+      if (typeof Chart === "undefined") {
+        reject(new Error("Chart.js failed to load"));
       } else {
         resolve();
       }
     };
-    script.onerror = () => reject(new Error('Failed to load Chart.js CDN'));
+    script.onerror = () => reject(new Error("Failed to load Chart.js CDN"));
     document.head.appendChild(script);
   });
 }

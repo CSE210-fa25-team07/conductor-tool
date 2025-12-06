@@ -657,8 +657,4 @@ describe("Attendance Service Integration Tests", () => {
       expect(parentMeetingUUID).toBe(meeting.meetingUUID);
     });
   });
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> dev
