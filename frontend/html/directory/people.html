@@ -1,45 +1,49 @@
 <template>
-  <div style="max-width: 1200px;">
-    <header style="margin-bottom: var(--space-xl);">
-      <h1 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-4xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-sm);
-      ">People</h1>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-      ">View all students and instructors in this course</p>
+  <link rel="stylesheet" href="../../css/pages/directory/people.css">
+
+  <div class="roster-container">
+    <!-- Header -->
+    <header class="roster-header">
+      <h1 class="roster-title">Course Roster</h1>
     </header>
 
-    <section style="
-      background: var(--color-light-matcha);
-      border: var(--border-thick);
-      padding: var(--space-2xl);
-      text-align: center;
-    ">
-      <h2 style="
-        font-size: var(--text-3xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-lg);
-      ">👥</h2>
-      <h3 style="
-        font-family: var(--font-heading);
-        font-size: var(--text-2xl);
-        color: var(--color-forest-green);
-        margin-bottom: var(--space-md);
-      ">People Directory</h3>
-      <p style="
-        font-family: var(--font-mono);
-        font-size: var(--text-base);
-        color: var(--color-forest-green-medium);
-        line-height: 1.6;
-      ">
-        This view will display a list of all course participants,<br>
-        with search and filter capabilities.
-      </p>
+    <!-- Filter Controls -->
+    <section class="filter-section">
+      <div class="filter-controls">
+        <label class="filter-label">Filter by Role:</label>
+        <select id="role-filter" class="role-filter-select">
+          <option value="all">All Roles</option>
+          <option value="student">Students</option>
+          <option value="ta">Teaching Assistants</option>
+          <option value="instructor">Instructors</option>
+        </select>
+
+        <div class="total-count-container">
+          Total: <strong id="roster-total-count">0</strong>
+        </div>
+      </div>
     </section>
+
+    <!-- Roster Table -->
+    <section class="roster-table-section">
+      <table class="roster-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="roster-table-body">
+          <tr>
+            <td colspan="4">Loading roster...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Pagination Controls -->
+    <section id="roster-pagination" class="pagination-section"></section>
   </div>
 </template>
