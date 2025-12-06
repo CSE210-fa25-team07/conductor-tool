@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Conductor Tool</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/admin/admin.css">
+
+  <!-- Google Fonts - Ecological Brutalism Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation will be injected by navigation.js -->
+
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+    ☰
+  </button>
+
+  <!-- Sidebar Overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main Layout (Sidebar + Content) -->
+  <main class="course-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Secondary navigation will be dynamically loaded here -->
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Placeholder -->
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <section class="content-area" id="content-area">
+      <!-- Content will be dynamically loaded here -->
+      <div class="loading-message">Loading...</div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="../../js/pages/admin/adminMain.js"></script>
+
+</body>
+</html>

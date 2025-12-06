@@ -163,7 +163,6 @@ function showSuccessMessage() {
   const form = document.querySelector(".form");
 
   form.innerHTML = `
-    <figure class="icon" aria-label="Success icon" style="background: #48bb78;">✓</figure>
     <h1 class="page-title">Request Submitted</h1>
     <p class="message">
       Your access request has been sent to the system administrator.

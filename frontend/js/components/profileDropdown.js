@@ -116,7 +116,8 @@ async function fetchUserPhoto(userAvatar, name) {
  * @param {string} name - User's full name
  */
 function displayInitials(userAvatar, name) {
-  const initials = name.split(" ").map(word => word[0]).join("").toUpperCase();
+  const parts = name.split(" ");
+  const initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   userAvatar.textContent = initials;
 }
 
