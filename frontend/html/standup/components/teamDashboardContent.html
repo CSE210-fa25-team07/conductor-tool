@@ -5,67 +5,104 @@
       <h3 class="section-title">Team Metrics</h3>
       <div class="section-divider"></div>
     </div>
-    <div class="metrics-row" id="metrics-row">
+    <div class="metrics-row metrics-summary" id="metrics-row">
       <!-- Metric cards inserted here -->
     </div>
-    <div class="metrics-expansion" id="metrics-expansion">
-      <!-- Expanded metric charts will be inserted here -->
-    </div>
-  </section>
 
-  <!-- Team Trends Section -->
-  <section class="dashboard-section">
-    <div class="section-header">
-      <h3 class="section-title">Team Trends</h3>
-      <div class="section-divider"></div>
+    <!-- 2x2 Charts Grid -->
+    <div class="metrics-charts-grid" id="metrics-charts-grid">
+      <div class="metric-chart-panel" data-metric="members">
+        <div class="metric-chart-header">
+          <span class="metric-chart-title">Active Members Over Time</span>
+          <div class="metric-controls">
+            <div class="metric-time-filter">
+              <button class="metric-time-btn" data-days="3">3D</button>
+              <button class="metric-time-btn active" data-days="7">7D</button>
+              <button class="metric-time-btn" data-days="14">14D</button>
+              <button class="metric-time-btn" data-days="30">30D</button>
+            </div>
+            <label class="metric-breakdown-toggle">
+              <input type="checkbox" class="metric-breakdown-checkbox" data-metric="members" />
+              <span class="toggle-label">By Member</span>
+            </label>
+          </div>
+        </div>
+        <div class="metric-chart-wrapper"><canvas id="chart-members"></canvas></div>
+      </div>
+      <div class="metric-chart-panel" data-metric="submissions">
+        <div class="metric-chart-header">
+          <span class="metric-chart-title">Submissions Over Time</span>
+          <div class="metric-controls">
+            <div class="metric-time-filter">
+              <button class="metric-time-btn" data-days="3">3D</button>
+              <button class="metric-time-btn active" data-days="7">7D</button>
+              <button class="metric-time-btn" data-days="14">14D</button>
+              <button class="metric-time-btn" data-days="30">30D</button>
+            </div>
+            <label class="metric-breakdown-toggle">
+              <input type="checkbox" class="metric-breakdown-checkbox" data-metric="submissions" />
+              <span class="toggle-label">By Member</span>
+            </label>
+          </div>
+        </div>
+        <div class="metric-chart-wrapper"><canvas id="chart-submissions"></canvas></div>
+      </div>
+      <div class="metric-chart-panel" data-metric="sentiment">
+        <div class="metric-chart-header">
+          <span class="metric-chart-title">Avg Sentiment Over Time</span>
+          <div class="metric-controls">
+            <div class="metric-time-filter">
+              <button class="metric-time-btn" data-days="3">3D</button>
+              <button class="metric-time-btn active" data-days="7">7D</button>
+              <button class="metric-time-btn" data-days="14">14D</button>
+              <button class="metric-time-btn" data-days="30">30D</button>
+            </div>
+            <label class="metric-breakdown-toggle">
+              <input type="checkbox" class="metric-breakdown-checkbox" data-metric="sentiment" />
+              <span class="toggle-label">By Member</span>
+            </label>
+          </div>
+        </div>
+        <div class="metric-chart-wrapper"><canvas id="chart-sentiment"></canvas></div>
+      </div>
+      <div class="metric-chart-panel" data-metric="blockers">
+        <div class="metric-chart-header">
+          <span class="metric-chart-title">Blockers Over Time</span>
+          <div class="metric-controls">
+            <div class="metric-time-filter">
+              <button class="metric-time-btn" data-days="3">3D</button>
+              <button class="metric-time-btn active" data-days="7">7D</button>
+              <button class="metric-time-btn" data-days="14">14D</button>
+              <button class="metric-time-btn" data-days="30">30D</button>
+            </div>
+            <label class="metric-breakdown-toggle">
+              <input type="checkbox" class="metric-breakdown-checkbox" data-metric="blockers" />
+              <span class="toggle-label">By Member</span>
+            </label>
+          </div>
+        </div>
+        <div class="metric-chart-wrapper"><canvas id="chart-blockers"></canvas></div>
+      </div>
     </div>
-    <div class="charts-row">
-      <div class="chart-container">
-        <div class="chart-header">
-          <h4 class="chart-title">Submission Activity</h4>
-          <label class="chart-toggle">
-            <input type="checkbox" id="submissionToggle" />
+
+    <!-- GitHub Activity Chart (full width, below 2x2 grid) -->
+    <div class="github-chart-panel" id="github-chart-panel">
+      <div class="metric-chart-header">
+        <span class="metric-chart-title">GitHub Activity Over Time</span>
+        <div class="metric-controls">
+          <div class="metric-time-filter" id="github-time-filter">
+            <button class="metric-time-btn" data-days="3">3D</button>
+            <button class="metric-time-btn active" data-days="7">7D</button>
+            <button class="metric-time-btn" data-days="14">14D</button>
+            <button class="metric-time-btn" data-days="30">30D</button>
+          </div>
+          <label class="metric-breakdown-toggle">
+            <input type="checkbox" id="github-breakdown-checkbox" />
             <span class="toggle-label">By Member</span>
           </label>
         </div>
-        <div class="chart-wrapper">
-          <canvas id="submissionChart"></canvas>
-        </div>
       </div>
-      <div class="chart-container">
-        <div class="chart-header">
-          <h4 class="chart-title">Sentiment Trend</h4>
-          <label class="chart-toggle">
-            <input type="checkbox" id="sentimentToggle" />
-            <span class="toggle-label">By Member</span>
-          </label>
-        </div>
-        <div class="chart-wrapper">
-          <canvas id="sentimentChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Member Performance Section -->
-  <section class="dashboard-section">
-    <div class="section-header">
-      <h3 class="section-title">Member Performance</h3>
-      <div class="section-divider"></div>
-    </div>
-    <div class="member-charts-row">
-      <div class="chart-container chart-tall">
-        <h4 class="chart-title">Submissions by Member</h4>
-        <div class="chart-wrapper-tall">
-          <canvas id="memberSubmissionsChart"></canvas>
-        </div>
-      </div>
-      <div class="chart-container chart-tall">
-        <h4 class="chart-title">Average Sentiment by Member</h4>
-        <div class="chart-wrapper-tall">
-          <canvas id="memberSentimentChart"></canvas>
-        </div>
-      </div>
+      <div class="github-chart-wrapper"><canvas id="chart-github"></canvas></div>
     </div>
   </section>
 

@@ -72,9 +72,7 @@ function functionName(param1, param2) {
 
 ## Running the Web App (Local)
 > [!NOTE]
-> In order to use authentication (Log in with Google), you must have the `.env` file.
-> The `.env` file contains the necessary secrets and information that our web app uses for the Google Auth API.
-> Please ask the authentication team for more info.
+> Secrets for Google OAuth and GitHub Integration can be found [here](https://team-07-global.slack.com/archives/C0A1YEEV0D8/p1765005068127439). Please ensure to not leak these secrets.
 
 
 ### 1. Setup Environment Variables

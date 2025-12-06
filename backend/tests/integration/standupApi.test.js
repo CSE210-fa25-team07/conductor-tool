@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { randomUUID } from "node:crypto";
 import request from "supertest";
 import express from "express";
 import session from "express-session";
@@ -8,6 +9,44 @@ import { getPrisma } from "../../src/utils/db.js";
 
 const app = express();
 const prisma = getPrisma();
+
+async function createCourseStaffUser(courseUuid, roleName = "TA") {
+  const email = `test-${roleName.toLowerCase()}-${randomUUID()}@example.com`;
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      firstName: "Test",
+      lastName: `${roleName}-User`
+    }
+  });
+
+  const roleRecord = await prisma.role.findUnique({
+    where: { role: roleName }
+  });
+
+  await prisma.courseEnrollment.create({
+    data: {
+      userUuid: user.userUuid,
+      courseUuid,
+      roleUuid: roleRecord.roleUuid,
+      enrollmentStatus: "active",
+      enrolledAt: new Date()
+    }
+  });
+
+  return user;
+}
+
+async function cleanupTestUser(userUuid) {
+  if (!userUuid) {
+    return;
+  }
+
+  await prisma.courseEnrollment.deleteMany({ where: { userUuid } });
+  await prisma.teamMember.deleteMany({ where: { userUuid } });
+  await prisma.user.deleteMany({ where: { userUuid } });
+}
 
 app.use(express.json());
 app.use(session({
@@ -255,22 +294,28 @@ describe("Standup API", () => {
   });
 
   describe("GET /standups/ta/overview", () => {
+    let taTestUser;
+
+    beforeAll(async () => {
+      taTestUser = await createCourseStaffUser(testCourse.courseUuid, "TA");
+    });
+
+    afterAll(async () => {
+      await cleanupTestUser(taTestUser?.userUuid);
+    });
+
     it("should return 401 without session", async () => {
       const response = await request(app).get(`/standups/ta/overview?courseId=${testCourse.courseUuid}`);
       expect(response.status).toBe(401);
     });
 
     it("should return 400 without courseId", async () => {
-      const taUser = await prisma.user.findFirst({
-        where: { email: "ta_alice@ucsd.edu" }
-      });
-
       const agent = request.agent(app);
       await agent.post("/test/setup-session").send({
         user: {
-          id: taUser.userUuid,
-          email: taUser.email,
-          name: `${taUser.firstName} ${taUser.lastName}`
+          id: taTestUser.userUuid,
+          email: taTestUser.email,
+          name: `${taTestUser.firstName} ${taTestUser.lastName}`
         }
       });
 
@@ -299,16 +344,12 @@ describe("Standup API", () => {
     });
 
     it("should return course overview for TA", async () => {
-      const taUser = await prisma.user.findFirst({
-        where: { email: "ta_alice@ucsd.edu" }
-      });
-
       const agent = request.agent(app);
       await agent.post("/test/setup-session").send({
         user: {
-          id: taUser.userUuid,
-          email: taUser.email,
-          name: `${taUser.firstName} ${taUser.lastName}`
+          id: taTestUser.userUuid,
+          email: taTestUser.email,
+          name: `${taTestUser.firstName} ${taTestUser.lastName}`
         }
       });
 
@@ -341,16 +382,12 @@ describe("Standup API", () => {
     });
 
     it("should include standup details", async () => {
-      const taUser = await prisma.user.findFirst({
-        where: { email: "ta_alice@ucsd.edu" }
-      });
-
       const agent = request.agent(app);
       await agent.post("/test/setup-session").send({
         user: {
-          id: taUser.userUuid,
-          email: taUser.email,
-          name: `${taUser.firstName} ${taUser.lastName}`
+          id: taTestUser.userUuid,
+          email: taTestUser.email,
+          name: `${taTestUser.firstName} ${taTestUser.lastName}`
         }
       });
 
@@ -369,16 +406,12 @@ describe("Standup API", () => {
     });
 
     it("should support date filtering", async () => {
-      const taUser = await prisma.user.findFirst({
-        where: { email: "ta_alice@ucsd.edu" }
-      });
-
       const agent = request.agent(app);
       await agent.post("/test/setup-session").send({
         user: {
-          id: taUser.userUuid,
-          email: taUser.email,
-          name: `${taUser.firstName} ${taUser.lastName}`
+          id: taTestUser.userUuid,
+          email: taTestUser.email,
+          name: `${taTestUser.firstName} ${taTestUser.lastName}`
         }
       });
 

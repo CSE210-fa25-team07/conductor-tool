@@ -14,6 +14,7 @@ async function createStandup(data) {
       courseUuid: data.courseUuid,
       dateSubmitted: data.dateSubmitted || new Date(),
       whatDone: data.whatDone,
+      githubActivities: data.githubActivities || null,
       whatNext: data.whatNext,
       blockers: data.blockers,
       reflection: data.reflection,
@@ -75,6 +76,7 @@ async function updateStandup(standupUuid, data) {
     where: { standupUuid },
     data: {
       whatDone: data.whatDone,
+      githubActivities: data.githubActivities,
       whatNext: data.whatNext,
       blockers: data.blockers,
       reflection: data.reflection,
@@ -154,6 +156,24 @@ async function getCourseStandups(courseUuid, filters = {}) {
   });
 }
 
+/**
+ * Get TA email for a team
+ * @param {string} teamUuid - Team UUID
+ * @returns {Promise<string|null>} TA email or null if no TA assigned
+ */
+async function getTAEmailByTeam(teamUuid) {
+  const team = await prisma.team.findUnique({
+    where: { teamUuid },
+    include: {
+      teamTa: {
+        select: { email: true }
+      }
+    }
+  });
+
+  return team?.teamTa?.email || null;
+}
+
 export {
   createStandup,
   getUserStandups,
@@ -161,5 +181,6 @@ export {
   updateStandup,
   deleteStandup,
   getTeamStandups,
-  getCourseStandups
+  getCourseStandups,
+  getTAEmailByTeam
 };

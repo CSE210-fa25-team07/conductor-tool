@@ -13,7 +13,7 @@ Business logic. One file per team, plus shared services.
 
 - `userService.js` - Get user information
 - `qrCodeService.js` - Attendance team (QR code generation)
-- `notificationService.js` - Standup team (Slack/Email/SMS)
+- `emailService.js` - Standup team (Email sending)
 
 ## Responsibilities
 

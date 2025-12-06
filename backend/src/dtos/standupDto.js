@@ -10,6 +10,7 @@ function toStandupDto(standup) {
     courseUuid: standup.courseUuid,
     dateSubmitted: standup.dateSubmitted,
     whatDone: standup.whatDone,
+    githubActivities: standup.githubActivities,
     whatNext: standup.whatNext,
     blockers: standup.blockers,
     reflection: standup.reflection,

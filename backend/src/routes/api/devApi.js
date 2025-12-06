@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
 
     // Set session
     req.session.user = {
-      id: user.id,
+      id: user.userUuid,
       email: user.email,
       name: `${user.firstName} ${user.lastName}`
     };

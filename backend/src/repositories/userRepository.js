@@ -160,6 +160,23 @@ async function getUserStatusByUuid(userUuid) {
   };
 }
 
+/**
+ * Update user's GitHub connection info
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} githubData - Object with githubUsername and githubAccessToken
+ * @returns {Promise<Object>} Updated user object
+ */
+async function updateUserGitHub(userUuid, githubData) {
+  const updatedUser = await prisma.user.update({
+    where: { userUuid: userUuid },
+    data: {
+      githubUsername: githubData.githubUsername,
+      githubAccessToken: githubData.githubAccessToken
+    }
+  });
+  return updatedUser;
+}
+
 async function getUsersByUuids(userUuids) {
   const users = await prisma.user.findMany({
     where: {
@@ -174,4 +191,4 @@ async function getUsersByUuids(userUuids) {
   return users;
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid, getUsersByUuids };
+export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid, updateUserGitHub, getUsersByUuids };

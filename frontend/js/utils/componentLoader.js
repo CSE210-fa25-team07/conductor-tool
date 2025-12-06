@@ -91,7 +91,7 @@ export async function renderComponent(componentName, data) {
  * @param {Object} data - Data object
  * @returns {string} Filled HTML
  */
-function fillTemplate(template, data) {
+export function fillTemplate(template, data) {
   let result = template;
 
   // Process conditional sections {{#key}}...{{/key}}
@@ -112,7 +112,17 @@ function fillTemplate(template, data) {
     return "";
   });
 
-  // Process variables {{key}}
+  // Process raw/unescaped variables {{{key}}} (triple braces)
+  result = result.replace(/\{\{\{(\w+)\}\}\}/g, (match, key) => {
+    const value = data[key];
+    if (value === undefined || value === null) {
+      return "";
+    }
+    // Return raw HTML without escaping
+    return String(value);
+  });
+
+  // Process variables {{key}} (double braces - escaped)
   result = result.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     const value = data[key];
     if (value === undefined || value === null) {
