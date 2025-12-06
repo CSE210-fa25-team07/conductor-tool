@@ -41,17 +41,26 @@ async function verifyCode(req, res) {
   const { code } = req.body;
 
   // Check if provided code maps to a course
-  const courseInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
-  if (!courseInfo) {
+  const courseEnrollmentInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
+  if (!courseEnrollmentInfo) {
     return res.status(400).json({
       success: false,
       error: "Verification code is invalid"
     });
   }
 
+  // Check if course is active
+  const courseInfo = await courseRepository.getCourseByUuid(courseEnrollmentInfo.courseUuid);
+  if (!courseInfo.term.isActive) {
+    return res.status(400).json({
+      success: false,
+      error: "Course is not active"
+    });
+  }
+
   return res.status(200).json({
     success: true,
-    courseInfo
+    courseInfo: courseEnrollmentInfo
   });
 }
 
@@ -66,11 +75,20 @@ async function enrollUserByCode(req, res) {
   const profile = req.session.user;
 
   // Check if provided code maps to a course
-  const courseInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
-  if (!courseInfo) {
+  const courseEnrollmentInfo = await verificationCodeRepository.findCourseByVerificationCode(code);
+  if (!courseEnrollmentInfo) {
     return res.status(400).json({
       success: false,
       error: "Verification code is invalid"
+    });
+  }
+
+  // Check if course is active
+  const courseInfo = await courseRepository.getCourseByUuid(courseEnrollmentInfo.courseUuid);
+  if (!courseInfo.term.isActive) {
+    return res.status(400).json({
+      success: false,
+      error: "Course is not active"
     });
   }
 
@@ -91,8 +109,8 @@ async function enrollUserByCode(req, res) {
   // Enroll user to course
   const course = await courseRepository.enrollUserToCourse(
     req.session.user.id,
-    courseInfo.courseUuid,
-    courseInfo.roleUuid
+    courseEnrollmentInfo.courseUuid,
+    courseEnrollmentInfo.roleUuid
   );
 
   if (!course) {
