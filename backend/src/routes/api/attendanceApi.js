@@ -2,6 +2,10 @@
  * @module attendance/api
  * API endpoints for attendance management
  */
+/**
+ * @module attendance/api
+ * API endpoints for attendance management
+ */
 import express from "express";
 import * as attendanceService from "../../services/attendanceService.js";
 import { toInstructorAnalyticsDto, toStudentAnalyticsDto } from "../../dtos/attendanceDto.js";

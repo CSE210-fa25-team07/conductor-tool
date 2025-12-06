@@ -50,7 +50,7 @@ function toStudentAnalyticsDto(analytics) {
   return {
     userUuid: analytics.userUuid,
     courseUuid: analytics.courseUuid,
-    attendanceByType: (analytics.attendanceByType || analytics.byMeetingType || []).map(t => ({
+    attendanceByType: analytics.byMeetingType.map(t => ({
       meetingType: t.meetingType,
       totalMeetings: t.totalMeetings,
       attended: t.attended,
@@ -62,13 +62,13 @@ function toStudentAnalyticsDto(analytics) {
 function toInstructorAnalyticsDto(analytics) {
   return {
     courseUuid: analytics.courseUuid,
-    timeline: (analytics.timeline || analytics.meetings || []).map(m => ({
-      date: m.meetingDate || m.date,
+    timeline: analytics.meetings.map(m => ({
+      date: m.meetingDate,
       meetingType: m.meetingType,
       meetingTitle: m.meetingTitle,
       totalParticipants: m.totalParticipants,
       attended: m.attended,
-      attendancePercentage: Math.round((m.attendancePercentage ?? m.percentage ?? 0) * 100) / 100
+      attendancePercentage: Math.round(m.percentage * 100) / 100
     }))
   };
 }

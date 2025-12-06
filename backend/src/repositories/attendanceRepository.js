@@ -161,7 +161,8 @@ async function createParticipants(participantsData) {
  * Get multiple participants by parameters.
  * meetingUUID and courseUUID are required -- all participants for that meeting
  * @param {Object} params -- meetingUUID, courseUUID, participantUUID, present
- * @returns
+ * @returns {Promise<Array>} List of participant objects
+ * @throws {Error} on database error
  */
 async function getParticipantListByParams(params) {
   const { meetingUUID, courseUUID, participantUUID, present } = params;
@@ -212,7 +213,7 @@ async function getParticipantListByParams(params) {
  * @param {string} participantUUID
  * @param {boolean} present
  * @param {string} attendanceTime -- optional attendance time
- * @returns updated participant object
+ * @returns {Promise<Object>} updated participant object
  */
 async function updateParticipant(meetingUUID, participantUUID, present, attendanceTime) {
   const updatedParticipant = await prisma.participant.update({
@@ -308,6 +309,145 @@ async function deleteMeetingByParentUUID(meetingUUID) {
   return true;
 }
 
+/**
+ * Get student attendance percentages grouped by meeting type
+ * @param {string} userUuid
+ * @param {string} courseUuid
+ * @param {Object} filters
+ * @returns {Promise<Object>}
+ */
+async function getStudentAttendanceByMeetingType(userUuid, courseUuid, filters = {}) {
+  const where = {
+    participantUuid: userUuid,
+    meeting: {
+      courseUuid: courseUuid
+    }
+  };
+
+  if (filters.startDate || filters.endDate) {
+    where.meeting.meetingDate = {};
+    if (filters.startDate) {
+      where.meeting.meetingDate.gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      where.meeting.meetingDate.lte = new Date(filters.endDate);
+    }
+  }
+
+  const participants = await prisma.participant.findMany({
+    where,
+    include: {
+      meeting: {
+        select: {
+          meetingType: true,
+          meetingDate: true
+        }
+      }
+    }
+  });
+
+  // Group by meeting type and calculate percentages
+  const byType = participants.reduce((acc, p) => {
+    const type = p.meeting.meetingType;
+    if (!acc[type]) {
+      acc[type] = { total: 0, attended: 0 };
+    }
+    acc[type].total++;
+    if (p.present) acc[type].attended++;
+    return acc;
+  }, {});
+
+  return {
+    userUuid,
+    courseUuid,
+    byMeetingType: Object.entries(byType).map(([type, data]) => ({
+      meetingType: parseInt(type),
+      totalMeetings: data.total,
+      attended: data.attended,
+      percentage: (data.total > 0) ? (data.attended / data.total) * 100 : 0
+    }))
+  };
+}
+
+/**
+ * Get attendance data over time for instructor view
+ * @param {string} courseUuid
+ * @param {Object} filters
+ * @returns {Promise<Object>}
+ */
+async function getInstructorAttendanceOverTime(courseUuid, filters = {}) {
+  const meetingWhere = {
+    courseUuid: courseUuid
+  };
+
+  if (filters.meetingType) {
+    meetingWhere.meetingType = parseInt(filters.meetingType);
+  }
+
+  if (filters.startDate || filters.endDate) {
+    meetingWhere.meetingDate = {};
+    if (filters.startDate) {
+      meetingWhere.meetingDate.gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      meetingWhere.meetingDate.lte = new Date(filters.endDate);
+    }
+  }
+
+  // Build participant filter to include team filtering at database level
+  const participantsWhere = {
+    participant: {
+      teamMemberships: {
+        some: {
+          team: { courseUuid },
+          leftAt: null,
+          ...(filters.teamUuid && { teamUuid: filters.teamUuid })
+        }
+      }
+    }
+  };
+
+  const meetings = await prisma.meeting.findMany({
+    where: meetingWhere,
+    include: {
+      participants: {
+        where: participantsWhere,
+        include: {
+          participant: {
+            include: {
+              teamMemberships: {
+                where: {
+                  team: { courseUuid },
+                  leftAt: null
+                },
+                include: { team: true }
+              }
+            }
+          }
+        }
+      }
+    },
+    orderBy: { meetingDate: "asc" }
+  });
+
+  return {
+    courseUuid,
+    meetings: meetings.map(m => {
+      const attendedCount = m.participants.filter(p => p.present).length;
+      const totalCount = m.participants.length;
+      return {
+        meetingUuid: m.meetingUuid,
+        meetingDate: m.meetingDate,
+        meetingType: m.meetingType,
+        meetingTitle: m.meetingTitle,
+        totalParticipants: totalCount,
+        attended: attendedCount,
+        percentage: totalCount > 0 ? (attendedCount / totalCount) * 100 : 0
+      };
+    })
+  };
+}
+
 export {
   createMeeting,
   getMeetingByUUID,
@@ -322,6 +462,8 @@ export {
   createMeetingCode,
   getMeetingCodeByMeetingUuid,
   getMeetingCodeByMeetingUuidAndCode,
-  deleteMeetingByParentUUID
+  deleteMeetingByParentUUID,
+  getStudentAttendanceByMeetingType,
+  getInstructorAttendanceOverTime
 };
 
