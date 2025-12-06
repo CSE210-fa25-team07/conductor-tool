@@ -106,7 +106,7 @@ async function loadTerms(mode) {
  */
 async function loadCourseData(courseUuid) {
   try {
-    const response = await fetch(`/v1/api/courses/${courseUuid}`);
+    const response = await fetch(`/v1/api/courses/${courseUuid}/edit`);
 
     if (!response.ok) {
       throw new Error("Failed to fetch course data");
@@ -259,7 +259,7 @@ async function handleEditCourseSubmit(e, courseUuid) {
   submitButton.textContent = "Saving...";
 
   try {
-    const response = await fetch(`/v1/api/courses/${courseUuid}`, {
+    const response = await fetch(`/v1/api/courses/${courseUuid}/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
