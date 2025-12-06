@@ -67,7 +67,7 @@ async function getCoursesWithDetailsByUserId(userUuid) {
     code: enrollment.course.courseCode,
     name: enrollment.course.courseName,
     description: enrollment.course.description,
-    term: enrollment.course.term.termName,
+    term: `${enrollment.course.term.season} ${enrollment.course.term.year}`,
     people: enrollment.course.enrollments.length
   }));
 }
