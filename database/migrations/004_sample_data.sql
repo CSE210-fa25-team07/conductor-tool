@@ -16,13 +16,16 @@ INSERT INTO class_term (year, season, start_date, end_date, is_active) VALUES
 ON CONFLICT (year, season) DO NOTHING;
 
 -- ============================================
--- 2. USERS (15 total: 2 professors, 3 TAs, 10 students)
+-- 2. USERS (18 total: 5 professors/admins, 3 TAs, 10 students)
 -- ============================================
 INSERT INTO users (email, first_name, last_name, github_username, bio, pronouns, phone_number, last_login) VALUES
-    -- Professors
+    -- Professors & Admins
     ('powell@ucsd.edu', 'Thomas', 'Powell', 'tpowell', 'Professor of Software Engineering', 'he/him', '858-534-1001', NOW() - INTERVAL '2 hours'),
     ('jones@ucsd.edu', 'Sarah', 'Jones', 'sjones', 'Associate Professor, HCI Research', 'she/her', '858-534-1002', NOW() - INTERVAL '1 day'),
-    
+    ('johnson@ucsd.edu', 'Michael', 'Johnson', 'mjohnson', 'Associate Professor, Distributed Systems', 'he/him', '858-534-1003', NOW() - INTERVAL '3 hours'),
+    ('williams@ucsd.edu', 'Jennifer', 'Williams', 'jwilliams', 'Assistant Professor, Machine Learning', 'she/her', '858-534-1004', NOW() - INTERVAL '5 hours'),
+    ('brown@ucsd.edu', 'Robert', 'Brown', 'rbrown', 'Professor of Computer Science', 'he/him', '858-534-1005', NOW() - INTERVAL '4 hours'),
+
     -- TAs
     ('ta_alice@ucsd.edu', 'Alice', 'Anderson', 'alice-ta', 'PhD student researching Software Testing', 'she/her', '858-534-2001', NOW() - INTERVAL '3 hours'),
     ('ta_bob@ucsd.edu', 'Bob', 'Brown', 'bob-ta', 'MS student, Systems and Architecture', 'he/him', '858-534-2002', NOW() - INTERVAL '5 hours'),
@@ -48,18 +51,36 @@ DO $$
 DECLARE
     v_user_uuid UUID;
 BEGIN
-    -- Professor Powell
+    -- Professor Powell (Lead Admin)
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'powell@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, true, true, true, 'CSE 3110', 'Agile Development, Team Collaboration, Software Quality', 'https://tpowell.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
-    
-    -- Professor Jones
+
+    -- Professor Jones (Regular Professor - not admin)
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'jones@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, true, false, false, 'CSE 3120', 'HCI, UX Design, Accessibility Research', 'https://sjones.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
-    
+
+    -- Professor Johnson (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'johnson@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3130', 'Distributed Systems, Cloud Computing, Microservices', 'https://mjohnson.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
+    -- Professor Williams (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'williams@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3140', 'Machine Learning, AI, Neural Networks', 'https://jwilliams.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
+    -- Professor Brown (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'brown@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3150', 'Algorithms, Data Structures, Complexity Theory', 'https://rbrown.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
     -- TA Alice
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
@@ -485,8 +506,8 @@ BEGIN
     RAISE NOTICE 'Created data for ALL tables:';
     RAISE NOTICE '  ✓ 5 Roles (unchanged)';
     RAISE NOTICE '  ✓ 3 Terms (Fall 2024, Winter 2025, Spring 2025)';
-    RAISE NOTICE '  ✓ 15 Users (2 professors, 3 TAs, 10 students)';
-    RAISE NOTICE '  ✓ 5 Staff Profiles';
+    RAISE NOTICE '  ✓ 18 Users (5 professors/admins, 3 TAs, 10 students)';
+    RAISE NOTICE '  ✓ 8 Staff Profiles (1 lead admin, 3 admins, 1 professor, 3 TAs)';
     RAISE NOTICE '  ✓ 3 Courses';
     RAISE NOTICE '  ✓ 5 Verification Codes';
     RAISE NOTICE '  ✓ 17 Course Enrollments';
