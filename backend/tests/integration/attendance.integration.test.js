@@ -6,7 +6,7 @@
  * with mocked database layer to focus on business logic
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 // Helper to create mock request/response
 const createMockRequest = (overrides = {}) => ({
@@ -21,11 +21,11 @@ const createMockRequest = (overrides = {}) => ({
 });
 
 const createMockResponse = () => ({
-  status: jest.fn(function(code) {
+  status: vi.fn(function(code) {
     this.statusCode = code;
     return this;
   }),
-  json: jest.fn(function(data) {
+  json: vi.fn(function(data) {
     this.body = data;
     return this;
   }),
@@ -39,11 +39,11 @@ describe("Attendance Service Integration Tests", () => {
   beforeEach(() => {
     req = createMockRequest();
     res = createMockResponse();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ============================================================
@@ -657,4 +657,8 @@ describe("Attendance Service Integration Tests", () => {
       expect(parentMeetingUUID).toBe(meeting.meetingUUID);
     });
   });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> dev

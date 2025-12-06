@@ -1,13 +1,11 @@
 /**
  * @module attendance/api
+ * API endpoints for attendance management
  */
 import express from "express";
 import * as attendanceService from "../../services/attendanceService.js";
-import { toStudentAnalyticsDto, toInstructorAnalyticsDto } from "../../dto/attendanceDto.js";
-import {
-  // validateInstructorAnalyticsRequest,
-  validateStudentAnalyticsRequest
-} from "../../validators/attendanceValidator.js";
+import { toInstructorAnalyticsDto, toStudentAnalyticsDto } from "../../dtos/attendanceDto.js";
+import { validateStudentAnalyticsRequest, validateInstructorAnalyticsRequest } from "../../validators/attendanceValidator.js";
 
 const router = express.Router();
 
@@ -116,7 +114,7 @@ router.get("/meeting/list/:courseUUID", async (req, res) => {
 
 /**
  * Get Participant by meeting and participant UUID
- * @name GET /attendance/participant/:meeting/:id
+ * @name GET /attendance/participant/:id
  * @param {string} req.params.meeting - Meeting UUID
  * @param {string} req.params.id - Participant UUID
  * @returns {Object} 200 - Participant object
@@ -138,6 +136,7 @@ router.get("/participant/:meeting/:id", async (req, res) => {
 
 /**
  * Create Participants
+ *
  * @param {Object} req.body -- Participant data
  * @returns {Object} 200 - Participant created
  * @returns {Object} 400 - Validation error
@@ -198,6 +197,17 @@ router.get("/meeting_code/:id", async (req, res) => {
   }
 });
 
+router.post("/meeting_code/:id", async (req, res) => {
+  try {
+    return await attendanceService.createMeetingCode(req, res);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
   try {
     return await attendanceService.recordAttendanceViaCode(req, res);
@@ -223,6 +233,7 @@ router.get("/meeting_code/record/:meeting/:code", async (req, res) => {
  */
 router.get("/analytics/student", async (req, res) => {
   try {
+    // Validate request parameters
     validateStudentAnalyticsRequest(req.query);
 
     // Get analytics from service
@@ -266,7 +277,10 @@ router.get("/analytics/student", async (req, res) => {
  */
 router.get("/analytics/instructor", async (req, res) => {
   try {
-    // Fix: attendanceService.getInstructorAnalytics must exist and be exported
+    // Validate request parameters
+    validateInstructorAnalyticsRequest(req.query);
+
+    // Get analytics from service
     if (typeof attendanceService.getInstructorAnalytics !== "function") {
       throw new Error("attendanceService.getInstructorAnalytics is not a function");
     }

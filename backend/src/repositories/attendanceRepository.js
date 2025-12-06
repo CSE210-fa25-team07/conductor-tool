@@ -8,7 +8,7 @@ const prisma = getPrisma();
 
 /**
  * Create a new meeting
- * @param {string} meetingData
+ * @param {Object} meetingData - Meeting data with creatorUUID, courseUUID, etc.
  * @returns {Promise<Object>} Created meeting
  * @throws {Error} on database error
  */
@@ -20,11 +20,22 @@ async function createMeeting(meetingData) {
     meetingEndTime: new Date(meetingData.meetingEndTime),
     meetingDate: new Date(meetingData.meetingDate),
     meetingTitle: meetingData.meetingTitle,
-    isRecurring: meetingData.isRecurring,
-    meetingType: meetingData.meetingType || 0  // Default to 0 if not provided
+    meetingType: meetingData.meetingType || 0
   };
 
-  // Add optional fields only if defined
+  const parentUUID = meetingData.parentMeetingUUID || meetingData.parentMeetingUuid;
+
+  if (parentUUID?.trim()) {
+    data.parentMeetingUuid = parentUUID;
+    data.isRecurring = true;
+  } else if (meetingData.isRecurring) {
+    data.isRecurring = true;
+    data.parentMeetingUuid = null;
+  } else {
+    data.isRecurring = false;
+    data.parentMeetingUuid = null;
+  }
+
   if (meetingData.meetingDescription !== undefined) {
     data.meetingDescription = meetingData.meetingDescription;
   }
@@ -33,10 +44,7 @@ async function createMeeting(meetingData) {
     data.meetingLocation = meetingData.meetingLocation;
   }
 
-  const meeting = await prisma.meeting.create({
-    data
-  });
-  return meeting;
+  return await prisma.meeting.create({ data });
 }
 
 /**
@@ -68,22 +76,48 @@ async function updateMeeting(meetingUUID, updateData) {
       meetingTitle: updateData.meetingTitle,
       meetingDescription: updateData.meetingDescription,
       meetingLocation: updateData.meetingLocation,
-      isRecurring: updateData.isRecurring
+      isRecurring: updateData.isRecurring,
+      parentMeetingUuid: updateData.parentMeetingUUID ?? updateData.parentMeetingUuid ?? undefined
     }
   });
   return updatedMeeting;
 }
 
 /**
- * Delete meeting by UUID
+ * Delete meeting by UUID and repair linked list chain
  * @param {string} meetingUUID to delete
  * @returns {Promise<boolean>} true if deleted
  * @throws {Error} on database error
  */
 async function deleteMeeting(meetingUUID) {
+  const meetingToDelete = await prisma.meeting.findUnique({
+    where: { meetingUuid: meetingUUID },
+    select: { parentMeetingUuid: true }
+  });
+
+  if (!meetingToDelete) {
+    return false;
+  }
+
+  // Find the child meeting (next in chain) that points to this meeting as its parent
+  const childMeeting = await prisma.meeting.findFirst({
+    where: { parentMeetingUuid: meetingUUID },
+    select: { meetingUuid: true }
+  });
+
+  // If there's a child, update it to point to this meeting's parent (repair the chain)
+  if (childMeeting) {
+    await prisma.meeting.update({
+      where: { meetingUuid: childMeeting.meetingUuid },
+      data: { parentMeetingUuid: meetingToDelete.parentMeetingUuid }
+    });
+  }
+
+  // Now delete the meeting
   await prisma.meeting.delete({
     where: { meetingUuid: meetingUUID }
   });
+
   return true;
 }
 
@@ -161,7 +195,7 @@ async function createParticipants(participantsData) {
  * Get multiple participants by parameters.
  * meetingUUID and courseUUID are required -- all participants for that meeting
  * @param {Object} params -- meetingUUID, courseUUID, participantUUID, present
- * @returns
+ * @returns {Promise<Array>} List of participant objects
  */
 async function getParticipantListByParams(params) {
   const { meetingUUID, courseUUID, participantUUID, present } = params;
@@ -308,6 +342,45 @@ async function deleteMeetingByParentUUID(meetingUUID) {
   return true;
 }
 
+/**
+ * Delete all future meetings in a recurring series by traversing linked list forward
+ * @param {string} currentMeetingUUID - UUID of the current meeting being deleted
+ * @param {Date} fromDate - Only delete meetings on or after this date
+ * @returns {Promise<boolean>} true if deleted
+ * @throws {Error} on database error
+ */
+async function deleteFutureMeetingsByParentUUID(currentMeetingUUID, fromDate) {
+  const meetingsToDelete = new Set([currentMeetingUUID]);
+  const toProcess = [currentMeetingUUID];
+
+  while (toProcess.length > 0) {
+    const currentUUID = toProcess.shift();
+
+    const nextMeetings = await prisma.meeting.findMany({
+      where: {
+        parentMeetingUuid: currentUUID,
+        meetingDate: { gte: fromDate }
+      },
+      select: { meetingUuid: true }
+    });
+
+    for (const meeting of nextMeetings) {
+      if (!meetingsToDelete.has(meeting.meetingUuid)) {
+        meetingsToDelete.add(meeting.meetingUuid);
+        toProcess.push(meeting.meetingUuid);
+      }
+    }
+  }
+
+  if (meetingsToDelete.size > 0) {
+    await prisma.meeting.deleteMany({
+      where: { meetingUuid: { in: Array.from(meetingsToDelete) } }
+    });
+  }
+
+  return true;
+}
+
 export {
   createMeeting,
   getMeetingByUUID,
@@ -322,6 +395,7 @@ export {
   createMeetingCode,
   getMeetingCodeByMeetingUuid,
   getMeetingCodeByMeetingUuidAndCode,
-  deleteMeetingByParentUUID
+  deleteMeetingByParentUUID,
+  deleteFutureMeetingsByParentUUID
 };
 

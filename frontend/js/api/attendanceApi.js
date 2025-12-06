@@ -6,13 +6,9 @@
 const API_BASE = "/v1/api/attendance";
 
 async function handleResponse(response) {
-  // Handle empty responses (204 No Content or empty 201)
   const contentType = response.headers.get("content-type");
   if (!contentType || !contentType.includes("application/json")) {
-    if (response.ok) {
-      // If status is OK but no JSON, return success
-      return { success: true };
-    }
+    if (response.ok) return { success: true };
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
 
@@ -20,16 +16,12 @@ async function handleResponse(response) {
   try {
     const text = await response.text();
     if (!text || text.trim() === "") {
-      if (response.ok) {
-        return { success: true };
-      }
+      if (response.ok) return { success: true };
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     result = JSON.parse(text);
   } catch (error) {
-    if (response.ok) {
-      return { success: true };
-    }
+    if (response.ok) return { success: true };
     throw new Error(`Failed to parse response: ${error.message}`);
   }
 
@@ -39,6 +31,16 @@ async function handleResponse(response) {
 
   // Extract data property from response
   return result.data || result;
+}
+
+function normalizeArrayResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (data?.data && Array.isArray(data.data)) return data.data;
+  if (data?.users && Array.isArray(data.users)) return data.users;
+  if (data?.teams && Array.isArray(data.teams)) return data.teams;
+  if (data?.participants && Array.isArray(data.participants)) return data.participants;
+  if (data?.meetings && Array.isArray(data.meetings)) return data.meetings;
+  return [];
 }
 
 /**
@@ -62,13 +64,10 @@ async function handleResponse(response) {
  * }
  */
 export async function getCourseParticipants(courseUUID) {
-  const url = `${API_BASE}/participants/${courseUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/participants/${courseUUID}`, {
     method: "GET",
     credentials: "include"
   });
-
   return handleResponse(response);
 }
 
@@ -79,17 +78,12 @@ export async function getCourseParticipants(courseUUID) {
  * @throws {Error} If the request fails
  */
 export async function createMeeting(meetingData) {
-  const url = `${API_BASE}/meeting/`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/meeting/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(meetingData)
   });
-
   return handleResponse(response);
 }
 
@@ -101,17 +95,12 @@ export async function createMeeting(meetingData) {
  * @throws {Error} If the request fails
  */
 export async function deleteMeeting(meetingUUID, deleteFuture = false) {
-  const url = `${API_BASE}/meeting/${meetingUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/meeting/${meetingUUID}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ deleteFuture })
   });
-
   return handleResponse(response);
 }
 
@@ -130,30 +119,11 @@ export async function deleteMeeting(meetingUUID, deleteFuture = false) {
  * Backend filters meetings to show only those where user is creator or participant
  */
 export async function getMeetingList(courseUUID) {
-  const url = `${API_BASE}/meeting/list/${courseUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/meeting/list/${courseUUID}`, {
     method: "GET",
     credentials: "include"
   });
-
-  const data = await handleResponse(response);
-
-  // Backend may return:
-  // - An array of meetings directly
-  // - An object with .data (array)
-  // - An object with .meetings (array)
-  if (Array.isArray(data)) {
-    return data;
-  }
-  if (data && Array.isArray(data.data)) {
-    return data.data;
-  }
-  if (data && Array.isArray(data.meetings)) {
-    return data.meetings;
-  }
-
-  return [];
+  return normalizeArrayResponse(await handleResponse(response));
 }
 
 /**
@@ -179,35 +149,17 @@ export async function getMeetingList(courseUUID) {
  * }
  */
 export async function getAllCourseUsers(courseUUID) {
-  const url = `/v1/api/courses/${courseUUID}/users`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`/v1/api/courses/${courseUUID}/users`, {
     method: "GET",
     credentials: "include"
   });
 
   if (!response.ok) {
-    await response.text().catch(() => "Unknown error");
     throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
   }
 
   const data = await handleResponse(response);
-
-  if (Array.isArray(data)) {
-    return data;
-  }
-  if (data && Array.isArray(data.users)) {
-    return data.users;
-  }
-  if (data && Array.isArray(data.data)) {
-    return data.data;
-  }
-
-  if (data && typeof data === "object" && Object.keys(data).length === 0) {
-    return [];
-  }
-
-  return [];
+  return normalizeArrayResponse(data);
 }
 
 /**
@@ -237,30 +189,11 @@ export async function getAllCourseUsers(courseUUID) {
  * }
  */
 export async function getCourseTeams(courseUUID) {
-  const url = `/v1/api/courses/${courseUUID}/teams`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`/v1/api/courses/${courseUUID}/teams`, {
     method: "GET",
     credentials: "include"
   });
-
-  const data = await handleResponse(response);
-
-  // Backend may return:
-  // - An array of teams directly
-  // - An object with .teams
-  // - An object with .data (array)
-  if (Array.isArray(data)) {
-    return data;
-  }
-  if (data && Array.isArray(data.teams)) {
-    return data.teams;
-  }
-  if (data && Array.isArray(data.data)) {
-    return data.data;
-  }
-
-  return [];
+  return normalizeArrayResponse(await handleResponse(response));
 }
 
 /**
@@ -283,13 +216,10 @@ export async function getCourseTeams(courseUUID) {
  * }
  */
 export async function getMeetingCode(meetingUUID) {
-  const url = `${API_BASE}/meeting_code/${meetingUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/meeting_code/${meetingUUID}`, {
     method: "GET",
     credentials: "include"
   });
-
   return handleResponse(response);
 }
 
@@ -325,16 +255,10 @@ export async function recordAttendanceByCode(meetingUUID, code) {
     throw new Error("Meeting UUID and code are required");
   }
 
-  // Backend route is /meeting_code/record/:code
-  // Backend service expects req.params.meeting and req.params.code
-  // Try query param first, backend may need it in path
-  const url = `${API_BASE}/meeting_code/record/${code}?meeting=${meetingUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}/meeting_code/record/${meetingUUID}/${code}`, {
     method: "GET",
     credentials: "include"
   });
-
   return handleResponse(response);
 }
 
@@ -360,25 +284,12 @@ export async function recordAttendanceByCode(meetingUUID, code) {
  * }
  */
 export async function getCourseDetails(courseUUID) {
-  const API_BASE_COURSES = "/v1/api/courses";
-  const url = `${API_BASE_COURSES}/${courseUUID}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`/v1/api/courses/${courseUUID}`, {
     method: "GET",
     credentials: "include"
   });
-
   const data = await handleResponse(response);
-
-  // Backend course API currently returns:
-  // { success: true, course: { ...courseDto } }
-  // Normalize to always return the course DTO object
-  if (data && data.course) {
-    return data.course;
-  }
-
-  // Fallback: if the DTO is returned directly, just return it
-  return data;
+  return data?.course || data;
 }
 
 /**
@@ -388,42 +299,16 @@ export async function getCourseDetails(courseUUID) {
  * @returns {Promise<Array>} Array of participant objects with user info
  */
 export async function getMeetingParticipants(meetingUUID, courseUUID = null) {
-  const url = "/v1/api/attendance/participant/list/";
+  const requestBody = { meetingUUID };
+  if (courseUUID) requestBody.courseUUID = courseUUID;
 
-  const requestBody = {
-    meetingUUID: meetingUUID
-  };
-
-  // Add courseUUID if provided (helps with authorization)
-  if (courseUUID) {
-    requestBody.courseUUID = courseUUID;
-  }
-
-  const response = await fetch(url, {
+  const response = await fetch("/v1/api/attendance/participant/list/", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(requestBody)
   });
 
-  if (response.status === 404) {
-    return [];
-  }
-
-  const data = await handleResponse(response);
-
-  if (Array.isArray(data)) {
-    return data;
-  }
-  if (data && Array.isArray(data.data)) {
-    return data.data;
-  }
-  if (data && Array.isArray(data.participants)) {
-    return data.participants;
-  }
-
-  return [];
+  if (response.status === 404) return [];
+  return normalizeArrayResponse(await handleResponse(response));
 }
-

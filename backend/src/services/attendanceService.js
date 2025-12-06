@@ -1,8 +1,6 @@
 /**
- * Attendance Service
+ * Attendance Service - business logic for meetings and attendance
  * @module attendance/service
- *
- * Business logic layer for attendance and meeting management.
  */
 
 import * as attendanceRepository from "../repositories/attendanceRepository.js";
@@ -107,7 +105,8 @@ async function createMeeting(req, res) {
     meetingLocation,
     meetingType,
     isRecurring,
-    participants
+    participants,
+    parentMeetingUUID
   } = req.body;
 
   const userContext = await userContextRepository.getUserContext(userUUID);
@@ -164,7 +163,7 @@ async function createMeeting(req, res) {
     }
   }
 
-  const meeting = await attendanceRepository.createMeeting({
+  const meetingDataForRepository = {
     creatorUUID: userUUID,
     courseUUID,
     meetingStartTime,
@@ -175,7 +174,13 @@ async function createMeeting(req, res) {
     meetingLocation,
     meetingType,
     isRecurring: isRecurring || false
-  });
+  };
+
+  if (parentMeetingUUID?.trim()) {
+    meetingDataForRepository.parentMeetingUUID = parentMeetingUUID;
+  }
+
+  const meeting = await attendanceRepository.createMeeting(meetingDataForRepository);
 
   // Add creator as a participant (they should also see the meeting on their calendar)
   const allParticipants = [...new Set([userUUID, ...uniqueParticipants])];
@@ -289,7 +294,8 @@ async function updateMeeting(req, res) {
 async function deleteMeeting(req, res) {
   const userUUID = req.session.user.id;
   const meetingUUID = req.params.id;
-  const { deleteFuture } = req.body;
+  const deleteFutureRaw = (req.body && req.body.deleteFuture !== undefined) ? req.body.deleteFuture : req.query?.deleteFuture;
+  const deleteFuture = deleteFutureRaw === true || deleteFutureRaw === "true";
 
   const existingMeeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
   if (!existingMeeting) {
@@ -306,22 +312,40 @@ async function deleteMeeting(req, res) {
       enrollment.course.courseUuid === courseUUID && enrollment.course.term.isActive
     )
   );
+
+  // Check if user is staff (Professor or TA) in the course
+  const courseEnrollment = userContext.enrollments.find(
+    enrollment => enrollment.course.courseUuid === courseUUID
+  );
+  const userRole = courseEnrollment?.role?.role;
+  const isStaff = userRole === RoleEnum.PROFESSOR || userRole === RoleEnum.TA;
+  const isCreator = existingMeeting.creatorUuid === userUUID;
+
+  // Authorization check: allow deleting past meetings if deleteFuture is true
+  // (user wants to delete future meetings, so allow deleting the past one too)
   const canDelete = (
     isInActiveCourse
-        && existingMeeting.creatorUuid === userUUID
-        && existingMeeting.meetingEndTime > new Date()
+        && (isCreator || isStaff)
+        && (deleteFuture || existingMeeting.meetingEndTime > new Date())
   );
   if (!canDelete) {
     return res.status(403).json({
       success: false,
-      error: "Not authroized to delete meeting for this course"
+      error: "Not authorized to delete meeting for this course"
     });
   }
 
-  await attendanceRepository.deleteMeeting(meetingUUID);
-
-  if (existingMeeting.isRecurring && deleteFuture) {
-    await attendanceRepository.deleteMeetingByParentUUID(existingMeeting.meetingUuid);
+  if (deleteFuture) {
+    const meetingDateObj = new Date(existingMeeting.meetingDate);
+    const fromDate = new Date(Date.UTC(
+      meetingDateObj.getUTCFullYear(),
+      meetingDateObj.getUTCMonth(),
+      meetingDateObj.getUTCDate(),
+      0, 0, 0, 0
+    ));
+    await attendanceRepository.deleteFutureMeetingsByParentUUID(meetingUUID, fromDate);
+  } else {
+    await attendanceRepository.deleteMeeting(meetingUUID);
   }
 
   return res.status(200).json({
@@ -686,13 +710,12 @@ async function getParticipantListByParams(req, res) {
 
   const userUUID = req.session.user.id;
 
-  const isStaff = await userContextRepository.checkCourseStaffAccess(
-    userUUID,
-    courseUUID
-  );
   const userContext = await userContextRepository.getUserContext(userUUID);
   const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
-  const course = courseUUID ? await courseRepository.getCourseByUuid(courseUUID) : null;
+
+  // Determine the courseUUID - prefer from request, fallback to meeting's course
+  const effectiveCourseUUID = courseUUID || (meeting ? meeting.courseUuid : null);
+  const course = effectiveCourseUUID ? await courseRepository.getCourseByUuid(effectiveCourseUUID) : null;
 
   if (meetingUUID && !meeting) {
     return res.status(404).json({
@@ -701,16 +724,22 @@ async function getParticipantListByParams(req, res) {
     });
   }
 
-  if (courseUUID && !course) {
+  if (effectiveCourseUUID && !course) {
     return res.status(404).json({
       success: false,
       error: "Course not found"
     });
   }
 
-  if (courseUUID) {
+  // Check if user is staff (Professor or TA) for the course
+  const isStaff = effectiveCourseUUID ? await userContextRepository.checkCourseStaffRole(
+    userUUID,
+    effectiveCourseUUID
+  ) : false;
+
+  if (effectiveCourseUUID) {
     const isInCourse = userContext.enrollments.some(enrollment =>
-      enrollment.course.courseUuid === courseUUID
+      enrollment.course.courseUuid === effectiveCourseUUID
     );
     if (!isInCourse && !isStaff) {
       return res.status(403).json({
@@ -802,55 +831,7 @@ async function createMeetingCode(req, res) {
 
   const meetingCode = Math.random().toString(36).substring(2).substring(0, 6).toUpperCase();
 
-  // TODO(bukhradze): replace hostname
-  const HOSTNAME = "conductor-tool.ucsd.edu";
-  const redirectURL = `https://${HOSTNAME}/attendance/record/?meeting=${meetingUUID}&code=${meetingCode}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${redirectURL}&size=200x200`;
-
-  const validStartDatetime = meeting.meetingStartTime;
-  const validEndDatetime = meeting.meetingEndTime;
-
-  const codeData = {
-    qrUrl: qrUrl,
-    meetingUuid: meetingUUID,
-    meetingCode: meetingCode,
-    validStartDatetime: validStartDatetime,
-    validEndDatetime: validEndDatetime
-  };
-
-  const createdCode = await attendanceRepository.createMeetingCode(codeData);
-
-  return createdCode;
-}
-
-/**
- * Get meeting code for standalone endpoint (sends response)
- */
-async function getMeetingCodeResponse(req, res) {
-  const meetingUUID = req.params.id;
-  const userUUID = req.session.user.id;
-
-  const meeting = await attendanceRepository.getMeetingByUUID(meetingUUID);
-  if (!meeting) {
-    return res.status(404).json({
-      success: false,
-      error: "Meeting not found"
-    });
-  }
-
-  if (meeting.creatorUuid !== userUUID) {
-    return res.status(403).json({
-      success: false,
-      error: "Only the meeting creator can create meeting codes"
-    });
-  }
-
-  const meetingCode = Math.random().toString(36).substring(2).substring(0, 6).toUpperCase();
-
-  // TODO(bukhradze): replace hostname
-  const HOSTNAME = "conductor-tool.ucsd.edu";
-  const redirectURL = `https://${HOSTNAME}/attendance/record/?meeting=${meetingUUID}&code=${meetingCode}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${redirectURL}&size=200x200`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${meetingCode}&size=200x200`;
 
   const validStartDatetime = meeting.meetingStartTime;
   const validEndDatetime = meeting.meetingEndTime;
@@ -945,7 +926,10 @@ async function recordAttendanceViaCode(req, res) {
     });
   }
 
-  const now = new Date();
+  // Compare times in UTC - both Date objects represent absolute moments in time
+  // meetingCodeData.validStartDatetime and validEndDatetime are stored in UTC (from database)
+  // and represent the local time the user selected, converted to UTC
+  const now = new Date(); // Current UTC time
   if (now < meetingCodeData.validStartDatetime || now > meetingCodeData.validEndDatetime) {
     return res.status(403).json({
       success: false,
@@ -1110,5 +1094,6 @@ export {
   getMeetingCode,
   recordAttendanceViaCode,
   getInstructorAnalytics,
-  getStudentAnalytics
+  getStudentAnalytics,
+  createMeetingCode
 };

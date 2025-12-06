@@ -2,10 +2,15 @@
  * @module attendance/dto
  */
 
-
+/**
+ * Convert meeting data to DTO format
+ * @param {Object} meetingData - Meeting data from database
+ * @returns {Object} Meeting DTO with both camelCase and PascalCase aliases
+ */
 function toMeetingDTO(meetingData) {
   return {
     meetingUuid: meetingData.meetingUuid,
+    meetingUUID: meetingData.meetingUuid, // Alias for consistency with frontend
     creatorUuid: meetingData.creatorUuid,
     courseUuid: meetingData.courseUuid,
     meetingStartTime: meetingData.meetingStartTime,
@@ -16,10 +21,16 @@ function toMeetingDTO(meetingData) {
     meetingLocation: meetingData.meetingLocation,
     isRecurring: meetingData.isRecurring,
     parentMeetingUuid: meetingData.parentMeetingUuid,
+    parentMeetingUUID: meetingData.parentMeetingUuid, // Alias for consistency with frontend
     meetingType: meetingData.meetingType
   };
 }
 
+/**
+ * Convert participant data to DTO format
+ * @param {Object} participantData - Participant data from database
+ * @returns {Object} Participant DTO
+ */
 function toParticipantDTO(participantData) {
   return {
     participantUuid: participantData.participantUuid,
@@ -38,17 +49,56 @@ function toParticipantDTO(participantData) {
   };
 }
 
+/**
+ * Convert array of participants to DTO format
+ * @param {Array} participants - Array of participant data
+ * @returns {Array} Array of participant DTOs
+ */
 function toParticipantListDTO(participants) {
   return participants.map(toParticipantDTO);
 }
 
+/**
+ * Convert array of meetings to DTO format
+ * @param {Array} meetings - Array of meeting data
+ * @returns {Array} Array of meeting DTOs
+ */
 function toMeetingListDTO(meetings) {
   return meetings.map(toMeetingDTO);
+}
+
+function toStudentAnalyticsDto(analytics) {
+  return {
+    userUuid: analytics.userUuid,
+    courseUuid: analytics.courseUuid,
+    attendanceByType: (analytics.attendanceByType || analytics.byMeetingType || []).map(t => ({
+      meetingType: t.meetingType,
+      totalMeetings: t.totalMeetings,
+      attended: t.attended,
+      percentage: Math.round(t.percentage * 100) / 100 // Round to 2 decimals
+    }))
+  };
+}
+
+function toInstructorAnalyticsDto(analytics) {
+  return {
+    courseUuid: analytics.courseUuid,
+    timeline: (analytics.timeline || analytics.meetings || []).map(m => ({
+      date: m.meetingDate || m.date,
+      meetingType: m.meetingType,
+      meetingTitle: m.meetingTitle,
+      totalParticipants: m.totalParticipants,
+      attended: m.attended,
+      attendancePercentage: Math.round((m.attendancePercentage ?? m.percentage ?? 0) * 100) / 100
+    }))
+  };
 }
 
 export {
   toMeetingDTO,
   toParticipantDTO,
   toParticipantListDTO,
-  toMeetingListDTO
+  toMeetingListDTO,
+  toStudentAnalyticsDto,
+  toInstructorAnalyticsDto
 };

@@ -538,8 +538,8 @@ BEGIN
     
     INSERT INTO meeting_codes (qr_url, meeting_code, meeting_uuid, valid_start_datetime, valid_end_datetime)
     SELECT 
-        'https://api.qrserver.com/v1/create-qr-code/?data=CSE210-' || meeting_uuid,
-        'MTG-' || substring(meeting_uuid::text from 1 for 8),
+        'https://api.qrserver.com/v1/create-qr-code/?data=' || upper(substring(meeting_uuid::text from 1 for 6)) || '&size=200x200',
+        upper(substring(meeting_uuid::text from 1 for 6)),
         meeting_uuid,
         meeting_start_time - INTERVAL '10 minutes',
         meeting_start_time + INTERVAL '15 minutes'
