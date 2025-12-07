@@ -67,6 +67,11 @@ function toMeetingListDTO(meetings) {
   return meetings.map(toMeetingDTO);
 }
 
+/**
+ * Convert raw analytics data to Student Analytics DTO
+ * @param {Object} analytics - Raw analytics data
+ * @returns {Object} Student Analytics DTO
+ */
 function toStudentAnalyticsDto(analytics) {
   return {
     userUuid: analytics.userUuid,
@@ -80,6 +85,10 @@ function toStudentAnalyticsDto(analytics) {
   };
 }
 
+/** Convert raw analytics data to Instructor Analytics DTO
+ * @param {Object} analytics - Raw analytics data
+ * @returns {Object} Instructor Analytics DTO
+ */
 function toInstructorAnalyticsDto(analytics) {
   return {
     courseUuid: analytics.courseUuid,
