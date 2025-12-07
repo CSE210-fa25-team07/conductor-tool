@@ -128,6 +128,20 @@ async function getUserByUuid(userUuid) {
   return user;
 }
 
+async function getUsersByUuids(userUuids) {
+  const users = await prisma.user.findMany({
+    where: {
+      userUuid: {
+        in: userUuids
+      }
+    },
+    include: {
+      courseEnrollments: true
+    }
+  });
+  return users;
+}
+
 /**
  * Delete a user by UUID
  * If the user is a professor in any course, delete those courses as well
@@ -308,9 +322,11 @@ export {
   getUserByEmail,
   getAllUsers,
   getUserByUuid,
+  getUsersByUuids,
   deleteUserByUuid,
   getUserStatusByUuid,
   getAllUsersWithStaffStatus,
   updateStaffStatus,
   transferLeadAdmin
 };
+
