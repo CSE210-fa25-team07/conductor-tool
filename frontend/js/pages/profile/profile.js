@@ -137,7 +137,6 @@ async function saveProfile(event) {
   const formData = {
     firstName: document.getElementById("edit-firstName").value.trim(),
     lastName: document.getElementById("edit-lastName").value.trim(),
-    email: document.getElementById("edit-email").value.trim(),
     pronouns: document.getElementById("edit-pronouns").value.trim() || null,
     bio: document.getElementById("edit-bio").value.trim() || null,
     phoneNumber: document.getElementById("edit-phoneNumber").value.trim() || null,

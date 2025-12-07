@@ -507,12 +507,12 @@ export async function updateTeamLinks(teamUuid, linksData) {
  * @returns {Promise<Object>} Updated user object
  */
 export async function updateUser(userUuid, userData) {
+  // Note: email is not updatable - it's tied to authentication
   return await prisma.user.update({
     where: { userUuid },
     data: {
       firstName: userData.firstName,
       lastName: userData.lastName,
-      email: userData.email,
       pronouns: userData.pronouns,
       bio: userData.bio,
       phoneNumber: userData.phoneNumber,

@@ -237,7 +237,7 @@ async function getCourseTeams(req, res) {
  * @throws {Error} If validation fails
  */
 function validateProfileData(profileData) {
-  const { firstName, lastName, email, pronouns, bio, phoneNumber, githubUsername } = profileData;
+  const { firstName, lastName, pronouns, bio, phoneNumber, githubUsername } = profileData;
 
   // firstName is required
   if (firstName !== undefined) {
@@ -259,20 +259,7 @@ function validateProfileData(profileData) {
     }
   }
 
-  // email is required
-  if (email !== undefined) {
-    if (typeof email !== "string" || email.trim().length === 0) {
-      throw new Error("Email must be a non-empty string");
-    }
-    if (email.trim().length > 255) {
-      throw new Error("Email must be 255 characters or less");
-    }
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      throw new Error("Invalid email format");
-    }
-  }
+  // Note: email is not updatable - it's tied to authentication
 
   // Optional fields validation
   if (pronouns !== undefined && pronouns !== null && pronouns !== "") {
@@ -329,11 +316,10 @@ async function updateCurrentUserProfile(req, res) {
   // Validate input
   validateProfileData(profileData);
 
-  // Normalize user data
+  // Normalize user data (email is not updatable - tied to authentication)
   const normalizedUserData = {
     firstName: profileData.firstName?.trim(),
     lastName: profileData.lastName?.trim(),
-    email: profileData.email?.trim(),
     pronouns: profileData.pronouns?.trim() || null,
     bio: profileData.bio?.trim() || null,
     phoneNumber: profileData.phoneNumber?.trim() || null,
@@ -369,10 +355,9 @@ async function updateCurrentUserProfile(req, res) {
   // Fetch updated user profile
   const user = await directoryRepository.getUserProfile(userUuid);
 
-  // Update session with new name and email so sidebar reflects the change
+  // Update session with new name so sidebar reflects the change
   if (req.session.user) {
     req.session.user.name = `${user.firstName} ${user.lastName}`;
-    req.session.user.email = user.email;
   }
 
   return res.status(200).json({
