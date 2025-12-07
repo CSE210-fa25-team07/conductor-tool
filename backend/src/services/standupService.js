@@ -31,7 +31,7 @@ import * as emailService from "./emailService.js";
  */
 async function createStandup(req, res) {
   const userId = req.session.user.id;
-  const { teamUuid, courseUuid, whatDone, githubActivities, whatNext, blockers, reflection, visibility } = req.body;
+  const { teamUuid, courseUuid, whatDone, githubActivities, whatNext, blockers, reflection, visibility, sentimentScore } = req.body;
 
   if (!teamUuid || !courseUuid) {
     return res.status(400).json({
@@ -59,7 +59,8 @@ async function createStandup(req, res) {
     whatNext,
     blockers,
     reflection,
-    visibility: visibility || "team"
+    visibility: visibility || "team",
+    sentimentScore
   });
 
   if (blockers && blockers.trim().length > 0) {
@@ -134,7 +135,7 @@ async function getUserStandups(req, res) {
 async function updateStandup(req, res) {
   const userId = req.session.user.id;
   const { standupId } = req.params;
-  const { whatDone, githubActivities, whatNext, blockers, reflection, visibility } = req.body;
+  const { whatDone, githubActivities, whatNext, blockers, reflection, visibility, sentimentScore } = req.body;
 
   const standup = await standupRepository.getStandupById(standupId);
 
@@ -158,7 +159,8 @@ async function updateStandup(req, res) {
     whatNext,
     blockers,
     reflection,
-    visibility
+    visibility,
+    sentimentScore
   });
 
   return res.status(200).json({

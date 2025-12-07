@@ -30,7 +30,14 @@ async function createStandup(data) {
 }
 
 async function getUserStandups(userUuid, filters = {}) {
-  const where = { userUuid };
+  const where = {
+    userUuid,
+    course: {
+      term: {
+        isActive: true
+      }
+    }
+  };
 
   if (filters.courseUuid) {
     where.courseUuid = filters.courseUuid;
@@ -46,7 +53,9 @@ async function getUserStandups(userUuid, filters = {}) {
       where.dateSubmitted.gte = new Date(filters.startDate);
     }
     if (filters.endDate) {
-      where.dateSubmitted.lte = new Date(filters.endDate);
+      const endDate = new Date(filters.endDate);
+      endDate.setDate(endDate.getDate() + 1);
+      where.dateSubmitted.lt = endDate;
     }
   }
 
@@ -99,6 +108,23 @@ async function deleteStandup(standupUuid) {
 }
 
 async function getTeamStandups(teamUuid, filters = {}) {
+  // Verify team's course is in an active term (same pattern as getCourseStandups)
+  const team = await prisma.team.findFirst({
+    where: {
+      teamUuid,
+      course: {
+        term: {
+          isActive: true
+        }
+      }
+    }
+  });
+
+  if (!team) {
+    return [];
+  }
+
+  // Query standups with simple filter (no nested relation filter)
   const where = { teamUuid };
 
   if (filters.startDate || filters.endDate) {
@@ -107,7 +133,9 @@ async function getTeamStandups(teamUuid, filters = {}) {
       where.dateSubmitted.gte = new Date(filters.startDate);
     }
     if (filters.endDate) {
-      where.dateSubmitted.lte = new Date(filters.endDate);
+      const endDate = new Date(filters.endDate);
+      endDate.setDate(endDate.getDate() + 1);
+      where.dateSubmitted.lt = endDate;
     }
   }
 
@@ -123,6 +151,20 @@ async function getTeamStandups(teamUuid, filters = {}) {
 }
 
 async function getCourseStandups(courseUuid, filters = {}) {
+  // Verify course is in an active term
+  const course = await prisma.course.findFirst({
+    where: {
+      courseUuid,
+      term: {
+        isActive: true
+      }
+    }
+  });
+
+  if (!course) {
+    return [];
+  }
+
   // Get all teams in the course
   const teams = await prisma.team.findMany({
     where: { courseUuid },
