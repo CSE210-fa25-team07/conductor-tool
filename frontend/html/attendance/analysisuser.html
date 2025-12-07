@@ -1,0 +1,62 @@
+<template>
+
+  <style>
+    .analytics-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      border: 2px solid #4CAF50;
+    }
+
+    .chart-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #2d2d2d;
+    }
+
+    .type-filters {
+      margin-bottom: 16px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .type-filters label {
+      font-size: 14px;
+      color: #444;
+      cursor: pointer;
+    }
+
+    .chart-wrapper {
+      height: 350px;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 10px;
+      border: 1px solid #eee;
+      position: relative;
+    }
+  </style>
+
+
+  <div class="analytics-card" id="individualAnalyticsCard">
+
+    <h3 class="chart-title">Your Attendance Trend</h3>
+
+    <div class="type-filters">
+      <label><input type="checkbox" class="individual-type" value="lecture" checked> Lecture</label>
+      <label><input type="checkbox" class="individual-type" value="office-hours" checked> Office Hours</label>
+      <label><input type="checkbox" class="individual-type" value="ta-checkin" checked> TA Check-in</label>
+      <label><input type="checkbox" class="individual-type" value="team-meeting" checked> Team Meeting</label>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrapper">
+      <canvas id="individualAttendanceChart"></canvas>
+    </div>
+
+  </div>
+
+</template>
