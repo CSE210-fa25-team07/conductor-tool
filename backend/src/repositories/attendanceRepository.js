@@ -8,12 +8,6 @@ const prisma = getPrisma();
 
 /**
  * Create a new meeting
- * @param {string} meetingData
- * @returns {Promise<Object>} Created meeting
- * @throws {Error} on database error
- */
-/**
- * Create a new meeting
  * @param {Object} meetingData - Meeting data with creatorUUID, courseUUID, etc.
  * @returns {Promise<Object>} Created meeting
  * @throws {Error} on database error

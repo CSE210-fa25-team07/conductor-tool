@@ -67,9 +67,47 @@ function toMeetingListDTO(meetings) {
   return meetings.map(toMeetingDTO);
 }
 
+/**
+ * Convert raw analytics data to Student Analytics DTO
+ * @param {Object} analytics - Raw analytics data
+ * @returns {Object} Student Analytics DTO
+ */
+function toStudentAnalyticsDto(analytics) {
+  return {
+    userUuid: analytics.userUuid,
+    courseUuid: analytics.courseUuid,
+    attendanceByType: (analytics.attendanceByType || analytics.byMeetingType || []).map(t => ({
+      meetingType: t.meetingType,
+      totalMeetings: t.totalMeetings,
+      attended: t.attended,
+      percentage: Math.round(t.percentage * 100) / 100 // Round to 2 decimals
+    }))
+  };
+}
+
+/** Convert raw analytics data to Instructor Analytics DTO
+ * @param {Object} analytics - Raw analytics data
+ * @returns {Object} Instructor Analytics DTO
+ */
+function toInstructorAnalyticsDto(analytics) {
+  return {
+    courseUuid: analytics.courseUuid,
+    timeline: (analytics.timeline || analytics.meetings || []).map(m => ({
+      date: m.meetingDate || m.date,
+      meetingType: m.meetingType,
+      meetingTitle: m.meetingTitle,
+      totalParticipants: m.totalParticipants,
+      attended: m.attended,
+      attendancePercentage: Math.round((m.attendancePercentage ?? m.percentage ?? 0) * 100) / 100
+    }))
+  };
+}
+
 export {
   toMeetingDTO,
   toParticipantDTO,
   toParticipantListDTO,
-  toMeetingListDTO
+  toMeetingListDTO,
+  toStudentAnalyticsDto,
+  toInstructorAnalyticsDto
 };
