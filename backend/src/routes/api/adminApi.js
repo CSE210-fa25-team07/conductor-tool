@@ -115,7 +115,8 @@ router.post("/requests/:id/approve", async (req, res) => {
   } catch (error) {
     if (error.message.includes("not found") ||
         error.message.includes("already exists") ||
-        error.message.includes("Invalid")) {
+        error.message.includes("Invalid") ||
+        error.message.includes("not active")) {
       return res.status(400).json({
         success: false,
         error: error.message

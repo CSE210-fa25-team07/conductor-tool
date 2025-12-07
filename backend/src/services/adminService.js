@@ -6,6 +6,7 @@
  */
 
 import * as userRepository from "../repositories/userRepository.js";
+import * as courseRepository from "../repositories/courseRepository.js";
 import * as userValidator from "../validators/userValidator.js";
 import * as formRequestRepository from "../repositories/formRequestRepository.js";
 import * as verificationCodeRepository from "../repositories/verificationCodeRepository.js";
@@ -68,9 +69,15 @@ async function approveFormRequest(requestUuid) {
   }
 
   // Verify the verification code is valid and get course info
-  const courseInfo = await verificationCodeRepository.findCourseByVerificationCode(request.verificationCode);
-  if (!courseInfo) {
+  const courseEnrollmentInfo = await verificationCodeRepository.findCourseByVerificationCode(request.verificationCode);
+  if (!courseEnrollmentInfo) {
     throw new Error("Invalid verification code");
+  }
+
+  // Check if course is active
+  const courseInfo = await courseRepository.getCourseByUuid(courseEnrollmentInfo.courseUuid);
+  if (!courseInfo.term.isActive) {
+    throw new Error("Course is not active");
   }
 
   // Use transaction to create user, enroll in course, and delete request
@@ -81,13 +88,13 @@ async function approveFormRequest(requestUuid) {
       lastName: request.lastName,
       email: request.email
     },
-    courseInfo.courseUuid,
-    courseInfo.roleUuid
+    courseEnrollmentInfo.courseUuid,
+    courseEnrollmentInfo.roleUuid
   );
 
   return {
     user: newUser,
-    course: courseInfo
+    course: courseEnrollmentInfo
   };
 }
 
