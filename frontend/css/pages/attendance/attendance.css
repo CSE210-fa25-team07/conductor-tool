@@ -91,19 +91,28 @@
 }
 
 .calendar-day {
-    height: 100px;
-    max-height: 100px;
+    height: 120px;
+    max-height: 140px;
     background: #fafafa;
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 5px;
+    padding: 6px;
     position: relative;
     cursor: pointer;
     transition: background-color 0.2s ease;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+.calendar-day-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 2px;
+    padding-top: 22px; /* start items below the badge */
 }
 
 .calendar-day:hover {
@@ -128,29 +137,38 @@
 
 .date-number {
     font-weight: bold;
-    margin-bottom: 5px;
+    margin: 0;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    background: inherit;
-    z-index: 1;
-    padding-bottom: 2px;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-.calendar-day::-webkit-scrollbar {
+.calendar-day-content::-webkit-scrollbar {
     width: 4px;
 }
 
-.calendar-day::-webkit-scrollbar-track {
+.calendar-day-content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.calendar-day::-webkit-scrollbar-thumb {
+.calendar-day-content::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 2px;
 }
 
-.calendar-day::-webkit-scrollbar-thumb:hover {
+.calendar-day-content::-webkit-scrollbar-thumb:hover {
     background: #999;
 }
 
@@ -164,6 +182,10 @@
     color: white;
     text-align: center;
     flex-shrink: 0;
+}
+
+.calendar-day .meeting-tag:first-of-type {
+    margin-top: 0;
 }
 
 .type-lecture { background: #007bff; }
