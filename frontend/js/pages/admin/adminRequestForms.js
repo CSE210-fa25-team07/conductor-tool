@@ -49,15 +49,15 @@ function displayRequests(requests) {
   const noRequestsMessage = document.getElementById("noRequestsMessage");
   const requestsList = document.getElementById("requestsList");
 
+  // Clear existing items first
+  requestsList.innerHTML = "";
+
   if (!requests || requests.length === 0) {
     noRequestsMessage.style.display = "block";
     return;
   }
 
   noRequestsMessage.style.display = "none";
-
-  // Clear existing items
-  requestsList.innerHTML = "";
 
   // Populate list with request cards
   requests.forEach(request => {
