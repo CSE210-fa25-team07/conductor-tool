@@ -1,10 +1,9 @@
 /**
- * Calendar rendering and navigation helpers.
+ * @fileoverview Calendar rendering and navigation helpers for attendance dashboard.
  */
 
 import { formatDate, formatTimeForDisplay, getCourseIdFromUrl } from "./utils.js";
 import { getUserRoleInCourse } from "../../utils/userContext.js";
-import { isStaffRole } from "./utils.js";
 
 export function isDateWithinCourseRange(ctx, date) {
   if (!ctx.state.courseStartDate || !ctx.state.courseEndDate) return false;

@@ -1,5 +1,5 @@
 /**
- * Participant and team loading helpers for the attendance dashboard.
+ * @fileoverview Participant and team loading helpers for the attendance dashboard.
  */
 
 import { getAllCourseUsers, getCourseTeams } from "../../api/attendanceApi.js";
@@ -11,7 +11,8 @@ export async function loadAllUsersAndTeams(ctx) {
   if (!courseUUID) return;
 
   try {
-    ctx.state.allUsers = await getAllCourseUsers(courseUUID) || [];
+    const users = await getAllCourseUsers(courseUUID) || [];
+    ctx.state.allUsers = dedupeUsers(users);
   } catch (error) {
     ctx.state.allUsers = [];
     ctx.els.participantsContainer.innerHTML = `<p style="color: #666; padding: 10px;">Unable to load participants: ${error.message}</p>`;
@@ -47,6 +48,17 @@ function formatUserNameWithRole(user) {
   if (role === "Professor") return `${name} (Prof)`;
   if (role === "TA") return `${name} (TA)`;
   return name;
+}
+
+function dedupeUsers(users) {
+  const seen = new Set();
+  return (users || []).filter(user => {
+    const id = user?.userUuid;
+    if (!id) return false;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 }
 
 function createParticipantCheckbox(user) {

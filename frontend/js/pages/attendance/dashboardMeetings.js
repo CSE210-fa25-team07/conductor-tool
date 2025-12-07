@@ -1,5 +1,5 @@
 /**
- * Meeting loading, modals, QR, and form handling for the attendance dashboard.
+ * @fileoverview Meeting loading, modals, QR, and form handling for the attendance dashboard.
  */
 
 import {
@@ -25,6 +25,14 @@ import {
   populateMeetingParticipantsDisplay,
   loadAllUsersAndTeams
 } from "./dashboardParticipants.js";
+
+// Helpers to avoid repetition
+const getParticipantUuid = (p) =>
+  p?.user?.userUuid
+  || p?.participantUuid
+  || p?.participantUUID
+  || (p?.user ? p.user.id : null)
+  || (typeof p === "string" ? p : null);
 
 export function setupMeetingTypeOptions(ctx) {
   const courseUUID = getCourseIdFromUrl();
@@ -85,10 +93,7 @@ export async function loadMeetingsFromBackend(ctx) {
       const creatorUUID = meeting.creatorUUID || meeting.creatorUuid || null;
       const isCreator = userUuid && creatorUUID === userUuid;
       const participantList = meeting.participants || [];
-      const isParticipant = userUuid && participantList.some(p => {
-        const participantUuid = p.userUuid || p.participantUuid || p.participantUUID || (typeof p === "string" ? p : null);
-        return participantUuid === userUuid;
-      });
+      const isParticipant = userUuid && participantList.some(p => getParticipantUuid(p) === userUuid);
 
       ctx.state.allMeetings[dateStr].push({
         title: meeting.meetingTitle,
@@ -214,18 +219,13 @@ export async function openMeetingAttendance(ctx, date, index) {
     try {
       const participants = await getMeetingParticipants(meeting.meetingUUID, courseUUID);
 
-      const participantUsers = participants.map(p => {
-        let userUuid = null;
-        if (p.user && p.user.userUuid) {
-          userUuid = p.user.userUuid;
-        } else {
-          userUuid = p.participantUuid || p.participantUUID || (p.user ? p.user.id : null);
-        }
-
-        if (!userUuid) return null;
-        const user = ctx.state.allUsers.find(u => u.userUuid === userUuid);
-        return user || null;
-      }).filter(u => u !== null);
+      const participantUsers = participants
+        .map(p => {
+          const userUuid = getParticipantUuid(p);
+          if (!userUuid) return null;
+          return ctx.state.allUsers.find(u => u.userUuid === userUuid) || null;
+        })
+        .filter(Boolean);
 
       if (participantUsers.length === 0) {
         participantsContainer.innerHTML = "<p style='padding: 10px; color: #666; text-align: center;'>No participants</p>";
@@ -665,10 +665,10 @@ export function bindMeetingDeletion(ctx, refreshMeetings) {
     }
 
     const meeting = ctx.state.meetings[date]?.[ctx.state.activeMeetingContext.index];
-    const isPartOfRecurringChain = meeting?.isRecurring
+    const isPartOfRecurringChain = !!(meeting?.isRecurring
       || meeting?.parentMeetingUUID
       || meeting?.parentMeetingUuid
-      || meeting?.chainId;
+      || meeting?.chainId);
     if (!isPartOfRecurringChain) {
       alert("This meeting is not part of a recurring series.");
       return;
