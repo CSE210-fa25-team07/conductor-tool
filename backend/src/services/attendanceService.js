@@ -12,7 +12,13 @@ import * as userRepository from "../repositories/userRepository.js";
 import * as courseRepository from "../repositories/courseRepository.js";
 
 /**
- * Get a meeting by UUID
+ * Get a Meeting object by UUID
+ * @param {string} req.param.id -- UUID of the meeting
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 200 - Meeting object
+ * @returns {Object} 404 - Meeting not found
+ * @returns {Object} 400 - Missing meeting UUID parameter
+ * @status IN USE
  */
 async function getMeetingByUUID(req, res) {
   const meetingUUID = req.params.id;
@@ -74,7 +80,9 @@ async function getMeetingByUUID(req, res) {
 }
 
 /**
- * Create a new meeting
+ * Create meeting from data
+ * @param {Object} req -- Request data, containing UserUUID and Meeting data
+ * @param {Object} res -- Response
  */
 async function createMeeting(req, res) {
   const userUUID = req.session.user.id;
@@ -196,7 +204,14 @@ async function createMeeting(req, res) {
 }
 
 /**
- * Update a meeting
+ * Updates meeting data
+ * @param {Object} req - request, where body contains meeting dataa
+ * @param {Object} res - response
+ * @returns {Object} 200 - Meeting updated
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Meeting not found
+ * @returns {Object} 400 - Missing meeting UUID parameter
+ * @status IN USE
  */
 async function updateMeeting(req, res) {
   const userUUID = req.session.user.id;
@@ -267,7 +282,14 @@ async function updateMeeting(req, res) {
 }
 
 /**
- * Delete a meeting
+ * Delete a meeting by UUID
+ * @param {Object} req - Request with user auth data and meeting UUID in params
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Meeting deleted successfully
+ * @returns {Object} 400 - Missing meeting UUID parameter
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Meeting not found
+ * @status IN USE
  */
 async function deleteMeeting(req, res) {
   const userUUID = req.session.user.id;
@@ -333,7 +355,14 @@ async function deleteMeeting(req, res) {
 }
 
 /**
- * Get meeting list by course UUID
+ * Gets meeting list by course UUID
+ * @param {Object} req -- Request with user auth data and courseUUID param
+ * @param {Object} res -- Response
+ * @returns {Object} 200 - Meeting list
+ * @returns {Object} 400 - Missing course UUID parameter
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Course not found
+ * @status IN USE
  */
 async function getMeetingList(req, res) {
   const userUUID = req.session.user.id;
@@ -389,7 +418,14 @@ async function getMeetingList(req, res) {
 }
 
 /**
- * Get a participant from a meeting
+ * Get a specific participant from a meeting
+ * @param {Object} req - Request with participant UUID and meeting UUID in params
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Participant object
+ * @returns {Object} 400 - Missing participant or meeting UUID parameter
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Participant not found
+ * @status IN USE
  */
 async function getParticipant(req, res) {
   const participantUUID = req.params.id;
@@ -427,7 +463,14 @@ async function getParticipant(req, res) {
 }
 
 /**
- * Create participants for a meeting
+ * Create multiple participants for a meeting
+ * @param {Object} req - Request with participants array in body
+ * @param {Object} res - Response
+ * @returns {Object} 201 - Participants created successfully
+ * @returns {Object} 400 - Missing participants data or invalid participant data
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Meeting not found
+ * @status IN USE
  */
 async function createParticipants(req, res) {
   const participants = req.body.participants;
@@ -506,6 +549,13 @@ async function createParticipants(req, res) {
 
 /**
  * Update a participant's attendance status
+ * @param {Object} req - Request with meeting UUID, participant UUID, and attendance data in body
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Participant updated successfully
+ * @returns {Object} 400 - Missing participant or meeting UUID
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Participant or meeting not found
+ * @status IN USE
  */
 async function updateParticipant(req, res) {
   const userUUID = req.session.user.id;
@@ -573,6 +623,13 @@ async function updateParticipant(req, res) {
 
 /**
  * Delete a participant from a meeting
+ * @param {Object} req - Request with meeting UUID and participant UUID in params
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Participant deleted successfully
+ * @returns {Object} 400 - Missing participant or meeting UUID
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Participant or meeting not found
+ * @status IN USE
  */
 async function deleteParticipant(req, res) {
   const userUUID = req.session.user.id;
@@ -635,7 +692,14 @@ async function deleteParticipant(req, res) {
 }
 
 /**
- * Get participants filtered by params (meetingUUID, courseUUID, present)
+ * Get a list of participants filtered by parameters
+ * @param {Object} req - Request with meeting UUID, course UUID, and/or present filter in body
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Participant list
+ * @returns {Object} 400 - Missing required filter parameters
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - No participants found or meeting/course not found
+ * @status IN USE
  */
 async function getParticipantListByParams(req, res) {
   const {
@@ -738,7 +802,13 @@ async function getParticipantListByParams(req, res) {
 }
 
 /**
- * Create a meeting code for attendance
+ * Create a meeting code for attendance recording
+ * @param {Object} req - Request with meeting UUID in params and user auth data
+ * @param {Object} res - Response
+ * @returns {Object} 201 - Meeting code created successfully
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Meeting not found
+ * @status IN USE
  */
 async function createMeetingCode(req, res) {
   const meetingUUID = req.params.id;
@@ -783,7 +853,13 @@ async function createMeetingCode(req, res) {
 }
 
 /**
- * Get meeting code by meeting UUID
+ * Retrieve a meeting code by meeting UUID
+ * @param {Object} req - Request with meeting UUID in params and user auth data
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Meeting code data
+ * @returns {Object} 403 - Not permitted
+ * @returns {Object} 404 - Meeting or meeting code not found
+ * @status IN USE
  */
 async function getMeetingCode(req, res) {
   const meetingUUID = req.params.id;
@@ -820,7 +896,13 @@ async function getMeetingCode(req, res) {
 }
 
 /**
- * Record attendance using a meeting code
+ * Record a participant's attendance using a meeting code
+ * @param {Object} req - Request with meeting UUID and meeting code in params, user auth data in session
+ * @param {Object} res - Response
+ * @returns {Object} 200 - Attendance recorded successfully
+ * @returns {Object} 403 - Code invalid or not a participant
+ * @returns {Object} 404 - Meeting code not found
+ * @status IN USE
  */
 async function recordAttendanceViaCode(req, res) {
   // Accept meeting as either query param (from QR redirect) or route param
@@ -868,6 +950,136 @@ async function recordAttendanceViaCode(req, res) {
   });
 }
 
+async function getInstructorAnalytics({ courseUuid, startDate, endDate, meetingType, teamUuid }) {
+  if (!courseUuid) {
+    throw new Error("courseUuid is required");
+  }
+
+  let meetings = await attendanceRepository.getMeetingListByParams({
+    courseUUID: courseUuid,
+    isStaff: true
+  });
+
+  if (meetingType) {
+    meetings = meetings.filter(m => String(m.meetingType) === String(meetingType));
+  }
+
+  if (startDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
+  }
+  if (endDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
+  }
+
+  const meetingUuids = meetings.map(m => m.meetingUuid);
+
+  const allParticipants = await attendanceRepository.getParticipantListByParams({
+    courseUUID: courseUuid
+  });
+
+  // { meetingUuid: [participant, participant...] }
+  const participantsByMeeting = {};
+  for (const p of allParticipants) {
+    if (!participantsByMeeting[p.meetingUuid]) {
+      participantsByMeeting[p.meetingUuid] = [];
+    }
+    participantsByMeeting[p.meetingUuid].push(p);
+  }
+
+  const timeline = [];
+
+  for (const meeting of meetings) {
+    const participants = participantsByMeeting[meeting.meetingUuid] || [];
+
+    let filteredParticipants = participants;
+    if (teamUuid) {
+      filteredParticipants = [];
+
+      for (const p of participants) {
+        const inTeam = await userContextRepository.checkTeamMembership(p.participantUuid, teamUuid);
+
+        if (inTeam) {
+          filteredParticipants.push(p);
+        }
+      }
+    }
+
+    const totalParticipants = filteredParticipants.length;
+    const attended = filteredParticipants.filter(p => p.present).length;
+
+    const attendancePercentage = totalParticipants > 0
+      ? Math.round((attended / totalParticipants) * 100)
+      : 0;
+
+    timeline.push({
+      date: meeting.meetingDate,
+      meetingType: meeting.meetingType,
+      meetingTitle: meeting.meetingTitle,
+      totalParticipants,
+      attended,
+      attendancePercentage
+    });
+  }
+
+  return {
+    courseUuid,
+    timeline
+  };
+}
+
+async function getStudentAnalytics({ userUuid, courseUuid, startDate, endDate }) {
+  if (!userUuid || !courseUuid) {
+    throw new Error("userUuid and courseUuid are required");
+  }
+
+  // Get all meetings for the course
+  let meetings = await attendanceRepository.getMeetingListByParams({
+    courseUUID: courseUuid
+  });
+
+  // Filter by date range if provided
+  if (startDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
+  }
+  if (endDate) {
+    meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
+  }
+
+  // Get all participation records for this user in these meetings
+  const meetingUuids = meetings.map(m => m.meetingUuid);
+  const userParticipants = await attendanceRepository.getParticipantListByParams({
+    participantUUID: userUuid,
+    meetingUUIDs: meetingUuids
+  });
+
+  // Aggregate attendance by meeting type
+  const byMeetingType = [];
+  const typeMap = {};
+
+  meetings.forEach(meeting => {
+    const type = meeting.meetingType;
+    if (!typeMap[type]) {
+      typeMap[type] = { meetingType: type, totalMeetings: 0, attended: 0 };
+    }
+    typeMap[type].totalMeetings += 1;
+    const participant = userParticipants.find(p => p.meetingUuid === meeting.meetingUuid);
+    if (participant && participant.present) {
+      typeMap[type].attended += 1;
+    }
+  });
+
+  Object.values(typeMap).forEach(t => {
+    t.percentage = t.totalMeetings > 0 ? (t.attended / t.totalMeetings) * 100 : 0;
+    byMeetingType.push(t);
+  });
+
+  return {
+    userUuid,
+    courseUuid,
+    byMeetingType
+  };
+}
+
 export {
   getMeetingByUUID,
   createMeeting,
@@ -880,6 +1092,8 @@ export {
   deleteParticipant,
   getParticipantListByParams,
   getMeetingCode,
-  createMeetingCode,
-  recordAttendanceViaCode
+  recordAttendanceViaCode,
+  getInstructorAnalytics,
+  getStudentAnalytics,
+  createMeetingCode
 };
