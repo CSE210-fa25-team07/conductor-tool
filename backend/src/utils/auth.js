@@ -34,7 +34,7 @@ export async function checkUserFromSession(req, res, next) {
   if (!req.session.user) {
     return res.redirect("/logout");
   }
-  const check = await userRepository.getUserByEmail(req.session.user.email);
+  const check = await userRepository.getUserByUuid(req.session.user.id);
   if (!check) {
     return res.redirect("/logout");
   }
@@ -53,9 +53,43 @@ export async function checkApiSession(req, res, next) {
   if (!req.session.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const check = await userRepository.getUserByEmail(req.session.user.email);
+  const check = await userRepository.getUserByUuid(req.session.user.id);
   if (!check) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+  next();
+}
+
+/**
+ * Middleware to check if user is a system administrator (for API routes)
+ * Must be used after checkApiSession
+ * Returns 403 if user is not a system admin
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ */
+export async function checkSystemAdmin(req, res, next) {
+  if (!req.session.user || !req.session.user.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const userStatus = await userRepository.getUserStatusByUuid(req.session.user.id);
+
+  if (!userStatus.isSystemAdmin) {
+    return res.status(403).json({
+      success: false,
+      error: "Forbidden: Only system administrators can access this resource"
+    });
+  }
+
+  // Attach user info to req.user for use in route handlers
+  req.user = {
+    userUuid: req.session.user.id,
+    email: req.session.user.email,
+    isSystemAdmin: userStatus.isSystemAdmin,
+    isLeadAdmin: userStatus.isLeadAdmin,
+    isProf: userStatus.isProf
+  };
+
   next();
 }

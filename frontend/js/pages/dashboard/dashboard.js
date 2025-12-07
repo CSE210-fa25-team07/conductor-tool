@@ -83,13 +83,9 @@ function createCourseCard(course) {
   article.className = "course-card";
   article.id = `course-card-${course.courseUuid}`;
 
-  // Extract department code (first part of course code)
-  const deptCode = course.code.split(" ")[0];
-
   // Build card HTML
   article.innerHTML = `
     <header class="course-card-header">
-      <figure class="course-icon">${deptCode}</figure>
       <section class="course-info">
         <span class="course-code">${course.code}</span>
         <h3 class="course-name">${course.name}</h3>
