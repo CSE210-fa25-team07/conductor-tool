@@ -177,7 +177,7 @@ async function loadAnalytics(courseUuid, teamUuid = null) {
 /**
  * loadOverallChart
  * @param {*} courseUuid
- * @returns {Promise<void>} 
+ * @returns {Promise<void>}
  */
 async function renderOverallChart(courseUuid) {
   const filters = getOverallFilters();

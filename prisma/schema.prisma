@@ -49,7 +49,7 @@ model Staff {
   personalWebsite  String?  @map("personal_website")
   isProf           Boolean? @default(false) @map("is_prof")
   isSystemAdmin    Boolean? @default(false) @map("is_system_admin")
-  is_lead_admin    Boolean? @default(false)
+  isLeadAdmin      Boolean? @default(false) @map("is_lead_admin")
   user             User     @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("staffs")
