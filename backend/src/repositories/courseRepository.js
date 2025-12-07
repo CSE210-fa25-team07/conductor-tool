@@ -68,7 +68,7 @@ async function getCoursesWithDetailsByUserId(userUuid) {
     name: enrollment.course.courseName,
     description: enrollment.course.description,
     term: `${enrollment.course.term.season} ${enrollment.course.term.year}`,
-    people: enrollment.course.enrollments.length
+    people: new Set(enrollment?.course?.enrollments.map(e => e.userUuid)).size
   }));
 }
 
