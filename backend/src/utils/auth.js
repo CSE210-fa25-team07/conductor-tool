@@ -82,5 +82,14 @@ export async function checkSystemAdmin(req, res, next) {
     });
   }
 
+  // Attach user info to req.user for use in route handlers
+  req.user = {
+    userUuid: req.session.user.id,
+    email: req.session.user.email,
+    isSystemAdmin: userStatus.isSystemAdmin,
+    isLeadAdmin: userStatus.isLeadAdmin,
+    isProf: userStatus.isProf
+  };
+
   next();
 }
