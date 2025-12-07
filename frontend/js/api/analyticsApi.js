@@ -5,6 +5,11 @@
 
 const API_BASE = "/v1/api/attendance/analytics";
 
+/**
+ * Handle fetch response
+ * @param {Response} response - Fetch API Response object
+ * @returns {Promise<Object>} Parsed JSON data
+ */
 async function handleResponse(response) {
   const contentType = response.headers.get("content-type");
   if (!contentType || !contentType.includes("application/json")) {
@@ -79,6 +84,11 @@ export async function getInstructorAnalytics({ courseUuid, startDate, endDate, m
   return handleResponse(response);
 }
 
+/**
+ * Get course teams
+ * @param {string} courseUuid - Course UUID
+ * @returns {Promise<Array>} List of teams
+ */
 export async function getCourseTeams(courseUuid) {
   const url = `/v1/api/courses/${courseUuid}/teams`;
   const response = await fetch(url, {

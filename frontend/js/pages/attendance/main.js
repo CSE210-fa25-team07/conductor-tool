@@ -1542,6 +1542,7 @@ function getCourseId() {
   return match ? match[1] : null;
 }
 
+
 /** Render class analytics (Professor/TA only)
  * @param {HTMLElement} container - Container to render into
  */
@@ -1561,6 +1562,7 @@ export async function renderClassAnalytics(container) {
   const courseUUID = getCourseId();
   showClassAnalytics(courseUUID);
 }
+
 
 /** Render class analytics (Professor/TA only)
  * @param {HTMLElement} container - Container to render into
@@ -1608,8 +1610,6 @@ export async function renderGroupanalysis(container) {
 }
 
 
-
-
 /**
  * Render the Attendance Analytics view.
  *
@@ -1652,7 +1652,6 @@ export async function renderAnalysisView(container) {
     }
 
   } catch (err) {
-    // console.error("Error rendering analysis view:", err);
   }
 }
 

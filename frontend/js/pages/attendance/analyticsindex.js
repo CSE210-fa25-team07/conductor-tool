@@ -100,7 +100,7 @@ export async function showIndividualAnalytics(courseUuid, userUuid) {
  * buildIndividualDataset
  * @param {*} attendanceByType
  * @param {*} filters
- * @returns
+ * @returns {{labels: string[], datasetMap: Object}}
  */
 function buildIndividualDataset(attendanceByType, filters) {
   const labels = Object.values(TYPE_LABEL); // ["Lecture", "Office Hours", ...]
@@ -153,7 +153,7 @@ async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
  * loadAnalytics
  * @param {*} courseUuid
  * @param {*} teamUuid
- * @returns
+ * @returns {Promise<Array>} timeline data
  */
 async function loadAnalytics(courseUuid, teamUuid = null) {
   try {
@@ -177,7 +177,7 @@ async function loadAnalytics(courseUuid, teamUuid = null) {
 /**
  * loadOverallChart
  * @param {*} courseUuid
- * @returns
+ * @returns {Promise<void>} 
  */
 async function renderOverallChart(courseUuid) {
   const filters = getOverallFilters();
@@ -205,6 +205,7 @@ async function renderOverallChart(courseUuid) {
 
 /** * renderTeamChart
  * @param {*} courseUuid
+ * @returns {Promise<void>} team chart
  */
 async function renderTeamChart(courseUuid) {
   const teamUuid = document.getElementById("groupTeamSelect")?.value;
@@ -236,7 +237,7 @@ async function renderTeamChart(courseUuid) {
 /** * buildTimelineDatasets
  * @param {*} timeline
  * @param {*} filters
- * @returns
+ * @returns {{labels: string[], datasetMap: Object}} timeline datasets
  */
 function buildTimelineDatasets(timeline, filters) {
   const labels = [...new Set(timeline.map(i => i.date))].sort();
@@ -266,7 +267,7 @@ function buildTimelineDatasets(timeline, filters) {
 
 
 /** * getOverallFilters
- * @returns
+ * @returns {Object} filters
  */
 function getOverallFilters() {
   const filters = {};
@@ -276,7 +277,7 @@ function getOverallFilters() {
 
 
 /** * getTeamFilters
- * @returns
+ * @returns {Object} filters
  */
 function getTeamFilters() {
   const filters = {};
@@ -285,7 +286,7 @@ function getTeamFilters() {
 }
 
 /** * getIndividualFilters
- * @returns
+ * @returns {Object} filters
  */
 function getIndividualFilters() {
   const filters = {};

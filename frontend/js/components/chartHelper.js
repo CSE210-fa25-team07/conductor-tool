@@ -8,7 +8,6 @@ export const ChartHelper = {
     "team-meeting": "#9C27B0"
   },
 
-  // --------- Bar dataset builder ----------
   _makeBarDataset(label, data, color) {
     return {
       label,
@@ -20,7 +19,13 @@ export const ChartHelper = {
     };
   },
 
-  // --------- Bar Chart Renderer ----------
+  /**
+   * 
+   * @param {*} canvasId 
+   * @param {*} labels 
+   * @param {*} datasetMap 
+   * @returns {Chart|null} Bar Chart instance
+   */
   createBarChart(canvasId, labels, datasetMap) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return null;
@@ -48,7 +53,6 @@ export const ChartHelper = {
     });
   },
 
-  // --------- Line helpers ----------
   _makeGradient(ctx, color) {
     const g = ctx.createLinearGradient(0, 0, 0, 300);
     g.addColorStop(0, color);
@@ -72,7 +76,13 @@ export const ChartHelper = {
     };
   },
 
-  // --------- Line Chart Renderer ----------
+  /**
+   * 
+   * @param {*} canvasId 
+   * @param {*} labels 
+   * @param {*} datasetMap 
+   * @returns {Chart|null} Line Chart instance
+   */
   createMultiLineChart(canvasId, labels, datasetMap) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return null;
