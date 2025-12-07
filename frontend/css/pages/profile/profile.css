@@ -1,0 +1,348 @@
+/**
+ * Profile Page Styles
+ * Follows "Premium Ecological" design system
+ * Matches directory team's polished styling approach
+ */
+
+/* ==================== Variables (Local Overrides) ==================== */
+.profile-container {
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --shadow-card: 0 4px 12px rgba(5, 43, 8, 0.08);
+  --shadow-hover: 0 8px 24px rgba(5, 43, 8, 0.12);
+  --font-body: system-ui, -apple-system, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-2xl);
+}
+
+/* ==================== Back Button ==================== */
+.back-button-container {
+  margin-bottom: 1.5rem;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  text-decoration: none;
+  padding: 0.625rem 1rem;
+  background: var(--color-pale-mint);
+  cursor: pointer;
+  opacity: 0.7;
+  border-bottom: none;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  color: var(--color-forest-green);
+  opacity: 1;
+  transform: translateX(-2px);
+  border-bottom: none;
+}
+
+/* ==================== Profile Header ==================== */
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  background: var(--color-light-matcha);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-header:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  font-size: 3rem;
+  margin: 0 auto 1rem;
+  background: var(--color-radioactive-lime);
+  border: 3px solid var(--color-forest-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-forest-green);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--color-forest-green);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.profile-email {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
+}
+
+/* Messages */
+.error-message {
+  background: #ffebee;
+  border: var(--border-thick);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+  color: #c62828;
+}
+
+.success-message {
+  background: var(--color-radioactive-lime);
+  border: var(--border-thick);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+}
+
+/* ==================== Profile Content ==================== */
+.profile-content {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-content:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+.section-subtitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ==================== Profile View Mode ==================== */
+.profile-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  opacity: 0.8;
+}
+
+.field-value {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-forest-green);
+  padding: 1rem;
+  background: var(--color-pale-mint);
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.field-value:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-forest-green);
+  transform: translateX(2px);
+}
+
+.staff-info-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--color-pale-mint);
+}
+
+/* ==================== Profile Edit Mode ==================== */
+.profile-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  opacity: 0.8;
+}
+
+.form-input,
+.form-textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-forest-green);
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 2px solid var(--color-pale-mint);
+  border-radius: var(--radius-btn);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--color-forest-green);
+  box-shadow: 0 0 0 3px rgba(153, 255, 102, 0.2);
+  background: var(--color-pale-mint);
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: var(--color-forest-green);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* ==================== Buttons ==================== */
+.btn-primary,
+.btn-secondary {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--color-radioactive-lime);
+  color: var(--color-forest-green);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary:hover {
+  background: var(--color-forest-green);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-primary:disabled {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--color-forest-green);
+}
+
+.btn-secondary:hover {
+  background: var(--color-pale-mint);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1.5rem;
+  }
+
+  .profile-header {
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  .profile-name {
+    font-size: 2rem;
+  }
+
+  .profile-content {
+    padding: 1.5rem;
+  }
+
+  .profile-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

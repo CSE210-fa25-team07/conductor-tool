@@ -20,10 +20,10 @@ export const ChartHelper = {
   },
 
   /**
-   * 
-   * @param {*} canvasId 
-   * @param {*} labels 
-   * @param {*} datasetMap 
+   *
+   * @param {*} canvasId
+   * @param {*} labels
+   * @param {*} datasetMap
    * @returns {Chart|null} Bar Chart instance
    */
   createBarChart(canvasId, labels, datasetMap) {
@@ -77,10 +77,10 @@ export const ChartHelper = {
   },
 
   /**
-   * 
-   * @param {*} canvasId 
-   * @param {*} labels 
-   * @param {*} datasetMap 
+   *
+   * @param {*} canvasId
+   * @param {*} labels
+   * @param {*} datasetMap
    * @returns {Chart|null} Line Chart instance
    */
   createMultiLineChart(canvasId, labels, datasetMap) {
