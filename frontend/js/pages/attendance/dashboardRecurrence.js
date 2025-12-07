@@ -1,5 +1,5 @@
 /**
- * Recurring meeting controls and summaries.
+ * @fileoverview Recurring meeting controls and summaries for attendance dashboard.
  */
 
 import { parseLocalDate } from "./utils.js";
