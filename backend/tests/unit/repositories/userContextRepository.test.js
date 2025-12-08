@@ -1,3 +1,6 @@
+/**
+ * @module tests/unit/userContextRepository
+ */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   getUserContext,

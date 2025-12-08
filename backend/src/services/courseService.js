@@ -1,8 +1,8 @@
 /**
- * @module course/service
  * Course Service
  *
  * Business logic layer for course operations.
+ * @module course/service
  */
 import * as courseRepository from "../repositories/courseRepository.js";
 import * as courseDTO from "../dtos/courseDto.js";

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Team Dashboard View
  * Displays team standup activity and analytics with Chart.js
+ * @module standup/teamDashboard
  */
 
 import { getTeamStandups } from "../../api/standupApi.js";

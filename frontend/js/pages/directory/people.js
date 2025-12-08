@@ -1,6 +1,6 @@
 /**
  * @fileoverview People page logic (course roster)
- * @module pages/directory/people
+ * @module directory/people
  */
 
 import * as directoryApi from "../../api/directoryApi.js";

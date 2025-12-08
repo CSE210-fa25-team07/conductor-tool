@@ -1,5 +1,5 @@
 /**
- * @module metricsStorage
+ * @module metrics/storage
  * @description In-memory storage for performance metrics with configurable retention
  */
 

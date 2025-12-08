@@ -1,6 +1,6 @@
 /**
  * @fileoverview Team Profile page logic
- * @module pages/directory/teamProfile
+ * @module directory/teamProfile
  */
 
 import * as directoryApi from "../../api/directoryApi.js";

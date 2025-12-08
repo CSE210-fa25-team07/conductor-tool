@@ -2,6 +2,7 @@
  * @fileoverview Profile Dropdown Component
  * Shared component for user profile avatar and dropdown menu
  * Used in dashboard, class features, and other pages
+ * @module profileDropdown/component
  */
 
 import { loadUserContext, isSystemAdmin, isLeadAdmin, isProf } from "../utils/userContext.js";

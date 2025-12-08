@@ -1,6 +1,6 @@
 /**
  * @fileoverview Dashboard page logic
- * @module pages/directory/dashboard
+ * @module directory/dashboard
  */
 
 import * as directoryApi from "../../api/directoryApi.js";

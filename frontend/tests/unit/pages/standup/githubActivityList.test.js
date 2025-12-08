@@ -1,3 +1,6 @@
+/**
+ * @module tests/pages/standup/githubActivityList
+ */
 import { describe, it, expect, beforeEach } from "vitest";
 import { JSDOM } from "jsdom";
 

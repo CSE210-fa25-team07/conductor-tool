@@ -1,5 +1,6 @@
 /**
  * @fileoverview Attendance dashboard entrypoint (calendar + meeting creation/attendance).
+ * @module attendance/dashboard
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";

@@ -1,6 +1,7 @@
 /**
  * Admin Add User View
  * Handles adding new users to the system
+ * @module admin/addUser
  */
 export async function initAddUser() {
   const isStudentRadio = document.getElementById("isStudent");

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Individual History View
  * Displays a user's standup history (own history or another user's for TAs)
+ * @module standup/individualHistory
  */
 
 import { getUserStandups, getStandupsByUser, deleteStandup } from "../../api/standupApi.js";

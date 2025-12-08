@@ -1,5 +1,5 @@
 /**
- * @module metricsApi
+ * @module metrics/api
  * @description API routes for code monitoring and RAIL metrics
  */
 

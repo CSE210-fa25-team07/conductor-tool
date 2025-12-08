@@ -2,6 +2,7 @@
  * @fileoverview Top Navigation Component
  * Shared component for top navigation bar with logo and links
  * Can be injected into any page that needs navigation
+ * @module navigation/component
  */
 import { initProfileDropdown } from "./profileDropdown.js";
 

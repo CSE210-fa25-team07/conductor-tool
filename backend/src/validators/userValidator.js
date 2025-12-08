@@ -2,6 +2,7 @@
  * User Validator
  *
  * Validates user data and coordinates with the repository.
+ * @module user/validator
  */
 
 /**

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Directory Feature Main Entry Point
  * Handles directory views: Dashboard, People (roster), Group (teams), Team Profile, My (user profile)
+ * @module directory/main
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Attendance Analytics Page Logic
- * @module pages/attendance/analyticsindex
+ * @module attendance/analyticsindex
  */
 
 import { ChartHelper } from "../../components/chartHelper.js";
@@ -40,7 +40,7 @@ const KEY_TO_INT = {
 /**
  * 
  * @param {string} courseUuid 
- * @returns {startDate: Date, endDate: Date}
+ * @returns {{startDate: Date, endDate: Date}}
  */
 async function setDate(courseUuid) {
   const res = await getCourseDetails(courseUuid);
@@ -142,7 +142,7 @@ export async function showIndividualAnalytics(courseUuid, userUuid) {
  * create individual attendance dataset
  * @param {Array} attendanceByType 
  * @param {Object} filters 
- * @returns {labels: Array, datasetMap: Object}
+ * @returns {{labels: Array, datasetMap: Object}}
  */
 function buildIndividualDataset(attendanceByType, filters) {
   const labels = Object.values(TYPE_LABEL);
@@ -232,7 +232,7 @@ async function renderTeamChart(courseUuid) {
 /** Build timeline datasets
  * @param {Array} timeline 
  * @param {Object} filters 
- * @returns {labels: Array, datasetMap: Object}
+ * @returns {{labels: Array, datasetMap: Object}}
  */
 function buildTimelineDatasets(timeline, filters) {
   const labels = [...new Set(timeline.map(i => i.date))].sort();

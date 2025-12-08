@@ -1,6 +1,7 @@
 /**
  * Metrics Dashboard
  * Displays real-time performance metrics and RAIL compliance
+ * @module metrics/frontend
  */
 import { initGlobalNavigation } from "../../components/navigation.js";
 

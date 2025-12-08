@@ -1,5 +1,6 @@
 /**
  * Tests for userRepository
+ * @module tests/unit/userRepository
  */
 
 import { describe, it, expect, afterAll } from "vitest";

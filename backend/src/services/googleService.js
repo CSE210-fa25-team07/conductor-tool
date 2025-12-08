@@ -1,8 +1,8 @@
 /**
- * @module google-oauth2/service
  * Google OAuth Service
  *
  * Business logic layer for Google OAuth.
+ * @module google-oauth2/service
  */
 import fetch from "node-fetch";
 import * as userService from "./userService.js";

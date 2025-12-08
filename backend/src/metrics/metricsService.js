@@ -1,5 +1,5 @@
 /**
- * @module metricsService
+ * @module metrics/service
  * @description Service for calculating RAIL performance metrics and statistics
  */
 

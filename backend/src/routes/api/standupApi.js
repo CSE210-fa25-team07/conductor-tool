@@ -1,6 +1,6 @@
 /**
- * @module standup/api
  * Authentication handled by checkSession middleware in apiRoutes.js
+ * @module standup/api
  */
 
 import express from "express";

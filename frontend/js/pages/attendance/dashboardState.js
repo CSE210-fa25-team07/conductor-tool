@@ -1,5 +1,6 @@
 /**
  * @fileoverview Dashboard state and DOM helpers for attendance dashboard.
+ * @module attendance/dashboardState
  */
 
 export function createState() {

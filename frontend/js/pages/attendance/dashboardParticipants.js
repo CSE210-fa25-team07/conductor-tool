@@ -1,5 +1,6 @@
 /**
  * @fileoverview Participant and team loading helpers for the attendance dashboard.
+ * @module attendance/dashboardParticipants
  */
 
 import { getAllCourseUsers, getCourseTeams } from "../../api/attendanceApi.js";

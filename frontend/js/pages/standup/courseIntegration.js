@@ -13,6 +13,7 @@
  * 2. Enforces role-based access control
  * 3. Renders standup content within the course page container
  * 4. Maintains separation between the course page framework and standup logic
+ * @module standup/courseIntegration
  */
 
 import { loadUserContext, isProfessorOrTA } from "../../utils/userContext.js";

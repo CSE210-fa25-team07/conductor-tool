@@ -1,6 +1,7 @@
 /**
  * @fileoverview Standup Form View
  * Handles creating and editing standup submissions
+ * @module standup/standupForm
  */
 
 import { createStandup, updateStandup } from "../../api/standupApi.js";

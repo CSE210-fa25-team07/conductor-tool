@@ -1,6 +1,7 @@
 /**
  * @fileoverview GitHub Activity List Component
  * Reusable component for displaying and selecting GitHub activities
+ * @module standup/githubActivityList
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";

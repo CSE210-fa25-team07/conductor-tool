@@ -1,8 +1,8 @@
 /**
- * @module github/service
  * GitHub Service
  *
  * Fetches GitHub activity (commits, PRs, reviews) for standup auto-populate.
+ * @module github/service
  */
 import fetch from "node-fetch";
 import * as userRepository from "../repositories/userRepository.js";

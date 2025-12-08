@@ -1,7 +1,7 @@
 /**
- * @module dev/api
  * DEV ONLY - API endpoints for development utilities
  * NOT FOR PRODUCTION USE
+ * @module dev/api
  */
 
 import express from "express";

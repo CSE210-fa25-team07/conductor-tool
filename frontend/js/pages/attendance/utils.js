@@ -1,5 +1,6 @@
 /**
  * Shared attendance utilities: date helpers, role checks, and type mappings.
+ * @module attendance/utils
  */
 
 const MEETING_TYPES = {

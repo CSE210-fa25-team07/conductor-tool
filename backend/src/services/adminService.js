@@ -1,8 +1,6 @@
 /**
- * @module admin/service
- * Admin Service
- *
  * Business logic layer for Admin management.
+ * @module admin/service
  */
 
 import * as userRepository from "../repositories/userRepository.js";

@@ -1,9 +1,9 @@
 /**
- * @module github-oauth
  * GitHub OAuth Routes
  *
  * Handles GitHub OAuth flow for account linking (not login).
  * Users must already be logged in to connect their GitHub account.
+ * @module github-oauth
  */
 import express from "express";
 import "dotenv/config";

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Class Features Main Entry Point
  * Handles navigation between Directory, Attendance, and Standup features
+ * @module class/main
  */
 
 import { loadUserContext, getActiveCourse, isProfessorOrTA } from "../../utils/userContext.js";

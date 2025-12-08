@@ -16,6 +16,7 @@
  * - Only lead admin can transfer lead admin status
  * - Admins cannot be removed (must be demoted first)
  * - Lead admin cannot be demoted (must transfer status first)
+ * @module admin/manageUsers
  */
 
 import { loadUserContext, getCurrentUser } from "../../utils/userContext.js";

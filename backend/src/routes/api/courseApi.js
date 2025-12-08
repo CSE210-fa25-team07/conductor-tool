@@ -1,6 +1,6 @@
 /**
- * @module course/api
  * API endpoints for course data
+ * @module course/api
  */
 import express from "express";
 import * as courseService from "../../services/courseService.js";

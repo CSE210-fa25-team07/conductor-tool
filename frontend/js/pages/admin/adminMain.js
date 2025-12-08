@@ -1,6 +1,7 @@
 /**
  * @fileoverview Admin Dashboard Main Entry Point
  * Handles navigation between admin views: Request Forms, Add User, Manage Users
+ * @module admin/adminMain
  */
 
 import { loadUserContext } from "../../utils/userContext.js";

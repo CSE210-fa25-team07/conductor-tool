@@ -1,5 +1,5 @@
 /**
- * @module metricsMiddleware
+ * @module metrics/middleware
  * @description Middleware for collecting API-level performance metrics based on RAIL principles
  */
 

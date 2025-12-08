@@ -1,5 +1,6 @@
 /**
  * @fileoverview Meeting loading, modals, QR, and form handling for the attendance dashboard.
+ * @module attendance/dashboardMeetings
  */
 
 import {

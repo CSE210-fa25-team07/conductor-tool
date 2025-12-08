@@ -1,6 +1,6 @@
 /**
  * @fileoverview My page logic (user profile)
- * @module pages/directory/my
+ * @module directory/my
  */
 
 import * as directoryApi from "../../api/directoryApi.js";

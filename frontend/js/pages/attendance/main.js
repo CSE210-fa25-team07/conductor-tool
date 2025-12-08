@@ -2,6 +2,7 @@
  * Attendance entrypoint.
  * - Dashboard (calendar/meetings) delegated to dashboard.js.
  * - Analytics logic in analyticsindex.js.
+ * @module attendance/main
  */
 
 import { loadTemplate } from "../../utils/templateLoader.js";

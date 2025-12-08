@@ -1,6 +1,6 @@
 /**
- * @module attendance/api
  * API endpoints for attendance management
+ * @module attendance/api
  */
 import express from "express";
 import * as attendanceService from "../../services/attendanceService.js";

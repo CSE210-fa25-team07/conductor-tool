@@ -1,8 +1,8 @@
 /**
- * @module github/api
  * GitHub API Routes
  *
  * API endpoints for fetching GitHub activity.
+ * @module github/api
  */
 import express from "express";
 import * as githubService from "../../services/githubService.js";

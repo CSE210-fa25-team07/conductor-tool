@@ -1,3 +1,6 @@
+/**
+ * @module tests/unit/standupRepository
+ */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   createStandup,

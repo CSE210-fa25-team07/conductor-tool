@@ -1,8 +1,8 @@
 /**
- * @module github-oauth/service
  * GitHub OAuth Service
  *
  * Business logic for GitHub OAuth token exchange and account linking.
+ * @module github-oauth/service
  */
 import fetch from "node-fetch";
 import * as userRepository from "../repositories/userRepository.js";

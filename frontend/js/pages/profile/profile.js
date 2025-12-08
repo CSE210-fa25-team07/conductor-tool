@@ -1,6 +1,7 @@
 /**
  * @fileoverview Profile Page Logic
  * Handles profile view, edit, and update functionality
+ * @module profile/frontend
  */
 
 import { initProfileDropdown } from "../../components/profileDropdown.js";

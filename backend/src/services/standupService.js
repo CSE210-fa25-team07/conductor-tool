@@ -1,9 +1,9 @@
 /**
- * @module standup/service
  * Standup Service
  *
  * Business logic for standup CRUD operations and authorization.
  * Handles user permissions, team membership validation, and data transformation.
+ * @module standup/service
  */
 
 import * as standupRepository from "../repositories/standupRepository.js";

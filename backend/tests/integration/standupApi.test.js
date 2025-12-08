@@ -1,3 +1,6 @@
+/**
+ * @module tests/integration/standup
+ */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { randomUUID } from "node:crypto";
 import request from "supertest";

@@ -1,3 +1,6 @@
+/**
+ * @module tests/utils/componentLoader
+ */
 import { describe, it, expect } from "vitest";
 import { JSDOM } from "jsdom";
 

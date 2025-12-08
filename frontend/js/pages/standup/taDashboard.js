@@ -1,6 +1,7 @@
 /**
  * @fileoverview TA/Instructor Dashboard View
  * Displays multi-team overview and statistics with Chart.js analytics
+ * @module standup/taDashboard
  */
 
 import { getTAOverview } from "../../api/standupApi.js";

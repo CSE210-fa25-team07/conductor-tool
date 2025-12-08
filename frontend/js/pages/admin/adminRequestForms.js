@@ -1,6 +1,7 @@
 /**
  * Admin Request Forms View
  * Handles pending course creation requests
+ * @module admin/requestForms
  */
 
 let allRequests = []; // Store all requests for filtering

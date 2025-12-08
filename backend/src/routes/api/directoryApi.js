@@ -1,6 +1,6 @@
 /**
- * @module directory/api
  * Authentication handled by checkSession middleware in apiRoutes.js
+ * @module directory/api
  */
 
 import express from "express";

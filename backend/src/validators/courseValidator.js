@@ -2,6 +2,7 @@
  * Course Validator
  *
  * Validates course data for creation and updates.
+ * @module course/validator
  */
 
 /**

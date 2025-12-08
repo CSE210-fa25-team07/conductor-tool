@@ -1,3 +1,6 @@
+/**
+ * @module tests/unit/directoryRepository
+ */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   getCourseOverview,

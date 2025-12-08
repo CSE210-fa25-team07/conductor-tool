@@ -1,8 +1,8 @@
 /**
- * @module authentication/service
  * Authentication Service
  *
  * Business logic layer for authentication.
+ * @module authentication/service
  */
 import * as userService from "../services/userService.js";
 import * as userRepository from "../repositories/userRepository.js";

@@ -1,5 +1,6 @@
 /**
  * @fileoverview Calendar rendering and navigation helpers for attendance dashboard.
+ * @module attendance/dashboardCalendar
  */
 
 import { formatDate, formatTimeForDisplay, getCourseIdFromUrl } from "./utils.js";

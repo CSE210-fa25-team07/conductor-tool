@@ -1,6 +1,6 @@
 /**
  * @fileoverview Group page logic (course teams)
- * @module pages/directory/group
+ * @module directory/group
  */
 
 import * as directoryApi from "../../api/directoryApi.js";
