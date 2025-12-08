@@ -950,34 +950,36 @@ async function recordAttendanceViaCode(req, res) {
   });
 }
 
+/**
+ * Get instructor analytics for a course
+ * @param {Object} params - Parameters for analytics
+ * @param {string} params.courseUuid - UUID of the course
+ * @param {string} [params.startDate] - Start date filter (ISO string)
+ * @param {string} [params.endDate] - End date filter (ISO string)
+ * @param {string} [params.meetingType] - Meeting type filter
+ * @param {string} [params.teamUuid] - Team UUID filter
+ * @returns {Object} Analytics data
+ */
 async function getInstructorAnalytics({ courseUuid, startDate, endDate, meetingType, teamUuid }) {
   if (!courseUuid) {
     throw new Error("courseUuid is required");
   }
-
   let meetings = await attendanceRepository.getMeetingListByParams({
     courseUUID: courseUuid,
     isStaff: true
   });
-
   if (meetingType) {
     meetings = meetings.filter(m => String(m.meetingType) === String(meetingType));
   }
-
   if (startDate) {
     meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
   }
   if (endDate) {
     meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
   }
-
-  const meetingUuids = meetings.map(m => m.meetingUuid);
-
   const allParticipants = await attendanceRepository.getParticipantListByParams({
     courseUUID: courseUuid
   });
-
-  // { meetingUuid: [participant, participant...] }
   const participantsByMeeting = {};
   for (const p of allParticipants) {
     if (!participantsByMeeting[p.meetingUuid]) {
@@ -985,32 +987,24 @@ async function getInstructorAnalytics({ courseUuid, startDate, endDate, meetingT
     }
     participantsByMeeting[p.meetingUuid].push(p);
   }
-
   const timeline = [];
-
   for (const meeting of meetings) {
     const participants = participantsByMeeting[meeting.meetingUuid] || [];
-
     let filteredParticipants = participants;
     if (teamUuid) {
       filteredParticipants = [];
-
       for (const p of participants) {
         const inTeam = await userContextRepository.checkTeamMembership(p.participantUuid, teamUuid);
-
         if (inTeam) {
           filteredParticipants.push(p);
         }
       }
     }
-
     const totalParticipants = filteredParticipants.length;
     const attended = filteredParticipants.filter(p => p.present).length;
-
     const attendancePercentage = totalParticipants > 0
       ? Math.round((attended / totalParticipants) * 100)
       : 0;
-
     timeline.push({
       date: meeting.meetingDate,
       meetingType: meeting.meetingType,
@@ -1020,23 +1014,29 @@ async function getInstructorAnalytics({ courseUuid, startDate, endDate, meetingT
       attendancePercentage
     });
   }
-
   return {
     courseUuid,
     timeline
   };
 }
 
+/**
+ * Get student analytics for a course
+ * @param {Object} params - Parameters for analytics
+ * @param {string} params.userUuid - UUID of the user
+ * @param {string} params.courseUuid - UUID of the course
+ * @param {string} [params.startDate] - Start date filter (ISO string)
+ * @param {string} [params.endDate] - End date filter (ISO string)
+ * @returns {Object} Analytics data
+ */
 async function getStudentAnalytics({ userUuid, courseUuid, startDate, endDate }) {
   if (!userUuid || !courseUuid) {
     throw new Error("userUuid and courseUuid are required");
   }
-
   // Get all meetings for the course
   let meetings = await attendanceRepository.getMeetingListByParams({
     courseUUID: courseUuid
   });
-
   // Filter by date range if provided
   if (startDate) {
     meetings = meetings.filter(m => new Date(m.meetingDate) >= new Date(startDate));
@@ -1044,18 +1044,15 @@ async function getStudentAnalytics({ userUuid, courseUuid, startDate, endDate })
   if (endDate) {
     meetings = meetings.filter(m => new Date(m.meetingDate) <= new Date(endDate));
   }
-
   // Get all participation records for this user in these meetings
   const meetingUuids = meetings.map(m => m.meetingUuid);
   const userParticipants = await attendanceRepository.getParticipantListByParams({
     participantUUID: userUuid,
     meetingUUIDs: meetingUuids
   });
-
   // Aggregate attendance by meeting type
   const byMeetingType = [];
   const typeMap = {};
-
   meetings.forEach(meeting => {
     const type = meeting.meetingType;
     if (!typeMap[type]) {
@@ -1067,12 +1064,10 @@ async function getStudentAnalytics({ userUuid, courseUuid, startDate, endDate })
       typeMap[type].attended += 1;
     }
   });
-
   Object.values(typeMap).forEach(t => {
     t.percentage = t.totalMeetings > 0 ? (t.attended / t.totalMeetings) * 100 : 0;
     byMeetingType.push(t);
   });
-
   return {
     userUuid,
     courseUuid,

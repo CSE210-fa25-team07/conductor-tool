@@ -10,12 +10,12 @@ import {
   getCourseTeams
 } from "../../api/analyticsApi.js";
 
-// Active charts
+import { getCourseDetails } from "../../api/attendanceApi.js";
+
 let overallChart = null;
 let teamChart = null;
 let individualChart = null;
 
-// Meeting type → label
 const TYPE_LABEL = {
   "lecture": "Lecture",
   "office-hours": "Office Hours",
@@ -23,7 +23,6 @@ const TYPE_LABEL = {
   "team-meeting": "Team Meeting"
 };
 
-// backend int → frontend key
 const INT_TO_KEY = {
   0: "lecture",
   1: "office-hours",
@@ -31,7 +30,6 @@ const INT_TO_KEY = {
   3: "team-meeting"
 };
 
-// frontend key → backend int
 const KEY_TO_INT = {
   "lecture": 0,
   "office-hours": 1,
@@ -39,149 +37,61 @@ const KEY_TO_INT = {
   "team-meeting": 3
 };
 
-const $$ = sel => Array.from(document.querySelectorAll(sel));
+/**
+ * 
+ * @param {string} courseUuid 
+ * @returns {startDate: Date, endDate: Date}
+ */
+async function setDate(courseUuid) {
+  const res = await getCourseDetails(courseUuid);
+  const startDate = res.term.startDate ? new Date(res.term.startDate) : null;
+  const termEnd = res.term.endDate ? new Date(res.term.endDate) : null;
+  if (startDate) startDate.setHours(0, 0, 0, 0);
+  if (termEnd) termEnd.setHours(23, 59, 59, 999);
+  const currentDate = new Date();
+  let endDate;
+  if (termEnd && termEnd < currentDate) {
+    endDate = termEnd;
+  } else {
+    endDate = currentDate;
+  }
+  return { startDate, endDate };
+}
 
+/**
+ * Initialize analytics event listeners
+ * @param {string} courseUuid - Course UUID
+ * @param {string} [userUuid=null] - User UUID (optional)
+ */
+
+export function initAnalyticsEventListeners(courseUuid, userUuid = null) {
+  Array.from(document.querySelectorAll(".overall-type")).forEach(box => {
+    box.addEventListener("change", () => {
+      showClassAnalytics(courseUuid);
+    });
+  });
+
+  Array.from(document.querySelectorAll(".group-type")).forEach(box => {
+    box.addEventListener("change", () => {
+      renderTeamChart(courseUuid);
+    });
+  });
+
+  Array.from(document.querySelectorAll(".individual-type")).forEach(box => {
+    box.addEventListener("change", () => {
+      showIndividualAnalytics(courseUuid, userUuid);
+    });
+  });
+}
 
 
 /**
- * showClassAnalytics
- * @param {*} courseUuid
- *
+ * Show class-wide attendance analytics
+ * @param {string} courseUuid - Course UUID
  */
 export async function showClassAnalytics(courseUuid) {
-  await renderOverallChart(courseUuid);
-}
-
-/**
- * showGroupAnalytics
- * @param {*} courseUuid
- * @param {*} userUuid
- * @param {*} teamUuid
- */
-export async function showGroupAnalytics(courseUuid, userUuid, teamUuid = null) {
-  await loadTeamDropdown(courseUuid, userUuid, teamUuid);
-  await renderTeamChart(courseUuid);
-}
-
-
-/** * showIndividualAnalytics
- * @param {*} courseUuid
- * @param {*} userUuid
- */
-export async function showIndividualAnalytics(courseUuid, userUuid) {
-  const res = await getUserAnalytics({ courseUuid, userUuid });
-
-  if (!res || !res.attendanceByType) {
-    return;
-  }
-
-  const filters = getIndividualFilters();
-  const { labels, datasetMap } = buildIndividualDataset(res.attendanceByType, filters);
-
-  if (individualChart)
-    individualChart.destroy();
-
-  // Use Bar Chart instead of Line Chart
-  individualChart = ChartHelper.createBarChart(
-    "individualAttendanceChart",
-    labels,
-    datasetMap
-  );
-
-  // attach checkbox listeners
-  $$(".individual-type").forEach(b => {
-    b.addEventListener("change", () =>
-      showIndividualAnalytics(courseUuid, userUuid)
-    );
-  });
-}
-
-/**
- * buildIndividualDataset
- * @param {*} attendanceByType
- * @param {*} filters
- * @returns {{labels: string[], datasetMap: Object}}
- */
-function buildIndividualDataset(attendanceByType, filters) {
-  const labels = Object.values(TYPE_LABEL); // ["Lecture", "Office Hours", ...]
-
-  // Initialize datasetMap
-  const datasetMap = {
-    "lecture":       { label: "Lecture",       data: [0], enabled: filters["lecture"] },
-    "office-hours":  { label: "Office Hours",  data: [0], enabled: filters["office-hours"] },
-    "ta-checkin":    { label: "TA Check-in",   data: [0], enabled: filters["ta-checkin"] },
-    "team-meeting":  { label: "Team Meeting",  data: [0], enabled: filters["team-meeting"] }
-  };
-
-  // Fill data (one bar per meetingType)
-  attendanceByType.forEach(item => {
-    const key = INT_TO_KEY[item.meetingType];
-    datasetMap[key].data = [item.percentage];
-  });
-
-  return { labels, datasetMap };
-}
-
-
-/** * loadTeamDropdown
- * @param {*} courseUuid
- * @param {*} userUuid
- * @param {*} teamUuid
- */
-async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
-  const select = document.getElementById("groupTeamSelect");
-  if (!select) return;
-
-  let teams = [];
-  try {
-    teams = await getCourseTeams(courseUuid);
-  } catch (err) {
-  }
-  if (teamUuid) {
-    teams = teams.filter(t => t.teamUuid === teamUuid);
-  }
-  select.innerHTML =
-    "<option value=\"\">Select Team…</option>" +
-    teams.map(t => `<option value="${t.teamUuid}">${t.teamName}</option>`).join("");
-
-  select.addEventListener("change", () => renderTeamChart(courseUuid));
-}
-
-
-
-/**
- * loadAnalytics
- * @param {*} courseUuid
- * @param {*} teamUuid
- * @returns {Promise<Array>} timeline data
- */
-async function loadAnalytics(courseUuid, teamUuid = null) {
-  try {
-    const res = await getInstructorAnalytics({
-      courseUuid,
-      teamUuid: teamUuid || undefined
-    });
-
-    return res.timeline.map(i => ({
-      date: i.date.split("T")[0],
-      type: INT_TO_KEY[i.meetingType],
-      value: i.attendancePercentage
-    }));
-  } catch (e) {
-    return null;
-  }
-}
-
-
-
-/**
- * loadOverallChart
- * @param {*} courseUuid
- * @returns {Promise<void>}
- */
-async function renderOverallChart(courseUuid) {
   const filters = getOverallFilters();
-  const timeline = await loadAnalytics(courseUuid);
+  const timeline = await loadAnalytics(courseUuid, null);
   if (!timeline) return;
 
   const { labels, datasetMap } = buildTimelineDatasets(timeline, filters);
@@ -194,27 +104,119 @@ async function renderOverallChart(courseUuid) {
     labels,
     datasetMap
   );
+}
 
-  // attach checkbox listeners
-  $$(".overall-type").forEach(b => {
-    b.addEventListener("change", () => renderOverallChart(courseUuid));
-  });
+/**
+ * Show group attendance analytics
+ * @param {string} courseUuid - Course UUID
+ * @param {string} [userUuid=null] - User UUID (optional)
+ * @param {string} [teamUuid=null] - Team UUID (optional)
+ */
+export async function showGroupAnalytics(courseUuid, userUuid, teamUuid = null) {
+  await loadTeamDropdown(courseUuid, userUuid, teamUuid);
+  await renderTeamChart(courseUuid);
 }
 
 
+/**
+ * show individual attendance analytics
+ * @param {string} courseUuid 
+ * @param {string} [userUuid=null] - User UUID (optional)
+ */
+export async function showIndividualAnalytics(courseUuid, userUuid) {
+  const { startDate, endDate } = await setDate(courseUuid);
+  const res = await getUserAnalytics({ courseUuid, userUuid, startDate, endDate });
+  const filters = getIndividualFilters();
+  const { labels, datasetMap } = buildIndividualDataset(res.attendanceByType, filters);
 
-/** * renderTeamChart
- * @param {*} courseUuid
- * @returns {Promise<void>} team chart
+  if (individualChart)
+    individualChart.destroy();
+  individualChart = ChartHelper.createBarChart(
+    "individualAttendanceChart",
+    labels,
+    datasetMap
+  );
+}
+
+/**
+ * create individual attendance dataset
+ * @param {Array} attendanceByType 
+ * @param {Object} filters 
+ * @returns {labels: Array, datasetMap: Object}
+ */
+function buildIndividualDataset(attendanceByType, filters) {
+  const labels = Object.values(TYPE_LABEL);
+
+  const datasetMap = {
+    "lecture":       { label: "Lecture",       data: [NaN, NaN, NaN, NaN], enabled: filters["lecture"] },
+    "office-hours":  { label: "Office Hours",  data: [NaN, NaN, NaN, NaN], enabled: filters["office-hours"] },
+    "ta-checkin":    { label: "TA Check-in",   data: [NaN, NaN, NaN, NaN], enabled: filters["ta-checkin"] },
+    "team-meeting":  { label: "Team Meeting",  data: [NaN, NaN, NaN, NaN], enabled: filters["team-meeting"] }
+  };
+
+  attendanceByType.forEach(item => {
+    const key = INT_TO_KEY[item.meetingType];
+    const idx = Object.keys(TYPE_LABEL).indexOf(key);
+    datasetMap[key].data[idx] = item.percentage;
+  });
+
+  return { labels, datasetMap };
+}
+
+/**
+ * Load team dropdown options
+ * @param {string} courseUuid 
+ * @param {string} userUuid 
+ * @param {string} [teamUuid=null] 
+ */
+async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
+  const select = document.getElementById("groupTeamSelect");
+  let teams = [];
+  try {
+    teams = await getCourseTeams(courseUuid);
+  } catch (err) {}
+
+  if (teamUuid) {
+    teams = teams.filter(t => t.teamUuid === teamUuid);
+  }
+
+  select.innerHTML =
+    "<option value=\"\">Select Team…</option>" +
+    teams.map(t => `<option value="${t.teamUuid}">${t.teamName}</option>`).join("");
+
+  select.addEventListener("change", () => renderTeamChart(courseUuid));
+}
+
+/**
+ * Load analytics data
+ * @param {string} courseUuid 
+ * @param {string} [teamUuid=null] 
+ * @returns {Array} timeline data
+ */
+async function loadAnalytics(courseUuid, teamUuid = null) {
+  try {
+    const { startDate, endDate } = await setDate(courseUuid);
+    const res = await getInstructorAnalytics({
+      courseUuid,
+      teamUuid: teamUuid || undefined,
+      startDate: startDate,
+      endDate: endDate
+    });
+    return res.timeline.map(i => ({
+      date: i.date.split("T")[0],
+      type: INT_TO_KEY[i.meetingType],
+      value: i.attendancePercentage
+    }));
+  } catch (e) {}
+}
+
+/** Render team attendance chart
+ * @param {string} courseUuid 
  */
 async function renderTeamChart(courseUuid) {
   const teamUuid = document.getElementById("groupTeamSelect")?.value;
-  if (!teamUuid) return;
-
   const filters = getTeamFilters();
   const timeline = await loadAnalytics(courseUuid, teamUuid);
-  if (!timeline) return;
-
   const { labels, datasetMap } = buildTimelineDatasets(timeline, filters);
 
   if (teamChart)
@@ -225,23 +227,15 @@ async function renderTeamChart(courseUuid) {
     labels,
     datasetMap
   );
-
-  // checkbox listeners
-  $$(".group-type").forEach(b => {
-    b.addEventListener("change", () => renderTeamChart(courseUuid));
-  });
 }
 
-
-
-/** * buildTimelineDatasets
- * @param {*} timeline
- * @param {*} filters
- * @returns {{labels: string[], datasetMap: Object}} timeline datasets
+/** Build timeline datasets
+ * @param {Array} timeline 
+ * @param {Object} filters 
+ * @returns {labels: Array, datasetMap: Object}
  */
 function buildTimelineDatasets(timeline, filters) {
   const labels = [...new Set(timeline.map(i => i.date))].sort();
-
   const map = {
     "lecture":       { label: "Lecture", data: [], enabled: filters["lecture"] },
     "office-hours":  { label: "Office Hours", data: [], enabled: filters["office-hours"] },
@@ -251,46 +245,39 @@ function buildTimelineDatasets(timeline, filters) {
 
   labels.forEach(date => {
     const day = timeline.filter(i => i.date === date);
-
     for (const key of Object.keys(map)) {
       const match = day.find(i => i.type === key);
       const val = match ? Number(match.value) : Number.NaN;
-
       map[key].data.push(val);
     }
   });
-  return { labels, datasetMap: map };
 
+  return { labels, datasetMap: map };
 }
 
-
-
-
-/** * getOverallFilters
+/** Get overall attendance filters
  * @returns {Object} filters
  */
 function getOverallFilters() {
   const filters = {};
-  $$(".overall-type").forEach(b => filters[b.value] = b.checked);
+  Array.from(document.querySelectorAll(".overall-type")).forEach(b => filters[b.value] = b.checked);
   return filters;
 }
 
-
-/** * getTeamFilters
+/** Get team attendance filters
  * @returns {Object} filters
  */
 function getTeamFilters() {
   const filters = {};
-  $$(".group-type").forEach(b => filters[b.value] = b.checked);
+  Array.from(document.querySelectorAll(".group-type")).forEach(b => filters[b.value] = b.checked);
   return filters;
 }
 
-/** * getIndividualFilters
+/** Get individual attendance filters
  * @returns {Object} filters
  */
 function getIndividualFilters() {
   const filters = {};
-  $$(".individual-type").forEach(b => filters[b.value] = b.checked);
+  Array.from(document.querySelectorAll(".individual-type")).forEach(b => filters[b.value] = b.checked);
   return filters;
 }
-

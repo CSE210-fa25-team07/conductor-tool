@@ -18,7 +18,6 @@ async function handleResponse(response) {
     }
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
-
   let result;
   const text = await response.text();
   try {
@@ -35,11 +34,9 @@ async function handleResponse(response) {
     }
     throw new Error(`Failed to parse response: ${error.message}`);
   }
-
   if (!response.ok) {
     throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
   }
-
   return result.data || result;
 }
 
@@ -80,7 +77,6 @@ export async function getInstructorAnalytics({ courseUuid, startDate, endDate, m
     method: "GET",
     credentials: "include"
   });
-
   return handleResponse(response);
 }
 
