@@ -18,7 +18,10 @@ export async function render(container, view = "dashboard") {
   await renderDashboard(container, view);
 }
 
-/** Render class analytics (Professor/TA only) */
+/** 
+ * Render class analytics
+ * @param {HTMLElement} container
+ */
 export async function renderClassAnalytics(container) {
   const html = await loadTemplate("attendance", "analysisclass");
   container.insertAdjacentHTML("beforeend", html);
@@ -27,12 +30,13 @@ export async function renderClassAnalytics(container) {
     const content = template.content.cloneNode(true);
     template.replaceWith(content);
   }
-
   const courseUUID = getCourseIdFromUrl();
   showClassAnalytics(courseUUID);
 }
 
-/** Render individual analytics */
+/** Render individual analytics 
+ * @param {HTMLElement} container
+ */
 export async function renderIndividualAnalytics(container) {
   const html = await loadTemplate("attendance", "analysisuser");
   container.insertAdjacentHTML("beforeend", html);
@@ -41,14 +45,16 @@ export async function renderIndividualAnalytics(container) {
     const content = template.content.cloneNode(true);
     template.replaceWith(content);
   }
-
   const courseUUID = getCourseIdFromUrl();
   const userUuid = getCurrentUser().userUuid;
   showIndividualAnalytics(courseUUID, userUuid);
 }
 
-/** Render group analytics (Team Leader and above) */
-export async function renderGroupanalysis(container) {
+
+/** Render group analytics 
+ * @param {HTMLElement} container
+ */
+export async function renderGroupanalytics(container) {
   const html = await loadTemplate("attendance", "analysisgroup");
   container.insertAdjacentHTML("beforeend", html);
   const template = container.querySelector("template:last-of-type");
@@ -65,7 +71,8 @@ export async function renderGroupanalysis(container) {
 }
 
 /**
- * Render the Attendance Analytics view (legacy behavior kept intact).
+ * Render the analysis view
+ * @param {HTMLElement} container
  */
 export async function renderAnalysisView(container) {
   try {
@@ -90,16 +97,15 @@ export async function renderAnalysisView(container) {
       await initAnalyticsEventListeners(courseUUID, useruuid);
     } else if (role === "Team Leader") {
       await renderIndividualAnalytics(container);
-      await initAnalyticsEventListeners
-      await renderGroupanalysis(container);
+      await initAnalyticsEventListeners(courseUUID, useruuid);
+      await renderGroupanalytics(container);
       await initAnalyticsEventListeners(courseUUID, useruuid);
     } else {
       await renderClassAnalytics(container);
       await initAnalyticsEventListeners(courseUUID);
-      await renderGroupanalysis(container);
+      await renderGroupanalytics(container);
       await initAnalyticsEventListeners(courseUUID, useruuid);
     }
-
   } catch (err) {
     container.innerHTML = "<div class=\"error\">Unable to load analytics.</div>";
   }
