@@ -128,6 +128,12 @@ async function getUserByUuid(userUuid) {
   return user;
 }
 
+/**
+ * Get multiple users by UUIDs, including course enrollments
+ * @param {Array<string>} userUuids
+ * @returns {Promise<Array>}
+ * @status IN USE
+ */
 async function getUsersByUuids(userUuids) {
   const users = await prisma.user.findMany({
     where: {
@@ -217,6 +223,24 @@ async function getUserStatusByUuid(userUuid) {
     isSystemAdmin: staff.isSystemAdmin || false,
     isLeadAdmin: staff.isLeadAdmin || false
   };
+}
+
+/**
+ * Update user's GitHub connection info
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} githubData - Object with githubUsername and githubAccessToken
+ * @returns {Promise<Object>} Updated user object
+ * @status IN USE
+ */
+async function updateUserGitHub(userUuid, githubData) {
+  const updatedUser = await prisma.user.update({
+    where: { userUuid: userUuid },
+    data: {
+      githubUsername: githubData.githubUsername,
+      githubAccessToken: githubData.githubAccessToken
+    }
+  });
+  return updatedUser;
 }
 
 /**
@@ -325,8 +349,8 @@ export {
   getUsersByUuids,
   deleteUserByUuid,
   getUserStatusByUuid,
+  updateUserGitHub,
   getAllUsersWithStaffStatus,
   updateStaffStatus,
   transferLeadAdmin
 };
-

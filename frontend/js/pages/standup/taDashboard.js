@@ -13,7 +13,7 @@ import { navigateToView } from "./courseIntegration.js";
 const chartInstances = {};
 
 // Store data for chart toggling
-let chartData = {
+const chartData = {
   standups: [],
   teamGroups: {},
   dates: []
@@ -75,54 +75,113 @@ async function loadCourseOverview(courseUuid) {
 
     // Render Dashboard Structure
     contentDiv.innerHTML = `
-      <!-- Key Metrics Section -->
+      <!-- Key Metrics Summary -->
       <section class="dashboard-section">
         <div class="section-header">
           <h3 class="section-title">Key Metrics</h3>
           <div class="section-divider"></div>
         </div>
-        <div class="metrics-row">
+        <div class="metrics-row metrics-summary">
           ${renderMetricCard("Active Students", stats.activeStudents, "Students submitting", "activeStudents")}
-          ${renderMetricCard("Submission Rate", `${stats.submissionRate}%`, "Last 7 days", "submissionRate")}
+          ${renderMetricCard("Submissions", stats.totalSubmissions || standups.length, "Last 14 days", "submissionRate")}
           ${renderMetricCard("Avg Sentiment", stats.avgSentiment, "Scale 1-5", "avgSentiment")}
-          ${renderMetricCard("Blockers", stats.totalBlockers, "Reported this week", "blockers")}
+          ${renderMetricCard("Blockers", stats.totalBlockers, "Reported this period", "blockers")}
         </div>
-        <div class="metrics-expansion" id="metrics-expansion">
-          <!-- Expanded metric charts will be inserted here -->
-        </div>
-      </section>
 
-      <!-- Trends Section -->
-      <section class="dashboard-section">
-        <div class="section-header">
-          <h3 class="section-title">Trends</h3>
-          <div class="section-divider"></div>
+        <!-- 2x2 Charts Grid -->
+        <div class="metrics-charts-grid" id="metrics-charts-grid">
+          <div class="metric-chart-panel" data-metric="activeStudents">
+            <div class="metric-chart-header">
+              <span class="metric-chart-title">Active Students Over Time</span>
+              <div class="metric-controls">
+                <div class="metric-time-filter">
+                  <button class="metric-time-btn" data-days="3">3D</button>
+                  <button class="metric-time-btn active" data-days="7">7D</button>
+                  <button class="metric-time-btn" data-days="14">14D</button>
+                  <button class="metric-time-btn" data-days="30">30D</button>
+                </div>
+                <label class="metric-breakdown-toggle">
+                  <input type="checkbox" class="metric-breakdown-checkbox" data-metric="activeStudents" />
+                  <span class="toggle-label">By Team</span>
+                </label>
+              </div>
+            </div>
+            <div class="metric-chart-wrapper"><canvas id="chart-activeStudents"></canvas></div>
+          </div>
+          <div class="metric-chart-panel" data-metric="submissionRate">
+            <div class="metric-chart-header">
+              <span class="metric-chart-title">Submissions Over Time</span>
+              <div class="metric-controls">
+                <div class="metric-time-filter">
+                  <button class="metric-time-btn" data-days="3">3D</button>
+                  <button class="metric-time-btn active" data-days="7">7D</button>
+                  <button class="metric-time-btn" data-days="14">14D</button>
+                  <button class="metric-time-btn" data-days="30">30D</button>
+                </div>
+                <label class="metric-breakdown-toggle">
+                  <input type="checkbox" class="metric-breakdown-checkbox" data-metric="submissionRate" />
+                  <span class="toggle-label">By Team</span>
+                </label>
+              </div>
+            </div>
+            <div class="metric-chart-wrapper"><canvas id="chart-submissionRate"></canvas></div>
+          </div>
+          <div class="metric-chart-panel" data-metric="avgSentiment">
+            <div class="metric-chart-header">
+              <span class="metric-chart-title">Avg Sentiment Over Time</span>
+              <div class="metric-controls">
+                <div class="metric-time-filter">
+                  <button class="metric-time-btn" data-days="3">3D</button>
+                  <button class="metric-time-btn active" data-days="7">7D</button>
+                  <button class="metric-time-btn" data-days="14">14D</button>
+                  <button class="metric-time-btn" data-days="30">30D</button>
+                </div>
+                <label class="metric-breakdown-toggle">
+                  <input type="checkbox" class="metric-breakdown-checkbox" data-metric="avgSentiment" />
+                  <span class="toggle-label">By Team</span>
+                </label>
+              </div>
+            </div>
+            <div class="metric-chart-wrapper"><canvas id="chart-avgSentiment"></canvas></div>
+          </div>
+          <div class="metric-chart-panel" data-metric="blockers">
+            <div class="metric-chart-header">
+              <span class="metric-chart-title">Blockers Over Time</span>
+              <div class="metric-controls">
+                <div class="metric-time-filter">
+                  <button class="metric-time-btn" data-days="3">3D</button>
+                  <button class="metric-time-btn active" data-days="7">7D</button>
+                  <button class="metric-time-btn" data-days="14">14D</button>
+                  <button class="metric-time-btn" data-days="30">30D</button>
+                </div>
+                <label class="metric-breakdown-toggle">
+                  <input type="checkbox" class="metric-breakdown-checkbox" data-metric="blockers" />
+                  <span class="toggle-label">By Team</span>
+                </label>
+              </div>
+            </div>
+            <div class="metric-chart-wrapper"><canvas id="chart-blockers"></canvas></div>
+          </div>
         </div>
-        <div class="charts-row">
-          <div class="chart-container">
-            <div class="chart-header">
-              <h4 class="chart-title">Submission Activity</h4>
-              <label class="chart-toggle">
-                <input type="checkbox" id="submissionToggle" />
+
+        <!-- GitHub Activity Chart (full width, below 2x2 grid) -->
+        <div class="github-chart-panel" id="github-chart-panel">
+          <div class="metric-chart-header">
+            <span class="metric-chart-title">GitHub Activity Over Time</span>
+            <div class="metric-controls">
+              <div class="metric-time-filter" id="github-time-filter">
+                <button class="metric-time-btn" data-days="3">3D</button>
+                <button class="metric-time-btn active" data-days="7">7D</button>
+                <button class="metric-time-btn" data-days="14">14D</button>
+                <button class="metric-time-btn" data-days="30">30D</button>
+              </div>
+              <label class="metric-breakdown-toggle">
+                <input type="checkbox" id="github-breakdown-checkbox" />
                 <span class="toggle-label">By Team</span>
               </label>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="submissionChart"></canvas>
-            </div>
           </div>
-          <div class="chart-container">
-            <div class="chart-header">
-              <h4 class="chart-title">Sentiment Trend</h4>
-              <label class="chart-toggle">
-                <input type="checkbox" id="sentimentToggle" />
-                <span class="toggle-label">By Team</span>
-              </label>
-            </div>
-            <div class="chart-wrapper">
-              <canvas id="sentimentChart"></canvas>
-            </div>
-          </div>
+          <div class="github-chart-wrapper"><canvas id="chart-github"></canvas></div>
         </div>
       </section>
 
@@ -172,8 +231,15 @@ async function loadCourseOverview(courseUuid) {
       </section>
     `;
 
-    // Initialize Charts
-    initializeCharts(standups, teamGroups);
+    // Store data for chart rendering
+    chartData.standups = standups;
+    chartData.teamGroups = teamGroups;
+
+    // Initialize all 4 metric charts
+    initializeMetricCharts(teamGroups);
+
+    // Initialize GitHub activity chart
+    renderGitHubChart(teamGroups, 7, false);
 
     // Render feeds asynchronously
     const feedsList = document.getElementById("feeds-list");
@@ -183,8 +249,8 @@ async function loadCourseOverview(courseUuid) {
 
     // Attach Listeners
     attachTeamCardListeners(contentDiv);
-    attachMetricListeners(contentDiv, teamGroups);
-    attachChartToggleListeners();
+    attachMetricChartListeners(teamGroups);
+    attachGitHubChartListeners(teamGroups);
     attachAtRiskListeners(contentDiv);
     attachFeedFilterListener(standups);
     attachFeedClickListeners(contentDiv);
@@ -208,65 +274,209 @@ function renderMetricCard(label, value, subtext, metricKey) {
 }
 
 /**
- * Attach listeners to metric cards for expansion
- * Allows multiple cards to be expanded simultaneously
+ * Initialize all 4 metric charts in the 2x2 grid
+ * @param {Object} teamGroups - Grouped standups by team
  */
-function attachMetricListeners(container, teamGroups) {
-  const cards = container.querySelectorAll(".metric-card");
-  const expansionArea = container.querySelector("#metrics-expansion");
+function initializeMetricCharts(teamGroups) {
+  const metrics = ["activeStudents", "submissionRate", "avgSentiment", "blockers"];
+  metrics.forEach(metricKey => {
+    // Default: 7 days, not by team
+    renderMetricChart(metricKey, teamGroups, 7, false);
+  });
+}
 
-  cards.forEach(card => {
-    card.addEventListener("click", () => {
-      const metricKey = card.dataset.metric;
-      const metricLabel = card.dataset.label;
-      const isExpanded = card.classList.contains("expanded");
+/**
+ * Attach listeners to metric chart controls (time filter, breakdown toggle)
+ * @param {Object} teamGroups - Grouped standups by team
+ */
+function attachMetricChartListeners(teamGroups) {
+  const chartsGrid = document.getElementById("metrics-charts-grid");
+  if (!chartsGrid) return;
 
-      if (isExpanded) {
-        // Collapse: remove expanded class and remove chart panel
-        card.classList.remove("expanded");
-        const panel = expansionArea.querySelector(`[data-metric="${metricKey}"]`);
-        if (panel) {
-          panel.remove();
-        }
-        if (chartInstances[metricKey]) {
-          chartInstances[metricKey].destroy();
-          delete chartInstances[metricKey];
-        }
-      } else {
-        // Expand: add expanded class and create chart panel
-        card.classList.add("expanded");
-        const panel = document.createElement("div");
-        panel.className = "metric-expanded";
-        panel.dataset.metric = metricKey;
-        panel.innerHTML = `
-          <div class="metric-expanded-header">
-            <span class="metric-expanded-title">${metricLabel} by Team</span>
-            <button class="metric-expanded-close" data-metric="${metricKey}">×</button>
-          </div>
-          <div class="metric-expanded-chart">
-            <canvas id="chart-${metricKey}"></canvas>
-          </div>
-        `;
-        expansionArea.appendChild(panel);
+  const panels = chartsGrid.querySelectorAll(".metric-chart-panel");
+  panels.forEach(panel => {
+    const metricKey = panel.dataset.metric;
 
-        // Add close button listener
-        panel.querySelector(".metric-expanded-close").addEventListener("click", (e) => {
-          e.stopPropagation();
-          card.classList.remove("expanded");
-          panel.remove();
-          if (chartInstances[metricKey]) {
-            chartInstances[metricKey].destroy();
-            delete chartInstances[metricKey];
-          }
-        });
+    // Track current state for this panel
+    let currentDays = 7;
+    let currentByTeam = false;
 
-        // Render chart
-        setTimeout(() => {
-          renderMetricChart(metricKey, teamGroups);
-        }, 50);
-      }
+    // Add time filter listeners
+    const timeButtons = panel.querySelectorAll(".metric-time-btn");
+    timeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        timeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentDays = parseInt(btn.dataset.days, 10);
+        renderMetricChart(metricKey, teamGroups, currentDays, currentByTeam);
+      });
+    });
+
+    // Add breakdown toggle listener
+    const breakdownCheckbox = panel.querySelector(".metric-breakdown-checkbox");
+    if (breakdownCheckbox) {
+      breakdownCheckbox.addEventListener("change", (e) => {
+        currentByTeam = e.target.checked;
+        renderMetricChart(metricKey, teamGroups, currentDays, currentByTeam);
+      });
+    }
+  });
+}
+
+/**
+ * Attach listeners to GitHub chart controls
+ * @param {Object} teamGroups - Grouped standups by team
+ */
+function attachGitHubChartListeners(teamGroups) {
+  const panel = document.getElementById("github-chart-panel");
+  if (!panel) return;
+
+  let currentDays = 7;
+  let currentByTeam = false;
+
+  // Time filter listeners
+  const timeButtons = panel.querySelectorAll(".metric-time-btn");
+  timeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      timeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDays = parseInt(btn.dataset.days, 10);
+      renderGitHubChart(teamGroups, currentDays, currentByTeam);
     });
   });
+
+  // Breakdown toggle listener
+  const breakdownCheckbox = document.getElementById("github-breakdown-checkbox");
+  if (breakdownCheckbox) {
+    breakdownCheckbox.addEventListener("change", (e) => {
+      currentByTeam = e.target.checked;
+      renderGitHubChart(teamGroups, currentDays, currentByTeam);
+    });
+  }
+}
+
+/**
+ * Render GitHub activity chart (stacked bar chart)
+ * @param {Object} teamGroups - Grouped standups by team
+ * @param {number} days - Number of days to show
+ * @param {boolean} byTeam - Show breakdown by team
+ */
+function renderGitHubChart(teamGroups, days = 7, byTeam = false) {
+  const ctx = document.getElementById("chart-github");
+  if (!ctx) return;
+
+  if (chartInstances.github) {
+    chartInstances.github.destroy();
+  }
+
+  const { standups } = chartData;
+  const data = getGitHubDataOverTime(standups, teamGroups, days, byTeam);
+
+  chartInstances.github = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.labels,
+      datasets: data.datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          stacked: !byTeam,
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
+        },
+        x: {
+          stacked: !byTeam,
+          grid: { display: false },
+          ticks: { font: { family: "Monaco", size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+// GitHub activity type colors
+const GITHUB_COLORS = {
+  commit: "#16a34a",   // green
+  pr: "#9333ea",       // purple
+  review: "#0891b2",   // cyan
+  issue: "#d97706"     // orange
+};
+
+/**
+ * Get GitHub activity data over time
+ * @param {Array} standups - All standups
+ * @param {Object} teamGroups - Grouped standups by team
+ * @param {number} days - Number of days to show
+ * @param {boolean} byTeam - Show breakdown by team
+ * @returns {Object} { labels, datasets }
+ */
+function getGitHubDataOverTime(standups, teamGroups, days, byTeam = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
+
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
+
+  if (byTeam) {
+    // One line per team showing total GitHub activities
+    const datasets = Object.values(teamGroups).map((group, i) => {
+      const color = TEAM_COLORS[i % TEAM_COLORS.length];
+      const values = dates.map(date => {
+        const dayStandups = group.standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.length;
+        }, 0);
+      });
+      return {
+        label: group.team.teamName,
+        data: values,
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
+  } else {
+    // Stacked bar chart by activity type
+    const activityTypes = ["commit", "pr", "review", "issue"];
+    const datasets = activityTypes.map(type => {
+      const values = dates.map(date => {
+        const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.filter(a => a.type === type).length;
+        }, 0);
+      });
+      return {
+        label: type.charAt(0).toUpperCase() + type.slice(1) + "s",
+        data: values,
+        backgroundColor: GITHUB_COLORS[type],
+        borderColor: GITHUB_COLORS[type],
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
+  }
 }
 
 // Color palette for team charts - ecological theme with variety
@@ -284,44 +494,42 @@ const TEAM_COLORS = [
 ];
 
 /**
- * Render chart for expanded metric card
+ * Render chart for metric panel (line chart over time)
+ * @param {string} metricKey - The metric key
+ * @param {Object} teamGroups - Grouped standups by team
+ * @param {number} days - Number of days to show
+ * @param {boolean} byTeam - Show breakdown by team
  */
-function renderMetricChart(metricKey, teamGroups) {
+function renderMetricChart(metricKey, teamGroups, days = 7, byTeam = false) {
   const ctx = document.getElementById(`chart-${metricKey}`);
   if (!ctx) return;
-
-  const data = getMetricDataPerTeam(metricKey, teamGroups);
 
   // Destroy existing if any (safety check)
   if (chartInstances[metricKey]) {
     chartInstances[metricKey].destroy();
   }
 
-  // Generate colors array - one color per team
-  const backgroundColors = data.labels.map((_, i) => TEAM_COLORS[i % TEAM_COLORS.length]);
+  const { standups } = chartData;
+  const data = getMetricDataOverTime(metricKey, standups, teamGroups, days, byTeam);
 
   chartInstances[metricKey] = new Chart(ctx, {
-    type: "bar",
+    type: "line",
     data: {
       labels: data.labels,
-      datasets: [{
-        label: metricKey,
-        data: data.values,
-        backgroundColor: backgroundColors,
-        borderColor: "#052B08", // forest-green
-        borderWidth: 1
-      }]
+      datasets: data.datasets
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "Breakdown by Team",
-          color: "#052B08",
-          font: { family: "Monaco", size: 14 }
+        legend: {
+          display: byTeam,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
         }
       },
       scales: {
@@ -332,7 +540,7 @@ function renderMetricChart(metricKey, teamGroups) {
         },
         x: {
           grid: { display: false },
-          ticks: { font: { family: "Monaco" } }
+          ticks: { font: { family: "Monaco", size: 10 } }
         }
       }
     }
@@ -340,42 +548,106 @@ function renderMetricChart(metricKey, teamGroups) {
 }
 
 /**
- * Get data for per-team charts
+ * Get metric data over time for line charts
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - All standups
+ * @param {Object} teamGroups - Grouped standups by team
+ * @param {number} days - Number of days to show
+ * @param {boolean} byTeam - Show breakdown by team
+ * @returns {Object} { labels, datasets }
  */
-function getMetricDataPerTeam(metricKey, teamGroups) {
-  const labels = [];
-  const values = [];
+function getMetricDataOverTime(metricKey, standups, teamGroups, days, byTeam = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
 
-  Object.values(teamGroups).forEach(group => {
-    labels.push(group.team.teamName);
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
 
-    switch (metricKey) {
-    case "activeStudents":
-      values.push(group.users.size);
-      break;
-    case "submissionRate":
-      // Approx: submissions / (members * 5) * 100
-      // Using 5 as expected submissions per week per member
-      // This is a rough estimate for the demo
-      const expected = group.users.size * 5 || 1;
-      const rate = Math.min(100, Math.round((group.standups.length / expected) * 100));
-      values.push(rate);
-      break;
-    case "avgSentiment":
-      const sentiments = group.standups.filter(s => s.sentimentScore).map(s => s.sentimentScore);
-      const avg = sentiments.length > 0
-        ? (sentiments.reduce((a, b) => a + b, 0) / sentiments.length).toFixed(1)
-        : 0;
-      values.push(avg);
-      break;
-    case "blockers":
-      const blockerCount = group.standups.filter(s => s.blockers).length;
-      values.push(blockerCount);
-      break;
-    }
-  });
+  if (byTeam) {
+    // Multi-team view: one dataset per team
+    const datasets = Object.values(teamGroups).map((group, i) => {
+      const color = TEAM_COLORS[i % TEAM_COLORS.length];
+      const values = dates.map(date => getMetricValueForDate(metricKey, group.standups, date));
+      return {
+        label: group.team.teamName,
+        data: values,
+        borderColor: color,
+        backgroundColor: color + "33",
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 3,
+        pointBackgroundColor: color
+      };
+    });
+    return { labels, datasets };
+  } else {
+    // Aggregate view: single dataset
+    const values = dates.map(date => getMetricValueForDate(metricKey, standups, date));
+    const datasets = [{
+      label: getMetricLabel(metricKey),
+      data: values,
+      borderColor: "#052B08",
+      backgroundColor: "rgba(153, 255, 102, 0.2)",
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true,
+      pointBackgroundColor: "#FFFFFF",
+      pointBorderColor: "#052B08",
+      pointRadius: 4
+    }];
+    return { labels, datasets };
+  }
+}
 
-  return { labels, values };
+/**
+ * Get metric value for a specific date
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - Standups to analyze
+ * @param {string} date - Date string (YYYY-MM-DD)
+ * @returns {number|null} Metric value
+ */
+function getMetricValueForDate(metricKey, standups, date) {
+  const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
+
+  switch (metricKey) {
+  case "activeStudents":
+    return new Set(dayStandups.map(s => s.user?.userUuid).filter(Boolean)).size;
+
+  case "submissionRate":
+    return dayStandups.length;
+
+  case "avgSentiment": {
+    const withSentiment = dayStandups.filter(s => s.sentimentScore);
+    if (withSentiment.length === 0) return null;
+    const avg = withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length;
+    return parseFloat(avg.toFixed(1));
+  }
+
+  case "blockers":
+    return dayStandups.filter(s => s.blockers).length;
+
+  default:
+    return 0;
+  }
+}
+
+/**
+ * Get label for metric
+ * @param {string} metricKey - The metric key
+ * @returns {string} Human-readable label
+ */
+function getMetricLabel(metricKey) {
+  const labels = {
+    activeStudents: "Active Students",
+    submissionRate: "Submissions",
+    avgSentiment: "Avg Sentiment",
+    blockers: "Blockers"
+  };
+  return labels[metricKey] || metricKey;
 }
 
 /**
@@ -422,202 +694,6 @@ function renderAtRiskList(standups) {
   `).join("");
 }
 
-/**
- * Initialize Chart.js instances
- */
-function initializeCharts(standups, teamGroups) {
-  // Store data for toggle functionality
-  const dates = [...new Set(standups.map(s => s.dateSubmitted.split("T")[0]))].sort().slice(-7);
-  chartData = { standups, teamGroups, dates };
-
-  // Render charts in class-level mode (default)
-  renderSubmissionChart(false);
-  renderSentimentChart(false);
-}
-
-/**
- * Attach toggle listeners for chart view switching
- */
-function attachChartToggleListeners() {
-  const subToggle = document.getElementById("submissionToggle");
-  const sentToggle = document.getElementById("sentimentToggle");
-
-  if (subToggle) {
-    subToggle.addEventListener("change", (e) => {
-      renderSubmissionChart(e.target.checked);
-    });
-  }
-
-  if (sentToggle) {
-    sentToggle.addEventListener("change", (e) => {
-      renderSentimentChart(e.target.checked);
-    });
-  }
-}
-
-/**
- * Common chart options
- */
-function getCommonChartOptions(showLegend = false) {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: showLegend,
-        position: "bottom",
-        labels: {
-          boxWidth: 12,
-          padding: 8,
-          font: { family: "Monaco", size: 10 }
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { font: { family: "Monaco" } }
-      },
-      y: {
-        beginAtZero: true,
-        grid: { color: "#D3FBD6" },
-        ticks: { font: { family: "Monaco" } }
-      }
-    }
-  };
-}
-
-/**
- * Render Submission Chart (class-level or per-team)
- */
-function renderSubmissionChart(byTeam = false) {
-  const ctx = document.getElementById("submissionChart");
-  if (!ctx) return;
-
-  // Destroy existing chart
-  if (chartInstances.submission) {
-    chartInstances.submission.destroy();
-  }
-
-  const { standups, teamGroups, dates } = chartData;
-  const labels = dates.map(d => d.slice(5)); // MM-DD
-
-  let datasets;
-  if (byTeam) {
-    // Per-team view: one line per team
-    datasets = Object.values(teamGroups).map((group, i) => {
-      const color = TEAM_COLORS[i % TEAM_COLORS.length];
-      const data = dates.map(date =>
-        group.standups.filter(s => s.dateSubmitted.startsWith(date)).length
-      );
-      return {
-        label: group.team.teamName,
-        data,
-        borderColor: color,
-        backgroundColor: color + "33", // 20% opacity
-        borderWidth: 2,
-        tension: 0.3,
-        pointRadius: 3,
-        pointBackgroundColor: color
-      };
-    });
-  } else {
-    // Class-level view: single aggregated line
-    const submissionData = dates.map(date =>
-      standups.filter(s => s.dateSubmitted.startsWith(date)).length
-    );
-    datasets = [{
-      label: "Submissions",
-      data: submissionData,
-      borderColor: "#052B08",
-      backgroundColor: "rgba(153, 255, 102, 0.2)",
-      borderWidth: 2,
-      tension: 0.3,
-      fill: true,
-      pointBackgroundColor: "#FFFFFF",
-      pointBorderColor: "#052B08"
-    }];
-  }
-
-  chartInstances.submission = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: getCommonChartOptions(byTeam)
-  });
-}
-
-/**
- * Render Sentiment Chart (class-level or per-team)
- */
-function renderSentimentChart(byTeam = false) {
-  const ctx = document.getElementById("sentimentChart");
-  if (!ctx) return;
-
-  // Destroy existing chart
-  if (chartInstances.sentiment) {
-    chartInstances.sentiment.destroy();
-  }
-
-  const { standups, teamGroups, dates } = chartData;
-  const labels = dates.map(d => d.slice(5));
-
-  let datasets;
-  const baseOptions = getCommonChartOptions(byTeam);
-
-  if (byTeam) {
-    // Per-team view: one line per team
-    datasets = Object.values(teamGroups).map((group, i) => {
-      const color = TEAM_COLORS[i % TEAM_COLORS.length];
-      const data = dates.map(date => {
-        const dayStandups = group.standups.filter(s =>
-          s.dateSubmitted.startsWith(date) && s.sentimentScore
-        );
-        if (dayStandups.length === 0) return null;
-        return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
-      });
-      return {
-        label: group.team.teamName,
-        data,
-        borderColor: color,
-        borderWidth: 2,
-        tension: 0.1,
-        pointRadius: 4,
-        pointBackgroundColor: color
-      };
-    });
-  } else {
-    // Class-level view: single aggregated line
-    const sentimentData = dates.map(date => {
-      const dayStandups = standups.filter(s =>
-        s.dateSubmitted.startsWith(date) && s.sentimentScore
-      );
-      if (dayStandups.length === 0) return null;
-      return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
-    });
-    datasets = [{
-      label: "Avg Sentiment",
-      data: sentimentData,
-      borderColor: "#052B08",
-      borderWidth: 2,
-      borderDash: [5, 5],
-      tension: 0.1,
-      pointRadius: 4,
-      pointBackgroundColor: "#99FF66"
-    }];
-  }
-
-  chartInstances.sentiment = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: {
-      ...baseOptions,
-      scales: {
-        ...baseOptions.scales,
-        y: { ...baseOptions.scales.y, min: 1, max: 5 }
-      }
-    }
-  });
-}
 
 /**
  * Helper: Group standups by team
@@ -640,7 +716,6 @@ function groupStandupsByTeam(standups) {
  * Helper: Calculate stats
  */
 function calculateStats(standups, teamGroups) {
-  const _totalStandups = standups.length;
   const standupsWithSentiment = standups.filter(s => s.sentimentScore);
   const avgSentiment = standupsWithSentiment.length > 0
     ? (standupsWithSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / standupsWithSentiment.length).toFixed(1)

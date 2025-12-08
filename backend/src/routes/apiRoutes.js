@@ -10,6 +10,7 @@ import attendanceApis from "./api/attendanceApi.js";
 import authApis from "./api/authApi.js";
 import userContextApis from "./api/userContextApi.js";
 import courseApis from "./api/courseApi.js";
+import githubApis from "./api/githubApi.js";
 import metricsApis from "../metrics/metricsApi.js";
 import adminApis from "./api/adminApi.js";
 
@@ -31,6 +32,8 @@ router.use("/standups", checkApiSession, standupApis);
 router.use("/attendance", checkApiSession, attendanceApis);
 
 router.use("/user-context", checkApiSession, userContextApis);
+
+router.use("/github", checkApiSession, githubApis);
 
 router.use("/metrics", checkApiSession, metricsApis);
 

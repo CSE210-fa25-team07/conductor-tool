@@ -8,6 +8,7 @@ import { getActiveCourse, getUserTeams, isProfessorOrTA } from "../../utils/user
 import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { navigateBack, navigateToView } from "./courseIntegration.js";
+import { generateStoredActivitiesHtml } from "./githubActivityList.js";
 
 // Store chart instances to destroy them before re-rendering
 const chartInstances = {};
@@ -217,12 +218,15 @@ async function loadTeamData(teamUuid) {
       feedsList.innerHTML = await renderCompactFeeds(standups, 7);
     }
 
-    // Initialize charts
-    initializeCharts();
+    // Initialize all 4 metric charts
+    initializeMetricCharts();
+
+    // Initialize GitHub activity chart
+    renderGitHubChart(7, false);
 
     // Attach listeners
-    attachChartToggleListeners();
-    attachMetricListeners();
+    attachMetricChartListeners();
+    attachGitHubChartListeners();
     attachFeedFilterListener(standups);
     attachMemberClickListeners(); // Click member to view their standups
     attachFeedClickListeners(document.getElementById("team-feeds-list")); // Click feeds to see detail
@@ -265,79 +269,205 @@ function prepareMemberCardData(member, index) {
 }
 
 /**
- * Initialize all charts
+ * Initialize all 4 metric charts in the 2x2 grid
  */
-function initializeCharts() {
-  renderSubmissionChart(false);
-  renderSentimentChart(false);
-  renderMemberSubmissionsChart();
-  renderMemberSentimentChart();
-}
-
-/**
- * Attach chart toggle listeners
- */
-function attachChartToggleListeners() {
-  document.getElementById("submissionToggle")?.addEventListener("change", (e) => {
-    renderSubmissionChart(e.target.checked);
-  });
-
-  document.getElementById("sentimentToggle")?.addEventListener("change", (e) => {
-    renderSentimentChart(e.target.checked);
+function initializeMetricCharts() {
+  const metrics = ["members", "submissions", "sentiment", "blockers"];
+  metrics.forEach(metricKey => {
+    // Default: 7 days, not by member
+    renderMetricChart(metricKey, 7, false);
   });
 }
 
 /**
- * Attach metric card click listeners
+ * Attach listeners to metric chart controls (time filter, breakdown toggle)
  */
-function attachMetricListeners() {
-  const cards = document.querySelectorAll(".metric-card");
-  const expansionArea = document.getElementById("metrics-expansion");
+function attachMetricChartListeners() {
+  const chartsGrid = document.getElementById("metrics-charts-grid");
+  if (!chartsGrid) return;
 
-  cards.forEach(card => {
-    card.addEventListener("click", () => {
-      const metricKey = card.dataset.metric;
-      const metricLabel = card.dataset.label;
-      const isExpanded = card.classList.contains("expanded");
+  const panels = chartsGrid.querySelectorAll(".metric-chart-panel");
+  panels.forEach(panel => {
+    const metricKey = panel.dataset.metric;
 
-      if (isExpanded) {
-        card.classList.remove("expanded");
-        const panel = expansionArea.querySelector(`[data-metric="${metricKey}"]`);
-        if (panel) panel.remove();
-        if (chartInstances[metricKey]) {
-          chartInstances[metricKey].destroy();
-          delete chartInstances[metricKey];
-        }
-      } else {
-        card.classList.add("expanded");
-        const panel = document.createElement("div");
-        panel.className = "metric-expanded";
-        panel.dataset.metric = metricKey;
-        panel.innerHTML = `
-          <div class="metric-expanded-header">
-            <span class="metric-expanded-title">${metricLabel} by Member</span>
-            <button class="metric-expanded-close" data-metric="${metricKey}">×</button>
-          </div>
-          <div class="metric-expanded-chart">
-            <canvas id="chart-${metricKey}"></canvas>
-          </div>
-        `;
-        expansionArea.appendChild(panel);
+    // Track current state for this panel
+    let currentDays = 7;
+    let currentByMember = false;
 
-        panel.querySelector(".metric-expanded-close").addEventListener("click", (e) => {
-          e.stopPropagation();
-          card.classList.remove("expanded");
-          panel.remove();
-          if (chartInstances[metricKey]) {
-            chartInstances[metricKey].destroy();
-            delete chartInstances[metricKey];
-          }
-        });
+    // Add time filter listeners
+    const timeButtons = panel.querySelectorAll(".metric-time-btn");
+    timeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        timeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentDays = parseInt(btn.dataset.days, 10);
+        renderMetricChart(metricKey, currentDays, currentByMember);
+      });
+    });
 
-        setTimeout(() => renderMetricChart(metricKey), 50);
-      }
+    // Add breakdown toggle listener
+    const breakdownCheckbox = panel.querySelector(".metric-breakdown-checkbox");
+    if (breakdownCheckbox) {
+      breakdownCheckbox.addEventListener("change", (e) => {
+        currentByMember = e.target.checked;
+        renderMetricChart(metricKey, currentDays, currentByMember);
+      });
+    }
+  });
+}
+
+/**
+ * Attach listeners to GitHub chart controls
+ */
+function attachGitHubChartListeners() {
+  const panel = document.getElementById("github-chart-panel");
+  if (!panel) return;
+
+  let currentDays = 7;
+  let currentByMember = false;
+
+  // Time filter listeners
+  const timeButtons = panel.querySelectorAll(".metric-time-btn");
+  timeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      timeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDays = parseInt(btn.dataset.days, 10);
+      renderGitHubChart(currentDays, currentByMember);
     });
   });
+
+  // Breakdown toggle listener
+  const breakdownCheckbox = document.getElementById("github-breakdown-checkbox");
+  if (breakdownCheckbox) {
+    breakdownCheckbox.addEventListener("change", (e) => {
+      currentByMember = e.target.checked;
+      renderGitHubChart(currentDays, currentByMember);
+    });
+  }
+}
+
+/**
+ * Render GitHub activity chart (stacked bar chart)
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ */
+function renderGitHubChart(days = 7, byMember = false) {
+  const ctx = document.getElementById("chart-github");
+  if (!ctx) return;
+
+  if (chartInstances.github) {
+    chartInstances.github.destroy();
+  }
+
+  const { standups, members } = teamData;
+  const data = getGitHubDataOverTime(standups, members, days, byMember);
+
+  chartInstances.github = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.labels,
+      datasets: data.datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          stacked: !byMember,
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
+        },
+        x: {
+          stacked: !byMember,
+          grid: { display: false },
+          ticks: { font: { family: "Monaco", size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+// GitHub activity type colors
+const GITHUB_COLORS = {
+  commit: "#16a34a",   // green
+  pr: "#9333ea",       // purple
+  review: "#0891b2",   // cyan
+  issue: "#d97706"     // orange
+};
+
+/**
+ * Get GitHub activity data over time
+ * @param {Array} standups - All standups
+ * @param {Object} members - Grouped standups by member
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ * @returns {Object} { labels, datasets }
+ */
+function getGitHubDataOverTime(standups, members, days, byMember = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
+
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
+
+  if (byMember) {
+    // One bar per member showing total GitHub activities
+    const datasets = Object.values(members).map((member, i) => {
+      const color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+      const values = dates.map(date => {
+        const dayStandups = member.standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.length;
+        }, 0);
+      });
+      return {
+        label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
+        data: values,
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
+  } else {
+    // Stacked bar chart by activity type
+    const activityTypes = ["commit", "pr", "review", "issue"];
+    const datasets = activityTypes.map(type => {
+      const values = dates.map(date => {
+        const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.filter(a => a.type === type).length;
+        }, 0);
+      });
+      return {
+        label: type.charAt(0).toUpperCase() + type.slice(1) + "s",
+        data: values,
+        backgroundColor: GITHUB_COLORS[type],
+        borderColor: GITHUB_COLORS[type],
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
+  }
 }
 
 /**
@@ -357,29 +487,85 @@ function attachMemberClickListeners() {
 }
 
 /**
- * Render submission chart (team-level or per-member)
+ * Render metric chart (line chart over time)
+ * @param {string} metricKey - The metric key
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
  */
-function renderSubmissionChart(byMember = false) {
-  const ctx = document.getElementById("submissionChart");
+function renderMetricChart(metricKey, days = 7, byMember = false) {
+  const ctx = document.getElementById(`chart-${metricKey}`);
   if (!ctx) return;
 
-  if (chartInstances.submission) {
-    chartInstances.submission.destroy();
+  if (chartInstances[metricKey]) {
+    chartInstances[metricKey].destroy();
   }
 
-  const { standups, members, dates } = teamData;
-  const labels = dates.map(d => d.slice(5));
+  const { standups, members } = teamData;
+  const data = getMetricDataOverTime(metricKey, standups, members, days, byMember);
 
-  let datasets;
+  chartInstances[metricKey] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.labels,
+      datasets: data.datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: byMember,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: "Monaco", size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Get metric data over time for line charts
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - All standups
+ * @param {Object} members - Grouped standups by member
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ * @returns {Object} { labels, datasets }
+ */
+function getMetricDataOverTime(metricKey, standups, members, days, byMember = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
+
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
+
   if (byMember) {
-    datasets = Object.values(members).map((member, i) => {
+    // Multi-member view: one dataset per member
+    const datasets = Object.values(members).map((member, i) => {
       const color = MEMBER_COLORS[i % MEMBER_COLORS.length];
-      const data = dates.map(date =>
-        member.standups.filter(s => s.dateSubmitted.startsWith(date)).length
-      );
+      const values = dates.map(date => getMetricValueForDate(metricKey, member.standups, date));
       return {
         label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
-        data,
+        data: values,
         borderColor: color,
         backgroundColor: color + "33",
         borderWidth: 2,
@@ -388,267 +574,71 @@ function renderSubmissionChart(byMember = false) {
         pointBackgroundColor: color
       };
     });
+    return { labels, datasets };
   } else {
-    const submissionData = dates.map(date =>
-      standups.filter(s => s.dateSubmitted.startsWith(date)).length
-    );
-    datasets = [{
-      label: "Submissions",
-      data: submissionData,
+    // Aggregate view: single dataset
+    const values = dates.map(date => getMetricValueForDate(metricKey, standups, date));
+    const datasets = [{
+      label: getMetricLabel(metricKey),
+      data: values,
       borderColor: "#052B08",
       backgroundColor: "rgba(153, 255, 102, 0.2)",
       borderWidth: 2,
       tension: 0.3,
       fill: true,
       pointBackgroundColor: "#FFFFFF",
-      pointBorderColor: "#052B08"
+      pointBorderColor: "#052B08",
+      pointRadius: 4
     }];
+    return { labels, datasets };
   }
-
-  chartInstances.submission = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: getChartOptions(byMember)
-  });
 }
 
 /**
- * Render sentiment chart (team-level or per-member)
+ * Get metric value for a specific date
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - Standups to analyze
+ * @param {string} date - Date string (YYYY-MM-DD)
+ * @returns {number|null} Metric value
  */
-function renderSentimentChart(byMember = false) {
-  const ctx = document.getElementById("sentimentChart");
-  if (!ctx) return;
+function getMetricValueForDate(metricKey, standups, date) {
+  const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
 
-  if (chartInstances.sentiment) {
-    chartInstances.sentiment.destroy();
-  }
-
-  const { standups, members, dates } = teamData;
-  const labels = dates.map(d => d.slice(5));
-
-  let datasets;
-  if (byMember) {
-    datasets = Object.values(members).map((member, i) => {
-      const color = MEMBER_COLORS[i % MEMBER_COLORS.length];
-      const data = dates.map(date => {
-        const dayStandups = member.standups.filter(s =>
-          s.dateSubmitted.startsWith(date) && s.sentimentScore
-        );
-        if (dayStandups.length === 0) return null;
-        return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
-      });
-      return {
-        label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
-        data,
-        borderColor: color,
-        borderWidth: 2,
-        tension: 0.1,
-        pointRadius: 4,
-        pointBackgroundColor: color
-      };
-    });
-  } else {
-    const sentimentData = dates.map(date => {
-      const dayStandups = standups.filter(s =>
-        s.dateSubmitted.startsWith(date) && s.sentimentScore
-      );
-      if (dayStandups.length === 0) return null;
-      return (dayStandups.reduce((sum, s) => sum + s.sentimentScore, 0) / dayStandups.length).toFixed(1);
-    });
-    datasets = [{
-      label: "Avg Sentiment",
-      data: sentimentData,
-      borderColor: "#052B08",
-      borderWidth: 2,
-      borderDash: [5, 5],
-      tension: 0.1,
-      pointRadius: 4,
-      pointBackgroundColor: "#99FF66"
-    }];
-  }
-
-  chartInstances.sentiment = new Chart(ctx, {
-    type: "line",
-    data: { labels, datasets },
-    options: {
-      ...getChartOptions(byMember),
-      scales: {
-        ...getChartOptions(byMember).scales,
-        y: { ...getChartOptions(byMember).scales.y, min: 1, max: 5 }
-      }
-    }
-  });
-}
-
-/**
- * Render member submissions bar chart
- */
-function renderMemberSubmissionsChart() {
-  const ctx = document.getElementById("memberSubmissionsChart");
-  if (!ctx) return;
-
-  if (chartInstances.memberSubmissions) {
-    chartInstances.memberSubmissions.destroy();
-  }
-
-  const { members } = teamData;
-  const memberList = Object.values(members);
-  const labels = memberList.map(m => `${m.user.firstName} ${m.user.lastName.charAt(0)}.`);
-  const data = memberList.map(m => m.standups.length);
-  const colors = memberList.map((_, i) => MEMBER_COLORS[i % MEMBER_COLORS.length]);
-
-  chartInstances.memberSubmissions = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Submissions",
-        data,
-        backgroundColor: colors,
-        borderColor: "#052B08",
-        borderWidth: 1
-      }]
-    },
-    options: {
-      ...getChartOptions(false),
-      indexAxis: "y",
-      plugins: { legend: { display: false } }
-    }
-  });
-}
-
-/**
- * Render member sentiment bar chart
- */
-function renderMemberSentimentChart() {
-  const ctx = document.getElementById("memberSentimentChart");
-  if (!ctx) return;
-
-  if (chartInstances.memberSentiment) {
-    chartInstances.memberSentiment.destroy();
-  }
-
-  const { members } = teamData;
-  const memberList = Object.values(members);
-  const labels = memberList.map(m => `${m.user.firstName} ${m.user.lastName.charAt(0)}.`);
-  const data = memberList.map(m => {
-    const withSentiment = m.standups.filter(s => s.sentimentScore);
-    if (withSentiment.length === 0) return 0;
-    return (withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length).toFixed(1);
-  });
-  const colors = memberList.map((_, i) => MEMBER_COLORS[i % MEMBER_COLORS.length]);
-
-  chartInstances.memberSentiment = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Avg Sentiment",
-        data,
-        backgroundColor: colors,
-        borderColor: "#052B08",
-        borderWidth: 1
-      }]
-    },
-    options: {
-      ...getChartOptions(false),
-      indexAxis: "y",
-      plugins: { legend: { display: false } },
-      scales: {
-        ...getChartOptions(false).scales,
-        x: { ...getChartOptions(false).scales.x, min: 0, max: 5 }
-      }
-    }
-  });
-}
-
-/**
- * Render metric expansion chart
- */
-function renderMetricChart(metricKey) {
-  const ctx = document.getElementById(`chart-${metricKey}`);
-  if (!ctx) return;
-
-  if (chartInstances[metricKey]) {
-    chartInstances[metricKey].destroy();
-  }
-
-  const { members } = teamData;
-  const memberList = Object.values(members);
-  const labels = memberList.map(m => `${m.user.firstName} ${m.user.lastName.charAt(0)}.`);
-  const colors = memberList.map((_, i) => MEMBER_COLORS[i % MEMBER_COLORS.length]);
-
-  let data;
   switch (metricKey) {
   case "members":
+    return new Set(dayStandups.map(s => s.user?.userUuid).filter(Boolean)).size;
+
   case "submissions":
-    data = memberList.map(m => m.standups.length);
-    break;
-  case "sentiment":
-    data = memberList.map(m => {
-      const withSentiment = m.standups.filter(s => s.sentimentScore);
-      if (withSentiment.length === 0) return 0;
-      return (withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length).toFixed(1);
-    });
-    break;
-  case "blockers":
-    data = memberList.map(m => m.standups.filter(s => s.blockers).length);
-    break;
-  default:
-    data = memberList.map(m => m.standups.length);
+    return dayStandups.length;
+
+  case "sentiment": {
+    const withSentiment = dayStandups.filter(s => s.sentimentScore);
+    if (withSentiment.length === 0) return null;
+    const avg = withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length;
+    return parseFloat(avg.toFixed(1));
   }
 
-  chartInstances[metricKey] = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: metricKey,
-        data,
-        backgroundColor: colors,
-        borderColor: "#052B08",
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "Breakdown by Member",
-          color: "#052B08",
-          font: { family: "Monaco", size: 14 }
-        }
-      },
-      scales: {
-        y: { beginAtZero: true, grid: { color: "#D3FBD6" }, ticks: { font: { family: "Monaco" } } },
-        x: { grid: { display: false }, ticks: { font: { family: "Monaco" } } }
-      }
-    }
-  });
+  case "blockers":
+    return dayStandups.filter(s => s.blockers).length;
+
+  default:
+    return 0;
+  }
 }
 
 /**
- * Common chart options
+ * Get label for metric
+ * @param {string} metricKey - The metric key
+ * @returns {string} Human-readable label
  */
-function getChartOptions(showLegend = false) {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: showLegend,
-        position: "bottom",
-        labels: { boxWidth: 12, padding: 8, font: { family: "Monaco", size: 10 } }
-      }
-    },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { family: "Monaco" } } },
-      y: { beginAtZero: true, grid: { color: "#D3FBD6" }, ticks: { font: { family: "Monaco" } } }
-    }
+function getMetricLabel(metricKey) {
+  const labels = {
+    members: "Active Members",
+    submissions: "Submissions",
+    sentiment: "Avg Sentiment",
+    blockers: "Blockers"
   };
+  return labels[metricKey] || metricKey;
 }
 
 /**
@@ -707,6 +697,23 @@ function calculateStreak(standups) {
 }
 
 /**
+ * Count GitHub activities by type
+ * @param {Array} activities - Array of {type, label, url}
+ * @returns {Object} Counts by type
+ */
+function countGitHubActivities(activities) {
+  if (!activities || !Array.isArray(activities)) {
+    return { commit: 0, pr: 0, review: 0, issue: 0 };
+  }
+
+  return activities.reduce((counts, activity) => {
+    const type = activity.type || "commit";
+    counts[type] = (counts[type] || 0) + 1;
+    return counts;
+  }, { commit: 0, pr: 0, review: 0, issue: 0 });
+}
+
+/**
  * Render compact feed items for team dashboard
  */
 async function renderCompactFeeds(standups, days = 7) {
@@ -721,6 +728,10 @@ async function renderCompactFeeds(standups, days = 7) {
 
   const feedData = filtered.map(standup => {
     const date = new Date(standup.dateSubmitted);
+    const activityCounts = countGitHubActivities(standup.githubActivities);
+    const hasGithubActivity = activityCounts.commit > 0 || activityCounts.pr > 0 ||
+                              activityCounts.review > 0 || activityCounts.issue > 0;
+
     return {
       standupUuid: standup.standupUuid,
       userUuid: standup.user?.userUuid || "",
@@ -731,7 +742,12 @@ async function renderCompactFeeds(standups, days = 7) {
       moodScore: standup.sentimentScore || 3,
       hasBlocker: !!standup.blockers,
       blockerClass: standup.blockers ? "has-blocker" : "",
-      donePreview: truncateText(standup.whatDone, 60)
+      donePreview: truncateText(standup.whatDone, 60),
+      hasGithubActivity,
+      commitCount: activityCounts.commit || 0,
+      prCount: activityCounts.pr || 0,
+      reviewCount: activityCounts.review || 0,
+      issueCount: activityCounts.issue || 0
     };
   });
 
@@ -801,6 +817,15 @@ function showStandupDetailModal(standup) {
   const userName = standup.user ? `${standup.user.firstName} ${standup.user.lastName}` : "Unknown";
   const hasBlocker = !!standup.blockers;
   const moodScore = standup.sentimentScore || 3;
+  const hasGithubActivities = standup.githubActivities && Array.isArray(standup.githubActivities) && standup.githubActivities.length > 0;
+  const activitiesItemsHtml = hasGithubActivities ? generateStoredActivitiesHtml(standup.githubActivities) : "";
+  const githubActivitiesHtml = hasGithubActivities ? `
+    <div class="history-field github-activities-field">
+      <span class="history-field-label">GitHub Activity:</span>
+      <div class="history-github-activities">${activitiesItemsHtml}</div>
+    </div>
+  ` : "";
+  const doneLabel = hasGithubActivities ? "Notes:" : "Done:";
 
   const overlay = document.createElement("div");
   overlay.className = "confirm-modal-overlay";
@@ -833,10 +858,13 @@ function showStandupDetailModal(standup) {
             </div>
           </div>
           <div class="history-card-body">
+            ${githubActivitiesHtml}
+            ${standup.whatDone ? `
             <div class="history-field">
-              <span class="history-field-label">Done:</span>
-              <span class="history-field-text">${standup.whatDone || ""}</span>
+              <span class="history-field-label">${doneLabel}</span>
+              <span class="history-field-text">${standup.whatDone}</span>
             </div>
+            ` : ""}
             <div class="history-field">
               <span class="history-field-label">Next:</span>
               <span class="history-field-text">${standup.whatNext || ""}</span>
