@@ -6,7 +6,7 @@
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { createMeeting, deleteMeeting, getMeetingList, getAllCourseUsers, getCourseTeams, getMeetingCode, recordAttendanceByCode, getCourseDetails, getMeetingParticipants } from "../../api/attendanceApi.js";
 import { loadUserContext, getUserRoleInCourse, getCurrentUser } from "../../utils/userContext.js";
-import { showClassAnalytics, showIndividualAnalytics, showGroupAnalytics} from "./analyticsindex.js";
+import { showClassAnalytics, showIndividualAnalytics, showGroupAnalytics, initAnalyticsEventListeners} from "./analyticsindex.js";
 
 const meetings = {};
 let currentDate = new Date();
@@ -1560,7 +1560,7 @@ export async function renderClassAnalytics(container) {
   }
 
   const courseUUID = getCourseId();
-  showClassAnalytics(courseUUID);
+  showClassAnalytics(courseUUID, courseStartDate, currentDate);
 }
 
 
@@ -1582,7 +1582,7 @@ export async function renderIndividualAnalytics(container) {
 
   const courseUUID = getCourseId();
   const userUuid = getCurrentUser().userUuid;
-  showIndividualAnalytics(courseUUID, userUuid);
+  showIndividualAnalytics(courseUUID, userUuid, courseStartDate, currentDate);
 }
 
 
@@ -1606,7 +1606,8 @@ export async function renderGroupanalysis(container) {
   const userUuid = getCurrentUser().userUuid;
   const usercontext = await loadUserContext(courseUUID);
   const teamUuid = usercontext.teams[0]?.teamUuid || null;
-  showGroupAnalytics(courseUUID, userUuid, teamUuid);
+
+  showGroupAnalytics(courseUUID, userUuid, teamUuid, courseStartDate, currentDate);
 }
 
 
@@ -1629,26 +1630,28 @@ export async function renderAnalysisView(container) {
 
     const baseHTML = await loadTemplate("attendance", "analysis");
     container.innerHTML = baseHTML;
-
+    const userUuid = getCurrentUser().userUuid;
     const template = container.querySelector("template");
     if (template) {
       const content = template.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(content);
     }
-
     await new Promise(r => setTimeout(r, 50));
 
     if (role === "Student") {
       await renderIndividualAnalytics(container);
+      initAnalyticsEventListeners(courseUUID, userUuid);
     }
     else if (role === "Team Leader") {
       await renderIndividualAnalytics(container);
       await renderGroupanalysis(container);
+      initAnalyticsEventListeners(courseUUID, userUuid);
     }
     else {
       await renderClassAnalytics(container);
       await renderGroupanalysis(container);
+      initAnalyticsEventListeners(courseUUID, userUuid);
     }
 
   } catch (err) {
@@ -1668,7 +1671,6 @@ function loadChartJs() {
       resolve();
       return;
     }
-
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js";
     script.onload = () => {
