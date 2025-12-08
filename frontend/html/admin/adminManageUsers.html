@@ -1,0 +1,80 @@
+<template>
+  <main class="container manage-users-container">
+    <header class="page-header">
+      <h1 class="page-title">Manage Users</h1>
+      <p class="page-description">View and manage all users in the system</p>
+    </header>
+
+    <!-- Success/Error Messages -->
+    <div id="errorMessage" class="error-message" style="display: none;" role="alert"></div>
+    <div id="successMessage" class="success-message" style="display: none;" role="status"></div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchInput"
+        class="form-input search-input"
+        placeholder="Search by name or email..."
+        aria-label="Search users by name or email"
+      />
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingMessage" class="loading-message">
+      Loading users...
+    </div>
+
+    <!-- Users Container -->
+    <div id="usersContainer" style="display: none;">
+      <!-- Lead Admin Section -->
+      <section class="card user-section">
+        <header class="user-section-header">
+          <h2 class="user-section-title">Lead Admin</h2>
+        </header>
+        <div id="leadAdminList" class="user-list">
+          <!-- Lead admin will be populated here -->
+        </div>
+      </section>
+
+      <!-- Admins Section -->
+      <section class="card user-section">
+        <header class="user-section-header">
+          <h2 class="user-section-title">Admins</h2>
+        </header>
+        <div id="adminsList" class="user-list">
+          <!-- Admin users will be populated here -->
+        </div>
+        <div id="noAdminsMessage" class="no-users-message" style="display: none;">
+          No admins found.
+        </div>
+      </section>
+
+      <!-- Professors Section -->
+      <section class="card user-section">
+        <header class="user-section-header">
+          <h2 class="user-section-title">Professors</h2>
+        </header>
+        <div id="professorsList" class="user-list">
+          <!-- Professor users will be populated here -->
+        </div>
+        <div id="noProfessorsMessage" class="no-users-message" style="display: none;">
+          No professors found.
+        </div>
+      </section>
+
+      <!-- Students Section -->
+      <section class="card user-section">
+        <header class="user-section-header">
+          <h2 class="user-section-title">Students</h2>
+        </header>
+        <div id="studentsList" class="user-list">
+          <!-- Student users will be populated here -->
+        </div>
+        <div id="noStudentsMessage" class="no-users-message" style="display: none;">
+          No students found.
+        </div>
+      </section>
+    </div>
+  </main>
+</template>

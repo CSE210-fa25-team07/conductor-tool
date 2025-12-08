@@ -30,10 +30,20 @@
       </div>
     </div>
     <div class="history-card-body">
+      {{#hasGithubActivities}}
+      <div class="history-field github-activities-field">
+        <span class="history-field-label">GitHub Activity:</span>
+        <div class="history-github-activities">
+          {{{githubActivitiesHtml}}}
+        </div>
+      </div>
+      {{/hasGithubActivities}}
+      {{#whatDone}}
       <div class="history-field">
-        <span class="history-field-label">Done:</span>
+        <span class="history-field-label">{{#hasGithubActivities}}Notes:{{/hasGithubActivities}}{{^hasGithubActivities}}Done:{{/hasGithubActivities}}</span>
         <span class="history-field-text">{{whatDone}}</span>
       </div>
+      {{/whatDone}}
       <div class="history-field">
         <span class="history-field-label">Next:</span>
         <span class="history-field-text">{{whatNext}}</span>

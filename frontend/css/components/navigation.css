@@ -41,6 +41,27 @@
   color: var(--color-radioactive-lime);
 }
 
+/* Course/Admin Title in Top Nav */
+.course-title-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
+}
+
+.course-code {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-forest-green);
+}
+
+.course-name-short {
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--color-forest-green-medium);
+}
+
 .top-nav-links {
   display: flex;
   gap: var(--space-md);

@@ -282,8 +282,8 @@
   letter-spacing: 0.05em;
 }
 
-.required {
-  color: var(--color-radioactive-lime);
+.form-group .required {
+    color: red;
 }
 
 .form-group input[type="text"],

@@ -1,0 +1,91 @@
+<template>
+  <main class="container add-user-container">
+    <header class="page-header mb-xl">
+      <h1 class="page-title">Add User to System</h1>
+      <p class="page-description">Create new user accounts and assign roles</p>
+    </header>
+
+    <section class="card form-card">
+      <form id="addUserForm" class="add-user-form">
+        <fieldset class="form-group">
+          <label for="firstName" class="form-label">First Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            class="form-input"
+            required
+            placeholder="Enter first name"
+          >
+        </fieldset>
+
+        <fieldset class="form-group">
+          <label for="lastName" class="form-label">Last Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            class="form-input"
+            required
+            placeholder="Enter last name"
+          >
+        </fieldset>
+
+        <fieldset class="form-group">
+          <label for="email" class="form-label">Email <span class="required">*</span></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            required
+            placeholder="user@ucsd.edu"
+          >
+        </fieldset>
+
+        <fieldset class="form-group checkbox-group">
+          <legend class="form-label">User Type <span class="required">*</span></legend>
+          <div class="checkbox-group-inner">
+            <label class="checkbox-label">
+              <input
+                type="radio"
+                id="isStudent"
+                name="userType"
+                value="student"
+                class="form-checkbox"
+              >
+              Student
+            </label>
+            <label class="checkbox-label">
+              <input
+                type="radio"
+                id="isProf"
+                name="userType"
+                value="professor"
+                class="form-checkbox"
+              >
+              Professor
+            </label>
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                id="isSystemAdmin"
+                name="isSystemAdmin"
+                class="form-checkbox"
+              >
+              System Admin
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="errorMessage" class="error-message" style="display: none;" role="alert"></div>
+        <div id="successMessage" class="success-message" style="display: none;" role="status"></div>
+
+        <footer class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add User</button>
+        </footer>
+      </form>
+    </section>
+  </main>
+</template>

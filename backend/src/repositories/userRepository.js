@@ -38,6 +38,51 @@ async function addUser(user) {
 }
 
 /**
+ * Add a new user with staff status to the database
+ * @param {Object} user - User object with firstName, lastName, email
+ * @param {Object} staffStatus - Staff status with isProf and isSystemAdmin flags
+ * @returns {Promise<Object>} The added user with staff record
+ * @status IN USE
+ */
+async function addUserWithStaffStatus(user, staffStatus) {
+  // Check if user with email already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email: user.email }
+  });
+
+  if (existingUser) {
+    throw new Error("User with this email already exists");
+  }
+
+  // Create user and staff record in a transaction
+  const result = await prisma.$transaction(async (tx) => {
+    const newUser = await tx.user.create({
+      data: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      }
+    });
+
+    // Only create staff record if user is a professor or system admin
+    if (staffStatus.isProf || staffStatus.isSystemAdmin) {
+      await tx.staff.create({
+        data: {
+          userUuid: newUser.userUuid,
+          isProf: staffStatus.isProf || false,
+          isSystemAdmin: staffStatus.isSystemAdmin || false,
+          isLeadAdmin: false
+        }
+      });
+    }
+
+    return newUser;
+  });
+
+  return result;
+}
+
+/**
  * Get a user by email address
  * @param {string} email - Email address to search for
  * @returns {Promise<Object|null>} User object or null if not found
@@ -81,6 +126,26 @@ async function getUserByUuid(userUuid) {
     where: { userUuid: userUuid }
   });
   return user;
+}
+
+/**
+ * Get multiple users by UUIDs, including course enrollments
+ * @param {Array<string>} userUuids
+ * @returns {Promise<Array>}
+ * @status IN USE
+ */
+async function getUsersByUuids(userUuids) {
+  const users = await prisma.user.findMany({
+    where: {
+      userUuid: {
+        in: userUuids
+      }
+    },
+    include: {
+      courseEnrollments: true
+    }
+  });
+  return users;
 }
 
 /**
@@ -156,22 +221,136 @@ async function getUserStatusByUuid(userUuid) {
   return {
     isProf: staff.isProf || false,
     isSystemAdmin: staff.isSystemAdmin || false,
-    isLeadAdmin: staff.is_lead_admin || false
+    isLeadAdmin: staff.isLeadAdmin || false
   };
 }
 
-async function getUsersByUuids(userUuids) {
-  const users = await prisma.user.findMany({
-    where: {
-      userUuid: {
-        in: userUuids
-      }
-    },
-    include: {
-      courseEnrollments: true
+/**
+ * Update user's GitHub connection info
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} githubData - Object with githubUsername and githubAccessToken
+ * @returns {Promise<Object>} Updated user object
+ * @status IN USE
+ */
+async function updateUserGitHub(userUuid, githubData) {
+  const updatedUser = await prisma.user.update({
+    where: { userUuid: userUuid },
+    data: {
+      githubUsername: githubData.githubUsername,
+      githubAccessToken: githubData.githubAccessToken
     }
   });
-  return users;
+  return updatedUser;
 }
 
-export { addUser, getUserByEmail, getAllUsers, getUserByUuid, deleteUserByUuid, getUserStatusByUuid, getUsersByUuids };
+/**
+ * Get all users with their staff status
+ * @returns {Promise<Array>} Array of all users with staff information
+ * @status IN USE
+ */
+async function getAllUsersWithStaffStatus() {
+  const users = await prisma.user.findMany({
+    select: {
+      userUuid: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      staff: {
+        select: {
+          isProf: true,
+          isSystemAdmin: true,
+          isLeadAdmin: true
+        }
+      }
+    },
+    orderBy: {
+      lastName: "asc"
+    }
+  });
+
+  // Transform the data to flatten staff status
+  return users.map(user => ({
+    userUuid: user.userUuid,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isProf: user.staff?.isProf || false,
+    isSystemAdmin: user.staff?.isSystemAdmin || false,
+    isLeadAdmin: user.staff?.isLeadAdmin || false
+  }));
+}
+
+/**
+ * Update staff status for a user
+ * @param {string} userUuid - User UUID to update
+ * @param {Object} statusUpdates - Object with isProf, isSystemAdmin, or isLeadAdmin flags to update
+ * @returns {Promise<Object>} Updated staff record
+ * @status IN USE
+ */
+async function updateStaffStatus(userUuid, statusUpdates) {
+  // Check if staff record exists
+  const existingStaff = await prisma.staff.findUnique({
+    where: { userUuid: userUuid }
+  });
+
+  if (!existingStaff) {
+    // Create new staff record if it doesn't exist
+    return await prisma.staff.create({
+      data: {
+        userUuid: userUuid,
+        isProf: statusUpdates.isProf !== undefined ? statusUpdates.isProf : false,
+        isSystemAdmin: statusUpdates.isSystemAdmin !== undefined ? statusUpdates.isSystemAdmin : false,
+        isLeadAdmin: statusUpdates.isLeadAdmin !== undefined ? statusUpdates.isLeadAdmin : false
+      }
+    });
+  }
+
+  // Update existing staff record
+  return await prisma.staff.update({
+    where: { userUuid: userUuid },
+    data: statusUpdates
+  });
+}
+
+/**
+ * Transfer lead admin status from one admin to another
+ * @param {string} currentLeadAdminUuid - UUID of current lead admin
+ * @param {string} newLeadAdminUuid - UUID of new lead admin
+ * @returns {Promise<Object>} Result with both updated records
+ * @status IN USE
+ */
+async function transferLeadAdmin(currentLeadAdminUuid, newLeadAdminUuid) {
+  return await prisma.$transaction(async (tx) => {
+    // Remove lead admin status from current lead
+    const oldLead = await tx.staff.update({
+      where: { userUuid: currentLeadAdminUuid },
+      data: { isLeadAdmin: false }
+    });
+
+    // Add lead admin status to new lead
+    const newLead = await tx.staff.update({
+      where: { userUuid: newLeadAdminUuid },
+      data: { isLeadAdmin: true }
+    });
+
+    return {
+      oldLead,
+      newLead
+    };
+  });
+}
+
+export {
+  addUser,
+  addUserWithStaffStatus,
+  getUserByEmail,
+  getAllUsers,
+  getUserByUuid,
+  getUsersByUuids,
+  deleteUserByUuid,
+  getUserStatusByUuid,
+  updateUserGitHub,
+  getAllUsersWithStaffStatus,
+  updateStaffStatus,
+  transferLeadAdmin
+};

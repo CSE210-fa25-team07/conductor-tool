@@ -1,7 +1,9 @@
 import express from "express";
 import authRoutes from "./routes/web/authRoutes.js";
 import profileRoutes from "./routes/web/profileRoutes.js";
+import adminRoutes from "./routes/web/adminRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
+import githubAuthRoutes from "./routes/githubAuthRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import apiRoutes from "./routes/apiRoutes.js";
 import { metricsCollector } from "./metrics/metricsMiddleware.js";
@@ -42,10 +44,6 @@ app.get("/dashboard", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/dashboard.html"));
 });
 
-app.get("/calendar", checkUserFromSession, (req, res) => {
-  res.sendFile(path.join(__dirname, "../../frontend/html/dashboard/calendar.html"));
-});
-
 app.get("/metrics", checkUserFromSession, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/html/metrics/metrics.html"));
 });
@@ -68,7 +66,11 @@ app.use("/auth", checkSession, authRoutes);
 
 app.use("/profile", checkUserFromSession, profileRoutes);
 
+app.use("/admin", checkUserFromSession, adminRoutes);
+
 app.use("/google", googleRoutes);
+
+app.use("/github", githubAuthRoutes);
 
 app.use("/courses", checkUserFromSession, courseRoutes);
 

@@ -17,17 +17,20 @@ INSERT INTO class_term (year, season, start_date, end_date, is_active) VALUES
 ON CONFLICT (year, season) DO NOTHING;
 
 -- ============================================
--- 2. USERS (15 total: 2 professors, 3 TAs, 10 students)
+-- 2. USERS (18 total: 5 professors/admins, 3 TAs, 10 students)
 -- ============================================
 INSERT INTO users (email, first_name, last_name, github_username, bio, pronouns, phone_number, last_login) VALUES
-    -- Professors
+    -- Professors & Admins
     ('powell@ucsd.edu', 'Thomas', 'Powell', 'tpowell', 'Professor of Software Engineering', 'he/him', '858-534-1001', NOW() - INTERVAL '2 hours'),
     ('jones@ucsd.edu', 'Sarah', 'Jones', 'sjones', 'Associate Professor, HCI Research', 'she/her', '858-534-1002', NOW() - INTERVAL '1 day'),
-    
+    ('johnson@ucsd.edu', 'Michael', 'Johnson', 'mjohnson', 'Associate Professor, Distributed Systems', 'he/him', '858-534-1003', NOW() - INTERVAL '3 hours'),
+    ('williams@ucsd.edu', 'Jennifer', 'Williams', 'jwilliams', 'Assistant Professor, Machine Learning', 'she/her', '858-534-1004', NOW() - INTERVAL '5 hours'),
+    ('brown@ucsd.edu', 'Robert', 'Brown', 'rbrown', 'Professor of Computer Science', 'he/him', '858-534-1005', NOW() - INTERVAL '4 hours'),
+
     -- TAs
     ('ta_alice@ucsd.edu', 'Alice', 'Anderson', 'alice-ta', 'PhD student researching Software Testing', 'she/her', '858-534-2001', NOW() - INTERVAL '3 hours'),
     ('ta_bob@ucsd.edu', 'Bob', 'Brown', 'bob-ta', 'MS student, Systems and Architecture', 'he/him', '858-534-2002', NOW() - INTERVAL '5 hours'),
-    ('ta_carol@ucsd.edu', 'Carol', 'Chen', 'carol-ta', 'PhD student in HCI and Accessibility', 'she/her', '858-534-2003', NOW() - INTERVAL '1 day'),
+    ('waw009@ucsd.edu', 'Carol', 'Chen', 'carol-ta', 'PhD student in HCI and Accessibility', 'she/her', '858-534-2003', NOW() - INTERVAL '1 day'),
     
     -- Students
     ('david@ucsd.edu', 'David', 'Davis', 'ddavis', 'CS Senior, interested in full-stack dev', 'he/him', '858-555-0001', NOW() - INTERVAL '4 hours'),
@@ -49,32 +52,50 @@ DO $$
 DECLARE
     v_user_uuid UUID;
 BEGIN
-    -- Professor Powell
+    -- Professor Powell (Lead Admin)
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'powell@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, true, true, true, 'CSE 3110', 'Agile Development, Team Collaboration, Software Quality', 'https://tpowell.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
-    
-    -- Professor Jones
+
+    -- Professor Jones (Regular Professor - not admin)
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'jones@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, true, false, false, 'CSE 3120', 'HCI, UX Design, Accessibility Research', 'https://sjones.ucsd.edu')
     ON CONFLICT (user_uuid) DO NOTHING;
-    
+
+    -- Professor Johnson (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'johnson@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3130', 'Distributed Systems, Cloud Computing, Microservices', 'https://mjohnson.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
+    -- Professor Williams (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'williams@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3140', 'Machine Learning, AI, Neural Networks', 'https://jwilliams.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
+    -- Professor Brown (Admin)
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'brown@ucsd.edu';
+    INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
+    VALUES (v_user_uuid, true, true, false, 'CSE 3150', 'Algorithms, Data Structures, Complexity Theory', 'https://rbrown.ucsd.edu')
+    ON CONFLICT (user_uuid) DO NOTHING;
+
     -- TA Alice
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2140', 'Automated Testing, CI/CD', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
-    
+
     -- TA Bob
     SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2145', 'Software Architecture, Design Patterns', NULL)
     ON CONFLICT (user_uuid) DO NOTHING;
-    
+
     -- TA Carol
-    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'ta_carol@ucsd.edu';
+    SELECT user_uuid INTO v_user_uuid FROM users WHERE email = 'waw009@ucsd.edu';
     INSERT INTO staffs (user_uuid, is_prof, is_system_admin, is_lead_admin, office_location, research_interest, personal_website)
     VALUES (v_user_uuid, false, false, false, 'CSE 2150', 'User Experience, Interaction Design', 'https://cchen.me')
     ON CONFLICT (user_uuid) DO NOTHING;
@@ -193,7 +214,7 @@ BEGIN
     -- CSE110 Winter 2025
     INSERT INTO course_enrollment (user_uuid, course_uuid, role_uuid, enrollment_status, enrolled_at) VALUES
         ((SELECT user_uuid FROM users WHERE email = 'jones@ucsd.edu'), v_cse110_w25, v_role_prof, 'active', '2025-01-06'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_carol@ucsd.edu'), v_cse110_w25, v_role_ta, 'active', '2025-01-06'),
+        ((SELECT user_uuid FROM users WHERE email = 'waw009@ucsd.edu'), v_cse110_w25, v_role_ta, 'active', '2025-01-06'),
         ((SELECT user_uuid FROM users WHERE email = 'jack@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'kelly@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
         ((SELECT user_uuid FROM users WHERE email = 'leo@ucsd.edu'), v_cse110_w25, v_role_student, 'active', '2025-01-07'),
@@ -246,17 +267,17 @@ BEGIN
         WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Winter';
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
-        (v_cse210_w25, 'Team Alpha', 'https://github.com/cse210-alpha', 'https://github.com/cse210-alpha/project', 
+        (v_cse210_w25, 'Team Alpha', 'https://github.com/cse210-alpha', 'https://github.com/cse210-alpha/project',
          (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_alpha;
-    
+
     IF v_team_alpha IS NULL THEN
         SELECT team_uuid INTO v_team_alpha FROM teams WHERE course_uuid = v_cse210_w25 AND team_name = 'Team Alpha';
     END IF;
-    
+
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
-        (v_cse210_w25, 'Team Beta', 'https://github.com/cse210-beta', 'https://github.com/cse210-beta/project', 
+        (v_cse210_w25, 'Team Beta', 'https://github.com/cse210-beta', 'https://github.com/cse210-beta/project',
          (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_beta;
@@ -291,17 +312,17 @@ BEGIN
         WHERE c.course_code = 'CSE210' AND t.year = 2025 AND t.season = 'Fall';
     
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
-        (v_cse210_f25, 'Team Gamma', 'https://github.com/cse210-gamma', 'https://github.com/cse210-gamma/project', 
+        (v_cse210_f25, 'Team Gamma', 'https://github.com/cse210-gamma', 'https://github.com/cse210-gamma/project',
          (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_gamma;
-    
+
     IF v_team_gamma IS NULL THEN
         SELECT team_uuid INTO v_team_gamma FROM teams WHERE course_uuid = v_cse210_f25 AND team_name = 'Team Gamma';
     END IF;
-    
+
     INSERT INTO teams (course_uuid, team_name, team_page_url, repo_url, team_ta_uuid) VALUES
-        (v_cse210_f25, 'Team Delta', 'https://github.com/cse210-delta', 'https://github.com/cse210-delta/project', 
+        (v_cse210_f25, 'Team Delta', 'https://github.com/cse210-delta', 'https://github.com/cse210-delta/project',
          (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'))
     ON CONFLICT (course_uuid, team_name) DO NOTHING
     RETURNING team_uuid INTO v_team_delta;
@@ -392,11 +413,11 @@ BEGIN
         ORDER BY created_at DESC LIMIT 1;
     
     INSERT INTO standup_comments (standup_uuid, commenter_uuid, comment_text) VALUES
-        (v_standup1, (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'), 
+        (v_standup1, (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'),
          'Great work on the authentication! Make sure to add rate limiting.'),
         (v_standup1, (SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'),
          'Can you share the auth documentation so I can integrate it with the frontend?'),
-        (v_standup2, (SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'),
+        (v_standup2, (SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'),
          'Good progress! Let me know if you need help with the authorization logic.'),
         (v_standup2, (SELECT user_uuid FROM users WHERE email = 'grace@ucsd.edu'),
          'Looking good! We should sync on the API contract.');
@@ -425,7 +446,7 @@ BEGIN
         ((SELECT user_uuid FROM users WHERE email = 'emma@ucsd.edu'),
          (SELECT user_uuid FROM users WHERE email = 'david@ucsd.edu'),
          v_standup1, 'Emma commented on your standup', 'unread'),
-        ((SELECT user_uuid FROM users WHERE email = 'ta_bob@ucsd.edu'),
+        ((SELECT user_uuid FROM users WHERE email = 'ta_alice@ucsd.edu'),
          (SELECT user_uuid FROM users WHERE email = 'henry@ucsd.edu'),
          v_standup2, 'Your TA commented on your standup', 'unread');
 END $$;
@@ -579,9 +600,36 @@ END $$;
 -- ============================================
 INSERT INTO form_request (first_name, last_name, email, related_institution, verification_code, created_at) VALUES
     ('Nathan', 'Newman', 'nathan.newman@stanford.edu', 'Stanford University', 'CSE110-TA-WINTER25', NOW() - INTERVAL '2 days'),
-    ('Olivia', 'Owens', 'olivia.owens@berkeley.edu', 'UC Berkeley', 'CSE210-STU-WINTER25', NOW() - INTERVAL '1 day'),
-    ('Peter', 'Parker', 'peter.parker@mit.edu', 'MIT', 'CSE210-TA-WINTER25', NOW() - INTERVAL '5 days'),
-    ('Quinn', 'Quinn', 'quinn@caltech.edu', 'Caltech', 'CSE110-STU-WINTER25', NOW() - INTERVAL '7 days');
+    ('Olivia', 'Owens', 'olivia.owens@berkeley.edu', 'UC Berkeley', 'CSE210-STU-FALL25', NOW() - INTERVAL '1 day'),
+    ('Peter', 'Parker', 'peter.parker@mit.edu', 'MIT', 'CSE210-TA-FALL25', NOW() - INTERVAL '5 days'),
+    ('Quinn', 'Quinn', 'quinn@caltech.edu', 'Caltech', 'CSE110-STU-WINTER25', NOW() - INTERVAL '7 days'),
+    ('Rachel', 'Roberts', 'rachel.r@ucla.edu', 'UCLA', 'CSE210-STU-FALL25', NOW() - INTERVAL '3 hours'),
+    ('Sam', 'Stevens', 'sam.stevens@usc.edu', 'USC', 'CSE110-TA-WINTER25', NOW() - INTERVAL '6 hours'),
+    ('Tina', 'Turner', 'tina.t@ucsd.edu', 'UC San Diego', 'CSE210-TA-FALL25', NOW() - INTERVAL '12 hours'),
+    ('Uma', 'Underwood', 'uma.u@harvard.edu', 'Harvard University', 'CSE110-STU-WINTER25', NOW() - INTERVAL '18 hours'),
+    ('Victor', 'Vance', 'victor.v@yale.edu', 'Yale University', 'CSE210-STU-FALL25', NOW() - INTERVAL '4 days'),
+    ('Wendy', 'Williams', 'wendy.w@princeton.edu', 'Princeton University', 'CSE110-TA-WINTER25', NOW() - INTERVAL '6 days'),
+    ('Xavier', 'Xu', 'xavier.x@columbia.edu', 'Columbia University', 'CSE210-TA-FALL25', NOW() - INTERVAL '8 days'),
+    ('Yara', 'Yang', 'yara.y@cornell.edu', 'Cornell University', 'CSE110-STU-WINTER25', NOW() - INTERVAL '9 days'),
+    ('Zoe', 'Zhang', 'zoe.z@duke.edu', 'Duke University', 'CSE210-STU-FALL25', NOW() - INTERVAL '10 days'),
+    ('Alice', 'Adams', 'alice.a@brown.edu', 'Brown University', 'CSE110-TUTOR-WINTER25', NOW() - INTERVAL '11 days'),
+    ('Ben', 'Baker', 'ben.b@dartmouth.edu', 'Dartmouth College', 'CSE210-TA-FALL25', NOW() - INTERVAL '1 hour'),
+    ('Clara', 'Clark', 'clara.c@northwestern.edu', 'Northwestern University', 'CSE110-STU-WINTER25', NOW() - INTERVAL '2 hours'),
+    ('Daniel', 'Davis', 'daniel.d@uchicago.edu', 'University of Chicago', 'CSE210-STU-FALL25', NOW() - INTERVAL '8 hours'),
+    ('Emily', 'Edwards', 'emily.e@upenn.edu', 'University of Pennsylvania', 'CSE110-TA-WINTER25', NOW() - INTERVAL '14 hours'),
+    ('Frank', 'Fisher', 'frank.f@washu.edu', 'Washington University', 'CSE210-TA-FALL25', NOW() - INTERVAL '16 hours'),
+    ('Grace', 'Green', 'grace.g@vanderbilt.edu', 'Vanderbilt University', 'CSE110-STU-WINTER25', NOW() - INTERVAL '20 hours'),
+    ('Henry', 'Hall', 'henry.h@rice.edu', 'Rice University', 'CSE210-STU-FALL25', NOW() - INTERVAL '3 days'),
+    ('Iris', 'Irving', 'iris.i@emory.edu', 'Emory University', 'CSE110-TUTOR-WINTER25', NOW() - INTERVAL '5 days'),
+    ('Jack', 'Johnson', 'jack.j@georgetown.edu', 'Georgetown University', 'CSE210-TA-FALL25', NOW() - INTERVAL '7 days'),
+    ('Kate', 'King', 'kate.k@nyu.edu', 'New York University', 'CSE110-STU-WINTER25', NOW() - INTERVAL '12 days'),
+    ('Leo', 'Lee', 'leo.l@cmu.edu', 'Carnegie Mellon University', 'CSE210-STU-FALL25', NOW() - INTERVAL '13 days'),
+    ('Maya', 'Moore', 'maya.m@gatech.edu', 'Georgia Tech', 'CSE110-TA-WINTER25', NOW() - INTERVAL '30 minutes'),
+    ('Noah', 'Nelson', 'noah.n@umich.edu', 'University of Michigan', 'CSE210-TA-FALL25', NOW() - INTERVAL '45 minutes'),
+    ('Olivia', 'Oliver', 'olivia.o@uva.edu', 'University of Virginia', 'CSE110-STU-WINTER25', NOW() - INTERVAL '90 minutes'),
+    ('Paul', 'Peterson', 'paul.p@unc.edu', 'UNC Chapel Hill', 'CSE210-STU-FALL25', NOW() - INTERVAL '4 hours'),
+    ('Quinn', 'Quaid', 'quinn.q@utexas.edu', 'UT Austin', 'CSE110-TUTOR-WINTER25', NOW() - INTERVAL '5 hours');
+
 
 -- ============================================
 -- SUCCESS MESSAGE
@@ -594,8 +642,8 @@ BEGIN
     RAISE NOTICE 'Created data for ALL tables:';
     RAISE NOTICE '  ✓ 5 Roles (unchanged)';
     RAISE NOTICE '  ✓ 3 Terms (Fall 2024, Winter 2025, Spring 2025)';
-    RAISE NOTICE '  ✓ 15 Users (2 professors, 3 TAs, 10 students)';
-    RAISE NOTICE '  ✓ 5 Staff Profiles';
+    RAISE NOTICE '  ✓ 18 Users (5 professors/admins, 3 TAs, 10 students)';
+    RAISE NOTICE '  ✓ 8 Staff Profiles (1 lead admin, 3 admins, 1 professor, 3 TAs)';
     RAISE NOTICE '  ✓ 3 Courses';
     RAISE NOTICE '  ✓ 5 Verification Codes';
     RAISE NOTICE '  ✓ 17 Course Enrollments';
@@ -608,6 +656,6 @@ BEGIN
     RAISE NOTICE '  ✓ 4 Meetings';
     RAISE NOTICE '  ✓ 4 Meeting Codes';
     RAISE NOTICE '  ✓ 6 Participants (attendance records)';
-    RAISE NOTICE '  ✓ 5 Form Requests';
+    RAISE NOTICE '  ✓ 30 Form Requests';
     RAISE NOTICE '========================================';
 END $$;

@@ -878,6 +878,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-pale-mint);
@@ -904,12 +905,147 @@
   opacity: 1;
 }
 
+.metric-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.metric-time-filter {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.metric-breakdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-forest-green);
+}
+
+.metric-breakdown-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--color-forest-green);
+  cursor: pointer;
+}
+
+.metric-breakdown-toggle .toggle-label {
+  font-family: Monaco, monospace;
+}
+
+.metric-time-btn {
+  background: var(--color-pale-mint);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  font-family: Monaco, monospace;
+  color: var(--color-forest-green);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.metric-time-btn:hover:not(.active) {
+  background: var(--color-light-matcha);
+}
+
+.metric-time-btn.active {
+  background: var(--color-forest-green);
+  color: var(--color-white);
+  border-color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+.metric-time-btn.active:hover {
+  background: var(--color-forest-green-medium);
+  border-color: var(--color-forest-green-medium);
+}
+
 .metric-expanded-chart {
   height: 200px;
   position: relative;
 }
 
 .metric-expanded-chart canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* ==================== Metrics Charts 2x2 Grid ==================== */
+.metrics-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-chart-panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-pale-mint);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.metric-chart-title {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+.metric-chart-wrapper {
+  position: relative;
+  height: 180px;
+  flex: 1;
+}
+
+.metric-chart-wrapper canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* Summary-only metric cards (non-clickable) */
+.metrics-summary .metric-card {
+  cursor: default;
+}
+
+.metrics-summary .metric-card:hover {
+  background: var(--color-light-matcha);
+}
+
+/* ==================== GitHub Activity Chart ==================== */
+.github-chart-panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.github-chart-wrapper {
+  position: relative;
+  height: 250px;
+  width: 100%;
+}
+
+.github-chart-wrapper canvas {
   max-width: 100% !important;
   max-height: 100% !important;
 }
@@ -1164,6 +1300,14 @@
 
   .metric-expanded-chart {
     height: 180px;
+  }
+
+  .metrics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-chart-wrapper {
+    height: 160px;
   }
 }
 
@@ -2012,4 +2156,557 @@
   margin: 0;
   box-shadow: none;
   border: 1px solid var(--color-light-matcha);
+}
+
+/* ==================== GitHub Integration ==================== */
+.github-section {
+  margin-bottom: 1rem;
+}
+
+.github-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.github-connected {
+  background: var(--color-light-matcha);
+  color: var(--color-forest-green);
+}
+
+.github-not-connected {
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.github-icon {
+  font-family: "Font Awesome 6 Brands", sans-serif;
+  font-size: 1.1rem;
+}
+
+.btn-github-connect {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: var(--color-forest-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-github-connect:hover {
+  background: var(--color-forest-green-light);
+  transform: translateY(-1px);
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.label-row label {
+  margin-bottom: 0;
+}
+
+.btn-github-fetch {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-github-fetch:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-radioactive-lime);
+}
+
+.btn-github-fetch:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==================== GitHub Activity List ==================== */
+.github-activity-container {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.github-activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-pale-mint);
+  border-bottom: 1px solid var(--color-light-matcha);
+}
+
+.github-activity-title {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+}
+
+.github-activity-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-forest-green);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  opacity: 0.7;
+}
+
+.btn-link:hover {
+  opacity: 1;
+  background: var(--color-light-matcha);
+}
+
+.github-activity-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.github-activity-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--color-forest-green);
+  opacity: 0.6;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.github-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  margin: 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--color-pale-mint);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+}
+
+.github-activity-item:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-radioactive-lime);
+  transform: translateX(2px);
+}
+
+.github-activity-item input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-forest-green);
+}
+
+.activity-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.activity-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Activity type colors - card background and icon styling */
+.activity-icon-commit {
+  border-left-color: #059669;
+}
+.activity-icon-commit .activity-icon {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.activity-icon-pr {
+  border-left-color: #7c3aed;
+}
+.activity-icon-pr .activity-icon {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.activity-icon-review {
+  border-left-color: #0891b2;
+}
+.activity-icon-review .activity-icon {
+  background: #cffafe;
+  color: #0891b2;
+}
+
+.activity-icon-issue {
+  border-left-color: #d97706;
+}
+.activity-icon-issue .activity-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.activity-label {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-forest-green);
+  text-decoration: none;
+  line-height: 1.3;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activity-label::after {
+  content: "↗";
+  font-size: 0.75rem;
+  opacity: 0.4;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.activity-label:hover {
+  color: var(--color-forest-green-medium);
+}
+
+.activity-label:hover::after {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.github-activity-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-pale-mint);
+  border-top: 1px solid var(--color-light-matcha);
+}
+
+.btn-github-add {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: var(--color-forest-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-github-add:hover {
+  background: var(--color-forest-green-light);
+  transform: translateY(-1px);
+}
+
+.btn-close-activities {
+  color: var(--color-forest-green);
+  opacity: 0.6;
+}
+
+.btn-close-activities:hover {
+  opacity: 1;
+  background: transparent;
+}
+
+/* ==================== Selected Activities Section ==================== */
+.selected-activities-section {
+  background: var(--color-light-matcha);
+  border: 1px solid var(--color-radioactive-lime);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.selected-activities-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: var(--color-radioactive-lime);
+  border-bottom: 1px solid rgba(5, 43, 8, 0.1);
+}
+
+.selected-activities-title {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+}
+
+.selected-activities-list {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.selected-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--color-white);
+  border-radius: 4px;
+  border-left: 3px solid transparent;
+}
+
+.selected-activity-item .activity-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.selected-activity-item .activity-icon svg {
+  width: 10px;
+  height: 10px;
+}
+
+.selected-activity-item .activity-label {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-forest-green);
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.selected-activity-item .activity-label:hover {
+  color: var(--color-forest-green-medium);
+}
+
+.selected-activity-item .activity-label::after {
+  content: "↗";
+  font-size: 0.65rem;
+  opacity: 0.3;
+  margin-left: 0.3rem;
+}
+
+/* Inherit activity type colors */
+.selected-activity-item.activity-icon-commit {
+  border-left-color: #059669;
+}
+.selected-activity-item.activity-icon-commit .activity-icon {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.selected-activity-item.activity-icon-pr {
+  border-left-color: #7c3aed;
+}
+.selected-activity-item.activity-icon-pr .activity-icon {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.selected-activity-item.activity-icon-review {
+  border-left-color: #0891b2;
+}
+.selected-activity-item.activity-icon-review .activity-icon {
+  background: #cffafe;
+  color: #0891b2;
+}
+
+.selected-activity-item.activity-icon-issue {
+  border-left-color: #d97706;
+}
+.selected-activity-item.activity-icon-issue .activity-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* ==================== No Team Warning ==================== */
+.no-team-warning {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #92400e;
+  text-align: center;
+}
+
+/* ==================== History Card GitHub Activities ==================== */
+.history-github-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.history-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--color-pale-mint);
+  border: 1px solid var(--color-light-matcha);
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  font-size: 0.85rem;
+}
+
+.history-activity-item .activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.history-activity-item .activity-icon svg {
+  width: 10px;
+  height: 10px;
+}
+
+.history-activity-item .activity-label {
+  color: var(--color-forest-green);
+  text-decoration: none;
+  word-break: break-word;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.history-activity-item .activity-label:hover {
+  text-decoration: underline;
+  color: var(--color-forest-green-medium);
+}
+
+/* Activity type colors for history items */
+.history-activity-item.activity-icon-commit {
+  border-left-color: #16a34a;
+}
+.history-activity-item.activity-icon-commit .activity-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.history-activity-item.activity-icon-pr {
+  border-left-color: #9333ea;
+}
+.history-activity-item.activity-icon-pr .activity-icon {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.history-activity-item.activity-icon-review {
+  border-left-color: #0891b2;
+}
+.history-activity-item.activity-icon-review .activity-icon {
+  background: #cffafe;
+  color: #0891b2;
+}
+
+.history-activity-item.activity-icon-issue {
+  border-left-color: #d97706;
+}
+.history-activity-item.activity-icon-issue .activity-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* GitHub Activities field label styling */
+.github-activities-field .history-field-label {
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+/* ==================== Feed Activity Badges ==================== */
+.feed-activity-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.activity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
+
+.activity-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Commit badge - green */
+.activity-badge-commit {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+/* PR badge - purple */
+.activity-badge-pr {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+/* Review badge - cyan */
+.activity-badge-review {
+  background: #cffafe;
+  color: #0891b2;
+}
+
+/* Issue badge - orange */
+.activity-badge-issue {
+  background: #fef3c7;
+  color: #d97706;
 }

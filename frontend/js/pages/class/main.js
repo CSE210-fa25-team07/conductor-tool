@@ -7,7 +7,6 @@ import { loadUserContext, getActiveCourse, isProfessorOrTA } from "../../utils/u
 import { initProfileDropdown, createUserDropdown } from "../../components/profileDropdown.js";
 
 // State management
-let currentFeature = "directory";
 let currentView = "dashboard"; // default view within feature
 let courseData = null;
 
@@ -76,11 +75,11 @@ async function init() {
     const pathParts = window.location.pathname.split("/").filter(Boolean);
     const initialFeature = pathParts[2] || "directory";
 
-    // View can still come from query params for deep linking
+    // View can come from query params for deep linking (null if not specified)
     const urlParams = new URLSearchParams(window.location.search);
-    const initialView = urlParams.get("view") || "dashboard";
+    const initialView = urlParams.get("view") || null;
 
-    // Load initial feature
+    // Load initial feature (switchFeature handles default view per feature)
     await switchFeature(initialFeature, initialView);
 
   } catch (error) {
@@ -155,7 +154,6 @@ async function switchFeature(feature, view = null) {
     }
 
     // Update current state
-    currentFeature = feature;
     currentView = targetView;
 
     // Load the content for the feature/view

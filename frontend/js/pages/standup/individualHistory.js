@@ -4,10 +4,11 @@
  */
 
 import { getUserStandups, getStandupsByUser, deleteStandup } from "../../api/standupApi.js";
-import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
+import { getActiveCourse } from "../../utils/userContext.js";
 import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { navigateToView, navigateBack } from "./courseIntegration.js";
+import { generateStoredActivitiesHtml } from "./githubActivityList.js";
 
 
 // Store current view context
@@ -81,8 +82,6 @@ function showConfirm({ title = "Confirm", message, confirmText = "Confirm", canc
  * @param {Object} params - Optional params (userUuid, userName for TA viewing student)
  */
 export async function render(container, params = {}) {
-  const userTeams = getUserTeams();
-
   // Store context for viewing another user's history
   viewContext = {
     userUuid: params.userUuid || null,
@@ -113,9 +112,7 @@ export async function render(container, params = {}) {
       // Simpler filter for TA viewing student
       filterBarPlaceholder.outerHTML = await renderComponent("standup/historyFilterTA", {});
     } else {
-      filterBarPlaceholder.outerHTML = await renderComponent("standup/historyFilterUser", {
-        teams: userTeams
-      });
+      filterBarPlaceholder.outerHTML = await renderComponent("standup/historyFilterUser", {});
     }
   }
 
@@ -131,7 +128,6 @@ export async function render(container, params = {}) {
  */
 function attachFilterListeners() {
   const inputs = [
-    "filter-team",
     "filter-start-date",
     "filter-end-date"
   ];
@@ -152,7 +148,6 @@ async function loadHistory() {
     contentDiv.innerHTML = "<div class=\"loading-message\">Loading history...</div>";
 
     const filters = {
-      teamUuid: document.getElementById("filter-team")?.value,
       startDate: document.getElementById("filter-start-date")?.value,
       endDate: document.getElementById("filter-end-date")?.value
     };
@@ -206,6 +201,7 @@ async function loadHistory() {
 function prepareHistoryCardData(standup, readOnly = false) {
   const dateObj = new Date(standup.dateSubmitted);
   const hasBlocker = !!standup.blockers;
+  const hasGithubActivities = standup.githubActivities && Array.isArray(standup.githubActivities) && standup.githubActivities.length > 0;
 
   return {
     standupUuid: standup.standupUuid,
@@ -223,6 +219,8 @@ function prepareHistoryCardData(standup, readOnly = false) {
     hasBlocker,
     blockerClass: hasBlocker ? "has-blocker" : "",
     showActions: !readOnly,
+    hasGithubActivities,
+    githubActivitiesHtml: hasGithubActivities ? generateStoredActivitiesHtml(standup.githubActivities) : "",
     whatDone: standup.whatDone || "",
     whatNext: standup.whatNext || "",
     blockers: standup.blockers || ""

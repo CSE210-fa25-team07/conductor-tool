@@ -26,15 +26,13 @@ model User {
   bio                   String?
   phoneNumber           String?               @map("phone_number") @db.VarChar(20)
   githubUsername        String?               @map("github_username") @db.VarChar(100)
+  githubAccessToken     String?               @map("github_access_token")
   lastLogin             DateTime?             @map("last_login") @db.Timestamptz(6)
   courseEnrollments     CourseEnrollment[]
   createdMeetings       Meeting[]             @relation("MeetingCreator")
   participantMeetings   Participant[]
   staff                 Staff?
   standups              Standup[]
-  standupComments       StandupComment[]
-  receivedNotifications StandupNotification[] @relation("NotificationReceiver")
-  sentNotifications     StandupNotification[] @relation("NotificationSender")
   teamMemberships       TeamMember[]
   teamsAsTa             Team[]                @relation("TeamTA")
 
@@ -48,7 +46,7 @@ model Staff {
   personalWebsite  String?  @map("personal_website")
   isProf           Boolean? @default(false) @map("is_prof")
   isSystemAdmin    Boolean? @default(false) @map("is_system_admin")
-  is_lead_admin    Boolean? @default(false)
+  isLeadAdmin      Boolean? @default(false) @map("is_lead_admin")
   user             User     @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("staffs")
@@ -147,9 +145,10 @@ model Standup {
   userUuid       String                @map("user_uuid") @db.Uuid
   teamUuid       String                @map("team_uuid") @db.Uuid
   courseUuid     String                @map("course_uuid") @db.Uuid
-  dateSubmitted  DateTime?             @map("date_submitted") @db.Timestamptz(6)
-  whatDone       String?               @map("what_done")
-  whatNext       String?               @map("what_next")
+  dateSubmitted    DateTime?             @map("date_submitted") @db.Timestamptz(6)
+  whatDone         String?               @map("what_done")
+  githubActivities Json?                 @map("github_activities")
+  whatNext         String?               @map("what_next")
   blockers       String?
   reflection     String?
   sentimentScore Int?                  @map("sentiment_score")
@@ -159,39 +158,9 @@ model Standup {
   course         Course                @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
   team           Team                  @relation(fields: [teamUuid], references: [teamUuid], onDelete: Cascade, onUpdate: NoAction)
   user           User                  @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
-  comments       StandupComment[]
-  notifications  StandupNotification[]
   sentimentLogs  StandupSentimentLog[]
 
   @@map("standup")
-}
-
-model StandupComment {
-  commentUuid   String   @id @default(dbgenerated("gen_random_uuid()")) @map("comment_uuid") @db.Uuid
-  standupUuid   String   @map("standup_uuid") @db.Uuid
-  commenterUuid String   @map("commenter_uuid") @db.Uuid
-  commentText   String   @map("comment_text")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
-  commenter     User     @relation(fields: [commenterUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
-  standup       Standup  @relation(fields: [standupUuid], references: [standupUuid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("standup_comments")
-}
-
-model StandupNotification {
-  notifUuid    String   @id @default(dbgenerated("gen_random_uuid()")) @map("notif_uuid") @db.Uuid
-  senderUuid   String   @map("sender_uuid") @db.Uuid
-  receiverUuid String   @map("receiver_uuid") @db.Uuid
-  standupUuid  String   @map("standup_uuid") @db.Uuid
-  message      String
-  status       String   @db.VarChar(10)
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  receiver     User     @relation("NotificationReceiver", fields: [receiverUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
-  sender       User     @relation("NotificationSender", fields: [senderUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
-  standup      Standup  @relation(fields: [standupUuid], references: [standupUuid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@map("standup_notifications")
 }
 
 model StandupSentimentLog {
