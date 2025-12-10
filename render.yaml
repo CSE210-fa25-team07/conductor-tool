@@ -11,7 +11,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    branch: dev
+    branch: 151-CD-setup  # TODO: change back to 'dev' after testing
     buildCommand: npm ci && npx prisma generate
     startCommand: npm start
     healthCheckPath: /

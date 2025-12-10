@@ -36,5 +36,8 @@
   },
   "overrides": {
     "jws": ">=3.2.3"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   }
 }
