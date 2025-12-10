@@ -1,0 +1,88 @@
+# Render Blueprint - Infrastructure as Code
+# https://render.com/docs/blueprint-spec
+
+# ====================
+# STAGING ENVIRONMENT
+# ====================
+services:
+  # Staging Web Service
+  - type: web
+    name: conductor-staging
+    runtime: node
+    region: oregon
+    plan: free
+    branch: dev
+    buildCommand: npm ci && npx prisma generate
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: conductor-db-staging
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+
+  # Production Web Service
+  - type: web
+    name: conductor-prod
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm ci && npx prisma generate
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: conductor-db-prod
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+
+# ====================
+# DATABASES
+# ====================
+databases:
+  # Staging Database
+  - name: conductor-db-staging
+    region: oregon
+    plan: free
+    databaseName: conductor_staging
+    user: conductor_admin
+
+  # Production Database
+  - name: conductor-db-prod
+    region: oregon
+    plan: free
+    databaseName: conductor_prod
+    user: conductor_admin

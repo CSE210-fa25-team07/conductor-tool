@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files (set via Render dashboard)
+.env
+.env.*
+
+# Documentation and specs
+docs/
+specs/
+*.md
+
+# Tests
+**/__tests__/
+**/*.test.js
+**/*.spec.js
+vitest.config.js
+
+# Development files
+.claude/
+*.drawio
+jsconfig.json
+docker-compose.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Admin scripts (not needed in production)
+admin/
+
+# GitHub workflows
+.github/

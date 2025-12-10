@@ -38,8 +38,8 @@ const KEY_TO_INT = {
 };
 
 /**
- * 
- * @param {string} courseUuid 
+ *
+ * @param {string} courseUuid
  * @returns {{startDate: Date, endDate: Date}}
  */
 async function setDate(courseUuid) {
@@ -120,7 +120,7 @@ export async function showGroupAnalytics(courseUuid, userUuid, teamUuid = null) 
 
 /**
  * show individual attendance analytics
- * @param {string} courseUuid 
+ * @param {string} courseUuid
  * @param {string} [userUuid=null] - User UUID (optional)
  */
 export async function showIndividualAnalytics(courseUuid, userUuid) {
@@ -140,8 +140,8 @@ export async function showIndividualAnalytics(courseUuid, userUuid) {
 
 /**
  * create individual attendance dataset
- * @param {Array} attendanceByType 
- * @param {Object} filters 
+ * @param {Array} attendanceByType
+ * @param {Object} filters
  * @returns {{labels: Array, datasetMap: Object}}
  */
 function buildIndividualDataset(attendanceByType, filters) {
@@ -165,9 +165,9 @@ function buildIndividualDataset(attendanceByType, filters) {
 
 /**
  * Load team dropdown options
- * @param {string} courseUuid 
- * @param {string} userUuid 
- * @param {string} [teamUuid=null] 
+ * @param {string} courseUuid
+ * @param {string} userUuid
+ * @param {string} [teamUuid=null]
  */
 async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
   const select = document.getElementById("groupTeamSelect");
@@ -189,8 +189,8 @@ async function loadTeamDropdown(courseUuid, userUuid, teamUuid = null) {
 
 /**
  * Load analytics data
- * @param {string} courseUuid 
- * @param {string} [teamUuid=null] 
+ * @param {string} courseUuid
+ * @param {string} [teamUuid=null]
  * @returns {Array} timeline data
  */
 async function loadAnalytics(courseUuid, teamUuid = null) {
@@ -211,7 +211,7 @@ async function loadAnalytics(courseUuid, teamUuid = null) {
 }
 
 /** Render team attendance chart
- * @param {string} courseUuid 
+ * @param {string} courseUuid
  */
 async function renderTeamChart(courseUuid) {
   const teamUuid = document.getElementById("groupTeamSelect")?.value;
@@ -230,8 +230,8 @@ async function renderTeamChart(courseUuid) {
 }
 
 /** Build timeline datasets
- * @param {Array} timeline 
- * @param {Object} filters 
+ * @param {Array} timeline
+ * @param {Object} filters
  * @returns {{labels: Array, datasetMap: Object}}
  */
 function buildTimelineDatasets(timeline, filters) {

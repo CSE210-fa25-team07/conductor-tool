@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "node backend/src/server.js",
     "lint": "eslint . --fix",
     "docs": "jsdoc -c jsdoc.json",
     "test": "vitest run",
@@ -12,7 +13,8 @@
     "db:logs": "docker compose logs -f postgres",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "db:pull": "prisma db pull"
+    "db:pull": "prisma db pull",
+    "db:seed": "node scripts/seed-db.js"
   },
   "devDependencies": {
     "eslint": "^9.38.0",
@@ -29,7 +31,8 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "pg": "^8.11.3"
   },
   "overrides": {
     "jws": ">=3.2.3"
