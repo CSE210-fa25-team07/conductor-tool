@@ -21,7 +21,7 @@ describe("formRequestRepository", () => {
   let testCourseUuid;
   let testTermUuid;
   let testRoleUuid;
-  const testEmail = `test-form-2099@ucsd.edu`;
+  const testEmail = "test-form-2099@ucsd.edu";
 
   beforeAll(async () => {
     // Create test data: term, course, role, and verification code
@@ -38,7 +38,7 @@ describe("formRequestRepository", () => {
 
     const course = await prisma.course.create({
       data: {
-        courseCode: `TEST2099`,
+        courseCode: "TEST2099",
         courseName: "Test Course",
         termUuid: testTermUuid,
         description: "Test course description"
@@ -201,7 +201,7 @@ describe("formRequestRepository", () => {
      * and deletes the form request in a single transaction.
      */
     it("should approve a form request and create user enrollment", async () => {
-      const newEmail = `test-approve-2099@ucsd.edu`;
+      const newEmail = "test-approve-2099@ucsd.edu";
 
       // Create a new form request to approve
       const formRequest = await createFormRequest(

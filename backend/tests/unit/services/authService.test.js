@@ -198,8 +198,8 @@ describe("authService", () => {
       req.session.user = {
         email: "newuser@ucsd.edu",
         name: "New User",
-        given_name: "New",
-        family_name: "User"
+        firstName: "New",
+        lastName: "User"
       };
       const courseEnrollmentInfo = {
         courseUuid: "course-uuid-123",

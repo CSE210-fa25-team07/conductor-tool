@@ -31,8 +31,8 @@ describe("courseRepository", () => {
   let testStudentRoleUuid;
   let testProfessorRoleUuid;
   let testTaRoleUuid;
-  const testEmail = `test-course-2099@ucsd.edu`;
-  const testProfEmail = `test-prof-2099@ucsd.edu`;
+  const testEmail = "test-course-2099@ucsd.edu";
+  const testProfEmail = "test-prof-2099@ucsd.edu";
 
   beforeAll(async () => {
     // Create test term with a unique year to avoid conflicts
@@ -110,15 +110,15 @@ describe("courseRepository", () => {
      */
     it("should create a course with verification codes", async () => {
       const courseData = {
-        courseCode: `CSE-2099`,
+        courseCode: "CSE-2099",
         courseName: "Test Course",
         termUuid: testTermUuid,
         description: "Test Description",
         syllabusUrl: "https://example.com/syllabus",
         canvasUrl: "https://example.com/canvas",
-        taCode: `TA-2099`,
-        tutorCode: `TUTOR-2099`,
-        studentCode: `STUDENT-2099`,
+        taCode: "TA-2099",
+        tutorCode: "TUTOR-2099",
+        studentCode: "STUDENT-2099",
         instructorId: testProfessorUuid
       };
 
@@ -350,15 +350,15 @@ describe("courseRepository", () => {
      */
     it("should update a course with new verification codes", async () => {
       const updatedData = {
-        courseCode: `CSE-2099-UPDATED`,
+        courseCode: "CSE-2099-UPDATED",
         courseName: "Updated Course Name",
         termUuid: testTermUuid,
         description: "Updated Description",
         syllabusUrl: "https://example.com/syllabus-updated",
         canvasUrl: "https://example.com/canvas-updated",
-        taCode: `TA-2099-NEW`,
-        tutorCode: `TUTOR-2099-NEW`,
-        studentCode: `STUDENT-2099-NEW`
+        taCode: "TA-2099-NEW",
+        tutorCode: "TUTOR-2099-NEW",
+        studentCode: "STUDENT-2099-NEW"
       };
 
       const course = await updateCourseWithVerificationCodes(testCourseUuid, updatedData);

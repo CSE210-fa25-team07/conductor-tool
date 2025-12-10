@@ -52,7 +52,7 @@ describe("verificationCodeRepository", () => {
     // Create test courses
     const course1 = await prisma.course.create({
       data: {
-        courseCode: `TEST2099-1`,
+        courseCode: "TEST2099-1",
         courseName: "Test Course 1",
         termUuid: testTermUuid,
         description: "Test course 1"
@@ -62,7 +62,7 @@ describe("verificationCodeRepository", () => {
 
     const course2 = await prisma.course.create({
       data: {
-        courseCode: `TEST2099-2`,
+        courseCode: "TEST2099-2",
         courseName: "Test Course 2",
         termUuid: testTermUuid,
         description: "Test course 2"
@@ -71,9 +71,9 @@ describe("verificationCodeRepository", () => {
     testCourse2Uuid = course2.courseUuid;
 
     // Generate unique codes
-    testTaCode = `TA-2099`;
-    testTutorCode = `TUTOR-2099`;
-    testStudentCode = `STUDENT-2099`;
+    testTaCode = "TA-2099";
+    testTutorCode = "TUTOR-2099";
+    testStudentCode = "STUDENT-2099";
   });
 
   afterAll(async () => {
@@ -137,9 +137,9 @@ describe("verificationCodeRepository", () => {
      */
     it("should create verification codes for a course", async () => {
       const newCodes = {
-        taCode: `TA-NEW-2099`,
-        tutorCode: `TUTOR-NEW-2099`,
-        studentCode: `STUDENT-NEW-2099`
+        taCode: "TA-NEW-2099",
+        tutorCode: "TUTOR-NEW-2099",
+        studentCode: "STUDENT-NEW-2099"
       };
 
       await prisma.$transaction(async (tx) => {
@@ -180,7 +180,7 @@ describe("verificationCodeRepository", () => {
     it("should return empty codes for course without verification codes", async () => {
       const newCourse = await prisma.course.create({
         data: {
-          courseCode: `NOCODES2099`,
+          courseCode: "NOCODES2099",
           courseName: "No Codes Course",
           termUuid: testTermUuid,
           description: "Course without codes"
@@ -229,7 +229,7 @@ describe("verificationCodeRepository", () => {
       // Create a test course for this inactive code
       const inactiveCourse = await prisma.course.create({
         data: {
-          courseCode: `INACTIVE-COURSE-2099`,
+          courseCode: "INACTIVE-COURSE-2099",
           courseName: "Inactive Code Test Course",
           termUuid: testTermUuid,
           description: "Course for testing inactive codes"
@@ -237,7 +237,7 @@ describe("verificationCodeRepository", () => {
       });
 
       // Create an inactive code
-      const inactiveCode = `INACTIVE-2099`;
+      const inactiveCode = "INACTIVE-2099";
       await prisma.verificationCode.create({
         data: {
           courseUuid: inactiveCourse.courseUuid,
@@ -266,9 +266,9 @@ describe("verificationCodeRepository", () => {
      */
     it("should return true for unique codes excluding current course", async () => {
       const newCodes = [
-        `TA-UPDATE-2099`,
-        `TUTOR-UPDATE-2099`,
-        `STUDENT-UPDATE-2099`
+        "TA-UPDATE-2099",
+        "TUTOR-UPDATE-2099",
+        "STUDENT-UPDATE-2099"
       ];
 
       const isUnique = await areVerificationCodesUniqueForUpdate(testCourseUuid, newCodes);
@@ -305,9 +305,9 @@ describe("verificationCodeRepository", () => {
      */
     it("should update verification codes for a course", async () => {
       const updatedCodes = {
-        taCode: `TA-UPDATED-2099`,
-        tutorCode: `TUTOR-UPDATED-2099`,
-        studentCode: `STUDENT-UPDATED-2099`
+        taCode: "TA-UPDATED-2099",
+        tutorCode: "TUTOR-UPDATED-2099",
+        studentCode: "STUDENT-UPDATED-2099"
       };
 
       await prisma.$transaction(async (tx) => {
