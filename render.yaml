@@ -12,7 +12,7 @@ services:
     region: oregon
     plan: free
     branch: 151-CD-setup  # TODO: change back to 'dev' after testing
-    buildCommand: npm ci && npx prisma generate
+    buildCommand: npm ci && npx prisma generate && npm run db:seed
     startCommand: npm start
     healthCheckPath: /
     envVars:
@@ -44,7 +44,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: npm ci && npx prisma generate
+    buildCommand: npm ci && npx prisma generate && npm run db:seed
     startCommand: npm start
     healthCheckPath: /
     envVars:
