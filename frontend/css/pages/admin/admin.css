@@ -10,7 +10,7 @@
   min-height: calc(100vh - 84px);
   max-width: 1400px;
   margin: 0 auto;
-  margin-top: 84px; /* Only account for top-nav (no feature-nav) */
+  margin-top: 84px;
 }
 
 /* Sidebar */
