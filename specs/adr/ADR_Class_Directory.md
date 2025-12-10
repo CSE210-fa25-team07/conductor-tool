@@ -1,6 +1,5 @@
 **Title:** Class Directory & Group/User Profile Page
 **Date:** 2025-12-05  
-**Status:** Accepted  
 
 ---
 
@@ -8,9 +7,7 @@
 
 The Conductor tool requires a centralized, reliable, and easy-to-navigate location for all users (Professors, TAs, Tutors, and Students) to see who is in the course.
 
-Currently, this information is scattered across disconnected systems like the Canvas roster, Slack profiles, and various spreadsheets. This makes it difficult to quickly find contact information, understand the class structure (e.g., which TAs are assigned to which teams), or see team compositions.
-
-This feature must solve this by reading from the central user database (managed by the User Management feature) and presenting this information in a structured, role-appropriate, and domain-specific way to provide context for all other features (like Attendance and Work Journals).
+This feature reads from the central user database (managed by the User Management feature) and presenting this information in a structured, role-appropriate, and domain-specific way to provide context for all other features (like Attendance and Work Journals).
 
 ---
 
@@ -93,7 +90,7 @@ We implemented a centralized Class Directory as a core "read" interface for the 
 - Course enrollment verification for roster/team access
 - Team membership OR staff role for team profile access
 - Shared course enrollment for user profile access
-- Role verification for link editing (team leader/professor)
+- Role verification for link editing (team leader)
 
 ### Data Handling
 
@@ -120,7 +117,7 @@ We implemented a centralized Class Directory as a core "read" interface for the 
 
 Pros: Students are already using these tools.
 
-Cons: Rejected. This approach is unstructured, not searchable/filterable, and offers no role-based permissions for viewing sensitive data. It directly conflicts with the core problem of scattered information.
+Cons: Rejected. This approach is unstructured, not searchable/filterable, and offers no role-based permissions for viewing sensitive data. It directly conflicts with the core problem of scattered information. And we don't have enough time to integrate Slack/Discord profiles with our conductor tool.
 
 **Maintain a Central Google Sheet:**
 
@@ -217,25 +214,7 @@ Cons: Rejected. Project uses vanilla JavaScript to avoid build tooling complexit
    - Returns 403 Forbidden for unauthorized access
    - Different data visibility based on viewer's role
 
-### Database Schema Dependencies
 
-The directory feature relies on the following database models:
-- `User`: Basic user information (name, email, photo, pronouns, bio, etc.)
-- `Course`: Course information (code, name, links)
-- `CourseEnrollment`: User-course-role relationships
-- `Team`: Team information (name, links, TA assignment)
-- `TeamMember`: User-team relationships
-- `Role`: Role definitions
-- `Staff`: Staff-specific information (office location, research interests)
-
-### Frontend Navigation Flow
-
-1. User navigates to `/courses/:courseId/directory`
-2. Main router (`main.js`) loads appropriate template
-3. Page-specific module initializes and fetches data
-4. Data is rendered into the template
-5. User interactions trigger navigation or API calls
-6. State updates trigger re-renders
 
 ### Special Features
 
