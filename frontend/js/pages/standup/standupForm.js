@@ -98,11 +98,6 @@ export async function render(container, params = {}) {
     const moodRadio = document.querySelector(`input[name="sentimentScore"][value="${moodValue}"]`);
     if (moodRadio) moodRadio.checked = true;
 
-    // Set visibility radio button
-    const visibilityValue = standupData.visibility || "team";
-    const visibilityRadio = document.querySelector(`input[name="visibility"][value="${visibilityValue}"]`);
-    if (visibilityRadio) visibilityRadio.checked = true;
-
     // Populate selected activities from stored githubActivities
     if (standupData.githubActivities && Array.isArray(standupData.githubActivities)) {
       selectedActivities = standupData.githubActivities.map(activity => ({
@@ -573,7 +568,7 @@ async function handleSubmit(event) {
     blockers: formData.get("blockers") || null,
     reflection: formData.get("reflection") || null,
     sentimentScore: parseInt(formData.get("sentimentScore"), 10),
-    visibility: formData.get("visibility")
+    visibility: "team"
   };
 
   // Add courseUuid from active course
@@ -608,9 +603,6 @@ async function handleSubmit(event) {
       // Reset mood selector to default (3)
       const defaultMoodRadio = form.querySelector("input[name=\"sentimentScore\"][value=\"3\"]");
       if (defaultMoodRadio) defaultMoodRadio.checked = true;
-      // Reset visibility to default (team)
-      const defaultVisibilityRadio = form.querySelector("input[name=\"visibility\"][value=\"team\"]");
-      if (defaultVisibilityRadio) defaultVisibilityRadio.checked = true;
       // Clear selected activities
       selectedActivities = [];
       const selectedSection = document.getElementById("selected-activities-section");

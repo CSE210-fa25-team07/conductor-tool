@@ -2150,6 +2150,8 @@
 
 .standup-detail-content {
   padding: 0 1.5rem 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .standup-detail-content .history-card {
