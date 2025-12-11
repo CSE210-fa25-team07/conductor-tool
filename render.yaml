@@ -18,6 +18,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: BASE_URL
+        value: https://conductor-staging.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: conductor-db-staging
@@ -50,6 +52,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: BASE_URL
+        value: https://conductor-prod.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: conductor-db-prod
