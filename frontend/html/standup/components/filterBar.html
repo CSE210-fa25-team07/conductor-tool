@@ -1,0 +1,41 @@
+<template>
+    <div class="history-filters">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="filter-course">Course</label>
+                <select id="filter-course">
+                    <option value="">All Courses</option>
+                    {{#courses}}
+                    <option value="{{courseUuid}}" {{#selected}}selected{{/selected}}>
+                        {{courseCode}} - {{courseName}}
+                    </option>
+                    {{/courses}}
+                </select>
+            </div>
+
+            {{#showTeamSelect}}
+            <div class="filter-group">
+                <label for="filter-team">Team</label>
+                <select id="filter-team">
+                    <option value="">All Teams</option>
+                    {{#teams}}
+                    <option value="{{teamUuid}}" {{#selected}}selected{{/selected}}>
+                        {{teamName}}
+                    </option>
+                    {{/teams}}
+                </select>
+            </div>
+            {{/showTeamSelect}}
+
+            <div class="filter-group">
+                <label for="filter-start-date">Start Date</label>
+                <input type="date" id="filter-start-date" value="{{startDate}}">
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-end-date">End Date</label>
+                <input type="date" id="filter-end-date" value="{{endDate}}">
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,4 +1,5 @@
 /** @module authentication/frontend */
+import { handleVerification } from "../../utils/authVerify.js";
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       handleVerification();
     });
   }
+
   // ==================== REQUEST ACCESS PAGE ====================
   // USER EMAIL DISPLAY
   // Load user email on any page that needs it
@@ -60,73 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleGoogleLogin() {
   // Redirect to Google OAuth - backend handles user creation/login
   window.location.href = "/google/auth";
-
-  // TODO: Bring in Backend functionality
-}
-
-// ==================== VERIFICATION FUNCTIONS ====================
-
-/**
- * Handles verification form submission by validating the user's code
- * and checking if the authenticated email belongs to UCSD.
- *
- * Retrieves the user session from `/auth/session`, confirms the email domain,
- * and sends the entered verification code to `/auth/verify`. Redirects to the
- * dashboard upon success or shows an alert on failure.
- */
-async function handleVerification() {
-  const codeInput = document.getElementById("verification-code");
-  const code = codeInput.value.trim();
-
-  // Validate input
-  if (!code) {
-    alert("Please enter a verification code");
-    return;
-  }
-
-
-  try {
-    // First, get user session to check email
-    const sessionResponse = await fetch("/auth/session", {
-      credentials: "include"
-    });
-
-    if (!sessionResponse.ok) {
-      alert("Session expired. Please log in again.");
-      window.location.href = "/";
-      return;
-    }
-
-    const sessionData = await sessionResponse.json();
-    const isUCSDEmail = sessionData.user.email.endsWith("@ucsd.edu");
-
-    if (!isUCSDEmail) {
-      // Non-UCSD user -> redirect to request access
-      window.location.href = "/auth/request-access";
-      return;
-    }
-
-    // Call backend to verify code and create user
-    const response = await fetch("/auth/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ code })
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      // Verification successful, redirect to dashboard
-      window.location.href = "/dashboard";
-    } else {
-      // Verification failed
-      alert(data.error || "Invalid verification code");
-    }
-
-  } catch {
-    alert("An error occurred during verification. Please try again.");
-  }
 }
 
 // ==================== REQUEST ACCESS FUNCTIONS ====================
@@ -136,7 +71,7 @@ async function handleVerification() {
  */
 async function loadUserEmail() {
   try {
-    const response = await fetch("/auth/session", {
+    const response = await fetch("/v1/api/auth/session", {
       credentials: "include"
     });
 
@@ -163,14 +98,7 @@ async function loadUserEmail() {
  * Logs the user out by invalidating their session and redirecting to login.
  */
 function logout() {
-  fetch("/logout", {
-    method: "GET",
-    credentials: "include"
-  }).then(() => {
-    window.location.href = "/";
-  }).catch((error) => {
-    alert("Error during logout:", error);
-  });
+  window.location.href = "/logout";
 }
 
 // ==================== ACCESS REQUEST FORM FUNCTIONS ====================
@@ -179,54 +107,69 @@ function logout() {
  * Handle access request form submission
  */
 async function handleAccessRequest() {
+  const codeInput = document.getElementById("verification-code");
+  codeInput.addEventListener("input", () => {
+    codeInput.setCustomValidity("");
+  });
+  const emailInput = document.getElementById("email");
+  emailInput.addEventListener("input", () => {
+    emailInput.setCustomValidity("");
+  });
+
   // Get form data
   const formData = {
-    firstName: document.getElementById("first-name").value,
-    lastName: document.getElementById("last-name").value,
-    email: document.getElementById("email").value,
-    institution: document.getElementById("institution").value,
-    verificationCode: document.getElementById("verification-code").value
+    firstName: document.getElementById("first-name").value.trim(),
+    lastName: document.getElementById("last-name").value.trim(),
+    email: emailInput.value.trim(),
+    institution: document.getElementById("institution").value.trim(),
+    verificationCode: codeInput.value.trim()
   };
 
-  // TODO: Send form data to backend API
-  // Example:
-  // try {
-  //   const response = await fetch('/api/access-request', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     credentials: 'include',
-  //     body: JSON.stringify(formData)
-  //   });
-  //
-  //   if (response.ok) {
-  //     showSuccessMessage();
-  //   } else {
-  //     showMessage("Failed to submit access request. Please try again.");
-  //   }
-  // } catch (error) {
-  //   console.error('Error submitting access request:', error);
-  //   showMessage("An error occurred. Please try again.");
-  // }
+  const response = await fetch("/v1/api/auth/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ code: formData.verificationCode })
+  });
+  const data = await response.json();
 
-  // For now, just show success message
-  showSuccessMessage();
+  if (response.ok && data.success) {
+    // POST data to backend
+    const requestResponse = await fetch("/v1/api/auth/request-access", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(formData)
+    });
+
+    const requestData = await requestResponse.json();
+    if (requestData.success) {
+      showSuccessMessage();
+    } else {
+      emailInput.setCustomValidity(requestData.error || "Failed to submit access request.");
+      return;
+    }
+  } else {
+    // Verification failed
+    codeInput.setCustomValidity(data.error);
+    return;
+  }
 }
 
 /**
  * Show success message after form submission
  */
 function showSuccessMessage() {
-  const container = document.querySelector(".container");
+  const form = document.querySelector(".form");
 
-  container.innerHTML = `
-    <figure class="icon" aria-label="Success icon" style="background: #48bb78;">✓</figure>
+  form.innerHTML = `
     <h1 class="page-title">Request Submitted</h1>
     <p class="message">
       Your access request has been sent to the system administrator.
       You will get a notification once your account has been approved.
     </p>
     <nav class="button-group">
-      <button onclick="logout()" class="btn btn-primary">Return to Login</button>
+      <button onclick="window.location.href = '/logout'" class="btn btn-primary">Return to Login</button>
     </nav>
   `;
 }

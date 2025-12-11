@@ -1,0 +1,119 @@
+<template>
+  <div class="standup-form standup-form-compact">
+    <form id="standup-form">
+      <h2 id="form-title">Submit Daily Standup</h2>
+
+      <!-- Meta row: Date + Team -->
+      <div class="form-row">
+        <div class="form-group form-group-sm">
+          <label for="date-submitted">Date</label>
+          <input type="date" id="date-submitted" name="dateSubmitted" required>
+        </div>
+        <div id="team-select-placeholder" class="form-group form-group-sm">
+          <!-- Team select will be inserted here if teams exist -->
+        </div>
+      </div>
+
+      <!-- GitHub Integration -->
+      <div id="github-section" class="github-section">
+        <!-- GitHub status will be inserted here by JS -->
+      </div>
+
+      <!-- GitHub Activity List (populated when "Fetch from GitHub" is clicked) -->
+      <div id="github-activity-container" class="github-activity-container" style="display: none;">
+        <div class="github-activity-header">
+          <span class="github-activity-title">GitHub Activity (Last 24h)</span>
+          <div class="github-activity-actions">
+            <button type="button" id="select-all-btn" class="btn-link">Select All</button>
+            <button type="button" id="deselect-all-btn" class="btn-link">Deselect All</button>
+          </div>
+        </div>
+        <div id="github-activity-list" class="github-activity-list">
+          <!-- Activity items will be inserted here -->
+        </div>
+        <div class="github-activity-footer">
+          <button type="button" id="add-selected-btn" class="btn-github-add">Add Selected to Standup</button>
+          <button type="button" id="close-activities-btn" class="btn-link btn-close-activities">Close</button>
+        </div>
+      </div>
+
+      <!-- Selected GitHub Activities (shown after selection) -->
+      <div id="selected-activities-section" class="selected-activities-section" style="display: none;">
+        <div class="selected-activities-header">
+          <span class="selected-activities-title">Selected GitHub Activities</span>
+          <button type="button" id="edit-selection-btn" class="btn-link">Edit</button>
+        </div>
+        <div id="selected-activities-list" class="selected-activities-list">
+          <!-- Selected activity items will be shown here -->
+        </div>
+      </div>
+
+      <!-- Progress fields -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="what-done">What did you accomplish? *</label>
+          <button type="button" id="fetch-github-btn" class="btn-github-fetch" style="display: none;">
+            Fetch from GitHub
+          </button>
+        </div>
+        <textarea id="what-done" name="whatDone" rows="3"
+          placeholder="Additional notes (optional if GitHub activities selected)..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="what-next">What's next? *</label>
+        <textarea id="what-next" name="whatNext" required rows="3"
+          placeholder="Upcoming tasks and goals..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="blockers">Blockers</label>
+        <textarea id="blockers" name="blockers" rows="2"
+          placeholder="Any obstacles? (optional)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="reflection">Reflection</label>
+        <textarea id="reflection" name="reflection" rows="2"
+          placeholder="How are you feeling about your progress? (optional)"></textarea>
+      </div>
+
+      <!-- Mood + Visibility row -->
+      <div class="form-row form-row-bottom">
+        <div class="form-group form-group-inline">
+          <label>Mood</label>
+          <div class="pill-selector" id="mood-selector">
+            <label class="pill-option mood-pill mood-1">
+              <input type="radio" name="sentimentScore" value="1">
+              <span class="pill-content">1</span>
+            </label>
+            <label class="pill-option mood-pill mood-2">
+              <input type="radio" name="sentimentScore" value="2">
+              <span class="pill-content">2</span>
+            </label>
+            <label class="pill-option mood-pill mood-3">
+              <input type="radio" name="sentimentScore" value="3" checked>
+              <span class="pill-content">3</span>
+            </label>
+            <label class="pill-option mood-pill mood-4">
+              <input type="radio" name="sentimentScore" value="4">
+              <span class="pill-content">4</span>
+            </label>
+            <label class="pill-option mood-pill mood-5">
+              <input type="radio" name="sentimentScore" value="5">
+              <span class="pill-content">5</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <div id="cancel-button-placeholder"></div>
+        <button type="submit" class="btn-primary" id="submit-button">
+          Submit Standup
+        </button>
+      </div>
+    </form>
+  </div>
+</template>

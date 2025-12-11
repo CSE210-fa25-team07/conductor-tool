@@ -1,0 +1,47 @@
+<template>
+  <div class="member-card {{clickableClass}}"
+       data-user-id="{{userUuid}}"
+       data-user-name="{{userName}}"
+       style="border-left: 4px solid {{color}};">
+    <div class="member-card-header">
+      <div class="member-name">{{userName}}</div>
+      <div class="status-badge {{statusClass}}">{{statusText}}</div>
+    </div>
+    <div class="member-stats-row">
+      <div class="member-stat">
+        <span class="stat-value">{{submissionCount}}</span>
+        <span class="stat-label">submissions</span>
+      </div>
+      <div class="member-stat">
+        <span class="stat-value">{{avgSentiment}}</span>
+        <span class="stat-label">avg mood</span>
+      </div>
+      {{#hasStreak}}
+      <div class="member-stat streak">
+        <span class="stat-value">{{streakDisplay}}</span>
+        <span class="stat-label">day streak</span>
+      </div>
+      {{/hasStreak}}
+    </div>
+    {{#hasLatest}}
+    <div class="member-latest">
+      <span class="latest-date">{{latestDate}}</span>
+      <div class="mood-indicator mood-indicator-sm mood-{{latestMood}}">
+        <svg class="mood-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path class="mood-mouth"/>
+          <circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="mood-score">{{latestMood}}</span>
+      </div>
+      {{#hasBlocker}}
+      <span class="blocker-indicator">Blocker</span>
+      {{/hasBlocker}}
+    </div>
+    {{/hasLatest}}
+    {{^hasLatest}}
+    <div class="member-latest inactive">No recent activity</div>
+    {{/hasLatest}}
+  </div>
+</template>

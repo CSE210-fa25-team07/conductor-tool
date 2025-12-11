@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  roleUuid          String             @id @default(dbgenerated("gen_random_uuid()")) @map("role_uuid") @db.Uuid
+  role              String             @unique @db.VarChar(50)
+  courseEnrollments CourseEnrollment[]
+  verificationCodes VerificationCode[]
+
+  @@map("role")
+}
+
+model User {
+  userUuid              String                @id @default(dbgenerated("gen_random_uuid()")) @map("user_uuid") @db.Uuid
+  email                 String                @unique @db.VarChar(255)
+  firstName             String                @map("first_name") @db.VarChar(100)
+  lastName              String                @map("last_name") @db.VarChar(100)
+  photoUrl              String?               @map("photo_url")
+  pronouns              String?               @db.VarChar(50)
+  bio                   String?
+  phoneNumber           String?               @map("phone_number") @db.VarChar(20)
+  githubUsername        String?               @map("github_username") @db.VarChar(100)
+  githubAccessToken     String?               @map("github_access_token")
+  lastLogin             DateTime?             @map("last_login") @db.Timestamptz(6)
+  courseEnrollments     CourseEnrollment[]
+  createdMeetings       Meeting[]             @relation("MeetingCreator")
+  participantMeetings   Participant[]
+  staff                 Staff?
+  standups              Standup[]
+  teamMemberships       TeamMember[]
+  teamsAsTa             Team[]                @relation("TeamTA")
+
+  @@map("users")
+}
+
+model Staff {
+  userUuid         String   @id @map("user_uuid") @db.Uuid
+  officeLocation   String?  @map("office_location") @db.VarChar(255)
+  researchInterest String?  @map("research_interest")
+  personalWebsite  String?  @map("personal_website")
+  isProf           Boolean? @default(false) @map("is_prof")
+  isSystemAdmin    Boolean? @default(false) @map("is_system_admin")
+  isLeadAdmin      Boolean? @default(false) @map("is_lead_admin")
+  user             User     @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("staffs")
+}
+
+model ClassTerm {
+  termUuid  String   @id @default(dbgenerated("gen_random_uuid()")) @map("term_uuid") @db.Uuid
+  year      Int
+  season    String   @db.VarChar(20)
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+  isActive  Boolean? @default(true) @map("is_active")
+  courses   Course[]
+
+  @@unique([year, season], name: "unique_term", map: "unique_term")
+  @@map("class_term")
+}
+
+model Course {
+  courseUuid        String             @id @default(dbgenerated("gen_random_uuid()")) @map("course_uuid") @db.Uuid
+  courseCode        String             @map("course_code") @db.VarChar(20)
+  courseName        String             @map("course_name") @db.VarChar(255)
+  termUuid          String             @map("term_uuid") @db.Uuid
+  description       String?
+  syllabusUrl       String?            @map("syllabus_url")
+  canvasUrl         String?            @map("canvas_url")
+  lectureUuid       String?            @map("lecture_uuid") @db.Uuid
+  enrollments       CourseEnrollment[]
+  term              ClassTerm          @relation(fields: [termUuid], references: [termUuid], onDelete: Cascade, onUpdate: NoAction)
+  meetings          Meeting[]
+  standups          Standup[]
+  teams             Team[]
+  verificationCodes VerificationCode[]
+
+  @@unique([courseCode, termUuid], name: "unique_course_term", map: "unique_course_term")
+  @@map("courses")
+}
+
+model CourseEnrollment {
+  userUuid         String    @map("user_uuid") @db.Uuid
+  courseUuid       String    @map("course_uuid") @db.Uuid
+  roleUuid         String    @map("role_uuid") @db.Uuid
+  enrollmentStatus String    @default("active") @map("enrollment_status") @db.VarChar(20)
+  enrolledAt       DateTime? @map("enrolled_at") @db.Timestamptz(6)
+  droppedAt        DateTime? @map("dropped_at") @db.Timestamptz(6)
+  course           Course    @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
+  role             Role      @relation(fields: [roleUuid], references: [roleUuid], onUpdate: NoAction)
+  user             User      @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([userUuid, courseUuid, roleUuid])
+  @@map("course_enrollment")
+}
+
+model VerificationCode {
+  courseUuid String   @map("course_uuid") @db.Uuid
+  roleUuid   String   @map("role_uuid") @db.Uuid
+  veriCode   String   @unique @map("veri_code") @db.VarChar(100)
+  isActive   Boolean? @default(true) @map("is_active")
+  course     Course   @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
+  role       Role     @relation(fields: [roleUuid], references: [roleUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([courseUuid, roleUuid])
+  @@map("verification_codes")
+}
+
+model Team {
+  teamUuid    String       @id @default(dbgenerated("gen_random_uuid()")) @map("team_uuid") @db.Uuid
+  courseUuid  String       @map("course_uuid") @db.Uuid
+  teamName    String       @map("team_name")
+  teamPageUrl String?      @map("team_page_url")
+  repoUrl     String?      @map("repo_url")
+  teamTaUuid  String?      @map("team_ta_uuid") @db.Uuid
+  standups    Standup[]
+  members     TeamMember[]
+  course      Course       @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade)
+  teamTa      User?        @relation("TeamTA", fields: [teamTaUuid], references: [userUuid])
+
+  @@unique([courseUuid, teamName], name: "uq_team_name_per_course", map: "uq_team_name_per_course")
+  @@map("teams")
+}
+
+model TeamMember {
+  teamUuid String    @map("team_uuid") @db.Uuid
+  userUuid String    @map("user_uuid") @db.Uuid
+  joinedAt DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
+  leftAt   DateTime? @map("left_at") @db.Timestamptz(6)
+  team     Team      @relation(fields: [teamUuid], references: [teamUuid], onDelete: Cascade)
+  user     User      @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade)
+
+  @@id([teamUuid, userUuid], map: "pk_team_members")
+  @@map("team_members")
+}
+
+model Standup {
+  standupUuid    String                @id @default(dbgenerated("gen_random_uuid()")) @map("standup_uuid") @db.Uuid
+  userUuid       String                @map("user_uuid") @db.Uuid
+  teamUuid       String                @map("team_uuid") @db.Uuid
+  courseUuid     String                @map("course_uuid") @db.Uuid
+  dateSubmitted    DateTime?             @map("date_submitted") @db.Timestamptz(6)
+  whatDone         String?               @map("what_done")
+  githubActivities Json?                 @map("github_activities")
+  whatNext         String?               @map("what_next")
+  blockers       String?
+  reflection     String?
+  sentimentScore Int?                  @map("sentiment_score")
+  visibility     String?               @db.VarChar(20)
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  course         Course                @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
+  team           Team                  @relation(fields: [teamUuid], references: [teamUuid], onDelete: Cascade, onUpdate: NoAction)
+  user           User                  @relation(fields: [userUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
+  sentimentLogs  StandupSentimentLog[]
+
+  @@map("standup")
+}
+
+model StandupSentimentLog {
+  logUuid        String   @id @default(dbgenerated("gen_random_uuid()")) @map("log_uuid") @db.Uuid
+  standupUuid    String   @map("standup_uuid") @db.Uuid
+  sentimentScore Int      @map("sentiment_score")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  standup        Standup  @relation(fields: [standupUuid], references: [standupUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("standup_sentiment_logs")
+}
+
+model Meeting {
+  meetingUuid        String        @id @default(dbgenerated("gen_random_uuid()")) @map("meeting_uuid") @db.Uuid
+  creatorUuid        String        @map("creator_uuid") @db.Uuid
+  courseUuid         String        @map("course_uuid") @db.Uuid
+  meetingStartTime   DateTime      @map("meeting_start_time") @db.Timestamptz(6)
+  meetingEndTime     DateTime      @map("meeting_end_time") @db.Timestamptz(6)
+  meetingDate        DateTime      @map("meeting_date") @db.Date
+  meetingTitle       String        @map("meeting_title") @db.VarChar(255)
+  meetingDescription String?       @map("meeting_description")
+  meetingLocation    String?       @map("meeting_location") @db.VarChar(255)
+  isRecurring        Boolean       @default(false) @map("is_recurring")
+  parentMeetingUuid  String?       @map("parent_meeting_uuid") @db.Uuid
+  meetingType        Int           @map("meeting_type")
+  course             Course        @relation(fields: [courseUuid], references: [courseUuid], onDelete: Cascade, onUpdate: NoAction)
+  creator            User          @relation("MeetingCreator", fields: [creatorUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
+  parentMeeting      Meeting?      @relation("RecurringMeetings", fields: [parentMeetingUuid], references: [meetingUuid], onUpdate: NoAction)
+  childMeetings      Meeting[]     @relation("RecurringMeetings")
+  meetingCodes       MeetingCode[]
+  participants       Participant[]
+
+  @@map("meeting")
+}
+
+model Participant {
+  meetingUuid     String    @map("meeting_uuid") @db.Uuid
+  participantUuid String    @map("participant_uuid") @db.Uuid
+  present         Boolean   @default(false)
+  attendanceTime  DateTime? @map("attendance_time") @db.Timestamptz(6)
+  meeting         Meeting   @relation(fields: [meetingUuid], references: [meetingUuid], onDelete: Cascade, onUpdate: NoAction)
+  participant     User      @relation(fields: [participantUuid], references: [userUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([meetingUuid, participantUuid])
+  @@map("participants")
+}
+
+model MeetingCode {
+  codeUuid           String   @id @default(dbgenerated("gen_random_uuid()")) @map("code_uuid") @db.Uuid
+  qrUrl              String   @map("qr_url")
+  meetingCode        String   @map("meeting_code") @db.VarChar(20)
+  meetingUuid        String   @map("meeting_uuid") @db.Uuid
+  validStartDatetime DateTime @map("valid_start_datetime") @db.Timestamptz(6)
+  validEndDatetime   DateTime @map("valid_end_datetime") @db.Timestamptz(6)
+  meeting            Meeting  @relation(fields: [meetingUuid], references: [meetingUuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("meeting_codes")
+}
+
+model FormRequest {
+  requestUuid        String   @id @default(dbgenerated("gen_random_uuid()")) @map("request_uuid") @db.Uuid
+  firstName          String   @map("first_name") @db.VarChar(100)
+  lastName           String   @map("last_name") @db.VarChar(100)
+  email              String   @unique @db.VarChar(255)
+  relatedInstitution String?  @map("related_institution") @db.VarChar(255)
+  verificationCode   String?  @map("verification_code") @db.VarChar(100)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("form_request")
+}

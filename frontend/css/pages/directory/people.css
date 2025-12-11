@@ -1,0 +1,322 @@
+/**
+ * People (Course Roster) Page Styles
+ * Follows "Premium Ecological" design system
+ * Matches standup team's polished styling approach
+ */
+
+/* ==================== Variables (Local Overrides) ==================== */
+.roster-container {
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --radius-input: 8px;
+  --shadow-card: 0 4px 12px rgba(5, 43, 8, 0.08);
+  --shadow-hover: 0 8px 24px rgba(5, 43, 8, 0.12);
+  --font-body: system-ui, -apple-system, sans-serif;
+}
+
+/* ==================== Container ==================== */
+.roster-container {
+  max-width: 1200px;
+  font-family: var(--font-body);
+}
+
+/* ==================== Header ==================== */
+.roster-header {
+  margin-bottom: 2rem;
+}
+
+.roster-title {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+/* ==================== Filter Section ==================== */
+.filter-section {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+}
+
+.filter-controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+}
+
+.role-filter-select {
+  font-family: var(--font-body);
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-light-matcha);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-light);
+  color: var(--color-forest-green);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-filter-select:focus {
+  outline: none;
+  background-color: white;
+  border-color: var(--color-radioactive-lime);
+  box-shadow: 0 0 0 3px rgba(153, 255, 102, 0.2);
+}
+
+.role-filter-select:hover {
+  border-color: var(--color-radioactive-lime);
+}
+
+.total-count-container {
+  margin-left: auto;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-forest-green);
+  font-weight: 600;
+}
+
+/* ==================== Roster Table Section ==================== */
+.roster-table-section {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.roster-table-section {
+  /* Enable horizontal scroll for narrow screens while preserving card look */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roster-table thead tr {
+  background: var(--color-light-matcha);
+  border-bottom: 2px solid var(--color-forest-green);
+}
+
+.roster-table th {
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  color: var(--color-forest-green);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.roster-table th:last-child {
+  text-align: center;
+}
+
+.roster-table tbody tr {
+  border-bottom: 1px solid var(--color-pale-mint);
+  transition: background 0.15s ease;
+}
+
+.roster-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.roster-table tbody tr:hover {
+  background: var(--color-pale-mint);
+}
+
+.roster-table tbody td {
+  padding: 1.5rem;
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  font-size: 0.95rem;
+}
+
+.roster-table tbody td:last-child {
+  text-align: center;
+}
+
+.roster-table tbody td.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-forest-green);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* ==================== Role Badges ==================== */
+.role-badge {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-btn);
+  border: 2px solid var(--color-forest-green);
+  color: var(--color-forest-green);
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+.role-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.role-badge-professor {
+  background: var(--color-radioactive-lime);
+}
+
+.role-badge-ta {
+  background: var(--color-pale-mint);
+}
+
+.role-badge-student {
+  background: var(--color-light-matcha);
+}
+
+.role-badge-team-leader {
+  background: var(--color-radioactive-lime);
+  border-color: var(--color-forest-green);
+}
+
+/* ==================== User Avatar ==================== */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--color-forest-green);
+  object-fit: cover;
+}
+
+.user-avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-radioactive-lime);
+  border: 2px solid var(--color-forest-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--color-forest-green);
+  font-size: 0.9rem;
+}
+
+.user-pronouns {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-forest-green);
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* ==================== View Profile Button ==================== */
+.view-profile-btn {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  background: var(--color-pale-mint);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.view-profile-btn:hover {
+  background: var(--color-forest-green);
+  color: white;
+  transform: translateX(2px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ==================== Pagination Section ==================== */
+.pagination-section {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination-section button {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: var(--color-light-matcha);
+  color: var(--color-forest-green);
+}
+
+.pagination-section button:hover:not(:disabled) {
+  background-color: var(--color-radioactive-lime);
+  transform: translateY(-1px);
+}
+
+.pagination-section button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+  .roster-title {
+    font-size: 2rem;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .total-count-container {
+    margin-left: 0;
+  }
+
+  .roster-table {
+    font-size: 0.85rem;
+  }
+
+  .roster-table th,
+  .roster-table td {
+    padding: 1rem;
+  }
+}
+
+/* Extra-small devices: ensure table scrolls instead of breaking layout */
+@media (max-width: 480px) {
+  .filter-section {
+    padding: 1rem;
+  }
+
+  .roster-table {
+    /* Force scroll container to appear when columns don't fit */
+    min-width: 640px;
+  }
+
+  .role-filter-select {
+    width: 100%;
+  }
+}

@@ -1,0 +1,174 @@
+<template>
+  <link rel="stylesheet" href="../../css/pages/attendance/attendance.css">
+
+  <!-- Calendar Container -->
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button id="prev-month">◀</button>
+      <h2 id="current-month"></h2>
+      <button id="next-month">▶</button>
+    </div>
+
+    <div class="calendar-today-btn">
+      <button id="today-btn">Today</button>
+    </div>
+
+    <!-- Staff toggle for showing all meetings (Professors and TAs) -->
+    <div id="professor-meetings-toggle-container" class="professor-toggle-container hidden">
+      <label class="toggle-label">
+        <input type="checkbox" id="show-all-meetings-toggle" checked />
+        <span>Show all course meetings</span>
+      </label>
+      <p class="toggle-hint">Toggle to hide meetings you are not invited to</p>
+    </div>
+
+    <div class="calendar-grid" id="calendar-grid"></div>
+  </div>
+
+  <!-- Meeting Creation Modal -->
+  <div id="meeting-modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2>Create Meeting</h2>
+      <form id="meeting-form">
+
+        <!-- Meeting attributes -->
+        <label>Meeting Title</label>
+        <input type="text" id="meeting-title" required />
+
+        <label>Date</label>
+        <input type="date" id="meeting-date" required />
+
+        <label>Start Time</label>
+        <input type="time" id="meeting-time" required />
+
+        <label>End Time</label>
+        <input type="time" id="meeting-end-time" required />
+
+        <label>Meeting Type</label>
+        <select id="meeting-type" required>
+          <option>Lecture</option>
+          <option>OH</option>
+          <option>TA Check-In</option>
+          <option>Team Meeting</option>
+        </select>
+
+        <label>Participants</label>
+        <div class="participants-controls">
+          <button type="button" id="select-all-participants" class="btn-select-all">Select All</button>
+          <button type="button" id="deselect-all-participants" class="btn-deselect-all">Deselect All</button>
+          <select id="select-by-team" class="team-selector">
+            <option value="">Add by Team...</option>
+          </select>
+        </div>
+        <div id="meeting-participants" class="participants-container">
+          <!-- Participants will be loaded dynamically -->
+          <p style="padding: 10px; color: #666; text-align: center;">Loading participants...</p>
+        </div>
+
+        <label>Description</label>
+        <textarea id="meeting-description"></textarea>
+
+        <label>Meeting Location</label>
+        <input type="text" id="meeting-location" />
+        <p style="font-size: 0.875rem; color: #666; margin-top: 0.25rem;">Enter a location (Building and room, Zoom link, or Google Meet link) - optional</p>
+
+        <!-- set up meeting recurrence -->
+        <div class="recurring-card">
+          <div class="recurring-header">
+            <div class="recurring-copy">
+              <p class="recurring-title">Recurring weekly</p>
+              <p class="recurring-summary" id="recurring-summary">
+                Select a date to preview the repeating schedule.
+              </p>
+            </div>
+            <label class="recurring-toggle" for="recurring" aria-label="Toggle recurring weekly meetings">
+              <input type="checkbox" id="recurring" class="recurring-checkbox" />
+              <span class="recurring-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="recurring-end">
+            <label for="recurring-end-date">Repeat until</label>
+            <input type="date" id="recurring-end-date" />
+            <p class="recurring-hint">Meetings recur weekly up to and including this date.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit">Create Meeting</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Meeting Details Modal, displayed after clicking on an existing meeting in the calendar -->
+  <div id="meeting-content-modal-wrapper" class="modal hidden">
+    <div id="meeting-content-modal" class="modal-content attendance-modal">
+      <span id="close-meeting-content" class="close">&times;</span>
+
+      <div class="attendance-container">
+        
+        <!-- Meeting metadata -->
+        <div class="meeting-metadata">
+          <h2 id="attendance-meeting-title">Meeting Title</h2>
+          <p><strong>Date:</strong> <span id="attendance-meeting-date"></span></p>
+          <p><strong>Time:</strong> <span id="attendance-meeting-time"></span></p>
+          <p><strong>Type:</strong> <span id="attendance-meeting-type"></span></p>
+          <p id="attendance-meeting-location-label" style="display: none;"><strong>Location:</strong> <span id="attendance-meeting-location" class="meeting-location-value"></span></p>
+          <p id="attendance-meeting-desc-label" style="display: none;"><strong>Description:</strong></p>
+          <div id="attendance-meeting-desc" class="meeting-desc-scrollable" style="display: none;"></div>
+          <p><strong>Participants:</strong></p>
+          <div id="attendance-meeting-participants" class="meeting-participants-container">
+            <!-- Participants will be loaded dynamically, organized by team -->
+            <p style="padding: 10px; color: #666; text-align: center;">Loading participants...</p>
+          </div>
+          <div class="meeting-metadata-actions" id="meeting-actions">
+            <button id="delete-meeting" class="danger">Delete Meeting</button>
+            <button id="delete-future-meetings" class="danger secondary" disabled>Delete This & Future</button>
+          </div>
+        </div>
+
+        <!-- Attendance options - Different views for creator vs participant -->
+        <div class="attendance-options">
+          <!-- Creator View: Show QR Code and Alphanumeric Code -->
+          <div id="creator-attendance-view" class="attendance-view hidden">
+            <h3>Meeting Attendance Code</h3>
+            <div class="code-display-section">
+              <div class="qr-code-container">
+                <img id="meeting-qr-code" src="" alt="QR Code" class="qr-code-image" />
+                <p class="qr-code-label">Scan this QR code to mark attendance</p>
+              </div>
+              <div class="alphanumeric-code-container">
+                <label for="meeting-code-display">Alphanumeric Code:</label>
+                <div id="meeting-code-display" class="code-display"></div>
+                <button id="copy-code-btn" class="btn-copy-code">Copy Code</button>
+              </div>
+            </div>
+            <div class="creator-attendance-section">
+              <button id="creator-mark-attendance-btn" class="btn-creator-attendance">Mark My Attendance</button>
+            </div>
+          </div>
+
+          <!-- Participant View: Camera Scanner and Code Input -->
+          <div id="participant-attendance-view" class="attendance-view hidden">
+            <h3>Submit Attendance</h3>
+            <div class="attendance-input-section">
+              <div class="camera-scanner-container">
+                <video id="qr-scanner-video" class="camera-video" autoplay playsinline></video>
+                <canvas id="qr-scanner-canvas" class="camera-canvas hidden"></canvas>
+                <p class="camera-label">Point camera at QR code to scan</p>
+                <button id="start-camera-btn" class="btn-start-camera">Start Camera</button>
+                <button id="stop-camera-btn" class="btn-stop-camera hidden">Stop Camera</button>
+              </div>
+              <div class="code-input-container">
+                <p class="or-divider">Or enter code manually:</p>
+                <input type="text" id="attendance-passcode" placeholder="Enter code" maxlength="6" />
+                <button id="submit-attendance">Submit Attendance</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

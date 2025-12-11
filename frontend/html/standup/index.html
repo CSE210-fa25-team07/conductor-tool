@@ -1,14 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Standup Tool - Conductor</title>
-    <!-- NO CSS - Zero styling as requested -->
-</head>
-<body>
-    <div id="app"></div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting to Course Page - Conductor</title>
 
-    <script type="module" src="../../js/pages/standup/main.js"></script>
+  <link rel="stylesheet" href="../../css/components/global.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    /**
+     * Standup Redirec for DEV - This page ONLY redirects to the course page
+     * Standup is NOT a standalone feature
+     */
+    (function redirectToCoursePage() {
+      // Try to get course context from sessionStorage
+      const storedCourse = sessionStorage.getItem('activeCourse');
+
+      if (storedCourse) {
+        try {
+          const course = JSON.parse(storedCourse);
+          const courseId = course.courseUuid;
+
+          if (!courseId) {
+            throw new Error('No course UUID found');
+          }
+
+          // Redirect to course standup page
+          window.location.replace(`/courses/${courseId}/standup`);
+          return;
+        } catch (error) {
+          console.error('Failed to parse course data:', error);
+        }
+      }
+
+      // If we reach here, no valid course context - show message
+      // (Message will be displayed by the HTML below)
+    })();
+  </script>
+</head>
+<body class="animated-bg">
+
+  <main class="main-content" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <section style="max-width: 600px; text-align: center;">
+      <div style="
+        font-family: var(--font-mono);
+        color: var(--color-forest-green);
+        background: var(--color-light-matcha);
+        border: var(--border-thick);
+        padding: var(--space-2xl);
+      ">
+        <h1 style="
+          font-family: var(--font-heading);
+          font-size: var(--text-4xl);
+          color: var(--color-forest-green);
+          margin-bottom: var(--space-lg);
+        ">
+          Access Standup Through Course Page
+        </h1>
+        <p style="margin-bottom: var(--space-lg); line-height: 1.6; font-size: var(--text-lg);">
+          The standup feature is now integrated into the course features page.
+        </p>
+        <p style="margin-bottom: var(--space-xl); line-height: 1.6;">
+          Please select a course from the dashboard to access standup tools.
+        </p>
+        <a href="/dashboard" style="
+          display: inline-block;
+          padding: var(--space-md) var(--space-lg);
+          background: var(--color-radioactive-lime);
+          color: var(--color-forest-green);
+          border: var(--border-thick);
+          text-decoration: none;
+          font-family: var(--font-mono);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          transition: all var(--transition-fast);
+        ">
+          Go to Dashboard
+        </a>
+      </div>
+    </section>
+  </main>
+
 </body>
 </html>

@@ -1,0 +1,301 @@
+/**
+ * Navigation Component Styles
+ * Top navigation and secondary sidebar navigation
+ */
+
+/* Top Navigation - Brutalist Style */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 84px;
+  background: var(--color-pale-mint);
+  border-bottom: var(--border-thick);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-lg);
+}
+
+.top-nav-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-nav-logo {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  letter-spacing: -0.03em;
+}
+
+.top-nav-logo:hover {
+  color: var(--color-radioactive-lime);
+}
+
+/* Course/Admin Title in Top Nav */
+.course-title-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  color: var(--color-forest-green);
+}
+
+.course-code {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-forest-green);
+}
+
+.course-name-short {
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--color-forest-green-medium);
+}
+
+.top-nav-links {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.top-nav-link {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-forest-green-medium);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: var(--text-sm);
+  letter-spacing: 0.1em;
+  position: relative;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.top-nav-link:hover {
+  color: var(--color-forest-green);
+  border-bottom-color: var(--color-radioactive-lime);
+}
+
+.top-nav-link.active {
+  color: var(--color-forest-green);
+  border-bottom-color: var(--color-forest-green);
+  font-weight: 700;
+}
+
+/* User Profile Section - Brutalist */
+.user-profile-dropdown {
+  position: relative;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: var(--border-thin);
+}
+
+.user-profile:hover {
+  border-color: var(--color-radioactive-lime);
+  background: var(--color-light-matcha);
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-radioactive-lime);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-forest-green);
+  font-size: var(--text-base);
+  border: 1px solid var(--color-forest-green);
+}
+
+.user-name {
+  color: var(--color-forest-green);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--color-light-matcha);
+  border: var(--border-thin);
+  min-width: 200px;
+  z-index: 1100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-fast);
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-forest-green-medium);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--text-base);
+  text-decoration: none;
+  border-bottom: var(--border-thin);
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border-bottom-color: transparent;
+  padding-left: var(--space-lg);
+}
+
+/* Secondary Navigation - Brutalist Sidebar (20% larger) */
+.secondary-nav {
+  position: fixed;
+  top: 84px;
+  left: 0;
+  width: 288px;
+  height: calc(100vh - 84px);
+  background: var(--color-light-matcha);
+  border-right: var(--border-thin);
+  padding: var(--space-lg);
+  overflow-y: auto;
+  z-index: 900;
+  transition: transform var(--transition-base);
+}
+
+.secondary-nav.hidden {
+  transform: translateX(-100%);
+}
+
+.secondary-nav-title {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-forest-green-medium);
+  margin-bottom: var(--space-md);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.secondary-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.secondary-nav-link {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-forest-green-medium);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border-radius: 0;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.secondary-nav-link:hover {
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-radioactive-lime);
+}
+
+.secondary-nav-link.active {
+  background: var(--color-pale-mint);
+  color: var(--color-forest-green);
+  border-left-color: var(--color-forest-green);
+  font-weight: 700;
+}
+
+/* Main Content Area (adjusted for navigation) */
+.main-content {
+  margin-top: 84px;
+  margin-left: 0;
+  padding: var(--space-xl);
+  min-height: calc(100vh - 84px);
+  transition: margin-left var(--transition-base);
+}
+
+.main-content.with-sidebar {
+  margin-left: 288px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 0 var(--space-sm);
+  }
+
+  .top-nav-links {
+    gap: var(--space-sm);
+  }
+
+  .top-nav-link {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-xs);
+  }
+
+  .secondary-nav {
+    width: 240px;
+  }
+
+  .main-content.with-sidebar {
+    margin-left: 240px;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-nav-logo {
+    font-size: var(--text-lg);
+  }
+
+  .secondary-nav {
+    transform: translateX(-100%);
+  }
+
+  .secondary-nav.mobile-open {
+    transform: translateX(0);
+  }
+
+  .main-content.with-sidebar {
+    margin-left: 0;
+  }
+}

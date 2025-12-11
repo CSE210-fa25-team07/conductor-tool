@@ -1,0 +1,83 @@
+<template>
+
+  <style>
+    .analytics-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      border: 2px solid #4CAF50;
+    }
+
+    .chart-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #2d2d2d;
+    }
+
+    .filter-group {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .filter-group label {
+      font-size: 14px;
+      color: #444;
+    }
+
+    .type-filters {
+      margin-bottom: 16px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .type-filters label {
+      font-size: 14px;
+      color: #444;
+      cursor: pointer;
+    }
+
+    .chart-wrapper {
+      height: 350px;
+      position: relative;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 10px;
+      border: 1px solid #eee;
+    }
+  </style>
+
+
+  <div class="analytics-card" id="groupAnalyticsCard">
+
+    <h3 class="chart-title">Team Attendance Trend</h3>
+
+    <!-- Team dropdown -->
+    <div class="filter-group">
+      <label for="groupTeamSelect">Team: </label>
+      <select id="groupTeamSelect">
+        <option value="">Select Team…</option>
+      </select>
+    </div>
+
+    <!-- Type filters -->
+    <div class="type-filters">
+      <label><input type="checkbox" class="group-type" value="lecture" checked> Lecture</label>
+      <label><input type="checkbox" class="group-type" value="office-hours" checked> Office Hours</label>
+      <label><input type="checkbox" class="group-type" value="ta-checkin" checked> TA Check-in</label>
+      <label><input type="checkbox" class="group-type" value="team-meeting" checked> Team Meeting</label>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrapper">
+      <canvas id="groupAttendanceChart"></canvas>
+    </div>
+
+  </div>
+
+</template>

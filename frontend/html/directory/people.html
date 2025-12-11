@@ -1,0 +1,49 @@
+<template>
+  <link rel="stylesheet" href="../../css/pages/directory/people.css">
+
+  <div class="roster-container">
+    <!-- Header -->
+    <header class="roster-header">
+      <h1 class="roster-title">Course Roster</h1>
+    </header>
+
+    <!-- Filter Controls -->
+    <section class="filter-section">
+      <div class="filter-controls">
+        <label class="filter-label">Filter by Role:</label>
+        <select id="role-filter" class="role-filter-select">
+          <option value="all">All Roles</option>
+          <option value="student">Students</option>
+          <option value="ta">Teaching Assistants</option>
+          <option value="instructor">Instructors</option>
+        </select>
+
+        <div class="total-count-container">
+          Total: <strong id="roster-total-count">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roster Table -->
+    <section class="roster-table-section">
+      <table class="roster-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="roster-table-body">
+          <tr>
+            <td colspan="4">Loading roster...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Pagination Controls -->
+    <section id="roster-pagination" class="pagination-section"></section>
+  </div>
+</template>

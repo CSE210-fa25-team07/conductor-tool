@@ -34,11 +34,10 @@ conductor-tool/
 Backend follows this:
 
 ```
-Route → Controller → Service → Repository
+Route → Service → Repository
 ```
 
 - **Route:** URL mapping
-- **Controller:** Extract request data, return response
 - **Service:** Business logic
 - **Repository:** SQL queries
 
@@ -51,17 +50,8 @@ Don't mix layers. See [codebase_structure.md](specs/code_guides/codebase_structu
 One feature = matching files across layers:
 
 - `standupRoutes.js`
-- `standupController.js`
 - `standupService.js`
 - `standupRepository.js`
-
----
-
-## Where to Learn More
-
-- **[codebase_structure.md](specs/code_guides/codebase_structure.md)** - Quick reference with patterns
-- **[subteam_expectations.md](specs/code_guides/subteam_expectations.md)** - Team ownership + dependencies
-- **Folder READMEs** - Check any folder for specific guidance
 
 ---
 

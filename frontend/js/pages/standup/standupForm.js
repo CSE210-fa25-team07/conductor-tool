@@ -1,315 +1,690 @@
 /**
- * @fileoverview Standup Form Page - Student submits daily standup
- * NO STYLING - Pure HTML elements only
+ * @fileoverview Standup Form View
+ * Handles creating and editing standup submissions
  * @module standup/standupForm
  */
 
-import { currentUser, getGithubActivityByUser, mockTeams } from "./mockData.js";
+import { createStandup, updateStandup } from "../../api/standupApi.js";
+import { getGitHubStatus, getGitHubActivity, getConnectUrl } from "../../api/githubApi.js";
+import { getActiveCourse, getUserTeams } from "../../utils/userContext.js";
+import { refreshCurrentView, navigateBack } from "./courseIntegration.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
+
+let editMode = false;
+let editingStandupId = null;
 
 /**
- * Renders the standup submission form
- * @function renderStandupForm
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the standup form
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} params - Optional params (standupData for editing)
  */
-export function renderStandupForm(containerId) {
-  const container = document.getElementById(containerId);
+export async function render(container, params = {}) {
+  // Extract standupData from params
+  const standupData = params.standupData || null;
 
-  // Clear container
-  container.innerHTML = "";
+  // Set edit mode if standupData provided
+  editMode = !!standupData;
+  editingStandupId = standupData?.standupUuid || null;
 
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "Daily Standup";
-  container.appendChild(header);
+  // Reset selected activities for new form
+  selectedActivities = [];
+  currentActivityData = null;
 
-  // User info
-  const userInfo = document.createElement("p");
-  userInfo.textContent = `Logged in as: ${currentUser.name} (${currentUser.email})`;
-  container.appendChild(userInfo);
+  const activeCourse = getActiveCourse();
+  const userTeams = getUserTeams();
 
-  // Date info
-  const dateInfo = document.createElement("p");
-  dateInfo.textContent = `Date: ${new Date().toLocaleDateString()}`;
-  container.appendChild(dateInfo);
+  // Filter teams for the active course
+  const courseTeams = userTeams.filter(t => t.courseUuid === activeCourse?.courseUuid);
 
-  // Form
-  const form = document.createElement("form");
-  form.id = "standup-form";
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
 
-  // Question 1: What did you accomplish yesterday?
-  const q1Label = document.createElement("label");
-  q1Label.textContent = "1. What did you accomplish yesterday?";
-  form.appendChild(q1Label);
+  // Load page template
+  const pageHTML = await loadTemplate("standup", "standupForm");
+  container.innerHTML = pageHTML;
 
-  form.appendChild(document.createElement("br"));
-
-  const q1Textarea = document.createElement("textarea");
-  q1Textarea.id = "what-done";
-  q1Textarea.name = "what-done";
-  q1Textarea.rows = 5;
-  q1Textarea.cols = 80;
-  q1Textarea.placeholder = "Describe what you accomplished...";
-  form.appendChild(q1Textarea);
-
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
-
-  // GitHub status and auto-populate button
-  if (!currentUser.github_connected) {
-    const githubWarning = document.createElement("p");
-    githubWarning.textContent = "⚠️ GitHub not connected. Connect your GitHub account to auto-populate activity.";
-    form.appendChild(githubWarning);
-
-    const connectBtn = document.createElement("button");
-    connectBtn.type = "button";
-    connectBtn.textContent = "Connect GitHub Account";
-    connectBtn.onclick = () => {
-      alert("Would redirect to GitHub OAuth (mock action)");
-    };
-    form.appendChild(connectBtn);
-  } else {
-    // Show GitHub org info
-    const team = mockTeams.find(t => t.team_uuid === "team-001");
-    const githubInfo = document.createElement("p");
-    githubInfo.textContent = `GitHub connected: @${currentUser.github_username} | Team org: ${team.github_org}`;
-    form.appendChild(githubInfo);
-
-    // GitHub auto-populate button
-    const githubBtn = document.createElement("button");
-    githubBtn.type = "button";
-    githubBtn.textContent = "Auto-populate from GitHub (last 24h)";
-    githubBtn.onclick = () => {
-      const activities = getGithubActivityByUser(currentUser.user_uuid, 24);
-
-      if (activities.length === 0) {
-        q1Textarea.value = "No GitHub activity in the last 24 hours.";
-        return;
-      }
-
-      let content = "GitHub Activity (last 24h):\n\n";
-
-      // Group by type
-      const commits = activities.filter(a => a.activity_type === "commit");
-      const prs = activities.filter(a => a.activity_type === "pull_request");
-      const reviews = activities.filter(a => a.activity_type === "review");
-      const issues = activities.filter(a => a.activity_type === "issue");
-
-      if (commits.length > 0) {
-        content += "Commits:\n";
-        commits.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ ${activity.data.sha}: ${activity.data.message} (${activity.repo_name}) - ${hoursAgo}h ago - +${activity.data.additions}/-${activity.data.deletions} lines\n`;
-        });
-        content += "\n";
-      }
-
-      if (prs.length > 0) {
-        content += "Pull Requests:\n";
-        prs.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ PR #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      if (reviews.length > 0) {
-        content += "Code Reviews:\n";
-        reviews.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Reviewed PR #${activity.data.pr_number}: ${activity.data.pr_title} (${activity.repo_name}) - ${activity.data.review_state.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      if (issues.length > 0) {
-        content += "Issues:\n";
-        issues.forEach(activity => {
-          const hoursAgo = Math.floor((Date.now() - new Date(activity.timestamp)) / (1000 * 60 * 60));
-          content += `  ✓ Issue #${activity.data.number}: ${activity.data.title} (${activity.repo_name}) - ${activity.data.action.toUpperCase()} - ${hoursAgo}h ago\n`;
-        });
-        content += "\n";
-      }
-
-      content += "\n[You can edit above or add non-code work below]";
-
-      q1Textarea.value = content;
-    };
-    form.appendChild(githubBtn);
+  // Set form title
+  const formTitle = document.getElementById("form-title");
+  if (formTitle) {
+    formTitle.textContent = editMode ? "Edit Standup" : "Submit Daily Standup";
   }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  // Set date field
+  const dateField = document.getElementById("date-submitted");
+  if (dateField) {
+    dateField.value = standupData?.dateSubmitted?.split("T")[0] || today;
+    dateField.max = today;
+  }
 
-  // Question 2: What will you work on today?
-  const q2Label = document.createElement("label");
-  q2Label.textContent = "2. What will you work on today?";
-  form.appendChild(q2Label);
+  // Insert team select if teams exist
+  const teamSelectPlaceholder = document.getElementById("team-select-placeholder");
+  if (teamSelectPlaceholder && courseTeams.length > 0) {
+    // Use pill-style selector for teams - default to first team or editing team
+    const selectedTeam = standupData?.teamUuid || courseTeams[0].teamUuid;
+    teamSelectPlaceholder.innerHTML = `
+      <label>Team *</label>
+      <div class="team-pill-selector">
+        ${courseTeams.map(team => `
+          <label class="team-pill-option">
+            <input type="radio" name="teamUuid" value="${team.teamUuid}" ${selectedTeam === team.teamUuid ? "checked" : ""} required>
+            <span class="team-pill-content" title="${team.teamName}">${team.teamName}</span>
+          </label>
+        `).join("")}
+      </div>
+    `;
+  } else if (teamSelectPlaceholder) {
+    // Show message if no teams - standup requires a team
+    teamSelectPlaceholder.innerHTML = `
+      <div class="no-team-warning">
+        You must be assigned to a team to submit standups.
+      </div>
+    `;
+  }
 
-  form.appendChild(document.createElement("br"));
+  // Populate form fields with standupData if editing
+  if (standupData) {
+    const whatDone = document.getElementById("what-done");
+    const whatNext = document.getElementById("what-next");
+    const blockers = document.getElementById("blockers");
+    const reflection = document.getElementById("reflection");
 
-  const q2Textarea = document.createElement("textarea");
-  q2Textarea.id = "what-next";
-  q2Textarea.name = "what-next";
-  q2Textarea.rows = 5;
-  q2Textarea.cols = 80;
-  q2Textarea.placeholder = "Describe your plans for today...";
-  form.appendChild(q2Textarea);
+    if (whatDone) whatDone.value = standupData.whatDone || "";
+    if (whatNext) whatNext.value = standupData.whatNext || "";
+    if (blockers) blockers.value = standupData.blockers || "";
+    if (reflection) reflection.value = standupData.reflection || "";
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+    // Set mood selector radio button
+    const moodValue = standupData.sentimentScore || 3;
+    const moodRadio = document.querySelector(`input[name="sentimentScore"][value="${moodValue}"]`);
+    if (moodRadio) moodRadio.checked = true;
 
-  // Question 3: Any blockers?
-  const q3Label = document.createElement("label");
-  q3Label.textContent = "3. Any blockers?";
-  form.appendChild(q3Label);
+    // Populate selected activities from stored githubActivities
+    if (standupData.githubActivities && Array.isArray(standupData.githubActivities)) {
+      selectedActivities = standupData.githubActivities.map(activity => ({
+        type: activity.type,
+        iconClass: `activity-icon-${activity.type}`,
+        icon: getIconForType(activity.type),
+        label: activity.label,
+        url: activity.url,
+        text: `- ${activity.label}`
+      }));
+      // Render selected activities section
+      renderSelectedActivities();
+    }
+  }
 
-  form.appendChild(document.createElement("br"));
+  // Insert cancel button if in edit mode
+  const cancelButtonPlaceholder = document.getElementById("cancel-button-placeholder");
+  if (cancelButtonPlaceholder && editMode) {
+    cancelButtonPlaceholder.outerHTML = "<button type=\"button\" class=\"btn-secondary\" id=\"cancel-edit\">Cancel</button>";
+  }
 
-  const q3Textarea = document.createElement("textarea");
-  q3Textarea.id = "blockers";
-  q3Textarea.name = "blockers";
-  q3Textarea.rows = 3;
-  q3Textarea.cols = 80;
-  q3Textarea.placeholder = "Describe any blockers (leave empty if none)...";
-  form.appendChild(q3Textarea);
+  // Update submit button text
+  const submitButton = document.getElementById("submit-button");
+  if (submitButton) {
+    submitButton.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  // Attach event listeners
+  const form = document.getElementById("standup-form");
+  form.addEventListener("submit", handleSubmit);
 
-  // Reflection (optional)
-  const reflectionLabel = document.createElement("label");
-  reflectionLabel.textContent = "Personal reflection (optional):";
-  form.appendChild(reflectionLabel);
+  if (editMode) {
+    const cancelBtn = document.getElementById("cancel-edit");
+    cancelBtn?.addEventListener("click", () => {
+      editMode = false;
+      editingStandupId = null;
+      navigateBack();
+    });
+  }
 
-  form.appendChild(document.createElement("br"));
+  // Setup GitHub integration
+  await setupGitHubIntegration();
+}
 
-  const reflectionTextarea = document.createElement("textarea");
-  reflectionTextarea.id = "reflection";
-  reflectionTextarea.name = "reflection";
-  reflectionTextarea.rows = 3;
-  reflectionTextarea.cols = 80;
-  reflectionTextarea.placeholder = "How are you feeling about the project?";
-  form.appendChild(reflectionTextarea);
+/**
+ * Setup GitHub integration section
+ */
+async function setupGitHubIntegration() {
+  const githubSection = document.getElementById("github-section");
+  const fetchGithubBtn = document.getElementById("fetch-github-btn");
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  if (!githubSection) return;
 
-  // Sentiment emoji selector
-  const sentimentLabel = document.createElement("label");
-  sentimentLabel.textContent = "How are you feeling today?";
-  form.appendChild(sentimentLabel);
+  try {
+    const status = await getGitHubStatus();
 
-  form.appendChild(document.createElement("br"));
+    if (status.connected) {
+      // Show connected status
+      githubSection.innerHTML = `
+        <div class="github-status github-connected">
+          <span class="github-icon">&#xf09b;</span>
+          <span>Connected as <strong>@${status.username}</strong></span>
+        </div>
+      `;
 
-  const sentiments = [
-    { emoji: "😄", score: 1.0, label: "Very Happy" },
-    { emoji: "😊", score: 0.7, label: "Happy" },
-    { emoji: "🙂", score: 0.5, label: "Good" },
-    { emoji: "😐", score: 0.0, label: "Neutral" },
-    { emoji: "😕", score: -0.3, label: "Concerned" },
-    { emoji: "😞", score: -0.7, label: "Sad" }
-  ];
+      // Show the fetch button
+      if (fetchGithubBtn) {
+        fetchGithubBtn.style.display = "inline-block";
+        fetchGithubBtn.addEventListener("click", handleFetchFromGitHub);
+      }
+    } else {
+      // Show connect prompt - include courseUuid for redirect after auth
+      const activeCourse = getActiveCourse();
+      const connectUrl = getConnectUrl(activeCourse?.courseUuid || "");
+      githubSection.innerHTML = `
+        <div class="github-status github-not-connected">
+          <span>Connect your GitHub account to auto-populate your standup</span>
+          <a href="${connectUrl}" class="btn-github-connect">Connect GitHub</a>
+        </div>
+      `;
+    }
+  } catch {
+    // Hide section on error
+    githubSection.style.display = "none";
+  }
+}
 
-  const sentimentDiv = document.createElement("div");
-  sentimentDiv.id = "sentiment-selector";
+// Store fetched activity data
+let currentActivityData = null;
 
-  let selectedSentiment = null;
+// Store selected activities (array of {icon, iconClass, label, url, text})
+let selectedActivities = [];
 
-  sentiments.forEach(sentiment => {
-    const radioInput = document.createElement("input");
-    radioInput.type = "radio";
-    radioInput.name = "sentiment";
-    radioInput.value = sentiment.score;
-    radioInput.id = `sentiment-${sentiment.score}`;
+// Simple icons for activity types (using Unicode symbols)
+const ACTIVITY_ICONS = {
+  commit: "●",
+  pr: "⑃",
+  review: "✓",
+  issue: "◉"
+};
 
-    const radioLabel = document.createElement("label");
-    radioLabel.htmlFor = `sentiment-${sentiment.score}`;
-    radioLabel.textContent = `${sentiment.emoji} ${sentiment.label}`;
+/**
+ * Get icon for activity type
+ * @param {string} type - Activity type (commit, pr, review, issue)
+ * @returns {string} Icon character
+ */
+function getIconForType(type) {
+  return ACTIVITY_ICONS[type] || ACTIVITY_ICONS.commit;
+}
 
-    radioInput.onchange = () => {
-      selectedSentiment = {
-        score: sentiment.score,
-        emoji: sentiment.emoji
-      };
-    };
+/**
+ * Handle "Fetch from GitHub" button click
+ */
+async function handleFetchFromGitHub() {
+  const fetchBtn = document.getElementById("fetch-github-btn");
+  const activityContainer = document.getElementById("github-activity-container");
+  const activityList = document.getElementById("github-activity-list");
 
-    sentimentDiv.appendChild(radioInput);
-    sentimentDiv.appendChild(radioLabel);
-    sentimentDiv.appendChild(document.createElement("br"));
+  if (!fetchBtn || !activityContainer || !activityList) return;
+
+  // Show loading state
+  const originalText = fetchBtn.textContent;
+  fetchBtn.disabled = true;
+  fetchBtn.textContent = "Fetching...";
+
+  try {
+    const result = await getGitHubActivity(24);
+    currentActivityData = result;
+
+    // Render activity items
+    renderActivityList(result.activity, activityList);
+
+    // Show the activity container
+    activityContainer.style.display = "block";
+
+    // Setup activity controls
+    setupActivityControls();
+
+    // Reset button
+    fetchBtn.textContent = originalText;
+    fetchBtn.disabled = false;
+
+  } catch (error) {
+    // Show error state
+    fetchBtn.textContent = "Failed";
+    setTimeout(() => {
+      fetchBtn.textContent = originalText;
+      fetchBtn.disabled = false;
+    }, 2000);
+
+    // Show error message if token expired
+    if (error.code === "GITHUB_TOKEN_EXPIRED") {
+      showError("GitHub token expired. Please reconnect your account.");
+    } else {
+      showError("Failed to fetch GitHub activity. Please try again.");
+    }
+  }
+}
+
+/**
+ * Render activity items with checkboxes
+ * @param {Object} activity - Activity data with commits, pullRequests, reviews, issues
+ * @param {HTMLElement} container - Container to render into
+ */
+function renderActivityList(activity, container) {
+  container.innerHTML = "";
+
+  const allItems = [];
+
+  // Add commits
+  activity.commits.forEach((commit, idx) => {
+    const shortRepo = commit.repo.split("/").pop();
+    allItems.push({
+      type: "commit",
+      id: `commit-${idx}`,
+      icon: ACTIVITY_ICONS.commit,
+      iconClass: "activity-icon-commit",
+      label: `[${shortRepo}] ${commit.message}`,
+      url: commit.url,
+      text: `- [${shortRepo}] ${commit.message}`
+    });
   });
 
-  form.appendChild(sentimentDiv);
-
-  form.appendChild(document.createElement("br"));
-
-  // Visibility selector
-  const visibilityLabel = document.createElement("label");
-  visibilityLabel.textContent = "Who can see this standup?";
-  form.appendChild(visibilityLabel);
-
-  form.appendChild(document.createElement("br"));
-
-  const visibilitySelect = document.createElement("select");
-  visibilitySelect.id = "visibility";
-  visibilitySelect.name = "visibility";
-
-  ["Team", "Instructor", "Private"].forEach(vis => {
-    const option = document.createElement("option");
-    option.value = vis;
-    option.textContent = vis;
-    if (vis === "Team") option.selected = true;
-    visibilitySelect.appendChild(option);
+  // Add PRs
+  activity.pullRequests.forEach((pr, idx) => {
+    const shortRepo = pr.repo.split("/").pop();
+    const actionLabel = pr.action === "opened" ? "Opened" : pr.action === "closed" ? "Closed" : pr.action;
+    allItems.push({
+      type: "pr",
+      id: `pr-${idx}`,
+      icon: ACTIVITY_ICONS.pr,
+      iconClass: "activity-icon-pr",
+      label: `[${shortRepo}] PR #${pr.number}: ${pr.title} (${actionLabel})`,
+      url: pr.url,
+      text: `- [${shortRepo}] PR #${pr.number}: ${pr.title} (${actionLabel})`
+    });
   });
 
-  form.appendChild(visibilitySelect);
+  // Add reviews
+  activity.reviews.forEach((review, idx) => {
+    const shortRepo = review.repo.split("/").pop();
+    const stateLabel = review.state === "approved" ? "Approved" :
+      review.state === "changes_requested" ? "Requested changes" : "Commented";
+    allItems.push({
+      type: "review",
+      id: `review-${idx}`,
+      icon: ACTIVITY_ICONS.review,
+      iconClass: "activity-icon-review",
+      label: `[${shortRepo}] Reviewed PR #${review.prNumber} (${stateLabel})`,
+      url: review.url,
+      text: `- [${shortRepo}] Reviewed PR #${review.prNumber} (${stateLabel})`
+    });
+  });
 
-  form.appendChild(document.createElement("br"));
-  form.appendChild(document.createElement("br"));
+  // Add issues
+  activity.issues.forEach((issue, idx) => {
+    const shortRepo = issue.repo.split("/").pop();
+    const actionLabel = issue.action === "opened" ? "Opened" : "Closed";
+    allItems.push({
+      type: "issue",
+      id: `issue-${idx}`,
+      icon: ACTIVITY_ICONS.issue,
+      iconClass: "activity-icon-issue",
+      label: `[${shortRepo}] Issue #${issue.number}: ${issue.title} (${actionLabel})`,
+      url: issue.url,
+      text: `- [${shortRepo}] Issue #${issue.number}: ${issue.title} (${actionLabel})`
+    });
+  });
 
-  // Buttons
-  const saveDraftBtn = document.createElement("button");
-  saveDraftBtn.type = "button";
-  saveDraftBtn.textContent = "Save Draft";
-  saveDraftBtn.onclick = () => {
-    alert("Draft saved! (mock action)");
+  if (allItems.length === 0) {
+    container.innerHTML = "<div class=\"github-activity-empty\">No GitHub activity in the last 24 hours.</div>";
+    return;
+  }
+
+  // Render each item
+  allItems.forEach(item => {
+    const itemEl = document.createElement("label");
+    itemEl.className = `github-activity-item ${item.iconClass}`;
+    itemEl.innerHTML = `
+      <input type="checkbox" checked data-text="${escapeHtml(item.text)}" class="activity-checkbox">
+      <span class="activity-icon">${item.icon}</span>
+      <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="activity-label" onclick="event.stopPropagation();">
+        ${escapeHtml(item.label)}
+      </a>
+    `;
+    container.appendChild(itemEl);
+  });
+}
+
+/**
+ * Escape HTML special characters
+ */
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Setup activity controls (select/deselect all, add selected, close)
+ */
+function setupActivityControls() {
+  const selectAllBtn = document.getElementById("select-all-btn");
+  const deselectAllBtn = document.getElementById("deselect-all-btn");
+  const addSelectedBtn = document.getElementById("add-selected-btn");
+  const closeBtn = document.getElementById("close-activities-btn");
+
+  // Remove old event listeners by replacing elements
+  if (selectAllBtn) {
+    const newSelectAll = selectAllBtn.cloneNode(true);
+    selectAllBtn.parentNode.replaceChild(newSelectAll, selectAllBtn);
+    newSelectAll.addEventListener("click", () => toggleAllCheckboxes(true));
+  }
+
+  if (deselectAllBtn) {
+    const newDeselectAll = deselectAllBtn.cloneNode(true);
+    deselectAllBtn.parentNode.replaceChild(newDeselectAll, deselectAllBtn);
+    newDeselectAll.addEventListener("click", () => toggleAllCheckboxes(false));
+  }
+
+  if (addSelectedBtn) {
+    const newAddSelected = addSelectedBtn.cloneNode(true);
+    addSelectedBtn.parentNode.replaceChild(newAddSelected, addSelectedBtn);
+    newAddSelected.addEventListener("click", addSelectedToStandup);
+  }
+
+  if (closeBtn) {
+    const newClose = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newClose, closeBtn);
+    newClose.addEventListener("click", closeActivityContainer);
+  }
+}
+
+/**
+ * Toggle all checkboxes
+ */
+function toggleAllCheckboxes(checked) {
+  const checkboxes = document.querySelectorAll(".activity-checkbox");
+  checkboxes.forEach(cb => cb.checked = checked);
+}
+
+/**
+ * Add selected items to the standup (show in selected section)
+ */
+function addSelectedToStandup() {
+  const activityItems = document.querySelectorAll(".github-activity-item");
+
+  if (activityItems.length === 0) {
+    showError("No activities available.");
+    return;
+  }
+
+  // Collect selected items with their full data
+  selectedActivities = [];
+  activityItems.forEach(item => {
+    const checkbox = item.querySelector(".activity-checkbox");
+    if (checkbox && checkbox.checked) {
+      const iconClass = Array.from(item.classList).find(c => c.startsWith("activity-icon-")) || "";
+      const type = iconClass.replace("activity-icon-", "") || "commit";
+      const link = item.querySelector(".activity-label");
+      selectedActivities.push({
+        type,
+        icon: ACTIVITY_ICONS[type] || ACTIVITY_ICONS.commit,
+        iconClass,
+        label: link?.textContent?.trim() || "",
+        url: link?.href || "",
+        text: checkbox.dataset.text || ""
+      });
+    }
+  });
+
+  if (selectedActivities.length === 0) {
+    showError("No items selected.");
+    return;
+  }
+
+  // Show selected activities section
+  renderSelectedActivities();
+
+  // Close the activity picker
+  closeActivityContainer();
+}
+
+/**
+ * Render selected activities in the display section
+ */
+function renderSelectedActivities() {
+  const section = document.getElementById("selected-activities-section");
+  const list = document.getElementById("selected-activities-list");
+  const editBtn = document.getElementById("edit-selection-btn");
+
+  if (!section || !list) return;
+
+  if (selectedActivities.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  // Render selected items (read-only, clickable)
+  list.innerHTML = "";
+  selectedActivities.forEach(item => {
+    const itemEl = document.createElement("div");
+    itemEl.className = `selected-activity-item ${item.iconClass}`;
+    itemEl.innerHTML = `
+      <span class="activity-icon">${item.icon}</span>
+      <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="activity-label">
+        ${escapeHtml(item.label)}
+      </a>
+    `;
+    list.appendChild(itemEl);
+  });
+
+  // Show section
+  section.style.display = "block";
+
+  // Setup edit button
+  if (editBtn) {
+    const newEditBtn = editBtn.cloneNode(true);
+    editBtn.parentNode.replaceChild(newEditBtn, editBtn);
+    newEditBtn.addEventListener("click", handleEditSelection);
+  }
+}
+
+/**
+ * Handle edit button - reopen activity picker
+ */
+function handleEditSelection() {
+  const activityContainer = document.getElementById("github-activity-container");
+
+  if (!activityContainer) return;
+
+  // If we have activity data, just show the picker again
+  if (currentActivityData) {
+    activityContainer.style.display = "block";
+
+    // Re-check the boxes based on selectedActivities
+    const checkboxes = document.querySelectorAll(".activity-checkbox");
+    checkboxes.forEach(cb => {
+      const text = cb.dataset.text;
+      const isSelected = selectedActivities.some(a => a.text === text);
+      cb.checked = isSelected;
+    });
+  } else {
+    // Need to fetch again
+    handleFetchFromGitHub();
+  }
+}
+
+/**
+ * Close the activity container
+ */
+function closeActivityContainer() {
+  const activityContainer = document.getElementById("github-activity-container");
+  if (activityContainer) {
+    activityContainer.style.display = "none";
+  }
+}
+
+/**
+ * Get the user notes from the textarea
+ */
+function getUserNotes() {
+  const whatDoneField = document.getElementById("what-done");
+  return whatDoneField?.value?.trim() || "";
+}
+
+/**
+ * Get GitHub activities formatted for storage (type, label, url only - no icons)
+ * @returns {Array|null} Array of activity objects or null if none
+ */
+function getGitHubActivitiesForStorage() {
+  if (selectedActivities.length === 0) return null;
+
+  return selectedActivities.map(activity => ({
+    type: activity.iconClass?.replace("activity-icon-", "") || "commit",
+    label: activity.label,
+    url: activity.url
+  }));
+}
+
+/**
+ * Handle form submission
+ * @param {Event} event - Form submit event
+ */
+async function handleSubmit(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+
+  // Get user notes and GitHub activities separately
+  const userNotes = getUserNotes();
+  const githubActivities = getGitHubActivitiesForStorage();
+
+  // Validate: must have either selected activities or user input
+  if (!userNotes && !githubActivities) {
+    showError("Please select GitHub activities or enter what you accomplished.");
+    return;
+  }
+
+  // Build standup data object
+  const standupData = {
+    dateSubmitted: formData.get("dateSubmitted"),
+    teamUuid: formData.get("teamUuid") || null,
+    whatDone: userNotes || null,
+    githubActivities: githubActivities,
+    whatNext: formData.get("whatNext"),
+    blockers: formData.get("blockers") || null,
+    reflection: formData.get("reflection") || null,
+    sentimentScore: parseInt(formData.get("sentimentScore"), 10),
+    visibility: "team"
   };
-  form.appendChild(saveDraftBtn);
 
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.textContent = "Submit Standup";
-  form.appendChild(submitBtn);
+  // Add courseUuid from active course
+  const activeCourse = getActiveCourse();
+  if (activeCourse) {
+    standupData.courseUuid = activeCourse.courseUuid;
+  }
 
-  // Form submit handler
-  form.onsubmit = (e) => {
-    e.preventDefault();
+  try {
+    // Disable submit button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editMode ? "Updating..." : "Submitting...";
 
-    /* eslint-disable camelcase */
-    // Using snake_case to match database schema
-    const formData = {
-      what_done: q1Textarea.value,
-      what_next: q2Textarea.value,
-      blockers: q3Textarea.value,
-      reflection: reflectionTextarea.value,
-      sentiment_score: selectedSentiment?.score || 0,
-      sentiment_emoji: selectedSentiment?.emoji || "😐",
-      visibility: visibilitySelect.value,
-      date_submitted: new Date().toISOString()
-    };
-    /* eslint-enable camelcase */
+    // Submit to API
+    if (editMode && editingStandupId) {
+      await updateStandup(editingStandupId, standupData);
+    } else {
+      await createStandup(standupData);
+    }
 
-    // Standup submitted (mock - would send to backend)
-    alert(`Standup submitted successfully!\n\nSentiment: ${formData.sentiment_emoji}\nVisibility: ${formData.visibility}`);
+    // Show success message
+    showSuccess(editMode ? "Standup updated successfully!" : "Standup submitted successfully!");
 
-    // Clear form
-    form.reset();
-  };
+    // Reset form if creating new
+    if (!editMode) {
+      form.reset();
+      // Reset to today's date
+      const today = new Date().toISOString().split("T")[0];
+      form.querySelector("#date-submitted").value = today;
+      // Reset mood selector to default (3)
+      const defaultMoodRadio = form.querySelector("input[name=\"sentimentScore\"][value=\"3\"]");
+      if (defaultMoodRadio) defaultMoodRadio.checked = true;
+      // Clear selected activities
+      selectedActivities = [];
+      const selectedSection = document.getElementById("selected-activities-section");
+      if (selectedSection) selectedSection.style.display = "none";
+    }
 
-  container.appendChild(form);
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
 
-  // Display submission time estimate
-  const timeEstimate = document.createElement("p");
-  timeEstimate.textContent = "Estimated time to complete: < 2 minutes";
-  container.appendChild(timeEstimate);
+    // Exit edit mode if editing
+    if (editMode) {
+      setTimeout(() => {
+        editMode = false;
+        editingStandupId = null;
+        refreshCurrentView();
+      }, 1500);
+    }
+
+  } catch (error) {
+    showError(error.message);
+
+    // Re-enable button
+    const submitBtn = form.querySelector("button[type=\"submit\"]");
+    submitBtn.disabled = false;
+    submitBtn.textContent = editMode ? "Update Standup" : "Submit Standup";
+  }
+}
+
+/**
+ * Show success message
+ * @param {string} message - Success message
+ */
+function showSuccess(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".success-message");
+  if (existing) existing.remove();
+
+  const successDiv = document.createElement("div");
+  successDiv.className = "success-message";
+  // Using class instead of inline style
+  successDiv.style.cssText = `
+    background-color: var(--color-radioactive-lime);
+    border: 1px solid var(--color-forest-green);
+    color: var(--color-forest-green);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-family: var(--font-body);
+  `;
+  successDiv.textContent = message;
+
+  form.insertBefore(successDiv, form.firstChild);
+
+  // Auto-remove after 3 seconds
+  setTimeout(() => successDiv.remove(), 3000);
+}
+
+/**
+ * Show error message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+  const form = document.getElementById("standup-form");
+  const existing = document.querySelector(".error-message");
+  if (existing) existing.remove();
+
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.textContent = message;
+
+  form.insertBefore(errorDiv, form.firstChild);
+
+  // Auto-remove after 5 seconds
+  setTimeout(() => errorDiv.remove(), 5000);
+}
+
+/**
+ * Edit a standup
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} standupData - Standup data to edit
+ */
+export function editStandup(container, standupData) {
+  render(container, { standupData });
 }

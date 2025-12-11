@@ -1,0 +1,59 @@
+<template>
+  <div class="history-card {{blockerClass}}">
+    <div class="history-card-header">
+      <div class="history-card-left">
+        <div class="mood-indicator mood-{{moodScore}}">
+          <svg class="mood-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path class="mood-mouth"/>
+            <circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/>
+            <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          <span class="mood-score">{{moodScore}}</span>
+        </div>
+        <div class="history-date-info">
+          <span class="history-date">{{date}}</span>
+          <span class="history-time">{{time}}</span>
+        </div>
+      </div>
+      <div class="history-card-right">
+        <span class="history-team">{{teamName}}</span>
+        {{#hasBlocker}}
+        <span class="history-blocker-badge">Blocker</span>
+        {{/hasBlocker}}
+        {{#showActions}}
+        <div class="history-actions">
+          <button class="history-action-btn edit-btn" data-id="{{standupUuid}}" title="Edit">✎</button>
+          <button class="history-action-btn delete-btn" data-id="{{standupUuid}}" title="Delete">×</button>
+        </div>
+        {{/showActions}}
+      </div>
+    </div>
+    <div class="history-card-body">
+      {{#hasGithubActivities}}
+      <div class="history-field github-activities-field">
+        <span class="history-field-label">GitHub Activity:</span>
+        <div class="history-github-activities">
+          {{{githubActivitiesHtml}}}
+        </div>
+      </div>
+      {{/hasGithubActivities}}
+      {{#whatDone}}
+      <div class="history-field">
+        <span class="history-field-label">{{#hasGithubActivities}}Notes:{{/hasGithubActivities}}{{^hasGithubActivities}}Done:{{/hasGithubActivities}}</span>
+        <span class="history-field-text">{{whatDone}}</span>
+      </div>
+      {{/whatDone}}
+      <div class="history-field">
+        <span class="history-field-label">Next:</span>
+        <span class="history-field-text">{{whatNext}}</span>
+      </div>
+      {{#hasBlocker}}
+      <div class="history-field blocker">
+        <span class="history-field-label">Blocker:</span>
+        <span class="history-field-text">{{blockers}}</span>
+      </div>
+      {{/hasBlocker}}
+    </div>
+  </div>
+</template>

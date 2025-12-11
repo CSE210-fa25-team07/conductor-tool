@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Conductor Tool</title>
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="../../css/components/global.css">
+  <link rel="stylesheet" href="../../css/components/navigation.css">
+  <link rel="stylesheet" href="../../css/pages/profile/profile.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="animated-bg">
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <section class="top-nav-container">
+      <!-- Logo -->
+      <header class="top-nav-logo">
+        <a href="/dashboard" style="color: inherit; text-decoration: none; border: none;">Conductor</a>
+      </header>
+
+      <!-- User Profile with Dropdown -->
+      <section class="user-profile-dropdown">
+        <article class="user-profile" id="user-profile-trigger">
+          <figure class="user-avatar">...</figure>
+          <span class="user-name">Loading...</span>
+        </article>
+        <menu class="dropdown-menu" id="user-dropdown"></menu>
+      </section>
+    </section>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="profile-container">
+
+      <!-- Profile Header -->
+      <header class="profile-header">
+        <figure class="profile-avatar" id="profile-avatar">...</figure>
+        <h1 class="profile-name" id="profile-name">Loading...</h1>
+        <p class="profile-email" id="profile-email">Loading...</p>
+      </header>
+
+      <!-- Error Message -->
+      <div id="error-message" class="error-message" style="display: none;"></div>
+
+      <!-- Success Message -->
+      <div id="success-message" class="success-message" style="display: none;"></div>
+
+      <!-- Back Button -->
+      <div class="back-button-container">
+        <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+      </div>
+
+      <!-- Profile Content -->
+      <section class="profile-content">
+
+        <!-- View Mode -->
+        <div id="view-mode" class="profile-view">
+          <div class="profile-section-header">
+            <h2 class="section-title">Profile Information</h2>
+            <button id="edit-btn" class="btn-primary">Edit Profile</button>
+          </div>
+
+          <div class="profile-fields">
+            <div class="profile-field">
+              <label class="field-label">First Name</label>
+              <p class="field-value" id="view-firstName">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Last Name</label>
+              <p class="field-value" id="view-lastName">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Email</label>
+              <p class="field-value" id="view-email">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Pronouns</label>
+              <p class="field-value" id="view-pronouns">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Bio</label>
+              <p class="field-value" id="view-bio">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">Phone Number</label>
+              <p class="field-value" id="view-phoneNumber">-</p>
+            </div>
+
+            <div class="profile-field">
+              <label class="field-label">GitHub Username</label>
+              <p class="field-value" id="view-githubUsername">-</p>
+            </div>
+          </div>
+
+          <!-- Staff Information Section (only shown for staff) -->
+          <div id="staff-section" class="staff-info-section" style="display: none; margin-top: var(--space-xl);">
+            <h3 class="section-subtitle">Staff Information</h3>
+            <div class="profile-fields">
+              <div class="profile-field">
+                <label class="field-label">Office Location</label>
+                <p class="field-value" id="view-officeLocation">-</p>
+              </div>
+
+              <div class="profile-field">
+                <label class="field-label">Research Interests</label>
+                <p class="field-value" id="view-researchInterest">-</p>
+              </div>
+
+              <div class="profile-field">
+                <label class="field-label">Personal Website</label>
+                <p class="field-value" id="view-personalWebsite">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="edit-mode" class="profile-edit" style="display: none;">
+          <div class="profile-section-header">
+            <h2 class="section-title">Edit Profile</h2>
+          </div>
+
+          <form id="profile-form" class="profile-form">
+            <div class="form-field">
+              <label for="edit-firstName" class="form-label">First Name *</label>
+              <input type="text" id="edit-firstName" name="firstName" class="form-input" required maxlength="100">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-lastName" class="form-label">Last Name *</label>
+              <input type="text" id="edit-lastName" name="lastName" class="form-input" required maxlength="100">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-email" class="form-label">Email</label>
+              <input type="email" id="edit-email" name="email" class="form-input" readonly disabled style="background-color: #e8e8e8; color: #888; cursor: default;">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-pronouns" class="form-label">Pronouns</label>
+              <input type="text" id="edit-pronouns" name="pronouns" class="form-input" maxlength="50" placeholder="e.g., she/her, he/him, they/them">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-bio" class="form-label">Bio</label>
+              <textarea id="edit-bio" name="bio" class="form-textarea" maxlength="1000" rows="4" placeholder="Tell us about yourself..."></textarea>
+            </div>
+
+            <div class="form-field">
+              <label for="edit-phoneNumber" class="form-label">Phone Number</label>
+              <input type="tel" id="edit-phoneNumber" name="phoneNumber" class="form-input" maxlength="20" placeholder="e.g., (123) 456-7890">
+            </div>
+
+            <div class="form-field">
+              <label for="edit-githubUsername" class="form-label">GitHub Username</label>
+              <input type="text" id="edit-githubUsername" name="githubUsername" class="form-input" maxlength="100" placeholder="e.g., octocat">
+            </div>
+
+            <!-- Staff Information Fields (only shown for staff) -->
+            <div id="staff-edit-section" style="display: none;">
+              <h3 class="section-subtitle" style="margin-top: var(--space-xl); margin-bottom: var(--space-md);">Staff Information</h3>
+
+              <div class="form-field">
+                <label for="edit-officeLocation" class="form-label">Office Location</label>
+                <input type="text" id="edit-officeLocation" name="officeLocation" class="form-input" maxlength="255" placeholder="e.g., CSE 3110">
+              </div>
+
+              <div class="form-field">
+                <label for="edit-researchInterest" class="form-label">Research Interests</label>
+                <textarea id="edit-researchInterest" name="researchInterest" class="form-textarea" rows="3" placeholder="Describe your research interests..."></textarea>
+              </div>
+
+              <div class="form-field">
+                <label for="edit-personalWebsite" class="form-label">Personal Website</label>
+                <input type="url" id="edit-personalWebsite" name="personalWebsite" class="form-input" placeholder="https://example.com">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+              <button type="submit" id="save-btn" class="btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+
+      </section>
+
+    </section>
+  </main>
+
+  <!-- JavaScript -->
+  <script type="module" src="../../js/pages/profile/profile.js"></script>
+
+</body>
+</html>

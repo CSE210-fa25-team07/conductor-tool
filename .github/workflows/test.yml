@@ -1,0 +1,58 @@
+name: Unit tests
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: conductor_admin
+          POSTGRES_PASSWORD: conductor_dev_password
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd "sh -c 'pg_isready -U conductor_admin -d postgres'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create conductor_tool database
+        run: |
+          PGPASSWORD=conductor_dev_password psql -h localhost -U conductor_admin -d postgres -c "CREATE DATABASE conductor_tool;" || true
+        env:
+          PGPASSWORD: conductor_dev_password
+
+      - name: Seed database with SQL files
+        run: |
+          for file in ./database/migrations/*.sql; do
+            PGPASSWORD=conductor_dev_password psql -h localhost -U conductor_admin -d conductor_tool -f "$file"
+          done
+        env:
+          PGPASSWORD: conductor_dev_password
+
+      - name:  Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Run tests
+        run: npm run test
+        env:
+          DATABASE_URL: postgresql://conductor_admin:conductor_dev_password@localhost:5432/conductor_tool

@@ -68,27 +68,82 @@ function functionName(param1, param2) {
   // function body
 }
 ``` 
+- To test your code, run `npm run test`
 
 ## Running the Web App (Local)
 > [!NOTE]
-> In order to use authentication (Log in with Google), you must have the `.env` file.
-> The `.env` file contains the necessary secrets and information that our web app uses for the Google Auth API.
-> Please ask the authentication team for more info.
+> Secrets for Google OAuth and GitHub Integration can be found [here](https://team-07-global.slack.com/archives/C0A1YEEV0D8/p1765005068127439). Please ensure to not leak these secrets.
 
-1. Run the web server
-    ```bash
-    node backend/src/server.js
-    ```
-2. On your browser, go to `localhost:8081`
+
+### 1. Setup Environment Variables
+
+Copy the content from `.env.example` and append it to your `.env` file (or create `.env` if it doesn't exist)
+
+### 2. Start the Database
+
+Start the PostgreSQL container:
+
+```bash
+npm run db:start
+```
+
+This will:
+- Create PostgreSQL 16 instance on port 5433
+- Run all migration scripts in `database/migrations/`
+- Initialize the `conductor_tool` database with tables and default roles
+- Persist data in a Docker volume
+
+### 3. Generate Prisma Client
+
+Generate the Prisma Client from the schema:
+
+```bash
+npm run db:generate
+```
+
+This creates type-safe database access functions based on your schema.
+
+### 4. (Optional) Open Prisma Studio
+
+Explore your database with a visual interface:
+
+```bash
+npm run db:studio
+```
+
+Opens a browser-based GUI at http://localhost:5555 to view and edit data.
+
+### 5. Run the web server
+```bash
+node backend/src/server.js
+```
+On your browser, go to `localhost:8081`
+
+### Quick Start/Stop Scripts
+
+For convenience, you can use the helper scripts:
+
+```bash
+# Start all services (database + backend)
+./start.sh
+
+# Stop all services
+./stop.sh
+```
+
+These scripts handle port checking, service startup/shutdown, and display colorful logs.
    
 ## Structure
 
 ```
 conductor-tool/
-├── frontend/      # VanillaJS
-├── backend/       # Node.js + Express (Port 8081)
-├── database/      # PostgreSQL migrations
-└── specs/         # Docs, ADRs
+├── frontend/              # VanillaJS
+│   └── css/components/    # Shared CSS components (global, navigation)
+├── backend/               # Node.js + Express (Port 8081)
+├── database/              # PostgreSQL migrations
+├── specs/                 # Docs, ADRs
+├── start.sh               # Start all services
+└── stop.sh                # Stop all services
 ```
 
 ## Team Ownership
@@ -103,13 +158,11 @@ conductor-tool/
 ## Docs
 
 - **[STRUCTURE_SUMMARY.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/STRUCTURE_SUMMARY.md)** - Quick overview
-- **[codebase_structure.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/codebase_structure.md)** - Patterns & examples
-- **[subteam_expectations.md](https://github.com/CSE210-fa25-team07/conductor-tool/blob/main/specs/code_guides/subteam_expectations.md)** - Team dependencies
 - **Folder READMEs** - Check any folder for guidance
 
 ## Rules
 
-1. **3-layer pattern:** Route → Controller → Service → Repository
+1. **3-layer pattern:** Route → Service → Repository
 2. **File naming:** Match your feature (`standupRoutes.js`, `standupService.js`)
 3. **Don't mix layers:** Business logic goes in services, SQL goes in repositories
 4. **Check folder READMEs** when unsure where code goes

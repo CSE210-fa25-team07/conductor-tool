@@ -2,38 +2,11 @@
  * User Service
  *
  * Business logic layer for user management.
- * Validates user data and coordinates with the repository.
+ * @module user-management/service
  */
 
 import * as userRepository from "../repositories/userRepository.js";
-
-/**
- * Validate user data
- * @param {Object} userData - User data to validate
- * @throws {Error} If validation fails
- * @status IN USE
- */
-function validateUserData(userData) {
-  const { firstName, lastName, email } = userData;
-
-  if (!firstName || typeof firstName !== "string" || firstName.trim().length === 0) {
-    throw new Error("First name is required and must be a non-empty string");
-  }
-
-  if (!lastName || typeof lastName !== "string" || lastName.trim().length === 0) {
-    throw new Error("Last name is required and must be a non-empty string");
-  }
-
-  if (!email || typeof email !== "string") {
-    throw new Error("Email is required and must be a string");
-  }
-
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    throw new Error("Invalid email format");
-  }
-}
+import * as userValidator from "../validators/userValidator.js";
 
 /**
  * Add a new user
@@ -43,7 +16,7 @@ function validateUserData(userData) {
  */
 async function addUser(userData) {
   // Validate input
-  validateUserData(userData);
+  userValidator.validateUserData(userData);
 
   // Normalize data
   const normalizedUser = {
@@ -71,32 +44,24 @@ async function getUserByEmail(email) {
   return await userRepository.getUserByEmail(normalizedEmail);
 }
 
-/**
- * Get all users
- * @returns {Promise<Array>} Array of all user objects
- * @status NOT IN USE
- */
-async function getAllUsers() {
-  return await userRepository.getAllUsers();
-}
 
 /**
- * Get a user by ID
- * @param {string} id - User ID to search for
- * @returns {Promise<Object|null>} User object or null if not found
- * @status NOT IN USE
+ * Get user photo URL by UUID
+ * @param {string} userUuid - User UUID to search for
+ * @returns {Promise<string|null>} Photo URL or null if not found
+ * @status IN USE
  */
-async function getUserById(id) {
-  if (!id || typeof id !== "string") {
-    throw new Error("User ID is required and must be a string");
+async function getUserPhotoUrl(userUuid) {
+  if (!userUuid || typeof userUuid !== "string") {
+    throw new Error("User UUID is required");
   }
 
-  return await userRepository.getUserById(id);
+  const user = await userRepository.getUserByUuid(userUuid);
+  return user?.photoUrl || null;
 }
 
 export {
   addUser,
   getUserByEmail,
-  getAllUsers,
-  getUserById
+  getUserPhotoUrl
 };

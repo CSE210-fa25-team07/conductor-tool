@@ -1,0 +1,28 @@
+<template>
+  <link rel="stylesheet" href="../../css/pages/directory/group.css">
+
+  <div class="teams-container">
+    <!-- Header -->
+    <header class="teams-header">
+      <h1 class="teams-title">Course Teams</h1>
+    </header>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number" id="teams-total-count">0</div>
+        <div class="stat-label">Total Teams</div>
+      </div>
+    </section>
+
+    <!-- Teams Grid -->
+    <section id="teams-grid" class="teams-grid">
+      <div class="loading-card">
+        <p class="loading-text">Loading teams...</p>
+      </div>
+    </section>
+
+    <!-- Pagination Controls -->
+    <section id="teams-pagination" class="teams-pagination"></section>
+  </div>
+</template>

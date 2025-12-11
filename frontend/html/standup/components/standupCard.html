@@ -1,0 +1,37 @@
+<template>
+  <div class="standup-card">
+    <div class="standup-card-header">
+      <div class="standup-date">{{date}}</div>
+      <div class="standup-meta">{{teamName}} • {{time}}</div>
+    </div>
+
+    <div class="standup-card-body">
+      <div class="standup-field">
+        <div class="standup-field-label">DONE</div>
+        <div class="standup-field-content">{{whatDone}}</div>
+      </div>
+
+      <div class="standup-field">
+        <div class="standup-field-label">NEXT</div>
+        <div class="standup-field-content">{{whatNext}}</div>
+      </div>
+
+      {{#blockers}}
+      <div class="standup-field">
+        <div class="standup-field-label" style="color: #c53030;">BLOCKERS</div>
+        <div class="standup-field-content" style="background-color: #fff5f5; color: #c53030;">{{blockers}}</div>
+      </div>
+      {{/blockers}}
+
+      <div class="standup-field">
+        <div class="standup-field-label">MOOD</div>
+        <div class="standup-field-content" style="font-size: 1.5rem;">{{moodEmoji}}</div>
+      </div>
+    </div>
+
+    <div class="standup-card-actions">
+      <button class="btn-small edit-btn" data-id="{{standupUuid}}">Edit</button>
+      <button class="btn-small btn-danger delete-btn" data-id="{{standupUuid}}">Delete</button>
+    </div>
+  </div>
+</template>

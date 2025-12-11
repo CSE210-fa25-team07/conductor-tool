@@ -10,6 +10,7 @@ Closes #123
 
 ## Testing Instructions
 *Explain how reviewers can test your changes*
+- Start up the webapp using these [steps](https://github.com/CSE210-fa25-team07/conductor-tool?tab=readme-ov-file#running-the-web-app-local)
 
 **Expected Result:**
 * Describe what should happen if everything works correctly*

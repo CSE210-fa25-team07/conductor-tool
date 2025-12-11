@@ -1,0 +1,400 @@
+/**
+ * User Profile (My) Page Styles
+ * Follows "Premium Ecological" design system
+ * Matches standup team's polished styling approach
+ */
+
+/* ==================== Variables (Local Overrides) ==================== */
+.my-profile-container {
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --shadow-card: 0 4px 12px rgba(5, 43, 8, 0.08);
+  --shadow-hover: 0 8px 24px rgba(5, 43, 8, 0.12);
+  --font-body: system-ui, -apple-system, sans-serif;
+  max-width: 900px;
+}
+
+/* ==================== Back Button ==================== */
+.my-profile-container .back-to-people-container {
+  margin-bottom: 1.5rem;
+}
+
+.my-profile-container .back-to-people-btn {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-forest-green);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.my-profile-container .back-to-people-btn:hover {
+  opacity: 1;
+  transform: translateX(-2px);
+}
+
+/* ==================== User Profile Card ==================== */
+.my-profile-container .user-profile-card {
+  background: var(--color-light-matcha);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.my-profile-container .user-profile-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.my-profile-container .user-profile-header {
+  display: flex;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.my-profile-container .user-profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--color-radioactive-lime);
+  border: 3px solid var(--color-forest-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  color: var(--color-forest-green);
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.my-profile-container .user-profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.my-profile-container .user-info {
+  flex: 1;
+}
+
+.my-profile-container .user-profile-name {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--color-forest-green);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.my-profile-container .user-email {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+}
+
+.my-profile-container .user-pronouns {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  opacity: 0.6;
+  margin-bottom: 1rem;
+  font-style: italic;
+  display: inline-block;
+  background: rgba(5, 43, 8, 0.05);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+}
+
+.my-profile-container .user-bio {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--color-forest-green);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid var(--color-radioactive-lime);
+}
+
+/* ==================== Contact Section ==================== */
+.my-profile-container .contact-section {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.my-profile-container .contact-section:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.my-profile-container .section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-forest-green);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.my-profile-container .contact-info {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.my-profile-container .contact-info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-pale-mint);
+  border-radius: var(--radius-btn);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.my-profile-container .contact-info-item:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-forest-green);
+  transform: translateX(4px);
+}
+
+.my-profile-container .contact-info-label {
+  font-weight: 600;
+  min-width: 120px;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.my-profile-container .contact-info-value {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+/* ==================== Staff Section ==================== */
+.my-profile-container .staff-info-section {
+  margin-bottom: 2rem;
+}
+
+.my-profile-container .staff-section {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.my-profile-container .staff-section:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.my-profile-container .staff-details {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.my-profile-container .staff-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-pale-mint);
+  border-radius: var(--radius-btn);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.my-profile-container .staff-detail-item:hover {
+  background: var(--color-light-matcha);
+  border-color: var(--color-forest-green);
+  transform: translateX(4px);
+}
+
+.my-profile-container .staff-detail-label {
+  font-weight: 600;
+  min-width: 140px;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.my-profile-container .staff-detail-value {
+  flex: 1;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* ==================== Course Cards ==================== */
+.my-profile-container .course-card {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.my-profile-container .course-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.my-profile-container .course-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  margin-bottom: 0.5rem;
+}
+
+.my-profile-container .course-card-role {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
+  text-transform: capitalize;
+}
+
+/* ==================== Team Cards ==================== */
+.my-profile-container .teams-section {
+  margin-top: 2rem;
+}
+
+.my-profile-container .teams-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-forest-green);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.my-profile-container .team-card {
+  background: white;
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.my-profile-container .team-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  border-color: var(--color-radioactive-lime);
+}
+
+.my-profile-container .team-card-name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  margin-bottom: 0.5rem;
+}
+
+.my-profile-container .team-card-date {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-forest-green);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.my-profile-container .view-team-btn {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-forest-green);
+  background: var(--color-pale-mint);
+  border: 2px solid var(--color-forest-green);
+  border-radius: var(--radius-btn);
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.my-profile-container .view-team-btn:hover {
+  background: var(--color-radioactive-lime);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-card);
+}
+
+.my-profile-container .no-items-message {
+  font-family: var(--font-body);
+  color: var(--color-forest-green);
+  opacity: 0.6;
+  font-size: 0.95rem;
+  padding: 2rem;
+  text-align: center;
+  background: var(--color-pale-mint);
+  border-radius: var(--radius-card);
+  border: 2px dashed var(--color-forest-green);
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 768px) {
+  .my-profile-container .user-profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .my-profile-container .user-profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  .my-profile-container .user-profile-name {
+    font-size: 2rem;
+  }
+
+  .my-profile-container .user-profile-card,
+  .my-profile-container .contact-section,
+  .my-profile-container .staff-section {
+    padding: 1.5rem;
+  }
+
+  .my-profile-container .contact-info-item,
+  .my-profile-container .staff-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .my-profile-container .contact-info-label,
+  .my-profile-container .staff-detail-label {
+    min-width: auto;
+  }
+
+  .my-profile-container .user-bio {
+    padding: 0.75rem;
+  }
+}

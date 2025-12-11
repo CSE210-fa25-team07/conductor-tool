@@ -1,0 +1,46 @@
+<template>
+  <link rel="stylesheet" href="../../css/pages/directory/my.css">
+
+  <div class="my-profile-container">
+    <!-- Back to People Button -->
+    <div id="back-to-people-container" class="back-to-people-container">
+      <button id="back-to-people" class="back-to-people-btn">← Back to People</button>
+    </div>
+
+    <!-- User Profile Card -->
+    <section class="user-profile-card">
+      <div class="user-profile-header">
+        <!-- Avatar -->
+        <div id="user-avatar" class="user-profile-avatar">?</div>
+
+        <!-- User Info -->
+        <div class="user-info">
+          <h1 id="user-name" class="user-profile-name">Loading...</h1>
+          <div id="user-email" class="user-email"></div>
+          <div id="user-pronouns" class="user-pronouns"></div>
+          <div id="user-bio" class="user-bio"></div>
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div id="user-courses-list"></div>
+    </section>
+
+    <!-- Contact & Links -->
+    <section class="contact-section">
+      <h2 class="section-title">Contact Information</h2>
+      <div id="user-contact-info" class="contact-info"></div>
+    </section>
+
+    <!-- Staff Information (if applicable) -->
+    <section id="staff-info-section" class="staff-info-section" style="display: none;">
+      <div class="staff-section">
+        <h2 class="section-title">Staff Information</h2>
+        <div id="staff-details" class="staff-details"></div>
+      </div>
+    </section>
+
+    <!-- Teams -->
+    <div id="user-teams-list"></div>
+  </div>
+</template>

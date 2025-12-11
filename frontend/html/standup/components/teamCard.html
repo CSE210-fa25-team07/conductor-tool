@@ -1,0 +1,22 @@
+<template>
+  <div class="team-card" data-team-id="{{teamUuid}}" data-team-name="{{teamName}}">
+    <div class="team-card-header">
+      <div class="team-title">{{teamName}}</div>
+      <div class="alert-badge {{#hasBlockers}}attention{{/hasBlockers}}{{^hasBlockers}}ok{{/hasBlockers}}">
+        {{#hasBlockers}}⚠️ Blockers Reported{{/hasBlockers}}
+        {{^hasBlockers}}✅ On Track{{/hasBlockers}}
+      </div>
+    </div>
+    <div class="team-stats" style="display: flex; gap: 2rem; color: var(--color-forest-green);">
+      <div>
+        <strong>Members:</strong> {{memberCount}}
+      </div>
+      <div>
+        <strong>Submissions:</strong> {{submissionCount}}
+      </div>
+      <div>
+        <strong>Avg Mood:</strong> {{avgSentiment}} <span class="{{trendClass}}">{{trendIcon}}</span>
+      </div>
+    </div>
+  </div>
+</template>

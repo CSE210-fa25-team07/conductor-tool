@@ -1,416 +1,922 @@
 /**
- * @fileoverview Team Dashboard Page - Shows team members' standups
- * NO STYLING - Pure HTML elements only
+ * @fileoverview Team Dashboard View
+ * Displays team standup activity and analytics with Chart.js
  * @module standup/teamDashboard
  */
 
-import {
-  currentUser,
-  mockTeams,
-  getStandupsByTeam,
-  getUserById,
-  getCommentsByStandup,
-  mockComments,
-  getGithubActivityByTeam,
-  getGithubActivityByUser,
-  getReposByTeam,
-  mockUsers
-} from "./mockData.js";
+import { getTeamStandups } from "../../api/standupApi.js";
+import { getActiveCourse, getUserTeams, isProfessorOrTA } from "../../utils/userContext.js";
+import { renderComponent, renderComponents } from "../../utils/componentLoader.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
+import { navigateBack, navigateToView } from "./courseIntegration.js";
+import { generateStoredActivitiesHtml } from "./githubActivityList.js";
+
+// Store chart instances to destroy them before re-rendering
+const chartInstances = {};
+
+// Store data for chart interactions and standup lookups
+let teamData = {
+  standups: [],
+  members: {},
+  dates: [],
+  standupMap: {} // Map standupUuid to full standup for modal display
+};
+
+// Color palette for member charts (20 distinct colors)
+const MEMBER_COLORS = [
+  "#99FF66", // radioactive-lime
+  "#4ECDC4", // teal
+  "#66CC99", // mint green
+  "#FFD93D", // golden yellow
+  "#FF8C42", // orange
+  "#95E1D3", // soft aqua
+  "#C9B1FF", // lavender
+  "#FF6B6B", // coral
+  "#66D9EF", // sky blue
+  "#A8E6CF", // pale green
+  "#F7B267", // peach
+  "#7FDBFF", // bright cyan
+  "#B4F8C8", // mint
+  "#FFADAD", // salmon pink
+  "#9BF6FF", // ice blue
+  "#DDA0DD", // plum
+  "#E2F0CB", // light lime
+  "#FEC89A", // apricot
+  "#87CEEB", // sky
+  "#98D8C8" // seafoam
+];
 
 /**
- * Renders the team dashboard with team standups and collaboration features
- * @function renderTeamDashboard
- * @param {string} containerId - ID of the container element to render into
- * @returns {void}
+ * Render the team dashboard view
+ * @param {HTMLElement} container - Container to render into
+ * @param {Object} params - Optional parameters (e.g., teamUuid)
  */
-export function renderTeamDashboard(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
+export async function render(container, params = {}) {
+  const activeCourse = getActiveCourse();
+  const userTeams = getUserTeams();
+  const isTA = isProfessorOrTA();
 
-  // Header
-  const header = document.createElement("h1");
-  header.textContent = "Team Dashboard";
-  container.appendChild(header);
+  // Determine which team to show
+  let selectedTeamId = params.teamUuid;
+  const courseTeams = userTeams.filter(t => t.courseUuid === activeCourse?.courseUuid);
 
-  // User info
-  const userInfo = document.createElement("p");
-  userInfo.textContent = `Logged in as: ${currentUser.name}`;
-  container.appendChild(userInfo);
+  if (!selectedTeamId && courseTeams.length > 0) {
+    selectedTeamId = courseTeams[0].teamUuid;
+  }
 
-  // Team selector
-  const teamSelectorLabel = document.createElement("label");
-  teamSelectorLabel.textContent = "Select Team: ";
-  container.appendChild(teamSelectorLabel);
+  // If no team selected and not TA, show empty state
+  if (!selectedTeamId && !isTA) {
+    container.innerHTML = await renderComponent("standup/emptyState", {
+      icon: "👥",
+      title: "No Team Found",
+      text: "You are not currently assigned to any team in this course."
+    });
+    return;
+  }
 
-  const teamSelect = document.createElement("select");
-  teamSelect.id = "team-selector";
+  // Load page template
+  const pageHTML = await loadTemplate("standup", "teamDashboard");
+  container.innerHTML = pageHTML;
 
-  mockTeams.forEach(team => {
-    const option = document.createElement("option");
-    option.value = team.team_uuid;
-    option.textContent = team.name;
-    teamSelect.appendChild(option);
+  // Load Chart.js
+  await loadChartJs();
+
+  // Render breadcrumb navigation for TAs
+  if (isTA && params.teamUuid) {
+    const headerActions = document.getElementById("team-header-actions");
+    if (headerActions) {
+      const breadcrumb = document.createElement("div");
+      breadcrumb.className = "breadcrumb-nav";
+      breadcrumb.innerHTML = `
+        <button class="breadcrumb-link" id="back-to-overview">← TA Overview</button>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">${params.teamName || "Team"}</span>
+      `;
+      headerActions.prepend(breadcrumb);
+
+      document.getElementById("back-to-overview")?.addEventListener("click", () => {
+        navigateBack();
+      });
+    }
+  }
+
+  // Render team selector for students with multiple teams
+  const teamSelectPlaceholder = document.getElementById("team-selector-placeholder");
+  if (teamSelectPlaceholder) {
+    if (isTA) {
+      teamSelectPlaceholder.style.display = "none";
+    } else if (courseTeams.length > 1) {
+      const teamSelectHTML = await renderComponent("standup/teamSelector", {
+        teams: courseTeams.map(team => ({
+          ...team,
+          selected: team.teamUuid === selectedTeamId
+        }))
+      });
+      teamSelectPlaceholder.outerHTML = teamSelectHTML;
+
+      document.getElementById("team-select")?.addEventListener("change", (e) => {
+        loadTeamData(e.target.value);
+      });
+    } else {
+      teamSelectPlaceholder.style.display = "none";
+    }
+  }
+
+  // Load team data
+  if (selectedTeamId) {
+    await loadTeamData(selectedTeamId);
+  } else {
+    container.innerHTML = await renderComponent("standup/error", {
+      message: "Team not found."
+    });
+  }
+}
+
+/**
+ * Load Chart.js library dynamically
+ */
+function loadChartJs() {
+  return new Promise((resolve, reject) => {
+    if (window.Chart) return resolve();
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * Load team data and render dashboard
+ * @param {string} teamUuid - Team UUID
+ */
+async function loadTeamData(teamUuid) {
+  const contentDiv = document.getElementById("team-content");
+  const teamNameDisplay = document.getElementById("team-name-display");
+
+  try {
+    contentDiv.innerHTML = "<div class=\"loading-message\">Loading team analytics...</div>";
+
+    // Get last 14 days for better trend data
+    const endDate = new Date().toISOString().split("T")[0];
+    const startDate = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+    const standups = await getTeamStandups(teamUuid, { startDate, endDate });
+
+    // Update team name
+    if (standups.length > 0 && standups[0].team) {
+      if (teamNameDisplay) teamNameDisplay.textContent = standups[0].team.teamName;
+    }
+
+    // Process data
+    const members = groupStandupsByMember(standups);
+    const stats = calculateTeamStats(standups, members);
+    const dates = [...new Set(standups.map(s => s.dateSubmitted.split("T")[0]))].sort().slice(-7);
+
+    // Build standup lookup map for modal display
+    const standupMap = {};
+    standups.forEach(s => {
+      standupMap[s.standupUuid] = s;
+    });
+
+    // Store for chart interactions and standup lookups
+    teamData = { standups, members, dates, standupMap };
+
+    // Render dashboard structure using template
+    const dashboardHTML = await renderComponent("standup/teamDashboardContent", {
+      memberHint: "Click a member to view their standup history",
+      feedsCount: renderFeedsCount(standups, 7)
+    });
+    contentDiv.innerHTML = dashboardHTML;
+
+    // Render metric cards
+    const metricsRow = document.getElementById("metrics-row");
+    if (metricsRow) {
+      const metricsData = [
+        { label: "Team Members", value: stats.totalMembers, subtext: "Active this period", metricKey: "members" },
+        { label: "Submissions", value: stats.totalSubmissions, subtext: "Last 14 days", metricKey: "submissions" },
+        { label: "Avg Sentiment", value: stats.avgSentiment, subtext: "Team mood", metricKey: "sentiment" },
+        { label: "Blockers", value: stats.totalBlockers, subtext: "Need attention", metricKey: "blockers" }
+      ];
+      metricsRow.innerHTML = await renderComponents("standup/metricCard", metricsData);
+    }
+
+    // Render member cards
+    const memberGrid = document.getElementById("member-grid");
+    if (memberGrid) {
+      if (Object.keys(members).length > 0) {
+        const memberData = Object.values(members).map((m, i) => prepareMemberCardData(m, i));
+        memberGrid.innerHTML = await renderComponents("standup/memberCard", memberData);
+      } else {
+        memberGrid.innerHTML = "<div class=\"empty-state-inline\">No member activity in this period</div>";
+      }
+    }
+
+    // Render initial feeds
+    const feedsList = document.getElementById("team-feeds-list");
+    if (feedsList) {
+      feedsList.innerHTML = await renderCompactFeeds(standups, 7);
+    }
+
+    // Initialize all 4 metric charts
+    initializeMetricCharts();
+
+    // Initialize GitHub activity chart
+    renderGitHubChart(7, false);
+
+    // Attach listeners
+    attachMetricChartListeners();
+    attachGitHubChartListeners();
+    attachFeedFilterListener(standups);
+    attachMemberClickListeners(); // Click member to view their standups
+    attachFeedClickListeners(document.getElementById("team-feeds-list")); // Click feeds to see detail
+
+  } catch (error) {
+    contentDiv.innerHTML = `<div class="error-message">Failed to load team data: ${error.message}</div>`;
+  }
+}
+
+/**
+ * Prepare member card data for template
+ */
+function prepareMemberCardData(member, index) {
+  const { user, standups } = member;
+  standups.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+
+  const latest = standups[0];
+  const streak = calculateStreak(standups);
+  const hasBlocker = latest?.blockers;
+  const avgSentiment = standups.length > 0
+    ? (standups.reduce((sum, s) => sum + (s.sentimentScore || 0), 0) / standups.length).toFixed(1)
+    : "N/A";
+
+  return {
+    userUuid: user.userUuid,
+    userName: `${user.firstName} ${user.lastName}`,
+    clickableClass: "clickable", // Always clickable for all team members
+    color: MEMBER_COLORS[index % MEMBER_COLORS.length],
+    statusClass: !latest ? "status-inactive" : (hasBlocker ? "status-blocked" : "status-active"),
+    statusText: !latest ? "Inactive" : (hasBlocker ? "Blocked" : "Active"),
+    submissionCount: standups.length,
+    avgSentiment,
+    hasStreak: streak > 0,
+    streakDisplay: streak > 0 ? `🔥 ${streak}` : "",
+    hasLatest: !!latest,
+    latestDate: latest ? new Date(latest.dateSubmitted).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "",
+    latestMood: latest ? (latest.sentimentScore || 3) : "",
+    hasBlocker: !!hasBlocker
+  };
+}
+
+/**
+ * Initialize all 4 metric charts in the 2x2 grid
+ */
+function initializeMetricCharts() {
+  const metrics = ["members", "submissions", "sentiment", "blockers"];
+  metrics.forEach(metricKey => {
+    // Default: 7 days, not by member
+    renderMetricChart(metricKey, 7, false);
+  });
+}
+
+/**
+ * Attach listeners to metric chart controls (time filter, breakdown toggle)
+ */
+function attachMetricChartListeners() {
+  const chartsGrid = document.getElementById("metrics-charts-grid");
+  if (!chartsGrid) return;
+
+  const panels = chartsGrid.querySelectorAll(".metric-chart-panel");
+  panels.forEach(panel => {
+    const metricKey = panel.dataset.metric;
+
+    // Track current state for this panel
+    let currentDays = 7;
+    let currentByMember = false;
+
+    // Add time filter listeners
+    const timeButtons = panel.querySelectorAll(".metric-time-btn");
+    timeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        timeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentDays = parseInt(btn.dataset.days, 10);
+        renderMetricChart(metricKey, currentDays, currentByMember);
+      });
+    });
+
+    // Add breakdown toggle listener
+    const breakdownCheckbox = panel.querySelector(".metric-breakdown-checkbox");
+    if (breakdownCheckbox) {
+      breakdownCheckbox.addEventListener("change", (e) => {
+        currentByMember = e.target.checked;
+        renderMetricChart(metricKey, currentDays, currentByMember);
+      });
+    }
+  });
+}
+
+/**
+ * Attach listeners to GitHub chart controls
+ */
+function attachGitHubChartListeners() {
+  const panel = document.getElementById("github-chart-panel");
+  if (!panel) return;
+
+  let currentDays = 7;
+  let currentByMember = false;
+
+  // Time filter listeners
+  const timeButtons = panel.querySelectorAll(".metric-time-btn");
+  timeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      timeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDays = parseInt(btn.dataset.days, 10);
+      renderGitHubChart(currentDays, currentByMember);
+    });
   });
 
-  teamSelect.onchange = () => {
-    renderTeamStandups(container, teamSelect.value);
-  };
-
-  container.appendChild(teamSelect);
-  container.appendChild(document.createElement("br"));
-  container.appendChild(document.createElement("br"));
-
-  // Dashboard content container
-  const dashboardContent = document.createElement("div");
-  dashboardContent.id = "dashboard-content";
-  container.appendChild(dashboardContent);
-
-  // Initial render
-  renderTeamStandups(container, mockTeams[0].team_uuid);
+  // Breakdown toggle listener
+  const breakdownCheckbox = document.getElementById("github-breakdown-checkbox");
+  if (breakdownCheckbox) {
+    breakdownCheckbox.addEventListener("change", (e) => {
+      currentByMember = e.target.checked;
+      renderGitHubChart(currentDays, currentByMember);
+    });
+  }
 }
 
-function renderTeamStandups(container, teamId) {
-  const dashboardContent = document.getElementById("dashboard-content");
-  dashboardContent.innerHTML = "";
+/**
+ * Render GitHub activity chart (stacked bar chart)
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ */
+function renderGitHubChart(days = 7, byMember = false) {
+  const ctx = document.getElementById("chart-github");
+  if (!ctx) return;
 
-  const team = mockTeams.find(t => t.team_uuid === teamId);
-  const standups = getStandupsByTeam(teamId);
-
-  // Team name
-  const teamHeader = document.createElement("h2");
-  teamHeader.textContent = `${team.name} - Recent Standups`;
-  dashboardContent.appendChild(teamHeader);
-
-  // GitHub org info
-  if (team.github_org) {
-    const githubInfo = document.createElement("p");
-    githubInfo.textContent = `GitHub Organization: ${team.github_org}`;
-    dashboardContent.appendChild(githubInfo);
-
-    const repos = getReposByTeam(teamId);
-    const repoInfo = document.createElement("p");
-    repoInfo.textContent = `Repositories: ${repos.map(r => r.repo_name).join(", ")}`;
-    dashboardContent.appendChild(repoInfo);
+  if (chartInstances.github) {
+    chartInstances.github.destroy();
   }
 
-  dashboardContent.appendChild(document.createElement("hr"));
+  const { standups, members } = teamData;
+  const data = getGitHubDataOverTime(standups, members, days, byMember);
 
-  // GitHub Activity Section (Today)
-  const githubSection = document.createElement("div");
-  githubSection.innerHTML = "<h3>GitHub Activity (Today)</h3>";
+  chartInstances.github = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.labels,
+      datasets: data.datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          stacked: !byMember,
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
+        },
+        x: {
+          stacked: !byMember,
+          grid: { display: false },
+          ticks: { font: { family: "Monaco", size: 10 } }
+        }
+      }
+    }
+  });
+}
 
-  const teamGithubActivity = getGithubActivityByTeam(teamId, 24);
+// GitHub activity type colors
+const GITHUB_COLORS = {
+  commit: "#16a34a",   // green
+  pr: "#9333ea",       // purple
+  review: "#0891b2",   // cyan
+  issue: "#d97706"     // orange
+};
 
-  if (teamGithubActivity.length === 0) {
-    const noActivity = document.createElement("p");
-    noActivity.textContent = "No GitHub activity in the last 24 hours.";
-    githubSection.appendChild(noActivity);
+/**
+ * Get GitHub activity data over time
+ * @param {Array} standups - All standups
+ * @param {Object} members - Grouped standups by member
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ * @returns {Object} { labels, datasets }
+ */
+function getGitHubDataOverTime(standups, members, days, byMember = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
+
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
+
+  if (byMember) {
+    // One bar per member showing total GitHub activities
+    const datasets = Object.values(members).map((member, i) => {
+      const color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+      const values = dates.map(date => {
+        const dayStandups = member.standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.length;
+        }, 0);
+      });
+      return {
+        label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
+        data: values,
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
   } else {
-    // Team summary stats
-    const commits = teamGithubActivity.filter(a => a.activity_type === "commit");
-    const prs = teamGithubActivity.filter(a => a.activity_type === "pull_request");
-    const reviews = teamGithubActivity.filter(a => a.activity_type === "review");
+    // Stacked bar chart by activity type
+    const activityTypes = ["commit", "pr", "review", "issue"];
+    const datasets = activityTypes.map(type => {
+      const values = dates.map(date => {
+        const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
+        return dayStandups.reduce((sum, s) => {
+          if (!s.githubActivities || !Array.isArray(s.githubActivities)) return sum;
+          return sum + s.githubActivities.filter(a => a.type === type).length;
+        }, 0);
+      });
+      return {
+        label: type.charAt(0).toUpperCase() + type.slice(1) + "s",
+        data: values,
+        backgroundColor: GITHUB_COLORS[type],
+        borderColor: GITHUB_COLORS[type],
+        borderWidth: 1
+      };
+    });
+    return { labels, datasets };
+  }
+}
 
-    const statsSummary = document.createElement("p");
-    statsSummary.textContent = `Team total: ${commits.length} commits, ${prs.length} PRs, ${reviews.length} reviews`;
-    githubSection.appendChild(statsSummary);
+/**
+ * Attach member card click listeners (for TAs)
+ */
+function attachMemberClickListeners() {
+  const cards = document.querySelectorAll(".member-card.clickable");
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+      const userUuid = card.dataset.userId;
+      const userName = card.dataset.userName;
+      if (userUuid) {
+        navigateToView("history", { userUuid, userName });
+      }
+    });
+  });
+}
 
-    // Per-member GitHub activity
-    githubSection.appendChild(document.createElement("br"));
-    const perMemberHeader = document.createElement("strong");
-    perMemberHeader.textContent = "Per-Member Activity:";
-    githubSection.appendChild(perMemberHeader);
-    githubSection.appendChild(document.createElement("br"));
-    githubSection.appendChild(document.createElement("br"));
+/**
+ * Render metric chart (line chart over time)
+ * @param {string} metricKey - The metric key
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ */
+function renderMetricChart(metricKey, days = 7, byMember = false) {
+  const ctx = document.getElementById(`chart-${metricKey}`);
+  if (!ctx) return;
 
-    // Get team members (users in this team)
-    const teamMembers = mockUsers.filter(u => u.role === "student");
+  if (chartInstances[metricKey]) {
+    chartInstances[metricKey].destroy();
+  }
 
-    teamMembers.forEach(member => {
-      const memberActivity = getGithubActivityByUser(member.user_uuid, 24);
-      const memberDiv = document.createElement("div");
+  const { standups, members } = teamData;
+  const data = getMetricDataOverTime(metricKey, standups, members, days, byMember);
 
-      const memberHeader = document.createElement("strong");
-      memberHeader.textContent = `${member.name}:`;
-      memberDiv.appendChild(memberHeader);
-      memberDiv.appendChild(document.createElement("br"));
+  chartInstances[metricKey] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.labels,
+      datasets: data.datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: byMember,
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: { family: "Monaco", size: 10 }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: "#D3FBD6" },
+          ticks: { font: { family: "Monaco" } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: "Monaco", size: 10 } }
+        }
+      }
+    }
+  });
+}
 
-      if (!member.github_connected) {
-        const notConnected = document.createElement("span");
-        notConnected.textContent = "  ⚠️ GitHub not connected";
-        memberDiv.appendChild(notConnected);
-      } else if (memberActivity.length === 0) {
-        const noActivity = document.createElement("span");
-        noActivity.textContent = "  No activity today";
-        memberDiv.appendChild(noActivity);
-      } else {
-        const memberCommits = memberActivity.filter(a => a.activity_type === "commit");
-        const memberPRs = memberActivity.filter(a => a.activity_type === "pull_request");
-        const memberReviews = memberActivity.filter(a => a.activity_type === "review");
-        const memberIssues = memberActivity.filter(a => a.activity_type === "issue");
+/**
+ * Get metric data over time for line charts
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - All standups
+ * @param {Object} members - Grouped standups by member
+ * @param {number} days - Number of days to show
+ * @param {boolean} byMember - Show breakdown by member
+ * @returns {Object} { labels, datasets }
+ */
+function getMetricDataOverTime(metricKey, standups, members, days, byMember = false) {
+  // Generate last N days
+  const dates = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split("T")[0]);
+  }
 
-        const totalAdditions = memberCommits.reduce((sum, a) => sum + (a.data.additions || 0), 0);
-        const totalDeletions = memberCommits.reduce((sum, a) => sum + (a.data.deletions || 0), 0);
+  const labels = dates.map(d => d.slice(5)); // MM-DD format
 
-        const activityText = document.createElement("span");
-        activityText.textContent = `  ${memberCommits.length} commits (+${totalAdditions}/-${totalDeletions} lines)`;
-        if (memberPRs.length > 0) activityText.textContent += `, ${memberPRs.length} PRs`;
-        if (memberReviews.length > 0) activityText.textContent += `, ${memberReviews.length} reviews`;
-        if (memberIssues.length > 0) activityText.textContent += `, ${memberIssues.length} issues`;
+  if (byMember) {
+    // Multi-member view: one dataset per member
+    const datasets = Object.values(members).map((member, i) => {
+      const color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+      const values = dates.map(date => getMetricValueForDate(metricKey, member.standups, date));
+      return {
+        label: `${member.user.firstName} ${member.user.lastName.charAt(0)}.`,
+        data: values,
+        borderColor: color,
+        backgroundColor: color + "33",
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 3,
+        pointBackgroundColor: color
+      };
+    });
+    return { labels, datasets };
+  } else {
+    // Aggregate view: single dataset
+    const values = dates.map(date => getMetricValueForDate(metricKey, standups, date));
+    const datasets = [{
+      label: getMetricLabel(metricKey),
+      data: values,
+      borderColor: "#052B08",
+      backgroundColor: "rgba(153, 255, 102, 0.2)",
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true,
+      pointBackgroundColor: "#FFFFFF",
+      pointBorderColor: "#052B08",
+      pointRadius: 4
+    }];
+    return { labels, datasets };
+  }
+}
 
-        memberDiv.appendChild(activityText);
-        memberDiv.appendChild(document.createElement("br"));
+/**
+ * Get metric value for a specific date
+ * @param {string} metricKey - The metric key
+ * @param {Array} standups - Standups to analyze
+ * @param {string} date - Date string (YYYY-MM-DD)
+ * @returns {number|null} Metric value
+ */
+function getMetricValueForDate(metricKey, standups, date) {
+  const dayStandups = standups.filter(s => s.dateSubmitted.startsWith(date));
 
-        // Show repos worked on
-        const repos = [...new Set(memberActivity.map(a => a.repo_name))];
-        const reposText = document.createElement("span");
-        reposText.textContent = `  Repos: ${repos.join(", ")}`;
-        memberDiv.appendChild(reposText);
+  switch (metricKey) {
+  case "members":
+    return new Set(dayStandups.map(s => s.user?.userUuid).filter(Boolean)).size;
+
+  case "submissions":
+    return dayStandups.length;
+
+  case "sentiment": {
+    const withSentiment = dayStandups.filter(s => s.sentimentScore);
+    if (withSentiment.length === 0) return null;
+    const avg = withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length;
+    return parseFloat(avg.toFixed(1));
+  }
+
+  case "blockers":
+    return dayStandups.filter(s => s.blockers).length;
+
+  default:
+    return 0;
+  }
+}
+
+/**
+ * Get label for metric
+ * @param {string} metricKey - The metric key
+ * @returns {string} Human-readable label
+ */
+function getMetricLabel(metricKey) {
+  const labels = {
+    members: "Active Members",
+    submissions: "Submissions",
+    sentiment: "Avg Sentiment",
+    blockers: "Blockers"
+  };
+  return labels[metricKey] || metricKey;
+}
+
+/**
+ * Group standups by member
+ */
+function groupStandupsByMember(standups) {
+  const members = {};
+  standups.forEach(standup => {
+    if (!standup.user) return;
+    const userId = standup.user.userUuid;
+    if (!members[userId]) {
+      members[userId] = { user: standup.user, standups: [] };
+    }
+    members[userId].standups.push(standup);
+  });
+  return members;
+}
+
+/**
+ * Calculate team stats
+ */
+function calculateTeamStats(standups, members) {
+  const totalMembers = Object.keys(members).length;
+  const totalSubmissions = standups.length;
+  const withSentiment = standups.filter(s => s.sentimentScore);
+  const avgSentiment = withSentiment.length > 0
+    ? (withSentiment.reduce((sum, s) => sum + s.sentimentScore, 0) / withSentiment.length).toFixed(1)
+    : "N/A";
+  const totalBlockers = standups.filter(s => s.blockers).length;
+
+  return { totalMembers, totalSubmissions, avgSentiment, totalBlockers };
+}
+
+/**
+ * Calculate submission streak
+ */
+function calculateStreak(standups) {
+  let streak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const hasSubmission = standups.some(s => s.dateSubmitted.startsWith(dateStr));
+    if (hasSubmission) {
+      streak++;
+    } else if (i === 0) {
+      continue;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+/**
+ * Count GitHub activities by type
+ * @param {Array} activities - Array of {type, label, url}
+ * @returns {Object} Counts by type
+ */
+function countGitHubActivities(activities) {
+  if (!activities || !Array.isArray(activities)) {
+    return { commit: 0, pr: 0, review: 0, issue: 0 };
+  }
+
+  return activities.reduce((counts, activity) => {
+    const type = activity.type || "commit";
+    counts[type] = (counts[type] || 0) + 1;
+    return counts;
+  }, { commit: 0, pr: 0, review: 0, issue: 0 });
+}
+
+/**
+ * Render compact feed items for team dashboard
+ */
+async function renderCompactFeeds(standups, days = 7) {
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const filtered = standups
+    .filter(s => new Date(s.dateSubmitted) >= cutoff)
+    .sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+
+  if (filtered.length === 0) {
+    return "<div class=\"feeds-empty\">No standups in this period</div>";
+  }
+
+  const feedData = filtered.map(standup => {
+    const date = new Date(standup.dateSubmitted);
+    const activityCounts = countGitHubActivities(standup.githubActivities);
+    const hasGithubActivity = activityCounts.commit > 0 || activityCounts.pr > 0 ||
+                              activityCounts.review > 0 || activityCounts.issue > 0;
+
+    return {
+      standupUuid: standup.standupUuid,
+      userUuid: standup.user?.userUuid || "",
+      userName: standup.user ? `${standup.user.firstName} ${standup.user.lastName}` : "Unknown",
+      teamName: "",
+      dateStr: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      timeStr: date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      moodScore: standup.sentimentScore || 3,
+      hasBlocker: !!standup.blockers,
+      blockerClass: standup.blockers ? "has-blocker" : "",
+      donePreview: truncateText(standup.whatDone, 60),
+      hasGithubActivity,
+      commitCount: activityCounts.commit || 0,
+      prCount: activityCounts.pr || 0,
+      reviewCount: activityCounts.review || 0,
+      issueCount: activityCounts.issue || 0
+    };
+  });
+
+  return renderComponents("standup/feedItem", feedData);
+}
+
+/**
+ * Render feeds count text
+ */
+function renderFeedsCount(standups, days) {
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const count = standups.filter(s => new Date(s.dateSubmitted) >= cutoff).length;
+  return `${count} standup${count !== 1 ? "s" : ""}`;
+}
+
+/**
+ * Attach feed filter listener for team dashboard
+ */
+function attachFeedFilterListener(standups) {
+  const filterContainer = document.getElementById("team-feeds-filter");
+  if (!filterContainer) return;
+
+  const buttons = filterContainer.querySelectorAll(".feeds-filter-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const days = parseInt(btn.dataset.days, 10);
+      const feedsList = document.getElementById("team-feeds-list");
+      const feedsCount = document.getElementById("team-feeds-count");
+
+      if (feedsList) {
+        feedsList.innerHTML = await renderCompactFeeds(standups, days);
+        attachFeedClickListeners(feedsList);
       }
 
-      memberDiv.appendChild(document.createElement("br"));
-      githubSection.appendChild(memberDiv);
+      if (feedsCount) {
+        feedsCount.textContent = renderFeedsCount(standups, days);
+      }
     });
-  }
-
-  dashboardContent.appendChild(githubSection);
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // Filter by date
-  const filterLabel = document.createElement("label");
-  filterLabel.textContent = "Filter by date: ";
-  dashboardContent.appendChild(filterLabel);
-
-  const dateFilter = document.createElement("input");
-  dateFilter.type = "date";
-  dateFilter.value = new Date().toISOString().split("T")[0];
-  dashboardContent.appendChild(dateFilter);
-
-  const filterBtn = document.createElement("button");
-  filterBtn.textContent = "Filter";
-  filterBtn.onclick = () => {
-    alert(`Filtering by date: ${dateFilter.value} (mock action)`);
-  };
-  dashboardContent.appendChild(filterBtn);
-
-  dashboardContent.appendChild(document.createElement("br"));
-  dashboardContent.appendChild(document.createElement("br"));
-
-  // Sentiment trend summary
-  const sentimentSummary = document.createElement("div");
-  sentimentSummary.innerHTML = "<h3>7-Day Sentiment Trend</h3>";
-
-  const avgSentiment = standups.reduce((sum, s) => sum + s.sentiment_score, 0) / standups.length;
-  const avgText = document.createElement("p");
-  avgText.textContent = `Average team sentiment: ${avgSentiment.toFixed(2)} (${avgSentiment > 0.5 ? "Positive" : avgSentiment > 0 ? "Neutral" : "Negative"})`;
-  sentimentSummary.appendChild(avgText);
-
-  const trendMock = document.createElement("p");
-  trendMock.textContent = "[MOCK CHART: Line graph showing sentiment over 7 days would appear here]";
-  sentimentSummary.appendChild(trendMock);
-
-  dashboardContent.appendChild(sentimentSummary);
-
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // Active blockers section
-  const blockersSection = document.createElement("div");
-  blockersSection.innerHTML = "<h3>Active Blockers</h3>";
-
-  const activeBlockers = standups.filter(s => s.blockers && s.blockers.trim() !== "");
-
-  if (activeBlockers.length === 0) {
-    const noBlockers = document.createElement("p");
-    noBlockers.textContent = "No active blockers!";
-    blockersSection.appendChild(noBlockers);
-  } else {
-    activeBlockers.forEach(standup => {
-      const user = getUserById(standup.user_uuid);
-      const blockerDiv = document.createElement("div");
-      blockerDiv.innerHTML = `<strong>BLOCKER from ${user.name}:</strong>`;
-
-      const blockerText = document.createElement("p");
-      blockerText.textContent = standup.blockers;
-      blockerDiv.appendChild(blockerText);
-
-      const helpBtn = document.createElement("button");
-      helpBtn.textContent = "I can help!";
-      helpBtn.onclick = () => {
-        alert(`You offered to help ${user.name} with their blocker! (mock action - would add comment and notify user)`);
-      };
-      blockerDiv.appendChild(helpBtn);
-
-      const escalateBtn = document.createElement("button");
-      escalateBtn.textContent = "Escalate to TA";
-      escalateBtn.onclick = () => {
-        alert("Blocker escalated to TA! (mock action - would send notification to TA)");
-      };
-      blockerDiv.appendChild(escalateBtn);
-
-      const timeInfo = document.createElement("p");
-      const hoursSince = Math.floor((new Date() - new Date(standup.date_submitted)) / (1000 * 60 * 60));
-      timeInfo.textContent = `Posted ${hoursSince} hours ago ${hoursSince >= 4 ? "⚠️ AUTO-ESCALATION PENDING" : ""}`;
-      blockerDiv.appendChild(timeInfo);
-
-      blockerDiv.appendChild(document.createElement("hr"));
-      blockersSection.appendChild(blockerDiv);
-    });
-  }
-
-  dashboardContent.appendChild(blockersSection);
-
-  dashboardContent.appendChild(document.createElement("hr"));
-
-  // All standups
-  const standupsHeader = document.createElement("h3");
-  standupsHeader.textContent = "All Team Standups";
-  dashboardContent.appendChild(standupsHeader);
-
-  if (standups.length === 0) {
-    const noStandups = document.createElement("p");
-    noStandups.textContent = "No standups submitted yet.";
-    dashboardContent.appendChild(noStandups);
-  } else {
-    // Sort by date (most recent first)
-    const sortedStandups = [...standups].sort((a, b) =>
-      new Date(b.date_submitted) - new Date(a.date_submitted)
-    );
-
-    sortedStandups.forEach(standup => {
-      const standupCard = createStandupCard(standup);
-      dashboardContent.appendChild(standupCard);
-      dashboardContent.appendChild(document.createElement("hr"));
-    });
-  }
-
-  // Missing submissions section
-  const missingSection = document.createElement("div");
-  missingSection.innerHTML = "<h3>Missing Submissions</h3>";
-
-  const missingText = document.createElement("p");
-  missingText.textContent = "[MOCK: Would show team members who haven't submitted today]";
-  missingSection.appendChild(missingText);
-
-  dashboardContent.appendChild(missingSection);
+  });
 }
 
-function createStandupCard(standup) {
-  const user = getUserById(standup.user_uuid);
-  const comments = getCommentsByStandup(standup.standup_uuid);
+/**
+ * Attach click listeners to feed items to show standup detail modal
+ */
+function attachFeedClickListeners(container) {
+  if (!container) return;
 
-  const card = document.createElement("div");
-
-  // Header
-  const cardHeader = document.createElement("h4");
-  cardHeader.textContent = `${user.name} - ${new Date(standup.date_submitted).toLocaleString()}`;
-  card.appendChild(cardHeader);
-
-  // Sentiment
-  const sentiment = document.createElement("p");
-  sentiment.textContent = `Sentiment: ${standup.sentiment_emoji} (${standup.sentiment_score})`;
-  card.appendChild(sentiment);
-
-  // What done
-  const whatDoneLabel = document.createElement("strong");
-  whatDoneLabel.textContent = "What they accomplished:";
-  card.appendChild(whatDoneLabel);
-  card.appendChild(document.createElement("br"));
-
-  const whatDoneText = document.createElement("p");
-  whatDoneText.textContent = standup.what_done;
-  card.appendChild(whatDoneText);
-
-  // What next
-  const whatNextLabel = document.createElement("strong");
-  whatNextLabel.textContent = "What they're working on next:";
-  card.appendChild(whatNextLabel);
-  card.appendChild(document.createElement("br"));
-
-  const whatNextText = document.createElement("p");
-  whatNextText.textContent = standup.what_next;
-  card.appendChild(whatNextText);
-
-  // Blockers (if any)
-  if (standup.blockers && standup.blockers.trim() !== "") {
-    const blockersLabel = document.createElement("strong");
-    blockersLabel.textContent = "🚨 BLOCKERS:";
-    card.appendChild(blockersLabel);
-    card.appendChild(document.createElement("br"));
-
-    const blockersText = document.createElement("p");
-    blockersText.textContent = standup.blockers;
-    card.appendChild(blockersText);
-  }
-
-  // Reflection (if any)
-  if (standup.reflection && standup.reflection.trim() !== "") {
-    const reflectionLabel = document.createElement("strong");
-    reflectionLabel.textContent = "Reflection:";
-    card.appendChild(reflectionLabel);
-    card.appendChild(document.createElement("br"));
-
-    const reflectionText = document.createElement("p");
-    reflectionText.textContent = standup.reflection;
-    card.appendChild(reflectionText);
-  }
-
-  // Comments section
-  const commentsHeader = document.createElement("strong");
-  commentsHeader.textContent = `Comments (${comments.length}):`;
-  card.appendChild(commentsHeader);
-  card.appendChild(document.createElement("br"));
-
-  if (comments.length > 0) {
-    comments.forEach(comment => {
-      const commenter = getUserById(comment.commenter_uuid);
-      const commentDiv = document.createElement("div");
-
-      const commentAuthor = document.createElement("em");
-      commentAuthor.textContent = `${commenter.name} - ${new Date(comment.created_at).toLocaleString()}:`;
-      commentDiv.appendChild(commentAuthor);
-      commentDiv.appendChild(document.createElement("br"));
-
-      const commentText = document.createElement("p");
-      commentText.textContent = comment.comment_text;
-      commentDiv.appendChild(commentText);
-
-      card.appendChild(commentDiv);
+  const items = container.querySelectorAll(".feed-item[data-standup-id]");
+  items.forEach(item => {
+    item.addEventListener("click", () => {
+      const standupId = item.dataset.standupId;
+      if (standupId && teamData.standupMap[standupId]) {
+        showStandupDetailModal(teamData.standupMap[standupId]);
+      }
     });
-  }
+  });
+}
 
-  // Add comment form
-  const addCommentLabel = document.createElement("label");
-  addCommentLabel.textContent = "Add a comment:";
-  card.appendChild(addCommentLabel);
-  card.appendChild(document.createElement("br"));
+/**
+ * Show standup detail modal (uses history card format)
+ */
+function showStandupDetailModal(standup) {
+  const date = new Date(standup.dateSubmitted);
+  const userName = standup.user ? `${standup.user.firstName} ${standup.user.lastName}` : "Unknown";
+  const hasBlocker = !!standup.blockers;
+  const moodScore = standup.sentimentScore || 3;
+  const hasGithubActivities = standup.githubActivities && Array.isArray(standup.githubActivities) && standup.githubActivities.length > 0;
+  const activitiesItemsHtml = hasGithubActivities ? generateStoredActivitiesHtml(standup.githubActivities) : "";
+  const githubActivitiesHtml = hasGithubActivities ? `
+    <div class="history-field github-activities-field">
+      <span class="history-field-label">GitHub Activity:</span>
+      <div class="history-github-activities">${activitiesItemsHtml}</div>
+    </div>
+  ` : "";
+  const doneLabel = hasGithubActivities ? "Notes:" : "Done:";
 
-  const commentInput = document.createElement("textarea");
-  commentInput.rows = 2;
-  commentInput.cols = 60;
-  commentInput.placeholder = "Write a comment...";
-  card.appendChild(commentInput);
-  card.appendChild(document.createElement("br"));
+  const overlay = document.createElement("div");
+  overlay.className = "confirm-modal-overlay";
+  overlay.innerHTML = `
+    <div class="confirm-modal standup-detail-modal">
+      <div class="confirm-modal-header">
+        <h3 class="confirm-modal-title">${userName}'s Standup</h3>
+      </div>
+      <div class="standup-detail-content">
+        <div class="history-card ${hasBlocker ? "has-blocker" : ""}">
+          <div class="history-card-header">
+            <div class="history-card-left">
+              <div class="mood-indicator mood-${moodScore}">
+                <svg class="mood-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path class="mood-mouth"/>
+                  <circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+                </svg>
+                <span class="mood-score">${moodScore}</span>
+              </div>
+              <div class="history-date-info">
+                <span class="history-date">${date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
+                <span class="history-time">${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span>
+              </div>
+            </div>
+            <div class="history-card-right">
+              <span class="history-team">${standup.team?.teamName || ""}</span>
+              ${hasBlocker ? "<span class=\"history-blocker-badge\">Blocker</span>" : ""}
+            </div>
+          </div>
+          <div class="history-card-body">
+            ${githubActivitiesHtml}
+            ${standup.whatDone ? `
+            <div class="history-field">
+              <span class="history-field-label">${doneLabel}</span>
+              <span class="history-field-text">${standup.whatDone}</span>
+            </div>
+            ` : ""}
+            <div class="history-field">
+              <span class="history-field-label">Next:</span>
+              <span class="history-field-text">${standup.whatNext || ""}</span>
+            </div>
+            ${hasBlocker ? `
+            <div class="history-field blocker">
+              <span class="history-field-label">Blocker:</span>
+              <span class="history-field-text">${standup.blockers}</span>
+            </div>
+            ` : ""}
+            ${standup.reflection ? `
+            <div class="history-field">
+              <span class="history-field-label">Reflection:</span>
+              <span class="history-field-text">${standup.reflection}</span>
+            </div>
+            ` : ""}
+          </div>
+        </div>
+      </div>
+      <div class="confirm-modal-actions">
+        <button class="confirm-modal-btn confirm">Close</button>
+      </div>
+    </div>
+  `;
 
-  const submitCommentBtn = document.createElement("button");
-  submitCommentBtn.textContent = "Add Comment";
-  submitCommentBtn.onclick = () => {
-    if (commentInput.value.trim()) {
-      /* eslint-disable camelcase */
-      // Mock adding comment - using snake_case to match database schema
-      mockComments.push({
-        comment_uuid: `comment-${Date.now()}`,
-        standup_uuid: standup.standup_uuid,
-        commenter_uuid: currentUser.user_uuid,
-        comment_text: commentInput.value,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      /* eslint-enable camelcase */
-      alert("Comment added! (mock action - page would refresh)");
-      commentInput.value = "";
+  const closeModal = () => overlay.remove();
+
+  overlay.querySelector(".confirm-modal-btn").addEventListener("click", closeModal);
+
+  // Close on overlay click (outside modal)
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Close on Escape key
+  const handleKeydown = (e) => {
+    if (e.key === "Escape") {
+      document.removeEventListener("keydown", handleKeydown);
+      closeModal();
     }
   };
-  card.appendChild(submitCommentBtn);
+  document.addEventListener("keydown", handleKeydown);
 
-  return card;
+  document.body.appendChild(overlay);
+}
+
+/**
+ * Helper: Truncate text
+ */
+function truncateText(text, maxLength) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + "...";
 }

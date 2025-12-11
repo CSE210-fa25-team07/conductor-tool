@@ -1,8 +1,9 @@
 /** @type {import("eslint").FlatConfig[]} */
 module.exports = [
   {
-    ignores: ["node_modules/"],
-
+    ignores: ["**/node_modules/**", "**/docs/**"]
+  },
+  {
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",

@@ -3,18 +3,41 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
-    "docs": "jsdoc -c jsdoc.json"
+    "start": "node backend/src/server.js",
+    "lint": "eslint . --fix",
+    "docs": "jsdoc -c jsdoc.json",
+    "test": "vitest run",
+    "db:start": "docker compose up -d",
+    "db:stop": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "db:logs": "docker compose logs -f postgres",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:pull": "prisma db pull",
+    "db:seed": "node scripts/seed-db.js"
   },
   "devDependencies": {
     "eslint": "^9.38.0",
-    "jsdoc": "^4.0.0"
+    "jsdoc": "^4.0.0",
+    "jsdom": "^27.0.1",
+    "prisma": "^6.19.0",
+    "supertest": "^7.1.4",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "node-fetch": "^3.3.2",
+    "@prisma/client": "^6.19.0",
+    "@sendgrid/mail": "^8.1.6",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
-    "express-session": "^1.17.3"
+    "node-fetch": "^3.3.2",
+    "pg": "^8.11.3"
+  },
+  "overrides": {
+    "jws": ">=3.2.3"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   }
 }

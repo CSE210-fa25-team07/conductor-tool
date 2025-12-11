@@ -1,0 +1,33 @@
+<template>
+  <div class="history-filters">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filter-course">Course</label>
+        <select id="filter-course">
+          <option value="">All Courses</option>
+          <!-- Course options will be populated by JS -->
+        </select>
+      </div>
+
+      <div id="team-filter-placeholder">
+        <!-- Team filter will be inserted here if teams exist -->
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-start-date">Start Date</label>
+        <input
+          type="date"
+          id="filter-start-date"
+        >
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-end-date">End Date</label>
+        <input
+          type="date"
+          id="filter-end-date"
+        >
+      </div>
+    </div>
+  </div>
+</template>
