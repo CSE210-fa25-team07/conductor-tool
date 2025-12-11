@@ -39,7 +39,6 @@ async function seedDatabase() {
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
-    console.error("ERROR: DATABASE_URL environment variable is not set");
     process.exit(1);
   }
 
@@ -49,11 +48,9 @@ async function seedDatabase() {
   });
 
   try {
-    console.log("Connecting to database...");
     await client.connect();
 
     // Enable pgcrypto extension (needed for gen_random_uuid)
-    console.log("Enabling pgcrypto extension...");
     await client.query("CREATE EXTENSION IF NOT EXISTS pgcrypto;");
 
     // Get all SQL files sorted by name, skip 001 (database creation)
@@ -61,19 +58,12 @@ async function seedDatabase() {
       .filter(f => f.endsWith(".sql") && !f.startsWith("001"))
       .sort();
 
-    console.log(`Found ${files.length} migration files to run`);
-
     for (const file of files) {
-      console.log(`Running migration: ${file}`);
       const rawSql = readFileSync(join(migrationsDir, file), "utf8");
       const cleanedSql = cleanSql(rawSql);
       await client.query(cleanedSql);
-      console.log(`Completed: ${file}`);
     }
-
-    console.log("\nDatabase seeding completed successfully!");
   } catch (error) {
-    console.error("Database seeding failed:", error.message);
     process.exit(1);
   } finally {
     await client.end();
