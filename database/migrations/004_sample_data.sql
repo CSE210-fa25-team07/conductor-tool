@@ -628,7 +628,8 @@ INSERT INTO form_request (first_name, last_name, email, related_institution, ver
     ('Noah', 'Nelson', 'noah.n@umich.edu', 'University of Michigan', 'CSE210-TA-FALL25', NOW() - INTERVAL '45 minutes'),
     ('Olivia', 'Oliver', 'olivia.o@uva.edu', 'University of Virginia', 'CSE110-STU-WINTER25', NOW() - INTERVAL '90 minutes'),
     ('Paul', 'Peterson', 'paul.p@unc.edu', 'UNC Chapel Hill', 'CSE210-STU-FALL25', NOW() - INTERVAL '4 hours'),
-    ('Quinn', 'Quaid', 'quinn.q@utexas.edu', 'UT Austin', 'CSE110-TUTOR-WINTER25', NOW() - INTERVAL '5 hours');
+    ('Quinn', 'Quaid', 'quinn.q@utexas.edu', 'UT Austin', 'CSE110-TUTOR-WINTER25', NOW() - INTERVAL '5 hours')
+ON CONFLICT (email) DO NOTHING;
 
 
 -- ============================================

@@ -11,9 +11,9 @@ import * as githubAuthService from "../services/githubAuthService.js";
 import { checkUserFromSession } from "../utils/auth.js";
 
 const router = express.Router();
-const PORT = 8081;
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const REDIRECT_URI = `http://localhost:${PORT}/github/callback`;
+const BASE_URL = process.env.BASE_URL || "http://localhost:8081";
+const REDIRECT_URI = `${BASE_URL}/github/callback`;
 
 /**
  * Initiates GitHub OAuth flow by redirecting to GitHub's authorization page.

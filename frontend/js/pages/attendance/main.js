@@ -19,7 +19,7 @@ export async function render(container, view = "dashboard") {
   await renderDashboard(container, view);
 }
 
-/** 
+/**
  * Render class analytics
  * @param {HTMLElement} container
  */
@@ -35,7 +35,7 @@ export async function renderClassAnalytics(container) {
   showClassAnalytics(courseUUID);
 }
 
-/** Render individual analytics 
+/** Render individual analytics
  * @param {HTMLElement} container
  */
 export async function renderIndividualAnalytics(container) {
@@ -52,7 +52,7 @@ export async function renderIndividualAnalytics(container) {
 }
 
 
-/** Render group analytics 
+/** Render group analytics
  * @param {HTMLElement} container
  */
 export async function renderGroupanalytics(container) {

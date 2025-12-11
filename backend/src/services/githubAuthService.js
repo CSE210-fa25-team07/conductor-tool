@@ -8,10 +8,10 @@ import fetch from "node-fetch";
 import * as userRepository from "../repositories/userRepository.js";
 import "dotenv/config";
 
-const PORT = 8081;
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const REDIRECT_URI = `http://localhost:${PORT}/github/callback`;
+const BASE_URL = process.env.BASE_URL || "http://localhost:8081";
+const REDIRECT_URI = `${BASE_URL}/github/callback`;
 
 /**
  * Exchange authorization code for access token and link GitHub to user account

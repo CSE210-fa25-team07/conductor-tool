@@ -16,19 +16,31 @@ const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 8081;
+const PORT = process.env.PORT || 8081;
 
 app.use(express.json());
 
 // Metrics collection middleware (collect metrics for all requests)
 app.use(metricsCollector);
 
+const isProduction = process.env.NODE_ENV === "production";
+
 app.use(session({
-  secret: process.env.SESSION_SECRET,  // signs the session ID cookie (for dev: you can change this to any random string to bypass)
-  resave: false,             // don’t save session if nothing changed
-  saveUninitialized: false,  // don’t create session until something is stored
-  cookie: { secure: false }  // true if HTTPS/production
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: isProduction,
+    sameSite: isProduction ? "lax" : "lax",
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  },
+  proxy: isProduction // trust first proxy (Render's load balancer)
 }));
+
+// Trust proxy for secure cookies behind Render's load balancer
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 // Serve only assets statically (js, css, images) - HTML is served via protected routes
 app.use("/js", express.static(path.join(__dirname, "../../frontend/js")));

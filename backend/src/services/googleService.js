@@ -8,10 +8,10 @@ import fetch from "node-fetch";
 import * as userService from "./userService.js";
 import "dotenv/config";
 
-const PORT = 8081;
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const REDIRECT_URI = `http://localhost:${PORT}/google/callback`;
+const BASE_URL = process.env.BASE_URL || "http://localhost:8081";
+const REDIRECT_URI = `${BASE_URL}/google/callback`;
 
 /**
  * Exchange authorization code for tokens and fetch user profile

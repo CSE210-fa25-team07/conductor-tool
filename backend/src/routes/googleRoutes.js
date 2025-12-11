@@ -4,9 +4,9 @@ import "dotenv/config";
 import * as googleService from "../services/googleService.js";
 
 const router = express.Router();
-const PORT = 8081;
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const REDIRECT_URI = `http://localhost:${PORT}/google/callback`;
+const BASE_URL = process.env.BASE_URL || "http://localhost:8081";
+const REDIRECT_URI = `${BASE_URL}/google/callback`;
 /**
  * Initiates Google OAuth login by redirecting the user to Google's OAuth consent screen to authenticate.
  *
