@@ -11,6 +11,12 @@ The goal of **Conductor** is to:
 - Support fair and transparent assessment for both individual students and project groups.
 - Offer insights that help improve teaching efficiency and student learning outcomes.
 
+Live at [Conductor-Tool](https://conductor-prod-sjoh.onrender.com)
+Some videos you can checkout to learn more about the project:
+1. To understand what this project offers: [Show-Off Video](https://youtu.be/OBWT_CW6r_I)
+2. Important lesson the develop teams has learend: [Lesson Video](https://youtu.be/paZyKg_YvRM)
+3. Techinical breakdown of the project: [Technical Video](https://www.youtube.com/watch?v=KQFWetZaBKg)
+
 ## Getting Started
 
 ### Installing Node.js and npm
